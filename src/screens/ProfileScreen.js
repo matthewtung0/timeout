@@ -3,9 +3,11 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
 import { Context as UserContext } from '../context/userContext';
+import { Context as AuthContext } from '../context/AuthContext';
 
 const ProfileScreen = ({ navigation }) => {
     const { state, fetchSelf } = useContext(UserContext)
+    const { signout } = useContext(AuthContext);
 
     return (
         <View>
@@ -26,6 +28,11 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="Monthly Historical View"
                 onPress={() => navigation.navigate('HistoryMonthly')} />
+
+            <Button
+                style={styles.button}
+                title="Sign Out (temp)"
+                onPress={() => signout()} />
         </View>
     )
 }

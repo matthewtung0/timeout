@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, FlatList } from 'react-native';
 import { compareAsc, eachDayOfInterval, format, subDays, addDays } from 'date-fns';
 import DateList from '../components/DateList';
+import CalendarComponent from '../components/CalendarComponent';
 
 const today_date = () => {
 
@@ -29,17 +30,19 @@ const HistoryDailyScreen = () => {
         setTestSession(a);
     }
 
+    // cut views
+    /*<DateList
+                dates_to_display={default_interval()}
+                updateCallback={updateTestSession}>
+            </DateList>*/
+
     return (
         <View>
             <Text style={styles.title}>History Daily Screen</Text>
 
-            <DateList
-                dates_to_display={default_interval()}
-                updateCallback={updateTestSession}>
-            </DateList>
 
+            <CalendarComponent updateCallback={updateTestSession} />
             <Text style={styles.temp}>{testSession + " sample text"}</Text>
-
         </View>
     )
 }

@@ -31,13 +31,13 @@ import { Provider as UserProvider } from './src/context/userContext';
 const switchNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
 
+  loginFlow: createStackNavigator({
+    SignIn: SigninScreen,
+    SignUp: SignupScreen,
+    ForgotPassword: ForgotPasswordScreen,
+  }),
   mainFlow: createBottomTabNavigator({
 
-    loginFlow: createStackNavigator({
-      SignUp: SignupScreen,
-      SignIn: SigninScreen,
-      ForgotPassword: ForgotPasswordScreen,
-    }),
     sessionFlow: createStackNavigator({
       SessionSelect: SessionSelectScreen,
       SessionOngoing: SessionOngoingScreen,
