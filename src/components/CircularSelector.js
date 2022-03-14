@@ -133,6 +133,7 @@ const CircularSelector = ({ updateCallback }) => {
                         //d={`M50 10 A${radius} ${radius} 0 0 1 ${pathToPtX} ${pathToPtY}`}
                         d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
                     />
+                    <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='red'></Circle>
 
                     <Text x={50} y={55} fontSize={20} textAnchor="middle" fill="black">{formattedTime}</Text>
                 </Svg>

@@ -28,6 +28,34 @@ import { Provider as SessionProvider } from './src/context/SessionContext';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/userContext';
 
+import { Ionicons } from "@expo/vector-icons";
+
+const sessionStack = createStackNavigator({
+  SessionSelect: SessionSelectScreen,
+  SessionOngoing: SessionOngoingScreen,
+  SessionEval: SessionEvalScreen
+})
+
+const friendFeedStack = createStackNavigator({
+  FriendFeed: FriendFeedScreen,
+  FriendProfile: FriendProfileScreen
+})
+
+const profileStack = createStackNavigator({
+  Profile: ProfileScreen,
+  HistoryDaily: HistoryDailyScreen,
+  HistoryMonthly: HistoryMonthlyScreen,
+  userFriendsFlow: createStackNavigator({
+    FriendList: FriendListScreen,
+    AddFriend: AddFriendScreen,
+  }),
+  TodoFlow: createStackNavigator({
+    TodoList: TodoListScreen,
+    AddTodoItem: AddTodoItemScreen
+  })
+})
+
+
 const switchNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
 
@@ -37,31 +65,51 @@ const switchNavigator = createSwitchNavigator({
     ForgotPassword: ForgotPasswordScreen,
   }),
   mainFlow: createBottomTabNavigator({
-
-    sessionFlow: createStackNavigator({
-      SessionSelect: SessionSelectScreen,
-      SessionOngoing: SessionOngoingScreen,
-      SessionEval: SessionEvalScreen
-    }),
-
-    friendFeedFlow: createStackNavigator({
-      FriendFeed: FriendFeedScreen,
-      FriendProfile: FriendProfileScreen
-    }),
-
-    profileFlow: createStackNavigator({
-      Profile: ProfileScreen,
-      HistoryDaily: HistoryDailyScreen,
-      HistoryMonthly: HistoryMonthlyScreen,
-      userFriendsFlow: createStackNavigator({
-        FriendList: FriendListScreen,
-        AddFriend: AddFriendScreen,
-      }),
-      TodoFlow: createStackNavigator({
-        TodoList: TodoListScreen,
-        AddTodoItem: AddTodoItemScreen
-      })
-    })
+    sessionFlow: {
+      screen: sessionStack,
+      navigationOptions: {
+        tabBarLabel: "Timer",
+        tabBarIcon: (tabInfo) => {
+          return (
+            <Ionicons
+              name="alarm"
+              size={24}
+              color={tabInfo.focused ? "#FCE9B9" : "#67806D"}
+            />
+          )
+        }
+      }
+    },
+    friendFeedFlow: {
+      screen: friendFeedStack,
+      navigationOptions: {
+        tabBarLabel: "Community",
+        tabBarIcon: (tabInfo) => {
+          return (
+            <Ionicons
+              name="people"
+              size={24}
+              color={tabInfo.focused ? "#FCE9B9" : "#67806D"}
+            />
+          )
+        }
+      }
+    },
+    profileFlow: {
+      screen: profileStack,
+      navigationOptions: {
+        tabBarLabel: "Calendar",
+        tabBarIcon: (tabInfo) => {
+          return (
+            <Ionicons
+              name="calendar"
+              size={24}
+              color={tabInfo.focused ? "#FCE9B9" : "#67806D"}
+            />
+          )
+        }
+      }
+    }
 
   })
 })

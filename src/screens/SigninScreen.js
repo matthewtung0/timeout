@@ -16,7 +16,6 @@ const SigninScreen = ({ navigation }) => {
     const imgHeight = Image.resolveAssetSource(img_src).height
     const heightSet = width * (imgHeight / imgWidth)
 
-
     return (
         <View style={styles.container}>
             <NavigationEvents
@@ -29,9 +28,8 @@ const SigninScreen = ({ navigation }) => {
                 { width: width, height: height }]}
                 resizeMode='stretch'>
 
-                <Text style={styles.title}>Sign in here</Text>
                 <View style={styles.inputContainer}>
-                    <View style={{ flex: 6 }} />
+                    <View style={{ flex: 8 }} />
                     <View style={{ flex: 1.7 }}>
                         <Input
                             style={styles.inputStyle}
@@ -71,10 +69,6 @@ const SigninScreen = ({ navigation }) => {
                             onPress={() => signin({ email, password })}>
                             <Text style={styles.signInTextStyle}>Sign In</Text>
                         </TouchableOpacity>
-                        {/*<Button
-                            style={styles.button}
-                            title="Sign In"
-                        onPress={() => signin({ email, password })} />*/}
 
                         <TouchableOpacity onPress={() =>
                             navigation.navigate('SignUp')
@@ -89,13 +83,7 @@ const SigninScreen = ({ navigation }) => {
 
                 </View>
 
-
                 {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-
-                <Button
-                    style={styles.button}
-                    title="Sign Out"
-                    onPress={() => signout()} />
                 */}
 
             </ImageBackground>

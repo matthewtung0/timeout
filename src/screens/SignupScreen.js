@@ -1,53 +1,118 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import { NavigationEvents } from 'react-navigation';
 
+const img_src = require('../../assets/signin_background.png');
+
 const SignupScreen = ({ navigation }) => {
+    const { height, width } = Dimensions.get('window');
     const { state, signup, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
 
     return (
         <View style={styles.container}>
             <NavigationEvents
                 onWillFocus={clearErrorMessage}
             />
-            <Text style={styles.title}>Sign up for TimeOut!</Text>
-            <Input
-                label='Email'
-                autoCapitalize='none'
-                autoCorrect={false}
-                value={email}
-                onChangeText={setEmail}
-            />
-            <Input
-                secureTextEntry={true}
-                label="Password"
-                autoCapitalize='none'
-                autoCorrect={false}
-                value={password}
-                onChangeText={setPassword}
-            />
-            <Text>{email}</Text>
-            <Text>{password}</Text>
 
-            {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+            <ImageBackground
+                source={img_src}
+                style={[styles.image,
+                { width: width, height: height }]}
+                resizeMode='stretch'>
 
-            <Button
-                style={styles.button}
-                title="Sign Up"
-                onPress={() => signup({ email, password })} />
+                <View style={styles.inputContainer}>
+                    <View style={{ flex: 15 }} />
+                    <View style={{ flex: 11 }}>
 
-            <TouchableOpacity onPress={() =>
-                navigation.navigate('SignIn')
-            }
-            >
-                <Text style={styles.button}>Have an account? Sign in instead.</Text>
 
-            </TouchableOpacity>
+                        <View style={styles.nameContainer}>
+                            <Input
+                                style={styles.inputStyle}
+                                containerStyle={styles.nameInputStyleContainer}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='First Name'
+                                autoCorrect={false}
+                                value={firstName}
+                                onChangeText={setFirstName}
+                            />
+                            <Input
+                                style={styles.inputStyle}
+                                containerStyle={styles.nameInputStyleContainer}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Last Name'
+                                autoCorrect={false}
+                                value={lastName}
+                                onChangeText={setLastName}
+                            />
 
+                        </View>
+
+                        <Input
+                            style={styles.inputStyle}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            placeholder='Email'
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+
+                        <Input
+                            style={styles.inputStyle}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={false}
+                            placeholder="Username"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={username}
+                            onChangeText={setUsername}
+                        />
+
+                        <Input
+                            style={styles.inputStyle}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={true}
+                            placeholder="Password"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                    </View>
+
+                    <View style={{ flex: 4 }}>
+
+                        <TouchableOpacity
+                            style={styles.signUpBoxStyle}
+                            onPress={() => signup({ email, password })}>
+                            <Text style={styles.signUpTextStyle}>Sign Up</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() =>
+                            navigation.navigate('SignIn')
+                        }
+                        >
+                            <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
+                                <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </View>
+
+                </View>
+
+                {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}*/}
+
+
+            </ImageBackground>
         </View>
     )
 
@@ -62,8 +127,6 @@ SignupScreen.navigationOptions = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        marginBottom: 200
     },
     errorMessage: {
         fontSize: 16,
@@ -77,10 +140,57 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     button: {
-        color: 'blue',
+        color: 'orange',
+        marginHorizontal: 30,
+    },
+    inputStyle: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginHorizontal: 25,
+        paddingHorizontal: 17,
+    },
+    inputContainer: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    inputStyleContainer: {
+        borderBottomWidth: 0,
+    },
+    nameContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+    nameInputStyleContainer: {
+        width: 230,
+    },
+    signUpBoxStyle: {
+        backgroundColor: '#FCC859',
+        width: 150,
+        height: 40,
+        alignSelf: 'center',
+        alignItems: 'center',
         justifyContent: 'center',
-        margin: 10,
+        borderRadius: 10
+    },
+    signUpTextStyle: {
+        color: '#F6F2DF',
+        fontSize: 18,
+        fontWeight: 'bold'
+
+    },
+    redirectToSignInStyleWhite: {
+        color: '#F6F2DF',
+        alignSelf: 'center',
+        marginTop: 10
+    },
+    redirectToSignInStyleYellow: {
+        color: 'orange',
+        alignSelf: 'center',
+        marginTop: 10
     }
+
 })
 
 export default SignupScreen;
