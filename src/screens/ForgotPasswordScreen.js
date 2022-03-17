@@ -1,10 +1,13 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import { NavigationEvents } from 'react-navigation';
 
+const img_src = require('../../assets/signin_background.png');
+
 const ForgotPasswordScreen = ({ navigation }) => {
+    const { height, width } = Dimensions.get('window');
     const { state, forgot_password, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
 
@@ -14,31 +17,45 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 onWillFocus={clearErrorMessage}
             />
 
-            <Text style={styles.title}> Enter your email to get a reset link.</Text>
+            <ImageBackground
+                source={img_src}
+                style={[styles.image,
+                { width: width, height: height }]}
+                resizeMode='stretch'>
 
-            <Input
-                label='Email'
-                autoCapitalize='none'
-                autoCorrect={false}
-                value={email}
-                onChangeText={setEmail}
-            />
-            {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+                <View style={{ flex: 1 }}>
 
-            <Button
-                style={styles.button}
-                title="Send email to reset password!"
-                onPress={() => forgot_password(email)} />
-
-            <TouchableOpacity onPress={() =>
-                navigation.navigate('SignIn')
-            }
-            >
-                <Text style={styles.button}>Go back to sign in page</Text>
-
-            </TouchableOpacity>
+                    <Text style={styles.title}> Enter your email to get a reset link.</Text>
+                </View>
 
 
+
+                <View style={{ flex: 1 }}>
+                    <Input
+                        placeholder='Email'
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+
+                    <TouchableOpacity
+                        style={styles.signUpBoxStyle}
+                        onPress={() => forgot_password(email)}>
+                        <Text style={styles.signUpTextStyle}>Send Reset Link</Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity onPress={() =>
+                        navigation.navigate('SignIn')
+                    }
+                    >
+                        <Text style={styles.button}>Go back to sign in page</Text>
+
+                    </TouchableOpacity>
+                </View>
+            </ImageBackground>
         </View>
     )
 
@@ -53,8 +70,6 @@ ForgotPasswordScreen.navigationOptions = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        marginBottom: 200
     },
     errorMessage: {
         fontSize: 16,
@@ -71,6 +86,21 @@ const styles = StyleSheet.create({
         fontSize: 30,
         justifyContent: 'center',
         margin: 20,
+    },
+    signUpBoxStyle: {
+        backgroundColor: '#FCC859',
+        width: 150,
+        height: 40,
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10
+    },
+    signUpTextStyle: {
+        color: '#F6F2DF',
+        fontSize: 16,
+        fontWeight: 'bold'
+
     },
 })
 

@@ -13,26 +13,25 @@ const sessionReducer = (state, action) => {
 
 const fetchSessions = dispatch => async () => {
     const response = await timeoutApi.get('/sessions')
-    console.log(response)
-    dispatch( {type: 'fetch_sessions', payload: response.data})
+    dispatch({ type: 'fetch_sessions', payload: response.data })
 }
 
-const postSession = dispatch => async() => {};
+const postSession = dispatch => async () => { };
 
-const fetchFriendSession = dispatch => async () => {};
+const fetchFriendSession = dispatch => async () => { };
 
-const fetchOwnSession = dispatch => async () => {};
+const fetchOwnSession = dispatch => async () => { };
 
-const DeleteSession = dispatch => async () => {};
+const DeleteSession = dispatch => async () => { };
 
-const fetchAllSession = dispatch => async () => {};
-
-
+const fetchAllSession = dispatch => async () => { };
 
 
 
-export const {Provider, Context} = createDataContext(
+
+
+export const { Provider, Context } = createDataContext(
     sessionReducer,
-    {fetchSessions},
+    { fetchSessions },
     []
 );

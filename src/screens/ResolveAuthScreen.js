@@ -10,11 +10,8 @@ const ResolveAuthScreen = () => {
         const timer = setTimeout(
             () => {
                 tryLocalSignin();
-            }
-            , 2000);
-
+            }, 500);
         return () => clearTimeout(timer);
-
     }, [])
 
     return (
@@ -22,11 +19,9 @@ const ResolveAuthScreen = () => {
             <ImageBackground
                 source={require('../../assets/splash_screen.png')}
                 style={styles.image}>
-
             </ImageBackground>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({

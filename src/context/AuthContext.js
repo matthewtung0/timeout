@@ -30,9 +30,22 @@ const tryLocalSignin = dispatch => async () => {
     }
 };
 
-const signup = (dispatch) => async ({ email, password }) => {
+const signupValidation = (email, password) => {
+    // email format [anystring]@[anystring].[anystring]
+    let email_re = /\S+@\S+\.\S+/;
+
+    // pw between 6 to 20 characters, at least 1 numeric digit, 1 uppercase, 1 lowercase
+    let password_re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+    return (email_re.test(email) && password_re.test(password));
+}
+
+const signup = (dispatch) => async ({ email, password, username, firstName, lastName }) => {
+    if (!signupValidation(email, password)) {
+        dispatch({ type: 'add_error', payload: 'Invalid username or password!' })
+        return
+    }
     try {
-        const response = await timeoutApi.post('/signup', { email, password });
+        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName });
         res = await AsyncStorage.setItem('token', response.data.token);
 
         //sign up successful
@@ -47,6 +60,8 @@ const signup = (dispatch) => async ({ email, password }) => {
 const clearErrorMessage = dispatch => () => {
     dispatch({ type: 'clear_error_message' })
 }
+
+
 
 const signin = (dispatch) => async ({ email, password }) => {
     console.log("signin client side");

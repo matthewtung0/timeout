@@ -27,6 +27,7 @@ import FriendProfileScreen from './src/screens/FriendProfileScreen';
 import { Provider as SessionProvider } from './src/context/SessionContext';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/userContext';
+import { Provider as CategoryProvider } from './src/context/CategoryContext';
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -118,13 +119,19 @@ const App = createAppContainer(switchNavigator);
 
 export default () => {
   return (
+
     <UserProvider>
-      <AuthProvider>
-        <SessionProvider>
-          <App ref={(navigator) => { setNavigator(navigator) }} />
-        </SessionProvider>
-      </AuthProvider>
+      <CategoryProvider>
+        <AuthProvider>
+          <SessionProvider>
+            <App ref={(navigator) => { setNavigator(navigator) }} />
+          </SessionProvider>
+        </AuthProvider>
+      </CategoryProvider>
+
     </UserProvider>
+
+
 
 
   )

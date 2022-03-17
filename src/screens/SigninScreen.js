@@ -69,6 +69,7 @@ const SigninScreen = ({ navigation }) => {
                             onPress={() => signin({ email, password })}>
                             <Text style={styles.signInTextStyle}>Sign In</Text>
                         </TouchableOpacity>
+                        {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
                         <TouchableOpacity onPress={() =>
                             navigation.navigate('SignUp')
@@ -79,15 +80,8 @@ const SigninScreen = ({ navigation }) => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-
-
                 </View>
-
-                {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-                */}
-
             </ImageBackground>
-
         </View >
     )
 }
@@ -119,8 +113,8 @@ const styles = StyleSheet.create({
     errorMessage: {
         fontSize: 16,
         color: 'red',
-        marginLeft: 15,
-        marginTop: 15
+        marginTop: 10,
+        alignSelf: 'center'
     },
     button: {
         color: 'orange',

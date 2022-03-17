@@ -91,9 +91,10 @@ const SignupScreen = ({ navigation }) => {
 
                         <TouchableOpacity
                             style={styles.signUpBoxStyle}
-                            onPress={() => signup({ email, password })}>
+                            onPress={() => signup({ email, password, username, firstName, lastName })}>
                             <Text style={styles.signUpTextStyle}>Sign Up</Text>
                         </TouchableOpacity>
+                        {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
                         <TouchableOpacity onPress={() =>
                             navigation.navigate('SignIn')
@@ -131,8 +132,8 @@ const styles = StyleSheet.create({
     errorMessage: {
         fontSize: 16,
         color: 'red',
-        marginLeft: 15,
-        marginTop: 15
+        marginTop: 5,
+        alignSelf: 'center'
     },
     title: {
         fontSize: 30,

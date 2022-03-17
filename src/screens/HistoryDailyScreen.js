@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, FlatList } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, FlatList, Dimensions, Button } from 'react-native';
 import { compareAsc, eachDayOfInterval, format, subDays, addDays } from 'date-fns';
 import DateList from '../components/DateList';
 import CalendarComponent from '../components/CalendarComponent';
+import PastActivityCard from '../components/PastActivityCard';
 
 const today_date = () => {
 
@@ -22,12 +23,18 @@ const default_interval = () => {
     return date_interval
 }
 
-const HistoryDailyScreen = () => {
+const HistoryDailyScreen = ({ navigation }) => {
+    const { height, width } = Dimensions.get('window');
     const [displayed_dt, setDisplayedDt] = useState(today_date());
     const [testSession, setTestSession] = useState('uninitiated');
+    const [testMonth, setTestMonth] = useState('uninitiated month')
 
     const updateTestSession = (a) => {
         setTestSession(a);
+    }
+
+    const updateTestMonth = (a) => {
+        setTestMonth(a);
     }
 
     // cut views
@@ -37,12 +44,28 @@ const HistoryDailyScreen = () => {
             </DateList>*/
 
     return (
-        <View>
-            <Text style={styles.title}>History Daily Screen</Text>
+        <View style={styles.viewContainer}>
+            <View>
+                <Text>asdf</Text>
+            </View>
+            <ScrollView>
+                <View style={styles.cal}>
+                    <CalendarComponent
+                        updateCallback={updateTestSession}
+                        updateMonth={updateTestMonth} />
+                </View>
+                <Text style={styles.temp}>{testSession + " samplsse text"}</Text>
+                <Text style={styles.temp}>{testMonth + " cur month"}</Text>
+                <PastActivityCard />
+                <PastActivityCard />
+                <PastActivityCard />
+                <PastActivityCard />
+                <PastActivityCard />
+                <PastActivityCard />
 
+                <Button title="asdfadsfsd"></Button>
+            </ScrollView>
 
-            <CalendarComponent updateCallback={updateTestSession} />
-            <Text style={styles.temp}>{testSession + " sample text"}</Text>
         </View>
     )
 }
@@ -61,7 +84,15 @@ const styles = StyleSheet.create({
     temp: {
         margin: 20,
         fontSize: 15,
-    }
+    },
+    cal: {
+        marginHorizontal: 20,
+        marginBottom: 5,
+    },
+    viewContainer: {
+        flexDirection: 'column',
+        flex: 1
+    },
 })
 
 export default HistoryDailyScreen;
