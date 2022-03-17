@@ -7,11 +7,16 @@ const categoryReducer = (state, action) => {
             console.log("returning payload,", action.payload);
             return { ...state, userCategories: action.payload }
         case 'set_chosen_category':
-            return { ...state, chosenCategory: action.payload, inSession: true }
+            return {
+                ...state, chosenCategory: action.payload.buttonName, chosenCatId: action.payload.buttonId,
+                inSession: true
+            }
         case 'set_activity_name':
             return { ...state, customActivity: action.payload }
         case 'set_start_time':
             return { ...state, sessionStartTime: action.payload }
+        case 'set_prod_rating':
+            return { ...state, prodRating: action.payload }
         case 'set_end_time':
             return { ...state, sessionEndTime: action.payload.endTime, endEarlyFlag: action.payload.endEarlyFlag }
         case 'add_error':
@@ -39,6 +44,15 @@ const setActivityName = dispatch => (activityName) => {
     }
 }
 
+const setProdRating = dispatch => (prodRating) => {
+    console.log("setting prod rating to ", prodRating);
+    try {
+        dispatch({ type: 'set_prod_rating', payload: prodRating })
+    } catch (err) {
+        console.log("error setting prod rating")
+    }
+}
+
 const setEndTime = dispatch => (endTime, endEarlyFlag) => {
     console.log("setting end activity time");
     try {
@@ -48,10 +62,10 @@ const setEndTime = dispatch => (endTime, endEarlyFlag) => {
     }
 }
 
-const setChosen = dispatch => (catName) => {
-    console.log("setting chosen category to" + catName);
+const setChosen = dispatch => (button) => {
+    console.log("setting chosen category to" + button);
     try {
-        dispatch({ type: 'set_chosen_category', payload: catName })
+        dispatch({ type: 'set_chosen_category', payload: button })
     } catch (err) {
         console.log("error setting chosen category in category context");
     }
@@ -72,12 +86,16 @@ const fetchUserCategories = dispatch => async () => {
 
 export const { Provider, Context } = createDataContext(
     categoryReducer,
-    { fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime },
+    { fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating },
     {
-        userCategories: [], chosenCategory: '', inSession: false, errorMessage: '',
+        userCategories: [], chosenCategory: '',
+        chosenCatId: 0,
+        inSession: false,
+        errorMessage: '',
         customActivity: '',
         sessionStartTime: 0,
         sessionEndTime: 0,
-        endEarlyFlag: false
+        endEarlyFlag: false,
+        prodRating: 50,
     }
 );

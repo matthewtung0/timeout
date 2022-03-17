@@ -36,9 +36,9 @@ const SessionOngoingScreen = ({ navigation, timerTime, buttonId, buttonName }) =
 
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
-            setEndTime(now_dt, true)
+            setEndTime(fromUnixTime(now_dt), true)
         } else {
-            setEndTime(endTime, false)
+            setEndTime(fromUnixTime(endTime), false)
         }
         alert('Time end')
     }
@@ -52,7 +52,6 @@ const SessionOngoingScreen = ({ navigation, timerTime, buttonId, buttonName }) =
         handleStart();
 
     }, [])
-
 
     // useEffect second try
     /*useEffect(() => {
@@ -125,6 +124,8 @@ const SessionOngoingScreen = ({ navigation, timerTime, buttonId, buttonName }) =
         </View>
     )
 }
+
+SessionOngoingScreen.navigationOptions = () => { return { headerShown: false, }; }
 
 const styles = StyleSheet.create({
     title: {

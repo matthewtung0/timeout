@@ -4,7 +4,7 @@ import { Button, Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
 import { Context as CategoryContext } from '../context/CategoryContext';
-import { getUnixTime } from 'date-fns';
+import { getUnixTime, fromUnixTime } from 'date-fns';
 
 
 import timeoutApi from '../api/timeout';
@@ -23,7 +23,7 @@ const SessionSelectScreen = ({ navigation }) => {
 
     const updateButton = (button) => {
         setSelectedButton(button);
-        setChosen(button.buttonName)
+        setChosen(button)
     }
 
     // TEMPORARY FETCH FUNCTION IS PUT HERE TO GET USEEFFECT() TO WORK ...
@@ -38,10 +38,6 @@ const SessionSelectScreen = ({ navigation }) => {
             .catch(console.error)
 
     }, [])
-
-
-
-
 
     const handleStart = () => {
         console.log("handling chosen..");
@@ -97,7 +93,7 @@ const SessionSelectScreen = ({ navigation }) => {
                     <Button title="Start"
                         onPress={() => {
                             let now_dt = getUnixTime(new Date())
-                            setStartTime(now_dt)
+                            setStartTime(fromUnixTime(now_dt))
                             navigation.navigate('SessionOngoing', {
                                 timerTime: time,
                                 buttonId: selectedButton.buttonId,
