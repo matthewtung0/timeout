@@ -1,26 +1,23 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { Calendar, CalendarList } from 'react-native-calendars';
+import { subMonths, addMonths, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
+import timeoutApi from '../api/timeout';
 
-const CalendarComponent = ({ updateCallback, updateMonth }) => {
+const CalendarComponent = ({ curDate, updateCallback, updateMonth }) => {
     const { height, width } = Dimensions.get('window');
 
-    let selectedMonth = ""
     return (
         <View>
             <View style={{ flex: 1 }}>
                 <Calendar
-
+                    current={curDate}
                     onDayPress={day => {
-                        updateCallback(JSON.stringify(day));
-                        selectedMonth = day.month;
-                        updateMonth(selectedMonth);
-                        console.log('selected day', day);
+                        updateCallback(day);
                     }}
                     onMonthChange={month => {
-                        console.log('month changed', month);
-                        selectedMonth = month.month;
-                        updateMonth(selectedMonth);
+                        console.log('month changed', month.dateString);
+                        updateMonth(month);
                     }}
                     theme={{
                         textDayFontSize: 15,
@@ -33,8 +30,8 @@ const CalendarComponent = ({ updateCallback, updateMonth }) => {
 
                 <TouchableOpacity
                     style={styles.monthTouch}
-                    onPress={month => {
-                        updateMonth(month)
+                    onPress={day => {
+                        updateMonth(JSON.stringify(day))
                     }} />
 
             </View>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext, useEffect } from 'react';
+import React, { useCallback, useState, useContext, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, FlatList, TextInput } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
@@ -19,6 +19,12 @@ const SessionSelectScreen = ({ navigation }) => {
 
     const updateTime = (a) => {
         setTime(a);
+    }
+
+    const clearInputs = () => {
+        setSelectedButton({ buttonName: 'asdf', buttonId: -1 })
+        setTime(0)
+        setCustomActivity('')
     }
 
     const updateButton = (button) => {
@@ -48,18 +54,21 @@ const SessionSelectScreen = ({ navigation }) => {
             startTime: getUnixTime(new Date())
         })
     }
+
+    const circularRef = useRef()
+
     return (
         <View style={styles.viewContainer}>
 
             {/*<NavigationEvents onWillFocus={fetchUserCategories} />*/}
 
-
             <Text style={styles.title}>Session Select Screen</Text>
 
+            <CircularSelector
+                minSet={0}
+                updateCallback={updateTime}
+                ref={circularRef} />
 
-
-
-            <CircularSelector updateCallback={updateTime} />
             <TextInput
                 style={styles.input}
                 placeholder="Activity"
@@ -94,6 +103,10 @@ const SessionSelectScreen = ({ navigation }) => {
                         onPress={() => {
                             let now_dt = getUnixTime(new Date())
                             setStartTime(fromUnixTime(now_dt))
+
+                            clearInputs()
+                            circularRef.current.resetSlider()
+
                             navigation.navigate('SessionOngoing', {
                                 timerTime: time,
                                 buttonId: selectedButton.buttonId,

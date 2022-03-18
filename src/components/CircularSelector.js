@@ -1,4 +1,4 @@
-import React, { useRef, useState, Component } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Dimensions, ImageBackground } from 'react-native';
 import Svg, {
     Circle,
@@ -9,7 +9,7 @@ import { Text } from 'react-native-svg';
 const img_timer = require('../../assets/timer.png');
 const picked_width = 260
 
-const CircularSelector = ({ updateCallback }) => {
+const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     const { height, width } = Dimensions.get('window');
     const timer_radius_pct = 0.3 // fraction of screen that the radius takes
     const radius = (width * timer_radius_pct) * 100 / width // ex. 40 for 0.4 timer_radius_pct
@@ -27,6 +27,15 @@ const CircularSelector = ({ updateCallback }) => {
     const [curQuadrant, setCurQuadrant] = useState('')
     const [rightCheck, setRightCheck] = useState(false)
     const [leftCheck, setLeftCheck] = useState(false)
+
+    useImperativeHandle(ref, () => ({
+        resetSlider() {
+            setPathToPtX(50)
+            setPathToPtY(50 - radius)
+            setFormattedTime('00:00')
+            setTheta(0)
+        },
+    }))
 
     const polarToTime = (angle) => {
         let mins = Math.round((angle / 360) * maxTime)
@@ -114,8 +123,6 @@ const CircularSelector = ({ updateCallback }) => {
         setPathToPtX(deltaX)
         setPathToPtY(deltaY)
     }
-
-    const pan = useRef(new Animated.ValueXY()).current;
 
     let isCurrentTouched = false;
     let lockAtSixtyMin = false;
@@ -231,18 +238,7 @@ const CircularSelector = ({ updateCallback }) => {
                     }
                 }
 
-
-
-
-
             },
-            /*onPanResponderMove: Animated.event(
-                [
-                    null,
-                    { dx: pan.x, dy: pan.y }
-                ],
-                { useNativeDriver: false }
-            ),*/
         })
     ).current;
 
@@ -260,9 +256,10 @@ const CircularSelector = ({ updateCallback }) => {
                         height="100%" width="100%" viewBox={`0 0 100 100`}>
                         <Circle cx="50" cy="50" r={radius} stroke="blue" fill="none" strokeWidth="1"></Circle>
                         <Path stroke="red" strokeWidth="2" fill="none"
-                            //d={`M50 10 A${radius} ${radius} 0 0 1 ${pathToPtX} ${pathToPtY}`}
+                            // circular path
                             d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
                         />
+                        {/* circular knob */}
                         <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='red'></Circle>
 
                         <Text x={50} y={55} fontSize={20} textAnchor="middle" fill="black">{formattedTime}</Text>
@@ -282,10 +279,8 @@ const CircularSelector = ({ updateCallback }) => {
 
             </ImageBackground>
         </View>
-
     )
-
-}
+})
 
 const styles = StyleSheet.create({
     container: {

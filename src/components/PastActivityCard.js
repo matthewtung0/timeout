@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
 
-const PastActivityCard = () => {
+const PastActivityCard = ({ session }) => {
     const { height, width } = Dimensions.get('window');
+    let sesh = session
 
     return (
         <View style={[styles.cardStyle, { width: width * 0.8, height: height * 0.1 }]}>
-            <Text>Activity #1</Text>
+            <Text>{sesh.activity_name}</Text>
+            <Text>Productivity: {sesh.prod_rating}</Text>
         </View>
     )
 }
