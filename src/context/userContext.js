@@ -13,7 +13,6 @@ const userReducer = (state, action) => {
 }
 
 const fetchSelf = dispatch => async () => {
-    console.log("trying to fetch user data");
     try {
         const response = await timeoutApi.get('/self_user')
         dispatch({ type: 'fetch_self', payload: response.data })

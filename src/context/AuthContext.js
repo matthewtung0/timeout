@@ -22,11 +22,13 @@ const tryLocalSignin = dispatch => async () => {
     const token = await AsyncStorage.getItem('token')
     if (token) {
         dispatch({ type: 'signin', payload: token });
-        console.log("LOCAL SIGN IN SUCCESS");
-        navigate('profileFlow');
+        console.log("Local sign in succeeded");
+        return 1
+        //navigate('profileFlow');
     } else {
-        console.log("LOCAL SIGN IN FAILED");
-        navigate('loginFlow');
+        console.log("Local sign in failed - not signed in!");
+        return 0
+        //navigate('loginFlow');
     }
 };
 

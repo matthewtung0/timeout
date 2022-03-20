@@ -23,6 +23,7 @@ import AddFriendScreen from './src/screens/AddFriendScreen';
 import TodoListScreen from './src/screens/TodoListScreen';
 import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
 import FriendProfileScreen from './src/screens/FriendProfileScreen';
+import AddCategoryScreen from './src/screens/AddCategoryScreen'
 
 import { Provider as SessionProvider } from './src/context/SessionContext';
 import { Provider as AuthProvider } from './src/context/AuthContext';
@@ -46,6 +47,7 @@ const profileStack = createStackNavigator({
   Profile: ProfileScreen,
   HistoryDaily: HistoryDailyScreen,
   HistoryMonthly: HistoryMonthlyScreen,
+  AddCategory: AddCategoryScreen,
   userFriendsFlow: createStackNavigator({
     FriendList: FriendListScreen,
     AddFriend: AddFriendScreen,
@@ -121,14 +123,15 @@ export default () => {
   return (
 
     <UserProvider>
-      <CategoryProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <CategoryProvider>
+
           <SessionProvider>
             <App ref={(navigator) => { setNavigator(navigator) }} />
           </SessionProvider>
-        </AuthProvider>
-      </CategoryProvider>
 
+        </CategoryProvider>
+      </AuthProvider>
     </UserProvider>
 
 

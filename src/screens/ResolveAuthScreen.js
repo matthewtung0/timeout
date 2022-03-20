@@ -1,21 +1,45 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { View, StyleSheet, Text, ImageBackground } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
+import { NavigationEvents } from 'react-navigation';
+import { Context as CategoryContext } from '../context/CategoryContext';
 
 // doubles as the splash screen
-const ResolveAuthScreen = () => {
+const ResolveAuthScreen = ({ navigation }) => {
     const { tryLocalSignin } = useContext(AuthContext);
+    const { fetchUserCategories } = useContext(CategoryContext)
+    //const [loginResult, setLoginResult] = useState(0)
 
-    useEffect(() => {
+    /*useEffect(() => {
         const timer = setTimeout(
             () => {
                 tryLocalSignin();
             }, 500);
         return () => clearTimeout(timer);
-    }, [])
+    }, [])*/
+
+    const initiateUserInfo = async () => {
+        let res = await tryLocalSignin()
+        if (res) {
+            await fetchUserCategories();
+        }
+        setTimeout(
+            () => {
+                if (res) {
+                    navigation.navigate('profileFlow')
+                } else {
+                    navigation.navigate('loginFlow')
+                }
+            }, 200);
+    }
+
 
     return (
         <View>
+            <NavigationEvents onWillFocus={initiateUserInfo} />
+            {/*<Text>{JSON.stringify(state)}</Text>*/}
+
+
             <ImageBackground
                 source={require('../../assets/splash_screen.png')}
                 style={styles.image}>

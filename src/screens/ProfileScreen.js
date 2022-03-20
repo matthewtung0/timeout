@@ -13,10 +13,10 @@ const ProfileScreen = ({ navigation }) => {
         <View>
             <NavigationEvents onWillFocus={fetchSelf} />
 
-            <Text style={styles.title}>Profile Screen</Text>
-
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-            <Text>{JSON.stringify(state)}</Text>
+            <Text>First name: {state.first_name}</Text>
+            <Text>Last name: {state.last_name}</Text>
+            <Text>Username: {state.username}</Text>
 
             <Button
                 style={styles.button}
@@ -33,6 +33,16 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="Sign Out (temp)"
                 onPress={() => signout()} />
+
+            <Button
+                style={styles.button}
+                title="Add category (temp)"
+                onPress={() => navigation.navigate('AddCategory')} />
+
+            <Button
+                style={styles.button}
+                title="See Todo Items (temp)"
+                onPress={() => navigation.navigate('TodoFlow')} />
         </View>
     )
 }

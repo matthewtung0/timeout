@@ -4,7 +4,8 @@ import createDataContext from './createDataContext';
 const categoryReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_categories':
-            console.log("returning payload,", action.payload);
+            console.log("setting userCategories:")
+            console.log({ ...state, userCategories: action.payload })
             return { ...state, userCategories: action.payload }
         case 'set_chosen_category':
             return {
@@ -72,13 +73,11 @@ const setChosen = dispatch => (button) => {
 }
 
 const fetchUserCategories = dispatch => async () => {
-    console.log("TRYING TO FETCH CATEGORIES???");
     try {
         const response = await timeoutApi.get('/categories')
-        console.log(response.data);
         dispatch({ type: 'fetch_categories', payload: response.data })
     } catch (err) {
-        console.log("ERRRORRRR", err);
+        console.log("ERRRORRRR FETCHING CATEGORIES", err);
         dispatch({ type: 'add_error', payload: 'There was a problem retrieving the categories.' })
     }
 }
@@ -88,7 +87,8 @@ export const { Provider, Context } = createDataContext(
     categoryReducer,
     { fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating },
     {
-        userCategories: [], chosenCategory: '',
+        userCategories: [],
+        chosenCategory: '',
         chosenCatId: 0,
         inSession: false,
         errorMessage: '',
