@@ -7,7 +7,7 @@ import { Context as CategoryContext } from '../context/CategoryContext';
 // doubles as the splash screen
 const ResolveAuthScreen = ({ navigation }) => {
     const { tryLocalSignin } = useContext(AuthContext);
-    const { fetchUserCategories } = useContext(CategoryContext)
+    const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
     //const [loginResult, setLoginResult] = useState(0)
 
     /*useEffect(() => {
@@ -22,6 +22,7 @@ const ResolveAuthScreen = ({ navigation }) => {
         let res = await tryLocalSignin()
         if (res) {
             await fetchUserCategories();
+            await fetchUserTodoItems();
         }
         setTimeout(
             () => {

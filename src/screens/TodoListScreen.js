@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text, FlatList } from 'react-native';
 import { Input, Button } from 'react-native-elements'
-import timeoutApi from '../api/timeout';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import CategoryButton from '../components/CategoryButton';
 
@@ -9,26 +8,19 @@ import CategoryButton from '../components/CategoryButton';
 const TodoListScreen = () => {
     const [toDoItemName, setToDoItemName] = useState('')
     const [resMessage, setResMessage] = useState('')
-    const { state } = useContext(CategoryContext)
+    const { state, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
 
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
 
-    const resetInputs = () => {
+    const resetInputs = async () => {
         setSelectedButton({ buttonName: 'unsorted', buttonId: 3 })
         setToDoItemName('')
-    }
+        setResMessage('To-do Item successfully added.')
 
-    const addItem = async () => {
-        const response = await timeoutApi.post('/addItem', {
-            toDoItemName: toDoItemName, timeSubmitted: new Date(),
-            categoryId: selectedButton.buttonId
-        })
-        if (response.status == 200) {
-            setResMessage("To-do item set successfully!")
-            resetInputs()
-        } else {
-            setResMessage("Error adding to-do item! Changes not saved.")
-        }
+        // repull the list now that we've added to it
+        await fetchUserTodoItems();
+
+
     }
 
     const updateButton = (button) => {
@@ -67,17 +59,13 @@ const TodoListScreen = () => {
                             callback={updateButton} />
                     )
                 }}
-
-
             >
             </FlatList>
 
             <Button title="Add To-do Item"
-                onPress={() => {
-                    addItem()
-                }}></Button>
-
+                onPress={() => { addTodoItem(toDoItemName, new Date(), selectedButton.buttonId, resetInputs) }} />
             {resMessage ? <Text>{resMessage}</Text> : null}
+            {state.errorMessage ? <Text>{state.errorMessage}</Text> : null}
 
         </View>
     )

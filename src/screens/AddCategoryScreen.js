@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import timeoutApi from '../api/timeout';
+import { Context as CategoryContext } from '../context/CategoryContext';
 
 const AddCategoryScreen = () => {
     const [categoryName, setCategoryName] = useState('')
     const [resMessage, setResMessage] = useState('')
+    const { state, addCategory, fetchUserCategories } = useContext(CategoryContext)
 
-    const addCategory = async () => {
-        const response = await timeoutApi.post('/addCategory', { categoryName: categoryName, timeSubmitted: new Date() })
-        if (response.status == 200) {
-            setResMessage("Category set successfully!")
-        } else {
-            setResMessage("Error adding category! Changes not saved.")
-        }
+    const resetInputs = async () => {
+        setCategoryName('')
+        setResMessage("Category set successfully!")
+
+        // repull the list now that we've added to it
+        await fetchUserCategories();
     }
 
 
@@ -32,7 +32,7 @@ const AddCategoryScreen = () => {
 
             <Button title="Add category"
                 onPress={() => {
-                    addCategory()
+                    addCategory(categoryName, new Date(), resetInputs)
                 }}></Button>
 
             {resMessage ? <Text>{resMessage}</Text> : null}

@@ -4,9 +4,16 @@ import createDataContext from './createDataContext';
 const categoryReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_categories':
-            console.log("setting userCategories:")
-            console.log({ ...state, userCategories: action.payload })
             return { ...state, userCategories: action.payload }
+        case 'fetch_todo_items':
+            return { ...state, userTodoItems: action.payload }
+        case 'add_todo_item':
+            // dont try manually appending this.. wait for the repull
+            return state
+        //return { ...state, userTodoItems: [...state.userTodoItems, action.payload] }
+        case 'add_category':
+            // dont try manually appending this .. wait for the repull
+            return state
         case 'set_chosen_category':
             return {
                 ...state, chosenCategory: action.payload.buttonName, chosenCatId: action.payload.buttonId,
@@ -21,7 +28,7 @@ const categoryReducer = (state, action) => {
         case 'set_end_time':
             return { ...state, sessionEndTime: action.payload.endTime, endEarlyFlag: action.payload.endEarlyFlag }
         case 'add_error':
-            return { errorMessage: '', errorMessage: action.payload };
+            return { ...state, errorMessage: action.payload };
         default:
             return state;
     }
@@ -73,6 +80,7 @@ const setChosen = dispatch => (button) => {
 }
 
 const fetchUserCategories = dispatch => async () => {
+    console.log("trying to fetch user categories");
     try {
         const response = await timeoutApi.get('/categories')
         dispatch({ type: 'fetch_categories', payload: response.data })
@@ -82,10 +90,49 @@ const fetchUserCategories = dispatch => async () => {
     }
 }
 
+// putting todo items in this context for now..
+const fetchUserTodoItems = dispatch => async () => {
+    console.log("trying to fetch todo items");
+    try {
+        const response = await timeoutApi.get('/todoItems')
+        dispatch({ type: 'fetch_todo_items', payload: response.data })
+    } catch (err) {
+        console.log("error fetching todo items:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem retrieving the todo items.' })
+    }
+}
+
+const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, callback) => {
+    console.log("trying to add todo item");
+    try {
+        const response = await timeoutApi.post('/addItem', { toDoItemName, timeSubmitted, categoryId })
+        dispatch({ type: 'add_todo_item', payload: { toDoItemName, timeSubmitted, categoryId } })
+        callback()
+    } catch (err) {
+        console.log("error adding todo item:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem adding the todo item.' })
+    }
+}
+
+const addCategory = dispatch => async (categoryName, timeSubmitted, callback) => {
+    console.log("trying to add category");
+    try {
+        const response = await timeoutApi.post('/addCategory', { categoryName, timeSubmitted })
+        dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted } })
+        callback()
+    } catch (err) {
+        console.log("error adding category:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem adding the category.' })
+    }
+}
+
 
 export const { Provider, Context } = createDataContext(
     categoryReducer,
-    { fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating },
+    {
+        fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
+        fetchUserTodoItems, addTodoItem, addCategory
+    },
     {
         userCategories: [],
         chosenCategory: '',
@@ -97,5 +144,6 @@ export const { Provider, Context } = createDataContext(
         sessionEndTime: 0,
         endEarlyFlag: false,
         prodRating: 50,
+        userTodoItems: [],
     }
 );

@@ -22,7 +22,7 @@ const CategoryButton = ({ id, catName, bgColor, callback }) => {
 const styles = StyleSheet.create({
     square: {
         width: width / 3.5,
-        height: width / 3.5,
+        height: width / 6.5,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
