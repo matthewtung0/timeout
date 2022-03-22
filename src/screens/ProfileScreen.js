@@ -14,9 +14,9 @@ const ProfileScreen = ({ navigation }) => {
             <NavigationEvents onWillFocus={fetchSelf} />
 
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-            <Text>First name: {state.first_name}</Text>
-            <Text>Last name: {state.last_name}</Text>
-            <Text>Username: {state.username}</Text>
+            <Text>First name: {state.self_info.first_name}</Text>
+            <Text>Last name: {state.self_info.last_name}</Text>
+            <Text>Username: {state.self_info.username}</Text>
 
             <Button
                 style={styles.button}
@@ -43,6 +43,11 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="See Todo Items (temp)"
                 onPress={() => navigation.navigate('TodoFlow')} />
+
+            <Button
+                style={styles.button}
+                title="Friends (temp)"
+                onPress={() => navigation.navigate('Friend')} />
         </View>
     )
 }

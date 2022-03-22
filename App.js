@@ -31,6 +31,7 @@ import { Provider as UserProvider } from './src/context/userContext';
 import { Provider as CategoryProvider } from './src/context/CategoryContext';
 
 import { Ionicons } from "@expo/vector-icons";
+import FriendScreen from './src/screens/FriendScreen';
 
 const sessionStack = createStackNavigator({
   SessionSelect: SessionSelectScreen,
@@ -48,6 +49,7 @@ const profileStack = createStackNavigator({
   HistoryDaily: HistoryDailyScreen,
   HistoryMonthly: HistoryMonthlyScreen,
   AddCategory: AddCategoryScreen,
+  Friend: FriendScreen,
   userFriendsFlow: createStackNavigator({
     FriendList: FriendListScreen,
     AddFriend: AddFriendScreen,
