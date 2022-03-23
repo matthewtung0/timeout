@@ -82,7 +82,7 @@ const signin = (dispatch) => async ({ email, password }) => {
 const signout = dispatch => async () => {
     await AsyncStorage.removeItem('token');
     dispatch({ type: 'signout' });
-    navigate('friendFeedFlow');
+    navigate('SignIn');
 };
 
 const forgot_password = (dispatch) => async ({ email }) => {

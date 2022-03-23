@@ -6,17 +6,26 @@ const userReducer = (state, action) => {
         case 'fetch_self':
             return { ...state, self_info: action.payload }
         case 'add_error':
-            console.log(state);
+            console.log("ERROR: ", action.payload)
             return { ...state, errorMessage: action.payload };
         case 'request_outgoing_reqs':
-            return { ...state, outgoingFriendReqs: action.payload }
+            return { ...state, outgoingFriendReqs: action.payload, errorMessage: '' }
         case 'request_incoming_reqs':
-            return { ...state, incomingFriendReqs: action.payload }
+            return { ...state, incomingFriendReqs: action.payload, errorMessage: '' }
         case 'accept_friend':
-            console.log("reached accept friend reducer");
             return {
                 ...state, incomingFriendReqs: state.incomingFriendReqs.filter((req) => req.friend_a != action.payload.idToAccept),
                 friends: [...state.friends, { userId: action.payload.idToAccept, username: action.payload.usernameToAccept }]
+                , errorMessage: ''
+            }
+        case 'reject_friend':
+            return {
+                ...state, incomingFriendReqs: state.incomingFriendReqs.filter((req) => req.friend_a != action.payload.idToReject),
+                errorMessage: ''
+            }
+        case 'fetch_friends':
+            return {
+                ...state, friends: action.payload, errorMessage: ''
             }
         default:
             return state;
@@ -35,7 +44,12 @@ const fetchSelf = dispatch => async () => {
 const requestFriend = dispatch => async (codeToRequest, callback) => {
     try {
         const response = await timeoutApi.post('/requestFriend', { codeToRequest })
-        dispatch({ type: 'request_friend', payload: response.data })
+        if (response.status == 403) {
+            dispatch({ type: 'add_error', payload: response.data.error })
+        } else {
+            dispatch({ type: 'add_error', payload: response.data.error })
+        }
+
         callback()
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem requesting friend!' })
@@ -51,8 +65,19 @@ const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, cal
         console.log("done dispatch")
         callback()
     } catch (err) {
-        console.log("ERROR adding friend");
+        console.log("ERROR accepting friend:", err);
         dispatch({ type: 'add_error', payload: 'Problem accepting friend!' })
+    }
+}
+
+const rejectFriendRequest = dispatch => async (idToReject, callback) => {
+    try {
+        await timeoutApi.post('/rejectFriendRequest', { idToReject })
+        dispatch({ type: 'reject_friend', payload: { idToReject } })
+        callback()
+    } catch (err) {
+        console.log("ERROR rejecting friend request", err);
+        dispatch({ type: 'add_error', payload: 'Problem rejecting friend!' })
     }
 }
 
@@ -75,7 +100,18 @@ const fetchIncomingRequests = dispatch => async (callback) => {
         dispatch({ type: 'add_error', payload: 'Problem getting incoming friend reqs!' })
     }
 }
-const fetchFriends = dispatch => async () => { };
+
+const fetchFriends = dispatch => async (callback) => {
+    try {
+        const response = await timeoutApi.get('/friendsList')
+        console.log("response is:", response.data);
+        dispatch({ type: 'fetch_friends', payload: response.data })
+        callback()
+    } catch (err) {
+        console.log("Problem fetching friends:", err.stack())
+        dispatch({ type: 'add_error', payload: 'Problem getting friends!' })
+    }
+};
 
 const fetchEveryone = dispatch => async () => { };
 
@@ -90,11 +126,15 @@ const editFriends = dispatch => async () => { }
 
 export const { Provider, Context } = createDataContext(
     userReducer,
-    { fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests, acceptFriendRequest },
+    {
+        fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
+        acceptFriendRequest, rejectFriendRequest, fetchFriends
+    },
     {
         self_info: [],
         outgoingFriendReqs: [],
         incomingFriendReqs: [],
         friends: [],
+        errorMessage: '',
     }
 );
