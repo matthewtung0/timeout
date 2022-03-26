@@ -33,6 +33,7 @@ const userReducer = (state, action) => {
 }
 
 const fetchSelf = dispatch => async () => {
+    console.log("fetching self in profile screen")
     try {
         const response = await timeoutApi.get('/self_user')
         dispatch({ type: 'fetch_self', payload: response.data })

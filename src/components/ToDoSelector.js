@@ -1,71 +1,101 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Text, Button, TouchableOpacity, FlatList } from 'react-native';
+import ToDoComponent from './ToDoComponent';
 
 const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     return (
-        <View style={styles.modal}>
-            <Text style={styles.title}>Pick an existing to-do item to work on</Text>
+        <View style={styles.container}>
+            <View style={styles.dummy} />
+            <View style={styles.modal}>
+                <Text style={styles.title}>What's On Your Plate:</Text>
 
-            <FlatList
-                style
-                horizontal={false}
-                data={todoItems}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(result) => result.item_id}
-                renderItem={({ item }) => {
-                    return (
-                        // on press go back to session select screen with the clicked item id, item name and cat id
+                <FlatList
+                    style
+                    horizontal={false}
+                    data={todoItems}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(result) => result.item_id}
+                    renderItem={({ item }) => {
+                        return (
+                            // on press go back to session select screen with the clicked item id, item name and cat id
 
-                        <TouchableOpacity
-                            onPress={() => {
-                                callback({
-                                    "item_desc": item.item_desc,
-                                    "cat_id": item.category_id,
-                                    "item_id": item.item_id,
-                                    "cat_name": item.category_name,
-                                })
-                                toggleFunction()
+                            <TouchableOpacity
+                                onPress={() => {
+                                    callback({
+                                        "item_desc": item.item_desc,
+                                        "cat_id": item.category_id,
+                                        "item_id": item.item_id,
+                                        "cat_name": item.category_name,
+                                    })
+                                    toggleFunction()
 
-                            }}>
-                            <View style={styles.listItem}>
-                                <Text>Item name: {item.item_desc}</Text>
-                                <Text>Category: {item.category_name}</Text>
-                                <Text>Time created: {item.time_created}</Text>
-                            </View>
-                        </TouchableOpacity>
+                                }}>
+                                <View style={styles.toDoComponent}>
+                                    <ToDoComponent
+                                        itemName={item.item_desc}
+                                        category={item.category_name}
+                                        timeCreated={item.time_created}>
+                                    </ToDoComponent>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }}
+                >
+                </FlatList>
 
 
 
-                    )
-                }}
-
-                ListFooterComponent={() =>
-                    <Button title="Go back"
-                        onPress={toggleFunction} />
-                }
-            >
-            </FlatList>
-
+            </View>
+            <View style={styles.backContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={toggleFunction}>
+                    <Text style={styles.backButtonText}>X</Text>
+                </TouchableOpacity>
+            </View>
         </View>
+
     )
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'column',
+        flex: 1,
+    },
     modal: {
         flex: 1,
-        backgroundColor: '#ABC57E',
-        margin: 20,
+        borderWidth: 1,
+        borderColor: 'black',
+        backgroundColor: '#FFFFFF',
     },
     title: {
         fontSize: 20,
-        marginBottom: 10,
+        margin: 15,
+        color: '#67806D',
     },
-    listItem: {
-        margin: 5,
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 5,
-        padding: 5,
+    toDoComponent: {
+        marginHorizontal: 15,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'green',
+        justifyContent: 'center',
+        borderRadius: 500,
+    },
+    backButtonText: {
+        alignSelf: 'center',
+    },
+    backContainer: {
+        flex: 1,
+        width: '100%',
+        position: 'absolute',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end'
+    },
+    dummy: {
+        flex: 0.03,
     }
 })
 

@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useContext, useEffect, useRef } from 'react';
-import { View, StyleSheet, ScrollView, FlatList, TextInput } from 'react-native';
+import React, { useState, useContext, useRef } from 'react';
+import { View, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
@@ -8,7 +8,7 @@ import { getUnixTime, fromUnixTime } from 'date-fns';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 
-const SessionSelectScreen = ({ navigation }) => {
+const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const [time, setTime] = useState(0);
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
     //const { state, fetchSelf } = useContext(UserContext)
@@ -88,7 +88,6 @@ const SessionSelectScreen = ({ navigation }) => {
                 }
                 }
             />
-            <Button title="Pick from existing to-do items" onPress={toggleModal} />
 
             <FlatList
                 columnWrapperStyle={{ justifyContent: 'space-between', flex: 1, marginVertical: 5, marginHorizontal: 10 }}
@@ -125,10 +124,10 @@ const SessionSelectScreen = ({ navigation }) => {
                             clearInputs()
                             circularRef.current.resetSlider()
 
-                            navigation.navigate('SessionOngoing', {
-                                timerTime: timer_Time,
-                                buttonId: cat_Id,
-                                buttonName: cat_Name,
+                            navigate('SessionOngoing', {
+                                numMins: timer_Time,
+                                categoryId: cat_Id,
+                                categoryName: cat_Name,
                                 startTime: now_dt
                             })
                         }
@@ -137,6 +136,16 @@ const SessionSelectScreen = ({ navigation }) => {
 
             >
             </FlatList>
+
+            <View style={styles.modalContainer}>
+                <View style={styles.modalDummy} />
+
+                <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={toggleModal}>
+                    <Text>+</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
@@ -148,7 +157,7 @@ SessionSelectScreen.navigationOptions = () => {
 }
 const styles = StyleSheet.create({
     title: {
-        margin: 30,
+        margin: 20,
         fontSize: 25,
     }, container: {
         flex: 1,
@@ -165,6 +174,23 @@ const styles = StyleSheet.create({
         margin: 12,
         borderWidth: 1,
         padding: 10,
+    },
+    modal: {
+        borderRadius: 10,
+    },
+    modalButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'green',
+        borderRadius: 5,
+    },
+    modalContainer: {
+        flex: 1,
+        height: '100%',
+        position: 'absolute',
+    },
+    modalDummy: {
+        flex: 0.35,
     },
 })
 

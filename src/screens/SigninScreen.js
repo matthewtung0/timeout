@@ -18,9 +18,8 @@ const SigninScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <NavigationEvents
-                onWillFocus={clearErrorMessage}
-            />
+
+            {/*<NavigationEvents onWillFocus={clearErrorMessage}/>*/}
 
             <ImageBackground
                 source={img_src}
@@ -86,7 +85,11 @@ const SigninScreen = ({ navigation }) => {
     )
 }
 
-SigninScreen.navigationOptions = () => { return { headerShown: false, }; }
+/*SigninScreen.navigationOptions = () => {
+    return {
+        headerShown: false,
+    }
+}*/
 
 const styles = StyleSheet.create({
     container: {

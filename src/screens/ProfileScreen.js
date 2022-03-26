@@ -1,17 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
 import { Context as UserContext } from '../context/userContext';
 import { Context as AuthContext } from '../context/AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation }) => {
     const { state, fetchSelf } = useContext(UserContext)
     const { signout } = useContext(AuthContext);
 
+    /*useEffect(() => {
+        const test = navigation.addListener('focus', () => { fetchSelf });
+        return test;
+    }, [navigation])*/
+    useFocusEffect(
+
+        useCallback(() => {
+            console.log("use focus effect")
+            fetchSelf();
+            //return () => test();
+        }, [])
+
+    )
+
+
     return (
         <View>
-            <NavigationEvents onWillFocus={fetchSelf} />
+            {/*<NavigationEvents onWillFocus={fetchSelf} />*/}
 
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
             <Text>First name: {state.self_info.first_name}</Text>
@@ -51,6 +67,17 @@ const ProfileScreen = ({ navigation }) => {
         </View>
     )
 }
+/*ProfileScreen.navigationOptions = ( {navigation}) => {
+    return {
+        headerRight: () => (
+            <Button
+                onPress={() => navigation}
+                title="Info"
+                color="#fff"
+            />
+        ),
+    }
+}*/
 
 const styles = StyleSheet.create({
     title: {

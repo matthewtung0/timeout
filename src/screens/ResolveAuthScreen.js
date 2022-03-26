@@ -1,12 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useCallback } from 'react';
 import { View, StyleSheet, Text, ImageBackground } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 import { NavigationEvents } from 'react-navigation';
 import { Context as CategoryContext } from '../context/CategoryContext';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 // doubles as the splash screen
 const ResolveAuthScreen = ({ navigation }) => {
-    const { tryLocalSignin } = useContext(AuthContext);
+    const { state, tryLocalSignin } = useContext(AuthContext);
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
     //const [loginResult, setLoginResult] = useState(0)
 
@@ -17,6 +19,14 @@ const ResolveAuthScreen = ({ navigation }) => {
             }, 500);
         return () => clearTimeout(timer);
     }, [])*/
+
+    /*useFocusEffect(
+        useCallback(() => {
+            fetchSelf();
+            //return () => test();
+        }, [])
+
+    )*/
 
     const initiateUserInfo = async () => {
         let res = await tryLocalSignin()
@@ -37,7 +47,7 @@ const ResolveAuthScreen = ({ navigation }) => {
 
     return (
         <View>
-            <NavigationEvents onWillFocus={initiateUserInfo} />
+            {/*<NavigationEvents onWillFocus={initiateUserInfo} />*/}
             {/*<Text>{JSON.stringify(state)}</Text>*/}
 
 

@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-elements';
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
+//import { createBottomTabNavigator } from 'react-navigation-tabs';
+
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+
 import { setNavigator } from './src/navigationRef';
 
 import SessionSelectScreen from './src/screens/SessionSelectScreen';
@@ -33,6 +46,275 @@ import { Provider as CategoryProvider } from './src/context/CategoryContext';
 import { Ionicons } from "@expo/vector-icons";
 import FriendScreen from './src/screens/FriendScreen';
 
+import { Context as AuthContext } from './src/context/AuthContext';
+import { Context as CategoryContext } from './src/context/CategoryContext';
+
+const defaultOptions = {
+  headerRight: () => (
+    <Button
+      onPress={() => { }}
+      title="Settings"
+      color="#fff"
+    />
+  ),
+}
+
+const navOptions = {
+  title: "votre travail",
+  headerStyle: { backgroundColor: '#8B0000' },
+  headerTitleStyle: {
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  headerLeft: () => (
+    <TouchableOpacity onPress={() => navigation.openDrawer()} >
+      <Text>Settings</Text>
+    </TouchableOpacity>
+  ),
+}
+const pageOptions = {
+  headerShown: false,
+}
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+function CustomDrawerContent(props) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Close drawer"
+        onPress={() => props.navigation.closeDrawer()}
+      />
+      <DrawerItem
+        label="Toggle drawer"
+        onPress={() => props.navigation.toggleDrawer()}
+      />
+    </DrawerContentScrollView>
+  );
+}
+function CreateDrawer() {
+  return (
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+
+    >
+      <Drawer.Screen name="mainFlow"
+        component={CreateMainFlowTab}
+        options={{ drawerLabel: 'Back', title: '', }} />
+      <Drawer.Screen name="AddTodo"
+        component={AddTodoItemScreen}
+        options={{ drawerLabel: 'Add Todo Item', title: '', }} />
+      <Drawer.Screen name="AddCategory"
+        component={AddCategoryScreen}
+        options={{ drawerLabel: 'Add Category', title: '', }} />
+    </Drawer.Navigator>
+  );
+}
+
+function CreateLoginStack() {
+  return (
+    <Stack.Navigator
+      options={pageOptions}>
+      <Stack.Screen
+        name="SignIn"
+        component={SigninScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignupScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={pageOptions}
+      />
+    </Stack.Navigator>
+  )
+}
+function CreateSessionStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="SessionSelect"
+        component={SessionSelectScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="SessionOngoing"
+        component={SessionOngoingScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="SessionEval"
+        component={SessionEvalScreen}
+        options={pageOptions}
+      />
+    </Stack.Navigator>
+  )
+}
+function CreateFriendFeedStack() {
+  return (
+    <Stack.Navigator
+      options={pageOptions}>
+      <Stack.Screen
+        name="FriendFeed"
+        component={FriendFeedScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="FriendProfile"
+        component={FriendProfileScreen}
+        options={pageOptions}
+      />
+
+    </Stack.Navigator>
+  )
+}
+function CreateToDoFlowStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="TodoList"
+        component={TodoListScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="AddTodoItem"
+        component={AddTodoItemScreen}
+        options={pageOptions}
+      />
+    </Stack.Navigator>
+  )
+}
+function CreateFriendsFlowStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="FriendList"
+        component={FriendListScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="AddFriend"
+        component={AddFriendScreen}
+        options={pageOptions}
+      />
+    </Stack.Navigator>
+  )
+}
+function CreateProfileStack() {
+  return (
+    <Stack.Navigator
+      options={pageOptions}>
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="HistoryDaily"
+        component={HistoryDailyScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="HistoryMonthly"
+        component={HistoryMonthlyScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="AddCategory"
+        component={AddCategoryScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="Friend"
+        component={FriendScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="userFriendsFlow"
+        component={CreateFriendsFlowStack}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="TodoFlow"
+        component={CreateToDoFlowStack}
+        options={pageOptions}
+      />
+    </Stack.Navigator>
+  )
+}
+
+function CreateMainFlowTab() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="sessionFlow" component={CreateSessionStack}
+        options={pageOptions} />
+      <Tab.Screen name="friendFeedFlow" component={CreateFriendsFlowStack}
+        options={pageOptions} />
+      <Tab.Screen name="profileFlow" component={CreateProfileStack}
+        options={pageOptions} />
+    </Tab.Navigator>
+  )
+}
+function CreateMainNavigator() {
+  const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
+  const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+
+  useEffect(async () => {
+    console.log("trying local sign in ")
+    let res = await tryLocalSignin();
+    let firstTime = new Date()
+    let splashDisplayTime = 2000;
+    if (res) {
+      await fetchUserCategories();
+      await fetchUserTodoItems();
+      let secondTime = new Date();
+      let timeDiff = (secondTime.getTime() - firstTime.getTime());
+      console.log("Splash time reduced by", timeDiff);
+      splashDisplayTime = splashDisplayTime - timeDiff;
+
+      // adjust splash display time
+    }
+    setTimeout(
+      () => {
+        tempVarSet()
+      }, splashDisplayTime);
+  }, [])
+
+  return (
+    <Stack.Navigator>
+      {state.tempVar ? (
+        <Stack.Screen
+          name="SplashScreen"
+          component={ResolveAuthScreen}
+          options={pageOptions} />
+
+      ) : state.token == null ? (
+        <Stack.Screen
+          name="loginFlow"
+          component={CreateLoginStack}
+          options={pageOptions} />
+
+      ) : (
+        <Stack.Screen
+          name="drawer"
+          component={CreateDrawer}
+          options={pageOptions}
+        />
+
+      )}
+    </Stack.Navigator>
+
+  )
+}
+
+// OLD STUFF REACT NAVIGATION V4
 const sessionStack = createStackNavigator({
   SessionSelect: SessionSelectScreen,
   SessionOngoing: SessionOngoingScreen,
@@ -59,16 +341,18 @@ const profileStack = createStackNavigator({
     AddTodoItem: AddTodoItemScreen
   })
 })
+const loginStack = createStackNavigator({
 
+  SignIn: SigninScreen,
+  SignUp: SignupScreen,
+  ForgotPassword: ForgotPasswordScreen,
+})
 
-const switchNavigator = createSwitchNavigator({
+/*const mainNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
 
-  loginFlow: createStackNavigator({
-    SignIn: SigninScreen,
-    SignUp: SignupScreen,
-    ForgotPassword: ForgotPasswordScreen,
-  }),
+
+  loginFlow: loginStack,
   mainFlow: createBottomTabNavigator({
     sessionFlow: {
       screen: sessionStack,
@@ -116,12 +400,15 @@ const switchNavigator = createSwitchNavigator({
       }
     }
 
-  })
-})
+  }, // end of bottomtabnavigator
+  ) // end of mainflow bottom tab
+})*/
 
-const App = createAppContainer(switchNavigator);
+//const App = createAppContainer(mainNavigator);
+
 
 export default () => {
+
   return (
 
     <UserProvider>
@@ -129,15 +416,48 @@ export default () => {
         <CategoryProvider>
 
           <SessionProvider>
-            <App ref={(navigator) => { setNavigator(navigator) }} />
+
+            <NavigationContainer>
+
+              <Stack.Navigator
+                options={pageOptions}
+              >
+                <Stack.Screen
+                  name="MainStack"
+                  component={CreateMainNavigator}
+                  options={pageOptions}
+                />
+              </Stack.Navigator>
+
+              {/*<Drawer.Navigator initialRouteName='MainStack'
+                options={pageOptions}>
+                <Drawer.Screen name='MainStack' component={CreateMainNavigator} />
+                <Drawer.Screen name='AddTodo' component={CreateToDoFlowStack} />
+              </Drawer.Navigator>*/}
+
+
+            </NavigationContainer>
+          </SessionProvider>
+        </CategoryProvider>
+      </AuthProvider>
+    </UserProvider>
+  )
+}
+
+/*export default () => {
+  return (
+
+    <UserProvider>
+      <AuthProvider>
+        <CategoryProvider>
+
+          <SessionProvider>
+            <App
+              ref={(navigator) => { setNavigator(navigator) }} />
           </SessionProvider>
 
         </CategoryProvider>
       </AuthProvider>
     </UserProvider>
-
-
-
-
   )
-}
+}*/

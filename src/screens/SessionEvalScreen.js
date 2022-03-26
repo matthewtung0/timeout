@@ -5,7 +5,7 @@ import Slider from '@react-native-community/slider'
 import timeoutApi from '../api/timeout';
 import { format } from 'date-fns';
 
-const SessionEvalScreen = ({ navigation }) => {
+const SessionEvalScreen = ({ navigation: { navigate } }) => {
     const { state: s, setProdRating } = useContext(CategoryContext)
     const [prodRatingNum, setProdRatingNum] = useState(50)
 
@@ -14,7 +14,7 @@ const SessionEvalScreen = ({ navigation }) => {
         try {
             const response = await timeoutApi.post('/save_session', s)
             console.log("Session save successful!")
-            navigation.navigate('SessionSelect');
+            navigate('SessionSelect');
         } catch (err) {
             console.log("Problem adding session", err)
         }

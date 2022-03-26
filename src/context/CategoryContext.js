@@ -135,8 +135,8 @@ export const { Provider, Context } = createDataContext(
     },
     {
         userCategories: [],
-        chosenCategory: '',
-        chosenCatId: 0,
+        chosenCategory: 'unsorted',
+        chosenCatId: 3,
         inSession: false,
         errorMessage: '',
         customActivity: '',

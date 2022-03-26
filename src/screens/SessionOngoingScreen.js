@@ -4,11 +4,16 @@ import { Button } from 'react-native-elements';
 import { addMinutes, fromUnixTime, getUnixTime, isThisSecond, format, differenceInSeconds } from 'date-fns';
 import { Context as CategoryContext } from '../context/CategoryContext';
 
-const SessionOngoingScreen = ({ navigation, timerTime, buttonId, buttonName }) => {
-    let numMins = navigation.getParam('timerTime')
+const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
+    const { numMins, categoryId, categoryName, startTime } = params;
+    console.log(numMins);
+    console.log(categoryId);
+    console.log(categoryName);
+    console.log(startTime);
+    /*let numMins = navigation.getParam('timerTime')
     let categoryId = navigation.getParam('buttonId')
     let categoryName = navigation.getParam('buttonName')
-    let startTime = navigation.getParam('startTime')
+    let startTime = navigation.getParam('startTime')*/
     let endTime = getUnixTime(addMinutes(fromUnixTime(startTime), numMins)) // add 10 min to start time, return in Unix
 
     const [min, setMin] = useState(numMins);
@@ -117,7 +122,7 @@ const SessionOngoingScreen = ({ navigation, timerTime, buttonId, buttonName }) =
             <Button title="End Early"
                 onPress={() => {
                     handleReset(true)
-                    navigation.navigate('SessionEval')
+                    navigate('SessionEval')
                 }}
             ></Button>
             <Text>You've got this!</Text>
