@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Text, FlatList, Dimensions, Button } from 'react-native';
 import {
-    compareAsc, eachDayOfInterval, format, subDays, addDays, endOfDay, startOfDay, parseISO,
-    startOfMonth, endOfMonth
+    compareAsc, eachDayOfInterval, format, subDays, addDays,
+    endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
 } from 'date-fns';
 import CalendarComponent from '../components/CalendarComponent';
 import PastActivityCard from '../components/PastActivityCard';
 import timeoutApi from '../api/timeout';
-
+import { Context as SessionContext } from '../context/SessionContext';
 
 const today_date = () => {
     let date = format(new Date(), 'M-dd-yyyy z')
@@ -25,8 +25,6 @@ const default_interval = () => {
     let date_interval = eachDayOfInterval({ start: startDate, end: endDate })
     return date_interval
 }
-
-
 
 const getDaySession = async (dayObject) => {
     // get list of sessions you did that day
@@ -72,21 +70,16 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [displayed_dt, setDisplayedDt] = useState(today_date());
     const [selectedDay, setSelectedDay] = useState('uninitiated');
     const [testMonth, setTestMonth] = useState('uninitiated month')
+
+    const [dispMessage, setDispMessage] = useState('')
+
     const [daySessions, setDaySessions] = useState([])
     const [monthSessions, setMonthSessions] = useState([])
+
     const [calendarDate, setCalendarDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [useMonthly, setUseMonthly] = useState(true);
 
-    const monthStateHandle = async (date) => {
-        let res = await getMonthSession(date)
-        setMonthSessions(res)
-
-    }
-
-    useEffect(() => {
-        //monthStateHandle(new Date())
-    }, [])
-
+    const { state, fetchMonthly } = useContext(SessionContext)
 
     const filterOnDay = (dayObject) => {
         let date = parseISO(dayObject.dateString)
@@ -95,7 +88,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         let endTime = endOfDay(date)
         console.log("Start of day is", startTime);
 
-        let daySessions = monthSessions.filter(a => {
+        let daySessions = state.monthSessions.filter(a => {
             console.log("activity time start is", a.time_start)
             let compare_dt = parseISO(a.time_start)
             //console.log("comparing " + compare_dt + " and " + startTime)
@@ -106,26 +99,17 @@ const HistoryDailyScreen = ({ navigation }) => {
         console.log("USE MONTHLY IS FALSE FILTERED ON DAY", startTime);
         console.log("day session length", daySessions.length)
         setDaySessions(daySessions);
-
     }
 
+    const setMonthlyCallback = () => {
+        setUseMonthly(true);
+    }
 
     const updateSelectedDay = async (a) => {
         setSelectedDay(a);
         let res = await getDaySession(a);
         console.log("RESULT IS", res)
         setDaySessions(res)
-    }
-
-    const updateTestMonth = async (a) => {
-        console.log("trying to update this month's sessions");
-        console.log(a);
-        setTestMonth(a);
-        let res = await getMonthSession(a);
-        setMonthSessions(res)
-
-        let startOfMonthTemp = startOfMonth(parseISO(a.dateString))
-        setCalendarDate(format(startOfMonthTemp, 'yyyy-MM-dd'))
     }
 
     return (
@@ -135,8 +119,9 @@ const HistoryDailyScreen = ({ navigation }) => {
             </View>
 
             <FlatList
+                style={styles.flatlist}
                 horizontal={false}
-                data={useMonthly ? monthSessions : daySessions}
+                data={useMonthly ? state.monthSessions : daySessions}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(result) => result.activity_id}
                 renderItem={({ item }) => {
@@ -148,25 +133,23 @@ const HistoryDailyScreen = ({ navigation }) => {
                 ListHeaderComponent={() =>
                     <View style={styles.cal}>
                         <CalendarComponent
-                            curDate={calendarDate}
+                            curDate={state.calendarDate}
                             updateCallback={filterOnDay}
-                            updateMonth={updateTestMonth} />
+                            updateMonth={fetchMonthly}
+                            setMonthlyCallback={setMonthlyCallback} />
                     </View>
                 }
-                ListFooterComponent={() =>
-                    <Button title="asdfadsfsd"></Button>
-                }
 
-            >
-            </FlatList>
+                ListFooterComponent={() =>
+                    <View>
+                        {useMonthly ? state.monthSessions.length > 0 ? null : <Text>Nothing for this month!</Text> : null}
+                    </View>
+                }
+            />
+
+
         </View>
     )
-}
-
-HistoryDailyScreen.navigationOptions = () => {
-    return {
-        headerShown: true,
-    };
 }
 
 const styles = StyleSheet.create({
@@ -182,9 +165,10 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginBottom: 5,
     },
+    flatlist: {
+    },
     viewContainer: {
-        flexDirection: 'column',
-        flex: 1
+        flex: 1,
     },
 })
 

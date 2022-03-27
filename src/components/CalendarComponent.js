@@ -4,8 +4,10 @@ import { Calendar, CalendarList } from 'react-native-calendars';
 import { subMonths, addMonths, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
 import timeoutApi from '../api/timeout';
 
-const CalendarComponent = ({ curDate, updateCallback, updateMonth }) => {
+const CalendarComponent = ({ curDate, updateCallback, updateMonth, setMonthlyCallback }) => {
     const { height, width } = Dimensions.get('window');
+
+    const [curMonth, setCurMonth] = useState(format(new Date(), 'yyyy-MM-dd'))
 
     return (
         <View>
@@ -16,7 +18,8 @@ const CalendarComponent = ({ curDate, updateCallback, updateMonth }) => {
                         updateCallback(day);
                     }}
                     onMonthChange={month => {
-                        console.log('month changed', month.dateString);
+                        console.log('month changed', month);
+                        setCurMonth(month.dateString)
                         updateMonth(month);
                     }}
                     theme={{
@@ -30,9 +33,7 @@ const CalendarComponent = ({ curDate, updateCallback, updateMonth }) => {
 
                 <TouchableOpacity
                     style={styles.monthTouch}
-                    onPress={day => {
-                        updateMonth(JSON.stringify(day))
-                    }} />
+                    onPress={() => { setMonthlyCallback(curMonth) }} />
 
             </View>
 

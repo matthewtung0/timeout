@@ -1,10 +1,7 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
-
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-//import { createBottomTabNavigator } from 'react-navigation-tabs';
+import Modal from 'react-native-modal'
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native'
@@ -59,19 +56,6 @@ const defaultOptions = {
   ),
 }
 
-const navOptions = {
-  title: "votre travail",
-  headerStyle: { backgroundColor: '#8B0000' },
-  headerTitleStyle: {
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  headerLeft: () => (
-    <TouchableOpacity onPress={() => navigation.openDrawer()} >
-      <Text>Settings</Text>
-    </TouchableOpacity>
-  ),
-}
 const pageOptions = {
   headerShown: false,
 }
@@ -81,12 +65,19 @@ const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
+  const [modalVis, setModalVis] = useState(false)
   return (
     <DrawerContentScrollView {...props}>
+      <Modal
+        style={{ flex: 1, backgroundColor: 'red' }}
+        isVisible={modalVis}>
+        <Text>modal text</Text>
+        <Button title="Close" onPress={() => setModalVis(false)} />
+      </Modal>
       <DrawerItemList {...props} />
       <DrawerItem
-        label="Close drawer"
-        onPress={() => props.navigation.closeDrawer()}
+        label="Open modal"
+        onPress={() => setModalVis(true)}
       />
       <DrawerItem
         label="Toggle drawer"
@@ -315,38 +306,6 @@ function CreateMainNavigator() {
 }
 
 // OLD STUFF REACT NAVIGATION V4
-const sessionStack = createStackNavigator({
-  SessionSelect: SessionSelectScreen,
-  SessionOngoing: SessionOngoingScreen,
-  SessionEval: SessionEvalScreen
-})
-
-const friendFeedStack = createStackNavigator({
-  FriendFeed: FriendFeedScreen,
-  FriendProfile: FriendProfileScreen
-})
-
-const profileStack = createStackNavigator({
-  Profile: ProfileScreen,
-  HistoryDaily: HistoryDailyScreen,
-  HistoryMonthly: HistoryMonthlyScreen,
-  AddCategory: AddCategoryScreen,
-  Friend: FriendScreen,
-  userFriendsFlow: createStackNavigator({
-    FriendList: FriendListScreen,
-    AddFriend: AddFriendScreen,
-  }),
-  TodoFlow: createStackNavigator({
-    TodoList: TodoListScreen,
-    AddTodoItem: AddTodoItemScreen
-  })
-})
-const loginStack = createStackNavigator({
-
-  SignIn: SigninScreen,
-  SignUp: SignupScreen,
-  ForgotPassword: ForgotPasswordScreen,
-})
 
 /*const mainNavigator = createSwitchNavigator({
   ResolveAuth: ResolveAuthScreen,
@@ -404,9 +363,6 @@ const loginStack = createStackNavigator({
   ) // end of mainflow bottom tab
 })*/
 
-//const App = createAppContainer(mainNavigator);
-
-
 export default () => {
 
   return (
@@ -435,7 +391,6 @@ export default () => {
                 <Drawer.Screen name='AddTodo' component={CreateToDoFlowStack} />
               </Drawer.Navigator>*/}
 
-
             </NavigationContainer>
           </SessionProvider>
         </CategoryProvider>
@@ -443,21 +398,3 @@ export default () => {
     </UserProvider>
   )
 }
-
-/*export default () => {
-  return (
-
-    <UserProvider>
-      <AuthProvider>
-        <CategoryProvider>
-
-          <SessionProvider>
-            <App
-              ref={(navigator) => { setNavigator(navigator) }} />
-          </SessionProvider>
-
-        </CategoryProvider>
-      </AuthProvider>
-    </UserProvider>
-  )
-}*/
