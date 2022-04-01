@@ -29,6 +29,17 @@ const categoryReducer = (state, action) => {
             return { ...state, sessionEndTime: action.payload.endTime, endEarlyFlag: action.payload.endEarlyFlag }
         case 'add_error':
             return { ...state, errorMessage: action.payload };
+
+        case 'delete_todo_item':
+            return {
+                ...state,
+                userTodoItems: state.userTodoItems.filter((req) => req.item_id != action.payload.toDoId)
+            }
+        case 'delete_category':
+            return {
+                ...state,
+                userCategories: state.userCategories.filter((req) => req.category_id != action.payload.categoryId)
+            }
         default:
             return state;
     }
@@ -82,7 +93,7 @@ const setChosen = dispatch => (button) => {
 const fetchUserCategories = dispatch => async () => {
     console.log("trying to fetch user categories");
     try {
-        const response = await timeoutApi.get('/categories')
+        const response = await timeoutApi.get('/category')
         dispatch({ type: 'fetch_categories', payload: response.data })
     } catch (err) {
         console.log("ERRRORRRR FETCHING CATEGORIES", err);
@@ -94,7 +105,7 @@ const fetchUserCategories = dispatch => async () => {
 const fetchUserTodoItems = dispatch => async () => {
     console.log("trying to fetch todo items");
     try {
-        const response = await timeoutApi.get('/todoItems')
+        const response = await timeoutApi.get('/todoItem')
         dispatch({ type: 'fetch_todo_items', payload: response.data })
     } catch (err) {
         console.log("error fetching todo items:", err);
@@ -102,27 +113,50 @@ const fetchUserTodoItems = dispatch => async () => {
     }
 }
 
-const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, callback) => {
+const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, callback = null) => {
     console.log("trying to add todo item");
     try {
-        const response = await timeoutApi.post('/addItem', { toDoItemName, timeSubmitted, categoryId })
+        const response = await timeoutApi.post('/todoItem', { toDoItemName, timeSubmitted, categoryId })
         dispatch({ type: 'add_todo_item', payload: { toDoItemName, timeSubmitted, categoryId } })
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         console.log("error adding todo item:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the todo item.' })
     }
 }
 
-const addCategory = dispatch => async (categoryName, timeSubmitted, callback) => {
+const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
+    try {
+        const response = await timeoutApi.delete('/todoItem', { toDoId })
+        dispatch({ type: 'delete_todo_item', payload: { toDoId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error deleting todo item:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem deleting the todo item.' })
+    }
+}
+
+const addCategory = dispatch => async (categoryName, timeSubmitted, callback = null) => {
     console.log("trying to add category");
     try {
-        const response = await timeoutApi.post('/addCategory', { categoryName, timeSubmitted })
+        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted })
         dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted } })
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         console.log("error adding category:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the category.' })
+    }
+}
+
+const deleteCategory = dispatch => async (categoryId, callback = null) => {
+    console.log("trying to delete category");
+    try {
+        const response = await timeoutApi.delete('/category', { categoryId })
+        dispatch({ type: 'delete_category', payload: { categoryId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error deleting category:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem deleting the category.' })
     }
 }
 
@@ -131,7 +165,7 @@ export const { Provider, Context } = createDataContext(
     categoryReducer,
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
-        fetchUserTodoItems, addTodoItem, addCategory
+        fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory
     },
     {
         userCategories: [],

@@ -4,7 +4,12 @@ import createDataContext from './createDataContext';
 const userReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_self':
-            return { ...state, self_info: action.payload }
+            return {
+                ...state,
+                firstName: action.payload.first_name,
+                lastName: action.payload.last_name,
+                username: action.payload.username
+            }
         case 'add_error':
             console.log("ERROR: ", action.payload)
             return { ...state, errorMessage: action.payload };
@@ -27,6 +32,16 @@ const userReducer = (state, action) => {
             return {
                 ...state, friends: action.payload, errorMessage: ''
             }
+        case 'edit_self':
+            return {
+                ...state,
+                firstName: action.payload.firstName,
+                lastName: action.payload.lastName,
+                username: action.payload.username,
+                responseMessage: 'Info updated!',
+            }
+        case 'clear_response':
+            return { ...state, responseMessage: '', errorMessage: '' }
         default:
             return state;
     }
@@ -36,13 +51,14 @@ const fetchSelf = dispatch => async () => {
     console.log("fetching self in profile screen")
     try {
         const response = await timeoutApi.get('/self_user')
+        console.log("setting self info to", response.data)
         dispatch({ type: 'fetch_self', payload: response.data })
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
 
-const requestFriend = dispatch => async (codeToRequest, callback) => {
+const requestFriend = dispatch => async (codeToRequest, callback = null) => {
     try {
         const response = await timeoutApi.post('/requestFriend', { codeToRequest })
         if (response.status == 403) {
@@ -51,65 +67,63 @@ const requestFriend = dispatch => async (codeToRequest, callback) => {
             dispatch({ type: 'add_error', payload: response.data.error })
         }
 
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem requesting friend!' })
     }
 }
 
-const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, callback) => {
+const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, callback = null) => {
     try {
-        console.log("pre api");
         await timeoutApi.post('/acceptFriendRequest', { idToAccept })
-        console.log("trying dispatch");
         dispatch({ type: 'accept_friend', payload: { idToAccept, usernameToAccept } })
-        console.log("done dispatch")
-        callback()
+        if (callback) { callback() }
+
     } catch (err) {
         console.log("ERROR accepting friend:", err);
         dispatch({ type: 'add_error', payload: 'Problem accepting friend!' })
     }
 }
 
-const rejectFriendRequest = dispatch => async (idToReject, callback) => {
+const rejectFriendRequest = dispatch => async (idToReject, callback = null) => {
     try {
         await timeoutApi.post('/rejectFriendRequest', { idToReject })
         dispatch({ type: 'reject_friend', payload: { idToReject } })
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         console.log("ERROR rejecting friend request", err);
         dispatch({ type: 'add_error', payload: 'Problem rejecting friend!' })
     }
 }
 
-const fetchOutgoingRequests = dispatch => async (callback) => {
+const fetchOutgoingRequests = dispatch => async (callback = null) => {
     try {
         const response = await timeoutApi.get('/friendRequestsOutgoing')
         dispatch({ type: 'request_outgoing_reqs', payload: response.data })
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem getting outgoing friend reqs!' })
     }
 }
 
-const fetchIncomingRequests = dispatch => async (callback) => {
+const fetchIncomingRequests = dispatch => async (callback = null) => {
     try {
         const response = await timeoutApi.get('/friendRequestsIncoming')
         dispatch({ type: 'request_incoming_reqs', payload: response.data })
-        callback()
+        if (callback) { callback() }
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem getting incoming friend reqs!' })
     }
 }
 
-const fetchFriends = dispatch => async (callback) => {
+const fetchFriends = dispatch => async (callback = null) => {
     try {
         const response = await timeoutApi.get('/friendsList')
-        console.log("response is:", response.data);
         dispatch({ type: 'fetch_friends', payload: response.data })
-        callback()
+        if (callback) { callback() }
+
     } catch (err) {
-        console.log("Problem fetching friends:", err.stack())
+        console.log("Problem fetching friends:", err)
         dispatch({ type: 'add_error', payload: 'Problem getting friends!' })
     }
 };
@@ -118,7 +132,20 @@ const fetchEveryone = dispatch => async () => { };
 
 const postSelf = dispatch => async () => { }
 
-const editSelf = dispatch => async () => { }
+const editSelf = dispatch => async ({ firstName, lastName, username }) => {
+    try {
+        const response = await timeoutApi.patch('/self_user', { firstName, lastName, username })
+        dispatch({ type: 'edit_self', payload: { firstName, lastName, username } })
+        //callback()
+    } catch (err) {
+        console.log("Problem editing self user info:", err)
+        dispatch({ type: 'add_error', payload: 'Problem updating info!' })
+    }
+}
+
+const clearResponseMessage = dispatch => () => {
+    dispatch({ type: 'clear_response', payload: {} })
+}
 
 const deleteSelf = dispatch => async () => { }
 
@@ -129,13 +156,17 @@ export const { Provider, Context } = createDataContext(
     userReducer,
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
-        acceptFriendRequest, rejectFriendRequest, fetchFriends
+        acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
+        clearResponseMessage
     },
     {
-        self_info: [],
         outgoingFriendReqs: [],
         incomingFriendReqs: [],
         friends: [],
         errorMessage: '',
+        firstName: '',
+        lastName: '',
+        username: '',
+        responseMessage: '',
     }
 );

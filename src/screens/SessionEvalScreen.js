@@ -1,13 +1,24 @@
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useContext, useState, useCallback } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Switch } from 'react-native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import Slider from '@react-native-community/slider'
 import timeoutApi from '../api/timeout';
 import { format } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SessionEvalScreen = ({ navigation: { navigate } }) => {
-    const { state: s, setProdRating } = useContext(CategoryContext)
+    const { state: s, setProdRating, deleteTodoItem, addTodoItem } = useContext(CategoryContext)
     const [prodRatingNum, setProdRatingNum] = useState(50)
+
+
+    // handle adding to Todo List or not
+    const [existingItem, setExistingItem] = useState(false)
+    const [existingId, setExistingId] = useState('')
+
+    const [toRemove, setToRemove] = useState(false);
+    const [toAdd, setToAdd] = useState(false)
+    const toggleRemoveTodo = () => setToRemove(previousState => !previousState);
+    const toggleAddTodo = () => setToAdd(previousState => !previousState);
 
     // PUTTING THIS HERE TEMPORARILY ...
     const saveSession = async () => {
@@ -19,6 +30,37 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
             console.log("Problem adding session", err)
         }
     }
+
+    const checkTodoMatch = () => {
+        // check if this was an existing ToDo item
+        var curTodoItems = s.userTodoItems
+        for (var i = 0; i < curTodoItems.length; i++) {
+            var _catId = curTodoItems[i]['category_id']
+            var _itemDesc = curTodoItems[i]['item_desc']
+
+            if (_catId == s.chosenCatId && _itemDesc == s.customActivity) {
+                setExistingItem(true)
+                setExistingId(s.item_id)
+                return
+            }
+        }
+    }
+
+    // functions to add or remove from todo list if necessary
+    const deleteItem = async () => {
+        await deleteTodoItem(existingId)
+    }
+
+    const addItem = async () => {
+        await addTodoItem(s.customActivity, new Date(), s.chosenCatId)
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            checkTodoMatch()
+        }, [])
+
+    )
 
     return (
         <View>
@@ -47,7 +89,6 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
             </View>
 
 
-
             <Text>You just completed category:</Text>
             <Text>{s.chosenCategory}</Text>
             <Text>Your activity was {s.customActivity}</Text>
@@ -55,6 +96,29 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
                 and ending at {format(s.sessionEndTime, 'M-dd-yyyy')}, for a duration of
             </Text>
             <Text>End early flag is {s.endEarlyFlag.toString()}</Text>
+            {/*if it was, show option to remove from todo items
+            it it was not, show option to add this to todo item*/}
+            {existingItem ? (<View>
+                <Text>Enable if you want to remove this item from your todo list.</Text>
+                <Switch
+                    trackColor={{ false: "#767577", true: "#81b0ff" }}
+                    thumbColor={toRemove ? "#f5dd4b" : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleRemoveTodo}
+                    value={toRemove}
+                />
+            </View>) :
+                (<View>
+                    <Text>Check to add this item onto your todo list.</Text>
+                    <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={toAdd ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleAddTodo}
+                        value={toAdd}
+                    />
+                </View>)
+            }
 
             <TouchableOpacity
                 style={styles.buttonStyle}

@@ -1,12 +1,22 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, FlatList } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import { Input, Button } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 
 import timeoutApi from '../api/timeout';
 
 const FriendFeedScreen = ({ navigation }) => {
     const [feed, setFeed] = useState([]);
+
+    useFocusEffect(
+
+        useCallback(() => {
+            console.log("use focus effect")
+            getFeed();
+            //return () => test();
+        }, [])
+    )
 
     const getFeed = async () => {
         try {
@@ -19,9 +29,7 @@ const FriendFeedScreen = ({ navigation }) => {
 
     return (
         <View>
-            <NavigationEvents
-                onWillFocus={getFeed}
-            />
+            {/*<NavigationEvents onWillFocus={getFeed}/>*/}
 
             <Text style={styles.title}>Friend Feed Screen</Text>
 

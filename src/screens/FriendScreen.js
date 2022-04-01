@@ -36,10 +36,10 @@ const FriendScreen = ({ navigation }) => {
                     {state.errorMessage ? <Text>Error message here:{state.errorMessage}</Text> : null}
                 </View>
 
-                <Button title="Get Current Friends"
+                {/*<Button title="Get Current Friends"
                     onPress={() => {
                         fetchFriends(resetInputs)
-                    }} />
+                    }} />*/}
                 <FlatList
                     style={styles.flatlistStyle}
                     horizontal={true}
@@ -66,10 +66,10 @@ const FriendScreen = ({ navigation }) => {
                 </FlatList>
 
 
-                <Button title="See outgoing friend requests "
+                {/*<Button title="See outgoing friend requests "
                     onPress={() => {
                         fetchOutgoingRequests(resetInputs)
-                    }}></Button>
+                    }}></Button>*/}
                 <Text>Sent friend requests, awaiting reply:</Text>
 
                 <FlatList
@@ -95,10 +95,10 @@ const FriendScreen = ({ navigation }) => {
                 >
                 </FlatList>
 
-                <Button title="See incoming friend requests "
+                {/*<Button title="See incoming friend requests "
                     onPress={() => {
                         fetchIncomingRequests(resetInputs)
-                    }}></Button>
+                    }}></Button>*/}
                 <Text>People who've sent you a friend request:</Text>
                 <FlatList
                     style={styles.flatlistStyle}

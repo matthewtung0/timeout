@@ -8,7 +8,7 @@ const authReducer = (state, action) => {
         case 'signin':
             return { ...state, token: action.payload, isLoading: false };
         case 'add_error':
-            return { errorMessage: '', errorMessage: action.payload };
+            return { ...state, errorMessage: action.payload };
         case 'clear_error_message':
             return { ...state, errorMessage: '' }
         case 'signout':
@@ -81,6 +81,20 @@ const signin = (dispatch) => async ({ email, password }) => {
     }
 };
 
+const changePassword = (dispatch) => async (oldPassword, newPassword, callback) => {
+    try {
+        console.log("passing old pw", oldPassword);
+        console.log("passing new pw", newPassword);
+        const response = await timeoutApi.patch('/changePasswordApp', { oldPassword, newPassword });
+        //await AsyncStorage.setItem('token', response.data.token);
+        //console.log("password change successful. new token is " + response.data.token);
+        callback();
+    } catch (err) {
+        console.log(err)
+        dispatch({ type: 'add_error', payload: 'Problem changing password' })
+    }
+}
+
 const signout = dispatch => async () => {
     await AsyncStorage.removeItem('token');
     dispatch({ type: 'signout' });
@@ -103,6 +117,9 @@ const tempVarSet = (dispatch) => () => {
 
 export const { Provider, Context } = createDataContext(
     authReducer,
-    { signup, signin, signout, clearErrorMessage, tryLocalSignin, forgot_password, tempVarSet },
+    {
+        signup, signin, signout, clearErrorMessage,
+        tryLocalSignin, forgot_password, tempVarSet, changePassword
+    },
     { token: null, errorMessage: '', isLoading: true, tempVar: true }
 )

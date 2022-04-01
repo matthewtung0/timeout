@@ -1,12 +1,14 @@
 import React, { useState, useContext, useRef } from 'react';
-import { View, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { Button, Text } from 'react-native-elements';
+import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
+import { Button, Text, Input, Icon } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { getUnixTime, fromUnixTime } from 'date-fns';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
+
+const table_bg = require('../../assets/sessionselect_tablebg.png');
 
 const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const [time, setTime] = useState(0);
@@ -70,16 +72,24 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                         callback={fillInWithItem} />
                 </Modal>
             </View>
-            <Text style={styles.title}>Session Select Screen</Text>
 
-            <CircularSelector
-                minSet={0}
-                updateCallback={updateTime}
-                ref={circularRef} />
 
-            <TextInput
+            <ImageBackground
+                source={table_bg}
+                style={[styles.image]}
+                resizeMode='stretch'>
+                <CircularSelector
+                    minSet={0}
+                    updateCallback={updateTime}
+                    ref={circularRef} />
+
+            </ImageBackground>
+
+            <Input
                 style={styles.input}
                 placeholder="Activity"
+                rightIconContainerStyle={styles.rightIconInput}
+                inputContainerStyle={styles.inputStyleContainer}
                 autoCorrect={false}
                 value={customActivity}
                 onChangeText={(text) => {
@@ -88,6 +98,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 }
                 }
             />
+
+            {/*<Icon type='ionicon' name='create-outline' />*/}
 
             <FlatList
                 columnWrapperStyle={{ justifyContent: 'space-between', flex: 1, marginVertical: 5, marginHorizontal: 10 }}
@@ -115,6 +127,10 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 ListFooterComponent={() =>
                     <Button title="Start"
                         onPress={() => {
+                            if (time == 0) {
+                                alert("You must set a time amount!")
+                                return;
+                            }
                             let now_dt = getUnixTime(new Date())
                             setStartTime(fromUnixTime(now_dt))
                             let cat_Name = catName
@@ -170,10 +186,20 @@ const styles = StyleSheet.create({
         flex: 1
     },
     input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginHorizontal: 27,
+        paddingHorizontal: 17,
+    },
+    inputContainer: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    inputStyleContainer: {
+        borderBottomWidth: 0,
+    },
+    rightIconInput: {
+        backgroundColor: 'brown',
     },
     modal: {
         borderRadius: 10,
@@ -191,6 +217,8 @@ const styles = StyleSheet.create({
     },
     modalDummy: {
         flex: 0.35,
+    },
+    clockBackground: {
     },
 })
 

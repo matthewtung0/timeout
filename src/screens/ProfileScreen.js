@@ -21,18 +21,16 @@ const ProfileScreen = ({ navigation }) => {
             fetchSelf();
             //return () => test();
         }, [])
-
     )
-
 
     return (
         <View>
             {/*<NavigationEvents onWillFocus={fetchSelf} />*/}
 
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-            <Text>First name: {state.self_info.first_name}</Text>
-            <Text>Last name: {state.self_info.last_name}</Text>
-            <Text>Username: {state.self_info.username}</Text>
+            <Text>First name: {state.firstName}</Text>
+            <Text>Last name: {state.lastName}</Text>
+            <Text>Username: {state.username}</Text>
 
             <Button
                 style={styles.button}
@@ -64,6 +62,10 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="Friends (temp)"
                 onPress={() => navigation.navigate('Friend')} />
+            <Button
+                style={styles.button}
+                title="Edit Profile (temp)"
+                onPress={() => navigation.navigate('EditProfile')} />
         </View>
     )
 }

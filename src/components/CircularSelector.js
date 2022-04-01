@@ -6,12 +6,12 @@ import Svg, {
 } from 'react-native-svg';
 import { Text } from 'react-native-svg';
 
-const img_timer = require('../../assets/timer.png');
-const picked_width = 260
+const img_timer = require('../../assets/clock_bg.png');
+const { height, width } = Dimensions.get('window');
+const picked_width = width / 2 / 0.8
 
 const CircularSelector = forwardRef(({ updateCallback }, ref) => {
-    const { height, width } = Dimensions.get('window');
-    const timer_radius_pct = 0.3 // fraction of screen that the radius takes
+    const timer_radius_pct = 0.4 // fraction of screen that the radius takes
     const radius = (width * timer_radius_pct) * 100 / width // ex. 40 for 0.4 timer_radius_pct
     const [st, setSt] = useState({ cx: width / 2, cy: height / 2 });
     const [theta, setTheta] = useState(0);
@@ -287,16 +287,15 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         alignItems: 'center',
         marginBottom: 5,
+        marginTop: 40,
     },
     wrappedView: {
         aspectRatio: 1,
         borderWidth: 1,
-        borderColor: 'green',
+        borderColor: 'yellow',
         width: picked_width,
     },
     svgStyle: {
-        borderWidth: 1,
-        borderColor: 'red',
         flex: 1,
     },
     titleText: {

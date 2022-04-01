@@ -33,7 +33,8 @@ import AddFriendScreen from './src/screens/AddFriendScreen';
 import TodoListScreen from './src/screens/TodoListScreen';
 import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
 import FriendProfileScreen from './src/screens/FriendProfileScreen';
-import AddCategoryScreen from './src/screens/AddCategoryScreen'
+import AddCategoryScreen from './src/screens/AddCategoryScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 
 import { Provider as SessionProvider } from './src/context/SessionContext';
 import { Provider as AuthProvider } from './src/context/AuthContext';
@@ -45,6 +46,7 @@ import FriendScreen from './src/screens/FriendScreen';
 
 import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
+import { Context as UserContext } from './src/context/userContext';
 
 const defaultOptions = {
   headerRight: () => (
@@ -237,6 +239,11 @@ function CreateProfileStack() {
         component={CreateToDoFlowStack}
         options={pageOptions}
       />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={pageOptions}
+      />
     </Stack.Navigator>
   )
 }
@@ -246,7 +253,7 @@ function CreateMainFlowTab() {
     <Tab.Navigator>
       <Tab.Screen name="sessionFlow" component={CreateSessionStack}
         options={pageOptions} />
-      <Tab.Screen name="friendFeedFlow" component={CreateFriendsFlowStack}
+      <Tab.Screen name="friendFeedFlow" component={CreateFriendFeedStack}
         options={pageOptions} />
       <Tab.Screen name="profileFlow" component={CreateProfileStack}
         options={pageOptions} />
@@ -256,6 +263,7 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+  const { fetchOutgoingRequests, fetchIncomingRequests, fetchFriends } = useContext(UserContext)
 
   useEffect(async () => {
     console.log("trying local sign in ")
@@ -264,18 +272,28 @@ function CreateMainNavigator() {
     let splashDisplayTime = 2000;
     if (res) {
       await fetchUserCategories();
+      console.log('fetched categories');
       await fetchUserTodoItems();
+      console.log('fetched todo items');
+      await fetchFriends();
+      console.log('fetched friends');
+      await fetchOutgoingRequests();
+      console.log('fetched outgoing friend requests');
+      await fetchIncomingRequests();
+      console.log('fetched incoming friend requests');
       let secondTime = new Date();
       let timeDiff = (secondTime.getTime() - firstTime.getTime());
-      console.log("Splash time reduced by", timeDiff);
+      console.log("millisec that api calls took up: ", timeDiff);
       splashDisplayTime = splashDisplayTime - timeDiff;
 
       // adjust splash display time
     }
-    setTimeout(
-      () => {
-        tempVarSet()
-      }, splashDisplayTime);
+    if (splashDisplayTime > 0) {
+      setTimeout(
+        () => {
+          tempVarSet()
+        }, splashDisplayTime);
+    }
   }, [])
 
   return (
