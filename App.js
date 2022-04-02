@@ -21,7 +21,6 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import SessionOngoingScreen from './src/screens/SessionOngoingScreen';
 import SessionEvalScreen from './src/screens/SessionEvalScreen';
 import HistoryDailyScreen from './src/screens/HistoryDailyScreen';
-import HistoryMonthlyScreen from './src/screens/HistoryMonthlyScreen';
 
 import SignupScreen from './src/screens/SignupScreen';
 import SigninScreen from './src/screens/SigninScreen';
@@ -212,11 +211,6 @@ function CreateProfileStack() {
       <Stack.Screen
         name="HistoryDaily"
         component={HistoryDailyScreen}
-        options={pageOptions}
-      />
-      <Stack.Screen
-        name="HistoryMonthly"
-        component={HistoryMonthlyScreen}
         options={pageOptions}
       />
       <Stack.Screen

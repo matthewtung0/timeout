@@ -6,6 +6,7 @@ import {
 } from 'date-fns';
 import CalendarComponent from '../components/CalendarComponent';
 import PastActivityCard from '../components/PastActivityCard';
+import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
 import { Context as SessionContext } from '../context/SessionContext';
 
@@ -13,17 +14,6 @@ const today_date = () => {
     let date = format(new Date(), 'M-dd-yyyy z')
     return date;
 
-}
-
-const default_interval = () => {
-    let interval = 20;
-    //let startDate = format(subDays(new Date(), interval), 'M-dd-yyyy')
-    //let endDate = format(addDays(new Date(), interval), 'M-dd-yyyy')
-
-    let startDate = subDays(new Date(), interval)
-    let endDate = addDays(new Date(), interval)
-    let date_interval = eachDayOfInterval({ start: startDate, end: endDate })
-    return date_interval
 }
 
 const getDaySession = async (dayObject) => {
@@ -43,25 +33,6 @@ const getDaySession = async (dayObject) => {
         //
     } catch (err) {
         console.log("Problem getting day's sessions", err)
-    }
-}
-
-const getMonthSession = async (dayObject) => {
-    //console.log("Getting sessions for month of", dayObject);
-    //let date = parseISO(JSON.parse(dayObject).dateString)
-    let date = parseISO(dayObject.dateString)
-
-    try {
-        let startRange = startOfMonth(date)
-        let endRange = endOfMonth(date)
-        console.log("Start range is", startRange)
-
-        const response = await timeoutApi.get('/monthSessions', { params: { startTime: startRange, endTime: endRange } })
-        console.log(response.data);
-        return response.data
-        //
-    } catch (err) {
-        console.log("Problem getting month's sessions", err)
     }
 }
 
@@ -118,6 +89,10 @@ const HistoryDailyScreen = ({ navigation }) => {
                 <Text>asdf</Text>
             </View>
 
+            <MonthlySumComponent monthBatch={state.monthSessions}>
+
+            </MonthlySumComponent>
+
             <FlatList
                 style={styles.flatlist}
                 horizontal={false}
@@ -142,7 +117,10 @@ const HistoryDailyScreen = ({ navigation }) => {
 
                 ListFooterComponent={() =>
                     <View>
-                        {useMonthly ? state.monthSessions.length > 0 ? null : <Text>Nothing for this month!</Text> : null}
+                        {useMonthly ?
+                            state.monthSessions.length > 0 ?
+                                null : <Text>Nothing for this month!</Text>
+                            : null}
                     </View>
                 }
             />

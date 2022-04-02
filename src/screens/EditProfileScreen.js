@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -28,6 +28,20 @@ const EditProfileScreen = () => {
         setOldPassword('')
         setNewPassword('')
     }
+
+    const areYouSure = () =>
+        Alert.alert(
+            "Are you sure?",
+            "All your data will be deleted. This is not un-doable.",
+            [
+                {
+                    text: "Go back",
+                    onPress: () => { },
+                    style: "cancel"
+                },
+                { text: "Delete", onPress: () => { } }
+            ]
+        );
 
     // firstname, lastname, username, password
     return (
@@ -106,6 +120,12 @@ const EditProfileScreen = () => {
 
                 {passwordMessage ? <Text>{passwordMessage}</Text> : null}
 
+                <TouchableOpacity
+                    style={styles.signInBoxStyle}
+                    onPress={areYouSure}>
+                    <Text style={styles.signInTextStyle}>DELETE ACCOUNT</Text>
+                </TouchableOpacity>
+
             </ScrollView>
         </View>
     )
@@ -136,7 +156,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        marginBottom: 10,
     },
     signInTextStyle: {
         color: '#F6F2DF',

@@ -59,6 +59,17 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         setChosen({ buttonName: cat_name, buttonId: cat_id })
     }
 
+    const validateInputs = () => {
+        if (time == 0) {
+            alert("You must set a time amount!")
+            return false;
+        } else if (customActivity == '') {
+            alert("Please enter an activty to do!")
+            return false;
+        }
+        return true
+    }
+
     return (
         <View style={styles.viewContainer}>
 
@@ -127,8 +138,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 ListFooterComponent={() =>
                     <Button title="Start"
                         onPress={() => {
-                            if (time == 0) {
-                                alert("You must set a time amount!")
+                            if (!validateInputs()) {
                                 return;
                             }
                             let now_dt = getUnixTime(new Date())
