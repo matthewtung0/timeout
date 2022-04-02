@@ -96,7 +96,7 @@ const fetchUserCategories = dispatch => async () => {
         const response = await timeoutApi.get('/category')
         dispatch({ type: 'fetch_categories', payload: response.data })
     } catch (err) {
-        console.log("ERRRORRRR FETCHING CATEGORIES", err);
+        console.log("error fetching categories", err);
         dispatch({ type: 'add_error', payload: 'There was a problem retrieving the categories.' })
     }
 }

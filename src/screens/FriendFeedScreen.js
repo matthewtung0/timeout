@@ -1,43 +1,57 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
-import { Input, Button } from 'react-native-elements';
+import { View, StyleSheet, Text, FlatList, Pressable } from 'react-native';
+import { Input, Button, Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
-
-import timeoutApi from '../api/timeout';
+import { Context as SessionContext } from '../context/SessionContext';
 
 const FriendFeedScreen = ({ navigation }) => {
-    const [feed, setFeed] = useState([]);
+    const { state, fetchSessions, fetchUserReactions, reactToActivity } = useContext(SessionContext)
+    const [disableTouch, setDisableTouch] = useState(false)
 
     useFocusEffect(
 
         useCallback(() => {
             console.log("use focus effect")
             getFeed();
-            //return () => test();
         }, [])
     )
 
     const getFeed = async () => {
         try {
-            const response = await timeoutApi.get('/sessions')
-            setFeed(response.data);
+            await fetchSessions()
+            await fetchUserReactions()
         } catch (err) {
             console.log("Problem retrieving feed", err)
         }
     }
 
+    // add flag to identify which posts user likes, so dont need to re-search every state change
+    /*const setUserLikes = () => {
+        console.log("Setting user likes")
+        let string_temp = JSON.stringify(state.userReaction)
+        for (var i = 0; i < state.userSessions.length; i++) {
+            if (string_temp.includes(state.userSessions[i].activity_id)) {
+                state.userSessions[i].self_liked = true;
+            } else {
+                state.userSessions[i].self_liked = false;
+            }
+        }
+    }*/
+
+    // make buttons enabled again after api calls done
+    const reactCallback = () => {
+        setDisableTouch(false)
+    }
+
     return (
         <View>
-            {/*<NavigationEvents onWillFocus={getFeed}/>*/}
 
             <Text style={styles.title}>Friend Feed Screen</Text>
-
-
+            {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
             <FlatList
                 style={styles.flatlistStyle}
                 horizontal={false}
-                data={feed}
+                data={state.userSessions}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(result) => result.activity_id}
                 renderItem={({ item }) => {
@@ -47,6 +61,28 @@ const FriendFeedScreen = ({ navigation }) => {
                             <Text>Activity: {item.activity_name}</Text>
                             <Text>Category: {item.category_name}</Text>
                             <Text>Time done: {item.time_start}</Text>
+                            <View style={styles.likeContainer}>
+                                <Text style={styles.likeCount}>{item.reaction_count}</Text>
+                                <Pressable
+                                    onPress={() => {
+                                        let is_like = true
+                                        if (JSON.stringify(state.userReaction).includes(item.activity_id)) {
+                                            is_like = false
+                                        }
+                                        reactToActivity(item.activity_id, is_like, reactCallback)
+                                    }}>
+                                    {JSON.stringify(state.userReaction).includes(item.activity_id) ?
+                                        <Icon
+                                            name="heart"
+                                            type='font-awesome'
+                                            color='purple' /> :
+                                        <Icon
+                                            name="heart-o"
+                                            type='font-awesome' />}
+
+                                </Pressable>
+                            </View>
+
                         </View>
                     )
                 }}
@@ -61,8 +97,8 @@ const FriendFeedScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     title: {
-        margin: 30,
-        fontSize: 40,
+        margin: 10,
+        fontSize: 20,
     }, listItem: {
         margin: 5,
         borderWidth: 1,
@@ -76,6 +112,14 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderRadius: 5,
         padding: 5,
+    },
+    likeContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    likeCount: {
+        marginHorizontal: 5,
     }
 })
 

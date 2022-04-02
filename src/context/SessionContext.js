@@ -11,13 +11,63 @@ const sessionReducer = (state, action) => {
             return { ...state, userSessions: action.payload }
         case 'fetch_monthly':
             return { ...state, monthSessions: action.payload.monthlyData, calendarDate: action.payload.startOfMonth }
+        case 'fetch_reaction':
+            return { ...state, userReaction: action.payload }
+        case 'preemptive_like':
+            return {
+                ...state, userReaction: [...state.userReaction, { activity_id: action.payload.activity_id }],
+                userSessions: state.userSessions.map(item => {
+                    if (item.activity_id == action.payload.activity_id) {
+                        return { ...item, reaction_count: item.reaction_count + 1 }
+                    }
+                    return item;
+                })
+            }
+        case 'preemptive_unlike':
+            return {
+                ...state, userReaction: state.userReaction.filter((req) => req.activity_id != action.payload.activity_id),
+                userSessions: state.userSessions.map(item => {
+                    if (item.activity_id == action.payload.activity_id) {
+                        console.log("UPDATING", item);
+                        return { ...item, reaction_count: item.reaction_count - 1 }
+                    }
+                    return item;
+                })
+            }
+
+        case 'react_to_activity':
+            console.log("This was an unlike:", action.payload.wasUnliked);
+            if (!action.payload.wasUnliked) { //is a like
+                return {
+                    ...state,
+                    userReaction: [...state.userReaction, { activity_id: action.payload.activity_id }],
+                    userSessions: state.userSessions.map(item => {
+                        if (item.activity_id == action.payload.activity_id) {
+                            return { ...item, reaction_count: item.reaction_count + 1 }
+                        }
+                        return item;
+                    })
+                }
+            } else { // is an unlike
+                return {
+                    ...state,
+                    userReaction: state.userReaction.filter((req) => req.activity_id != action.payload.activity_id),
+                    userSessions: state.userSessions.map(item => {
+                        if (item.activity_id == action.payload.activity_id) {
+                            console.log("UPDATING", item);
+                            return { ...item, reaction_count: item.reaction_count - 1 }
+                        }
+                        return item;
+                    })
+                }
+            }
         default:
             return state;
     }
 }
 
 const fetchSessions = dispatch => async () => {
-    const response = await timeoutApi.get('/sessions')
+    const response = await timeoutApi.get('/session')
     dispatch({ type: 'fetch_sessions', payload: response.data })
 }
 
@@ -53,12 +103,43 @@ const DeleteSession = dispatch => async () => { };
 
 const fetchAllSession = dispatch => async () => { };
 
+// get activities that user has reacted on
+const fetchUserReactions = dispatch => async () => {
+    try {
+        const response = await timeoutApi.get('/interaction')
+        dispatch({ type: 'fetch_reaction', payload: response.data })
+    } catch (err) {
+        console.log("problem fetching user reactions", err);
+    }
+}
+
+const reactToActivity = dispatch => async (activity_id, is_like, reactCallback = null) => {
+    try {
+        if (is_like) {
+            dispatch({ type: 'preemptive_like', payload: { activity_id } })
+        } else {
+            dispatch({ type: 'preemptive_unlike', payload: { activity_id } })
+        }
+        const response = await timeoutApi.post('/interaction', { reaction_id: 0, activity_id })
+        //let wasUnliked = response.data.wasUnliked //flag whether this is an unlike (true) or like (false)
+        //dispatch({ type: 'react_to_activity', payload: { 'wasUnliked': wasUnliked, activity_id } })
+        if (reactCallback) { reactCallback(); }
+    } catch (err) {
+        if (is_like) {
+            dispatch({ type: 'preemptive_unlike', payload: { activity_id } })
+        } else {
+            dispatch({ type: 'preemptive_like', payload: { activity_id } })
+        }
+        console.log(err)
+    }
+}
 
 export const { Provider, Context } = createDataContext(
     sessionReducer,
-    { fetchSessions, fetchMonthly },
+    { fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity },
     {
         userSessions: [],
+        userReaction: [],
         daySessions: [],
         monthSessions: [],
         calendarDate: '',
