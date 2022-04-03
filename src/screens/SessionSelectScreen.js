@@ -129,7 +129,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                             <CategoryButton
                                 id={item.category_id}
                                 catName={item.category_name}
-                                bgColor="#FDD696"
+                                bgColor={item.color_id}
                                 callback={updateButton} />
                         </View>
                     )

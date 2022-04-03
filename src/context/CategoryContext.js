@@ -136,11 +136,11 @@ const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     }
 }
 
-const addCategory = dispatch => async (categoryName, timeSubmitted, callback = null) => {
+const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, callback = null) => {
     console.log("trying to add category");
     try {
-        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted })
-        dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted } })
+        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted, chosenColor })
+        dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted, chosenColor } })
         if (callback) { callback() }
     } catch (err) {
         console.log("error adding category:", err);
