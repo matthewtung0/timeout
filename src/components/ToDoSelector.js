@@ -1,15 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Text, Button, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Text, Button, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
 
 const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     const [showChild, setShowChild] = useState(false)
+    const { height, width } = Dimensions.get('window');
 
     const parentView = () => {
         return (
-            <>
-                <Text style={styles.title}>What's On Your Plate:</Text>
+            <View style={styles.parentContainer}>
+                <Text style={styles.title}>Tasks</Text>
                 <FlatList
                     style
                     horizontal={false}
@@ -33,6 +34,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                     <ToDoComponent
                                         itemName={item.item_desc}
                                         category={item.category_name}
+                                        color={item.color_id}
                                         timeCreated={item.time_created} />
                                 </View>
                             </TouchableOpacity>
@@ -40,15 +42,19 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                     }}
                     ListFooterComponent={() =>
                         <View>
-                            <Button
+
+                            <TouchableOpacity
+                                style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
                                 onPress={() => {
                                     setShowChild(true)
-                                }}
-                                title="Add item" />
+
+                                }}>
+                                <Text style={styles.plusText}>+</Text>
+                            </TouchableOpacity>
                         </View>
                     }
                 />
-            </>
+            </View>
         )
     }
 
@@ -62,11 +68,15 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
             <>
                 <AddTodoComponent
                     callback={addTodoCallback} />
-                <Button
-                    onPress={() => {
-                        setShowChild(false)
-                    }}
-                    title="Go back" />
+                <View style={{ backgroundColor: '#90AB72' }}>
+                    <TouchableOpacity
+                        style={styles.goBackChild}
+                        onPress={() => { setShowChild(false) }}>
+                        <Text style={styles.goBackText}>Go back</Text>
+
+                    </TouchableOpacity>
+                </View>
+
             </>
         )
     }
@@ -99,8 +109,12 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column',
         flex: 1,
+    },
+    parentContainer: {
+        flex: 1,
+        justifyContent: 'space-around',
+        backgroundColor: '#F9EAD3'
     },
     modal: {
         flex: 1,
@@ -109,8 +123,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     title: {
-        fontSize: 20,
+        alignSelf: 'center',
         margin: 15,
+        fontSize: 20,
+        fontWeight: 'bold',
         color: '#67806D',
     },
     toDoComponent: {
@@ -135,7 +151,34 @@ const styles = StyleSheet.create({
     },
     dummy: {
         flex: 0.03,
-    }
+    },
+    goBackChild: {
+        backgroundColor: '#90AB72',
+        alignItems: 'center',
+        width: 60,
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignSelf: 'center'
+    },
+    goBackText: {
+        color: 'white',
+        paddingBottom: 3,
+    },
+    plus: {
+        backgroundColor: '#ABC57E',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 15,
+        alignSelf: 'center',
+        marginBottom: 20,
+        marginTop: 20,
+    },
+    plusText: {
+        color: 'white',
+        fontSize: 50,
+        fontWeight: 'bold'
+    },
 })
 
 export default ToDoSelector;

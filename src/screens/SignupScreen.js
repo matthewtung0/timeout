@@ -1,10 +1,15 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
+import {
+    View, StyleSheet, TouchableOpacity, Dimensions, ImageBackground,
+    KeyboardAvoidingView, Image, ScrollView
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
-import { NavigationEvents } from 'react-navigation';
 
 const img_src = require('../../assets/signin_background.png');
+const img = require('../../assets/signup_plant.png')
 
 const SignupScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
@@ -16,105 +21,115 @@ const SignupScreen = ({ navigation }) => {
     const [lastName, setLastName] = useState('');
 
     return (
-        <View style={styles.container}>
-            <NavigationEvents
+        <KeyboardAvoidingView style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}>
+            {/*<NavigationEvents
                 onWillFocus={clearErrorMessage}
-            />
+    />*/}
 
-            <ImageBackground
+            {/*<ImageBackground
                 source={img_src}
                 style={[styles.image,
                 { width: width, height: height }]}
-                resizeMode='stretch'>
-
-                <View style={styles.inputContainer}>
-                    <View style={{ flex: 15 }} />
-                    <View style={{ flex: 11 }}>
+                resizeMode='stretch'>*/}
 
 
-                        <View style={styles.nameContainer}>
-                            <Input
-                                style={styles.inputStyle}
-                                containerStyle={styles.nameInputStyleContainer}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                placeholder='First Name'
-                                autoCorrect={false}
-                                value={firstName}
-                                onChangeText={setFirstName}
-                            />
-                            <Input
-                                style={styles.inputStyle}
-                                containerStyle={styles.nameInputStyleContainer}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                placeholder='Last Name'
-                                autoCorrect={false}
-                                value={lastName}
-                                onChangeText={setLastName}
-                            />
+            <Image
+                source={img}
+                resizeMode='stretch'
+                style={[styles.img, { maxWidth: width, maxHeight: height / 3 }]} />
 
-                        </View>
+            {/*<View style={styles.inputContainer}>
+                <View style={{ flex: 15, }} />
+                <View style={{ flex: 11 }}>*/}
 
-                        <Input
-                            style={styles.inputStyle}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            placeholder='Email'
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                            value={email}
-                            onChangeText={setEmail}
-                        />
+            {/*<View style={styles.nameContainer}>*/}
 
-                        <Input
-                            style={styles.inputStyle}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            secureTextEntry={false}
-                            placeholder="Username"
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
+            <ScrollView style={styles.inner}>
+                <Input
+                    style={styles.inputStyle}
+                    //containerStyle={styles.nameInputStyleContainer}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    placeholder='First Name'
+                    autoCorrect={false}
+                    value={firstName}
+                    onChangeText={setFirstName}
+                />
+                <Input
+                    style={styles.inputStyle}
+                    //containerStyle={styles.nameInputStyleContainer}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    placeholder='Last Name'
+                    autoCorrect={false}
+                    value={lastName}
+                    onChangeText={setLastName}
+                />
 
-                        <Input
-                            style={styles.inputStyle}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            secureTextEntry={true}
-                            placeholder="Password"
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                            value={password}
-                            onChangeText={setPassword}
-                        />
-                    </View>
+                <Input
+                    style={styles.inputStyle}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    placeholder='Email'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    value={email}
+                    onChangeText={setEmail}
+                />
 
-                    <View style={{ flex: 4 }}>
+                <Input
+                    style={styles.inputStyle}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    secureTextEntry={false}
+                    placeholder="Username"
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    value={username}
+                    onChangeText={setUsername}
+                />
 
-                        <TouchableOpacity
-                            style={styles.signUpBoxStyle}
-                            onPress={() => signup({ email, password, username, firstName, lastName })}>
-                            <Text style={styles.signUpTextStyle}>Sign Up</Text>
-                        </TouchableOpacity>
-                        {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+                <Input
+                    style={styles.inputStyle}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    secureTextEntry={true}
+                    placeholder="Password"
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    value={password}
+                    onChangeText={setPassword}
+                />
 
-                        <TouchableOpacity onPress={() =>
-                            navigation.navigate('SignIn')
-                        }
-                        >
-                            <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
-                                <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
-                            </Text>
+                <Input
+                    style={styles.inputStyle}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    secureTextEntry={true}
+                    placeholder="Confirm Password"
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                />
 
-                        </TouchableOpacity>
+                {/*<View style={{ flex: 4 }}>*/}
 
-                    </View>
+                <TouchableOpacity
+                    style={styles.signUpBoxStyle}
+                    onPress={() => signup({ email, password, username, firstName, lastName })}>
+                    <Text style={styles.signUpTextStyle}>Sign Up</Text>
+                </TouchableOpacity>
+                {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
-                </View>
+                <TouchableOpacity onPress={() =>
+                    navigation.navigate('SignIn')
+                }
+                >
+                    <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
+                        <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
+                    </Text>
+
+                </TouchableOpacity>
 
                 {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}*/}
+                {/*</ImageBackground>*/}
 
-
-            </ImageBackground>
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView >
     )
 
 }
@@ -128,6 +143,10 @@ SignupScreen.navigationOptions = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#FCC859'
+    },
+    inner: {
+        backgroundColor: '#67806D',
     },
     errorMessage: {
         fontSize: 16,
@@ -190,6 +209,9 @@ const styles = StyleSheet.create({
         color: 'orange',
         alignSelf: 'center',
         marginTop: 10
+    },
+    img: {
+        marginTop: 50,
     }
 
 })

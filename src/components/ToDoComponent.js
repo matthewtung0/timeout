@@ -1,10 +1,12 @@
 import React, { useRef, useState, Component } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
+const constants = require('../components/constants.json')
 
 const { height, width } = Dimensions.get('window');
 
 
-const ToDoComponent = ({ itemName, category, timeCreated, callback }) => {
+const ToDoComponent = ({ itemName, category, timeCreated, color, callback }) => {
+    let bgColorHex = constants.colors[color]
     return (
         <View style={styles.outerContainer}>
             <View style={styles.container}>
@@ -17,8 +19,8 @@ const ToDoComponent = ({ itemName, category, timeCreated, callback }) => {
                 </TouchableOpacity>
 
                 <View style={styles.categoryContainer}>
-                    <View style={styles.categoryStyle}>
-                        <Text style={styles.categoryText}>{category}</Text>
+                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex }]}>
+                        <Text style={[styles.categoryText]}>{category}</Text>
                     </View>
                 </View>
             </View>
@@ -36,8 +38,6 @@ const styles = StyleSheet.create({
         color: '#67806D',
         fontSize: 14,
     },
-
-
     outerContainer: {
         width: '100%',
         height: 80,
@@ -53,9 +53,14 @@ const styles = StyleSheet.create({
     toDoComponent: {
         justifyContent: 'center',
         flex: 1,
-        backgroundColor: '#CDD5A0',
+        backgroundColor: '#F6F2DF',
         padding: 15,
         borderRadius: 10,
+        shadowOffset: {
+            width: 2,
+            height: 2,
+        },
+        shadowOpacity: 0.3,
 
     },
     categoryContainer: {
@@ -68,7 +73,6 @@ const styles = StyleSheet.create({
     categoryStyle: {
         flex: 1,
         alignSelf: 'flex-end',
-        backgroundColor: '#ABC57E',
         borderRadius: 5,
         padding: 7,
         marginRight: 12,

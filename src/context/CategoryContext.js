@@ -113,11 +113,11 @@ const fetchUserTodoItems = dispatch => async () => {
     }
 }
 
-const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, callback = null) => {
+const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, notes, callback = null) => {
     console.log("trying to add todo item");
     try {
-        const response = await timeoutApi.post('/todoItem', { toDoItemName, timeSubmitted, categoryId })
-        dispatch({ type: 'add_todo_item', payload: { toDoItemName, timeSubmitted, categoryId } })
+        const response = await timeoutApi.post('/todoItem', { toDoItemName, timeSubmitted, categoryId, notes })
+        dispatch({ type: 'add_todo_item', payload: { toDoItemName, timeSubmitted, categoryId, notes } })
         if (callback) { callback() }
     } catch (err) {
         console.log("error adding todo item:", err);

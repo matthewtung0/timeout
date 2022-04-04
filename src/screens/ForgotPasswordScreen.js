@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
-import { NavigationEvents } from 'react-navigation';
 
 const img_src = require('../../assets/signin_background.png');
 
@@ -13,9 +12,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <NavigationEvents
+            {/*<NavigationEvents
                 onWillFocus={clearErrorMessage}
-            />
+    />*/}
 
             <ImageBackground
                 source={img_src}

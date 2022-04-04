@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
-import { NavigationEvents } from 'react-navigation';
 
 const img_src = require('../../assets/signin_background.png');
 
@@ -18,8 +17,6 @@ const SigninScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-
-            {/*<NavigationEvents onWillFocus={clearErrorMessage}/>*/}
 
             <ImageBackground
                 source={img_src}
@@ -70,26 +67,21 @@ const SigninScreen = ({ navigation }) => {
                         </TouchableOpacity>
                         {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
-                        <TouchableOpacity onPress={() =>
-                            navigation.navigate('SignUp')
-                        }
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('SignUp')}
                         >
+
                             <Text style={styles.redirectToSignInStyleWhite}>Don't have an account?
                                 <Text style={styles.redirectToSignInStyleYellow}> Sign up here!</Text>
                             </Text>
                         </TouchableOpacity>
+
                     </View>
                 </View>
             </ImageBackground>
         </View >
     )
 }
-
-/*SigninScreen.navigationOptions = () => {
-    return {
-        headerShown: false,
-    }
-}*/
 
 const styles = StyleSheet.create({
     container: {
