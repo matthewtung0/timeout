@@ -1,26 +1,49 @@
 import React, { useRef, useState, Component } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 
 const { height, width } = Dimensions.get('window');
 
-
-const ToDoComponent = ({ itemName, category, timeCreated, color, callback }) => {
-    let bgColorHex = constants.colors[color]
+const ToDoComponent = ({ item, callback, toggleFunction, editTask }) => {
+    let bgColorHex = constants.colors[item.color_id]
     return (
         <View style={styles.outerContainer}>
             <View style={styles.container}>
-                <View style={styles.dummy} />
+                {/*<View style={styles.dummy} />*/}
 
                 <TouchableOpacity
                     style={styles.toDoComponent}
-                    onPress={() => { }}>
-                    <Text style={styles.text}>{itemName}</Text>
+                    onPress={() => {
+                        callback({
+                            "item_desc": item.item_desc,
+                            "cat_id": item.category_id,
+                            "item_id": item.item_id,
+                            "cat_name": item.category_name,
+                        })
+                        toggleFunction()
+                    }}>
+                    <Text style={styles.text}>{item.item_desc}</Text>
                 </TouchableOpacity>
+
+
+                <View style={styles.editContainer}>
+                    <TouchableOpacity
+                        onPress={() => { editTask(item) }}>
+                        <Icon
+                            name="create-outline"
+                            type='ionicon'
+                            color='#BC9869' />
+                    </TouchableOpacity>
+
+                </View>
+
+
+
 
                 <View style={styles.categoryContainer}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex }]}>
-                        <Text style={[styles.categoryText]}>{category}</Text>
+                        <Text style={[styles.categoryText]}>{item.category_name}</Text>
                     </View>
                 </View>
             </View>
@@ -45,7 +68,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        flexDirection: 'column',
+        flexDirection: 'row',
     },
     dummy: {
         flex: 0.35,
@@ -79,6 +102,9 @@ const styles = StyleSheet.create({
     },
     touchStyle: {
         backgroundColor: 'yellow',
+    },
+    editContainer: {
+        justifyContent: 'flex-end',
     }
 
 })

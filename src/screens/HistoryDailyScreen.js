@@ -53,23 +53,42 @@ const HistoryDailyScreen = ({ navigation }) => {
     const { state, fetchMonthly } = useContext(SessionContext)
 
     const filterOnDay = (dayObject) => {
+        setSelectedDay(dayObject)
+        /* format:
+        Object {
+            "dateString": "2022-03-10",
+            "day": 10,
+            "month": 3,
+            "timestamp": 1646870400000,
+            "year": 2022,
+        }
+        */
         let date = parseISO(dayObject.dateString)
-
         let startTime = startOfDay(date)
         let endTime = endOfDay(date)
-        console.log("Start of day is", startTime);
 
         let daySessions = state.monthSessions.filter(a => {
-            console.log("activity time start is", a.time_start)
             let compare_dt = parseISO(a.time_start)
             //console.log("comparing " + compare_dt + " and " + startTime)
             return (compareAsc(compare_dt, startTime) >= 0 &&
                 compareAsc(endTime, compare_dt) > 0)
         })
         setUseMonthly(false)
-        console.log("USE MONTHLY IS FALSE FILTERED ON DAY", startTime);
-        console.log("day session length", daySessions.length)
         setDaySessions(daySessions);
+    }
+
+    const fetchMonthlyCallback = (month) => {
+        console.log("Month is", month)
+        setTestMonth(month)
+        // format is:
+        /*Object {
+            "dateString": "2022-03-01",
+            "day": 1,
+            "month": 3,
+            "timestamp": 1646092800000,
+            "year": 2022,
+        }*/
+        fetchMonthly(month)
     }
 
     const setMonthlyCallback = () => {
@@ -85,46 +104,71 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     return (
         <View style={styles.viewContainer}>
-            <View>
-                <Text>asdf</Text>
-            </View>
 
-            <MonthlySumComponent monthBatch={state.monthSessions}>
+            {useMonthly ?
+                <FlatList
+                    horizontal={false}
+                    data={undefined}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(result) => result.activity_id}
+                    renderItem={({ item }) => {
+                        return (
+                            <></>
+                        )
+                    }}
+                    ListHeaderComponent={() =>
+                        <View style={styles.cal}>
+                            <CalendarComponent
+                                curDate={state.calendarDate}
+                                updateCallback={filterOnDay}
+                                updateMonth={fetchMonthlyCallback}
+                                setMonthlyCallback={setMonthlyCallback} />
+                        </View>
 
-            </MonthlySumComponent>
+                    }
 
-            <FlatList
-                style={styles.flatlist}
-                horizontal={false}
-                data={useMonthly ? state.monthSessions : daySessions}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(result) => result.activity_id}
-                renderItem={({ item }) => {
-                    return (
-                        <PastActivityCard session={item} />
-                    )
-                }}
+                    ListFooterComponent={() =>
+                        <View>
+                            <Text style={styles.overviewTitle}>
+                                {testMonth.month}/{testMonth.year} Overview</Text>
+                            {state.monthSessions.length > 0 ?
+                                <MonthlySumComponent monthBatch={state.monthSessions} />
+                                :
+                                <Text style={styles.overviewTitle}>Nothing for this month!</Text>}
+                        </View>
+                    }
+                />
+                :
+                <FlatList
+                    horizontal={false}
+                    data={daySessions}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(result) => result.activity_id}
+                    renderItem={({ item }) => {
+                        return (
+                            <PastActivityCard session={item} />
+                        )
+                    }}
 
-                ListHeaderComponent={() =>
-                    <View style={styles.cal}>
-                        <CalendarComponent
-                            curDate={state.calendarDate}
-                            updateCallback={filterOnDay}
-                            updateMonth={fetchMonthly}
-                            setMonthlyCallback={setMonthlyCallback} />
-                    </View>
-                }
+                    ListHeaderComponent={() =>
+                        <View style={styles.cal}>
+                            <CalendarComponent
+                                curDate={state.calendarDate}
+                                updateCallback={filterOnDay}
+                                updateMonth={fetchMonthly}
+                                setMonthlyCallback={setMonthlyCallback} />
+                            <Text style={styles.overviewTitle}>
+                                {selectedDay.month}/{selectedDay.day}/{selectedDay.year}</Text>
+                        </View>
+                    }
 
-                ListFooterComponent={() =>
-                    <View>
-                        {useMonthly ?
-                            state.monthSessions.length > 0 ?
-                                null : <Text>Nothing for this month!</Text>
-                            : null}
-                    </View>
-                }
-            />
-
+                    ListFooterComponent={() =>
+                        <View>
+                            {daySessions.length > 0 ?
+                                null : <Text style={[styles.overviewTitle, { fontSize: 16 }]}>Nothing for this day!</Text>}
+                        </View>
+                    }
+                />}
 
         </View>
     )
@@ -143,10 +187,16 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginBottom: 5,
     },
-    flatlist: {
-    },
     viewContainer: {
         flex: 1,
+    },
+    overviewTitle: {
+        fontWeight: 'bold',
+        fontSize: 22,
+        alignSelf: 'center',
+        color: '#67806D',
+        marginTop: 10,
+        marginBottom: 8,
     },
 })
 

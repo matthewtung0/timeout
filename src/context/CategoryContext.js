@@ -125,6 +125,17 @@ const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, 
     }
 }
 
+const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDoName, callback = null) => {
+    try {
+        const response = await timeoutApi.put('/todoItem', { toDoItemName, categoryId, notes, oldToDoName })
+        dispatch({ type: 'add_todo_item', payload: { toDoItemName, categoryId, notes, oldToDoName } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error editing todo item:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem editing the todo item.' })
+    }
+}
+
 const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     try {
         const response = await timeoutApi.delete('/todoItem', { toDoId })
@@ -165,7 +176,7 @@ export const { Provider, Context } = createDataContext(
     categoryReducer,
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
-        fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory
+        fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem
     },
     {
         userCategories: [],

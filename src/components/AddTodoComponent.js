@@ -1,17 +1,19 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import {
     View, StyleSheet, Text, FlatList, TextInput,
     KeyboardAvoidingView, TouchableOpacity, Dimensions
 } from 'react-native';
-import { Input, Button } from 'react-native-elements'
+import { Input } from 'react-native-elements'
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import CategoryButton from './CategoryButton';
 
-const AddTodoComponent = ({ callback }) => {
+// DOUBLES AS ADD NEW ITEM AND EDIT EXISTING ONES!
+const AddTodoComponent = ({ title, callback, item }) => {
     const { height, width } = Dimensions.get('window');
     const [toDoItemName, setToDoItemName] = useState('')
     const [resMessage, setResMessage] = useState('')
-    const { state, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
+    const { state, addTodoItem, editTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
 
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
     const [notes, setNotes] = useState('Enter notes (optional)')
@@ -31,13 +33,32 @@ const AddTodoComponent = ({ callback }) => {
         setSelectedButton(button);
     }
 
+    const validateInputs = () => {
+        if (toDoItemName == '') {
+            alert("Please enter a task name")
+            return false
+        }
+        return true
+    }
+
+    // initialize data if this is an edit of existing task
+    useFocusEffect(
+        useCallback(() => {
+            if (item) {
+                setToDoItemName(item.item_desc)
+                setNotes(item.notes)
+                setSelectedButton({ buttonName: item.category_name, buttonId: item.category_id })
+            }
+        }, [])
+    )
+
     return (
 
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <Text style={styles.title}>Add Task</Text>
+            <Text style={styles.title}>{title}</Text>
 
             < Input
                 inputContainerStyle={styles.inputStyleContainer}
@@ -53,13 +74,14 @@ const AddTodoComponent = ({ callback }) => {
                 numberOfLines={4}
                 maxHeight={120}
                 editable
-                maxLength={5}
+                maxLength={150}
                 value={notes}
                 textAlignVertical='top'
                 onChangeText={setNotes}
 
             />
 
+            <Text>selected button is {selectedButton.buttonName}</Text>
             < FlatList
                 columnWrapperStyle={{ justifyContent: 'space-between', flex: 1, marginVertical: 5, marginHorizontal: 10 }}
                 style={styles.catButtons}
@@ -82,7 +104,13 @@ const AddTodoComponent = ({ callback }) => {
             <TouchableOpacity
                 style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
                 onPress={() => {
-                    addTodoItem(toDoItemName, new Date(), selectedButton.buttonId, notes, resetInputs);
+                    if (!validateInputs()) { return }
+                    if (item) {
+                        editTodoItem(toDoItemName, selectedButton.buttonId, notes,
+                            item.item_desc, resetInputs);
+                    } else {
+                        addTodoItem(toDoItemName, new Date(), selectedButton.buttonId, notes, resetInputs);
+                    }
 
                 }}>
                 <Text style={styles.plusText}>+</Text>

@@ -75,6 +75,7 @@ function CustomDrawerContent(props) {
         <Text>modal text</Text>
         <Button title="Close" onPress={() => setModalVis(false)} />
       </Modal>
+
       <DrawerItemList {...props} />
       <DrawerItem
         label="Open modal"

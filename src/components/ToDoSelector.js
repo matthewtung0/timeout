@@ -6,6 +6,15 @@ import AddTodoComponent from './AddTodoComponent';
 const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     const [showChild, setShowChild] = useState(false)
     const { height, width } = Dimensions.get('window');
+    const [childTitle, setChildTitle] = useState('Add Task')
+    const [editItem, setEditItem] = useState(null)
+
+    const editTask = (item) => {
+        setEditItem(item)
+        setChildTitle('Edit Task')
+        setShowChild(true)
+
+    }
 
     const parentView = () => {
         return (
@@ -19,7 +28,6 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                     keyExtractor={(result) => result.item_id}
                     renderItem={({ item }) => {
                         return (
-                            // on press go back to session select screen with the clicked item id, item name and cat id
                             <TouchableOpacity
                                 onPress={() => {
                                     callback({
@@ -32,10 +40,11 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                 }}>
                                 <View style={styles.toDoComponent}>
                                     <ToDoComponent
-                                        itemName={item.item_desc}
-                                        category={item.category_name}
-                                        color={item.color_id}
-                                        timeCreated={item.time_created} />
+                                        item={item}
+                                        callback={callback}
+                                        toggleFunction={toggleFunction}
+                                        editTask={editTask}
+                                    />
                                 </View>
                             </TouchableOpacity>
                         )
@@ -67,11 +76,16 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
         return (
             <>
                 <AddTodoComponent
+                    title={childTitle}
+                    item={editItem}
                     callback={addTodoCallback} />
                 <View style={{ backgroundColor: '#90AB72' }}>
                     <TouchableOpacity
                         style={styles.goBackChild}
-                        onPress={() => { setShowChild(false) }}>
+                        onPress={() => {
+                            setShowChild(false)
+                            setEditItem(null)
+                        }}>
                         <Text style={styles.goBackText}>Go back</Text>
 
                     </TouchableOpacity>

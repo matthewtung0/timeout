@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { Button, Text, Input, Icon } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
@@ -11,6 +11,7 @@ import ToDoSelector from '../components/ToDoSelector';
 const table_bg = require('../../assets/sessionselect_tablebg.png');
 
 const SessionSelectScreen = ({ navigation: { navigate } }) => {
+    const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
     //const { state, fetchSelf } = useContext(UserContext)
@@ -136,7 +137,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 }}
 
                 ListFooterComponent={() =>
-                    <Button title="Start"
+                    <TouchableOpacity
+                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
                         onPress={() => {
                             if (!validateInputs()) {
                                 return;
@@ -156,8 +158,10 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                 categoryName: cat_Name,
                                 startTime: now_dt
                             })
-                        }
-                        }></Button>
+                        }}>
+                        <Text style={styles.startText}>Start</Text>
+
+                    </TouchableOpacity>
                 }
 
             >
@@ -230,6 +234,26 @@ const styles = StyleSheet.create({
     },
     clockBackground: {
     },
+    start: {
+        backgroundColor: '#ABC57E',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 15,
+        alignSelf: 'center',
+        marginBottom: 20,
+        marginTop: 20,
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
+        shadowOpacity: 0.8,
+
+    },
+    startText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold'
+    }
 })
 
 export default SessionSelectScreen;

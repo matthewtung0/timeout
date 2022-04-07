@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
         fontSize: 25,
     },
     monthTouch: {
-        borderColor: 'pink',
-        borderWidth: 1,
+        //borderColor: 'pink',
+        //borderWidth: 1,
         width: 160,
         height: 50,
         position: 'absolute',

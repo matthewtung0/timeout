@@ -254,15 +254,15 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                 >
                     <Svg style={styles.svgStyle}
                         height="100%" width="100%" viewBox={`0 0 100 100`}>
-                        <Circle cx="50" cy="50" r={radius} stroke="blue" fill="none" strokeWidth="1"></Circle>
-                        <Path stroke="red" strokeWidth="2" fill="none"
+                        <Circle cx="50" cy="50" r={radius} stroke="#E8D39E" fill="none" strokeWidth="2"></Circle>
+                        <Path stroke="#ABC57E" strokeWidth="2" fill="none"
                             // circular path
                             d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
                         />
                         {/* circular knob */}
-                        <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='red'></Circle>
+                        <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
 
-                        <Text x={50} y={55} fontSize={20} textAnchor="middle" fill="black">{formattedTime}</Text>
+                        <Text x={50} y={55} fontSize={20} textAnchor="middle" fill="#90AB72">{formattedTime}</Text>
 
                         {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>
                         <Text x={50} y={65} fontSize={5} textAnchor="middle" fill="black">{"x position is " + st.cx}</Text>
