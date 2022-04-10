@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
-import { Calendar, CalendarList } from 'react-native-calendars';
-import { subMonths, addMonths, parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
-import timeoutApi from '../api/timeout';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import { format } from 'date-fns'
 
 const CalendarComponent = ({ curDate, updateCallback, updateMonth, setMonthlyCallback }) => {
     const { height, width } = Dimensions.get('window');
@@ -18,14 +17,25 @@ const CalendarComponent = ({ curDate, updateCallback, updateMonth, setMonthlyCal
                         updateCallback(day);
                     }}
                     onMonthChange={month => {
-                        console.log('month changed', month);
+                        //console.log('month changed', month);
                         setCurMonth(month.dateString)
                         updateMonth(month);
                     }}
+                    style={{
+                        borderRadius: 10,
+                    }}
                     theme={{
+                        calendarBackground: '#F6F2DF',
                         textDayFontSize: 15,
-                        textMonthFontSize: 15,
+                        textMonthFontSize: 18,
                         textDayHeaderFontSize: 15,
+                        todayTextColor: 'black',
+                        dayTextColor: '#67806D',
+                        monthTextColor: '#67806D',
+                        arrowColor: '#67806D',
+                        textSectionTitleColor: '#67806D',
+                        selectedDayTextColor: 'black',
+                        textMonthFontWeight: 'bold',
 
                     }}>
 

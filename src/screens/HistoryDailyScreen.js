@@ -1,13 +1,13 @@
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Text, FlatList, Dimensions, Button } from 'react-native';
+import React, { useContext, useState, useCallback } from 'react';
+import { View, StyleSheet, Text, FlatList, Dimensions } from 'react-native';
 import {
-    compareAsc, eachDayOfInterval, format, subDays, addDays,
-    endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
+    compareAsc, format, endOfDay, startOfDay, parseISO
 } from 'date-fns';
 import CalendarComponent from '../components/CalendarComponent';
 import PastActivityCard from '../components/PastActivityCard';
 import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
 
 const today_date = () => {
@@ -19,16 +19,11 @@ const today_date = () => {
 const getDaySession = async (dayObject) => {
     // get list of sessions you did that day
     let date = parseISO(JSON.parse(dayObject).dateString)
-    console.log("Getting session for day ", date)
     try {
         let startRange = startOfDay(date)
         let endRange = endOfDay(date)
 
-        console.log("Start range is", startRange)
-        console.log("end range is", endRange)
-
         const response = await timeoutApi.get('/daySessions', { params: { startTime: startRange, endTime: endRange } })
-        console.log(response.data);
         return response.data
         //
     } catch (err) {
@@ -37,10 +32,13 @@ const getDaySession = async (dayObject) => {
 }
 
 const HistoryDailyScreen = ({ navigation }) => {
+    var options = { month: 'long' };
     const { height, width } = Dimensions.get('window');
     const [displayed_dt, setDisplayedDt] = useState(today_date());
     const [selectedDay, setSelectedDay] = useState('uninitiated');
     const [testMonth, setTestMonth] = useState('uninitiated month')
+    const [displayedMonth, setDisplayedMonth] = useState(new Intl.DateTimeFormat('en-US', options).format(new Date()))
+    const [displayedYear, setDisplayedYear] = useState(new Date().getFullYear())
 
     const [dispMessage, setDispMessage] = useState('')
 
@@ -51,6 +49,10 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [useMonthly, setUseMonthly] = useState(true);
 
     const { state, fetchMonthly } = useContext(SessionContext)
+
+    const longMonth = (date) => {
+        return new Intl.DateTimeFormat('en-US', options).format(date)
+    }
 
     const filterOnDay = (dayObject) => {
         setSelectedDay(dayObject)
@@ -69,7 +71,6 @@ const HistoryDailyScreen = ({ navigation }) => {
 
         let daySessions = state.monthSessions.filter(a => {
             let compare_dt = parseISO(a.time_start)
-            //console.log("comparing " + compare_dt + " and " + startTime)
             return (compareAsc(compare_dt, startTime) >= 0 &&
                 compareAsc(endTime, compare_dt) > 0)
         })
@@ -77,9 +78,9 @@ const HistoryDailyScreen = ({ navigation }) => {
         setDaySessions(daySessions);
     }
 
-    const fetchMonthlyCallback = (month) => {
+    const fetchMonthlyCallback = async (month) => {
         console.log("Month is", month)
-        setTestMonth(month)
+        var month_dateObj = parseISO(month.dateString)
         // format is:
         /*Object {
             "dateString": "2022-03-01",
@@ -88,7 +89,12 @@ const HistoryDailyScreen = ({ navigation }) => {
             "timestamp": 1646092800000,
             "year": 2022,
         }*/
-        fetchMonthly(month)
+        await fetchMonthly(month_dateObj)
+
+        setDisplayedMonth(longMonth(month_dateObj))
+        setDisplayedYear(month_dateObj.getFullYear())
+
+        setTestMonth(month)
     }
 
     const setMonthlyCallback = () => {
@@ -98,9 +104,18 @@ const HistoryDailyScreen = ({ navigation }) => {
     const updateSelectedDay = async (a) => {
         setSelectedDay(a);
         let res = await getDaySession(a);
-        console.log("RESULT IS", res)
         setDaySessions(res)
     }
+
+    useFocusEffect(
+
+        useCallback(() => {
+            var dt = new Date()
+            fetchMonthly(dt)
+            setDisplayedMonth(longMonth(dt))
+            setDisplayedYear(dt.getFullYear())
+        }, [])
+    )
 
     return (
         <View style={styles.viewContainer}>
@@ -130,7 +145,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                     ListFooterComponent={() =>
                         <View>
                             <Text style={styles.overviewTitle}>
-                                {testMonth.month}/{testMonth.year} Overview</Text>
+                                {displayedMonth} {displayedYear} Overview</Text>
                             {state.monthSessions.length > 0 ?
                                 <MonthlySumComponent monthBatch={state.monthSessions} />
                                 :

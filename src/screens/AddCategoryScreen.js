@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 

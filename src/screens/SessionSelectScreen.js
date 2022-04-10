@@ -1,10 +1,9 @@
 import React, { useState, useContext, useRef } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
-import { Button, Text, Input, Icon } from 'react-native-elements';
+import { Text, Input } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
 import { Context as CategoryContext } from '../context/CategoryContext';
-import { getUnixTime, fromUnixTime } from 'date-fns';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 
@@ -143,8 +142,6 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                             if (!validateInputs()) {
                                 return;
                             }
-                            let now_dt = getUnixTime(new Date())
-                            setStartTime(fromUnixTime(now_dt))
                             let cat_Name = catName
                             let cat_Id = catId
                             let timer_Time = time
@@ -156,7 +153,6 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                 numMins: timer_Time,
                                 categoryId: cat_Id,
                                 categoryName: cat_Name,
-                                startTime: now_dt
                             })
                         }}>
                         <Text style={styles.startText}>Start</Text>
@@ -173,7 +169,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 <TouchableOpacity
                     style={styles.modalButton}
                     onPress={toggleModal}>
-                    <Text>+</Text>
+                    <Text style={styles.modalButtonText}>+</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -185,6 +181,7 @@ SessionSelectScreen.navigationOptions = () => {
         headerShown: false,
     };
 }
+
 const styles = StyleSheet.create({
     title: {
         margin: 20,
@@ -196,6 +193,7 @@ const styles = StyleSheet.create({
         borderColor: 'green'
     },
     viewContainer: {
+        marginTop: 35,
         flexDirection: 'column',
         flex: 1
     },
@@ -221,16 +219,26 @@ const styles = StyleSheet.create({
     modalButton: {
         width: 40,
         height: 40,
-        backgroundColor: 'green',
-        borderRadius: 5,
+        backgroundColor: '#ABC57E',
+        borderBottomRightRadius: 10,
+        borderTopRightRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    modalButtonText: {
+        fontWeight: 'bold',
+        fontSize: 25,
+        color: 'white',
     },
     modalContainer: {
         flex: 1,
         height: '100%',
         position: 'absolute',
     },
+
+    // decides how high up the modal tab is
     modalDummy: {
-        flex: 0.35,
+        flex: 0.1,
     },
     clockBackground: {
     },

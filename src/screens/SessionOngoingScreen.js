@@ -1,42 +1,42 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-elements';
-import { addMinutes, fromUnixTime, getUnixTime, isThisSecond, format, differenceInSeconds } from 'date-fns';
+import {
+    fromUnixTime, getUnixTime, isThisSecond, format,
+    differenceInMilliseconds, addSeconds
+} from 'date-fns';
 import { Context as CategoryContext } from '../context/CategoryContext';
+const constants = require('../components/constants.json')
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { numMins, categoryId, categoryName, startTime } = params;
-    console.log(numMins);
-    console.log(categoryId);
-    console.log(categoryName);
-    console.log(startTime);
-    /*let numMins = navigation.getParam('timerTime')
-    let categoryId = navigation.getParam('buttonId')
-    let categoryName = navigation.getParam('buttonName')
-    let startTime = navigation.getParam('startTime')*/
-    let endTime = getUnixTime(addMinutes(fromUnixTime(startTime), numMins)) // add 10 min to start time, return in Unix
+    const { numMins, categoryId, categoryName } = params;
 
     const [min, setMin] = useState(numMins);
     const [sec, setSec] = useState(0);
 
-    const [time, setTime] = useState(startTime);
     const [secLeft, setSecLeft] = useState(numMins * 60);
     let endThis = false;
-    const { state: categoryState, setEndTime } = useContext(CategoryContext)
+    const { state: categoryState, setEndTime, setStartTime } = useContext(CategoryContext)
     const increment = useRef(null);
 
+    let now_dt = getUnixTime(new Date())
+    let endTime = getUnixTime(addSeconds(fromUnixTime(now_dt), numMins * 60 + 1))
+    //let bgColorHex = constants.colors[bgColor]
 
     const handleStart = () => {
-        console.log("handling start")
         increment.current = setInterval(() => {
-            console.log("interval running");
             let dt = new Date();
-            setTime(getUnixTime(dt));
-            setSecLeft(differenceInSeconds(fromUnixTime(endTime), dt));
-        }, 1000)
+            var diff = differenceInMilliseconds(fromUnixTime(endTime), dt)
+            if (diff < 0) {
+                handleReset(false)
+                navigate('SessionEval')
+            }
+            //console.log("difference in sec:", diff / 1000)
+            setSecLeft(Math.floor(diff / 1000));
+        }, 100)
     }
 
-    const handleReset = (endEarly) => {
+    const handleReset = (endEarly = false) => {
         clearInterval(increment.current)
 
         if (endEarly) {
@@ -48,12 +48,12 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         alert('Time end')
     }
 
-
     useEffect(() => {
-        console.log("useeffect running");
+        setStartTime(fromUnixTime(now_dt))
         if (isThisSecond(fromUnixTime(endTime))) {
-            handleReset(false)
+            handleReset()
         }
+
         handleStart();
 
     }, [])
@@ -112,10 +112,14 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         <View>
             <Text style={styles.title}>Session Ongoing Screen</Text>
 
-            <Text style={styles.time}>{min + ":" + sec}</Text>
+            <Text style={styles.time}>{Math.floor(secLeft / 60) + ":" + secLeft % 60}</Text>
             <Text >{"Category id is " + categoryId}</Text>
             <Text >{"Category name is " + categoryName}</Text>
-            <Text>{"Start time is " + format(fromUnixTime(startTime), 'M-dd-yyyy z')}</Text>
+
+            {/*<View style={[styles.category, { backgroundColor: bgColorHex }]}>
+                <Text style={styles.text} >{catName}</Text>
+    </View>*/}
+
             <Text>{"End time is " + format(fromUnixTime(endTime), 'M-dd-yyyy z')}</Text>
             <Text>{"time is " + secLeft}</Text>
 
@@ -134,8 +138,8 @@ SessionOngoingScreen.navigationOptions = () => { return { headerShown: false, };
 
 const styles = StyleSheet.create({
     title: {
-        margin: 30,
-        fontSize: 40,
+        margin: 10,
+        fontSize: 25,
     },
     time: {
         fontSize: 40

@@ -7,7 +7,6 @@ const BAR_MAX_WIDTH = 200
 
 const MonthlySumComponent = ({ monthBatch }) => {
     const { height, width } = Dimensions.get('window');
-    console.log(monthBatch);
     let map = {}
     let colorMap = {}
     let act = 0

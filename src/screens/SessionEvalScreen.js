@@ -1,6 +1,7 @@
 import React, { useContext, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Switch } from 'react-native';
 import { Context as CategoryContext } from '../context/CategoryContext';
+import { Context as UserContext } from '../context/userContext';
 import Slider from '@react-native-community/slider'
 import timeoutApi from '../api/timeout';
 import { format } from 'date-fns';
@@ -8,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const SessionEvalScreen = ({ navigation: { navigate } }) => {
     const { state: s, setProdRating, deleteTodoItem, addTodoItem } = useContext(CategoryContext)
+    const { state: userState, addPoints } = useContext(UserContext)
     const [prodRatingNum, setProdRatingNum] = useState(50)
 
 
@@ -25,7 +27,9 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
         try {
             const response = await timeoutApi.post('/save_session', s)
             console.log("Session save successful!")
-            navigate('SessionSelect');
+
+            // after save session, update the points
+            const res = addPoints(100000, offBoard())
         } catch (err) {
             console.log("Problem adding session", err)
         }
@@ -53,6 +57,10 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
 
     const addItem = async () => {
         await addTodoItem(s.customActivity, new Date(), s.chosenCatId)
+    }
+
+    const offBoard = () => {
+        navigate('SessionSelect')
     }
 
     useFocusEffect(
@@ -122,7 +130,10 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
 
             <TouchableOpacity
                 style={styles.buttonStyle}
-                onPress={() => saveSession()}>
+                onPress={() => {
+                    saveSession()
+                }
+                }>
                 <Text style={styles.buttonTextStyle}>Finish</Text>
             </TouchableOpacity>
         </View>

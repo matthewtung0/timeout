@@ -71,14 +71,13 @@ const fetchSessions = dispatch => async () => {
     dispatch({ type: 'fetch_sessions', payload: response.data })
 }
 
-const fetchMonthly = dispatch => async (dayObject) => {
-    //let date = parseISO(JSON.parse(dayObject).dateString)
-    let date = parseISO(dayObject.dateString)
-    let startOfMonthTemp = startOfMonth(parseISO(dayObject.dateString))
+// fetch all tasks in the given day
+const fetchMonthly = dispatch => async (date) => {
+    //let date = parseISO(dayObject.dateString)
+    let startOfMonthTemp = startOfMonth(date)
     try {
         let startRange = startOfMonth(date)
         let endRange = endOfMonth(date)
-        console.log("Start range is", startRange)
 
         const response = await timeoutApi.get('/monthSessions', { params: { startTime: startRange, endTime: endRange } })
         dispatch({

@@ -8,7 +8,8 @@ const userReducer = (state, action) => {
                 ...state,
                 firstName: action.payload.first_name,
                 lastName: action.payload.last_name,
-                username: action.payload.username
+                username: action.payload.username,
+                points: action.payload.points,
             }
         case 'add_error':
             console.log("ERROR: ", action.payload)
@@ -40,6 +41,8 @@ const userReducer = (state, action) => {
                 username: action.payload.username,
                 responseMessage: 'Info updated!',
             }
+        case 'add_points':
+            return { ...state, points: parseInt(state.points) + parseInt(action.payload.pointsToAdd) }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
         default:
@@ -143,6 +146,17 @@ const editSelf = dispatch => async ({ firstName, lastName, username }) => {
     }
 }
 
+const addPoints = dispatch => async (pointsToAdd, callback) => {
+    try {
+        const response = await timeoutApi.patch('/self_user/points', { pointsToAdd })
+        dispatch({ type: 'add_points', payload: { pointsToAdd } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem adding points:", err)
+        dispatch({ type: 'add_error', payload: 'Problem adding points!' })
+    }
+}
+
 const clearResponseMessage = dispatch => () => {
     dispatch({ type: 'clear_response', payload: {} })
 }
@@ -157,7 +171,7 @@ export const { Provider, Context } = createDataContext(
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
-        clearResponseMessage
+        addPoints, clearResponseMessage
     },
     {
         outgoingFriendReqs: [],
@@ -167,6 +181,7 @@ export const { Provider, Context } = createDataContext(
         firstName: '',
         lastName: '',
         username: '',
+        points: 0,
         responseMessage: '',
     }
 );

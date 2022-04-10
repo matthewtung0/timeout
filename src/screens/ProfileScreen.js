@@ -2,12 +2,10 @@ import React, { useContext, useEffect, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
-import { Context as AuthContext } from '../context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation }) => {
     const { state, fetchSelf } = useContext(UserContext)
-    const { signout } = useContext(AuthContext);
 
     useFocusEffect(
 
@@ -25,16 +23,7 @@ const ProfileScreen = ({ navigation }) => {
             <Text>First name: {state.firstName}</Text>
             <Text>Last name: {state.lastName}</Text>
             <Text>Username: {state.username}</Text>
-
-            <Button
-                style={styles.button}
-                title="Daily Historical View"
-                onPress={() => navigation.navigate('HistoryDaily')}
-            />
-            <Button
-                style={styles.button}
-                title="Sign Out (temp)"
-                onPress={() => signout()} />
+            <Text>Points: {state.points} </Text>
 
             <Button
                 style={styles.button}

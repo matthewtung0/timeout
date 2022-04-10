@@ -1,13 +1,18 @@
 import React, { useContext, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, FlatList, Pressable } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
+
 import { Context as SessionContext } from '../context/SessionContext';
+import FriendScreen from './FriendScreen'
+
 import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+
 const constants = require('../components/constants.json')
 
 const FriendFeedScreen = ({ navigation }) => {
-    const { state, fetchSessions, fetchUserReactions, reactToActivity } = useContext(SessionContext)
+    const { state: sessionState, fetchSessions, fetchUserReactions, reactToActivity } = useContext(SessionContext)
     const [disableTouch, setDisableTouch] = useState(false)
 
     useFocusEffect(
@@ -26,19 +31,6 @@ const FriendFeedScreen = ({ navigation }) => {
         }
     }
 
-    // add flag to identify which posts user likes, so dont need to re-search every state change
-    /*const setUserLikes = () => {
-        console.log("Setting user likes")
-        let string_temp = JSON.stringify(state.userReaction)
-        for (var i = 0; i < state.userSessions.length; i++) {
-            if (string_temp.includes(state.userSessions[i].activity_id)) {
-                state.userSessions[i].self_liked = true;
-            } else {
-                state.userSessions[i].self_liked = false;
-            }
-        }
-    }*/
-
     // make buttons enabled again after api calls done
     const reactCallback = () => {
         setDisableTouch(false)
@@ -51,66 +43,114 @@ const FriendFeedScreen = ({ navigation }) => {
         return differenceInDays(new Date(), parseISO(endTime))
     }
 
-    console.log(state.userSessions)
+    const secondRoute = () => {
+        return (
+            <View>
+                {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
+                <FlatList
+                    style={styles.flatlistStyle}
+                    horizontal={false}
+                    data={sessionState.userSessions}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(result) => result.activity_id}
+                    renderItem={({ item }) => {
+                        return (
+                            <View style={styles.container}>
+                                <View style={styles.pfpcontainer}>
+                                    <View style={styles.pfp}>
+
+                                    </View>
+                                </View>
+                                <View style={styles.listItem}>
+                                    <Text>
+                                        <Text style={styles.bolded}>{item.username}</Text>
+                                        <Text> finished </Text>
+                                        <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
+                                        <Text> seconds</Text>
+                                    </Text>
+                                    <Text>
+                                        <Text>of </Text>
+                                        {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
+                                        <Text style={[styles.bolded]}>{item.category_name}</Text>
+                                        <Text> {daysAgo(item.time_end)} days ago</Text>
+                                    </Text>
+
+                                    <View style={styles.likeContainer}>
+                                        <Text style={styles.likeCount}>{item.reaction_count}</Text>
+                                        <Pressable
+                                            onPress={() => {
+                                                let is_like = true
+                                                if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
+                                                    is_like = false
+                                                }
+                                                reactToActivity(item.activity_id, is_like, reactCallback)
+                                            }}>
+                                            {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
+                                                <Icon
+                                                    name="heart"
+                                                    type='font-awesome'
+                                                    color='purple' /> :
+                                                <Icon
+                                                    name="heart-o"
+                                                    type='font-awesome' />}
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            </View>
+                        )
+                    }}
+                >
+                </FlatList>
+            </View>
+        )
+    }
+
+    const firstRoute = () => {
+        return (
+            <View>
+                <Text>ME</Text>
+            </View>
+        )
+    }
+    const thirdRoute = () => {
+        return (
+            <FriendScreen />
+        )
+    }
+    const renderScene = SceneMap({
+        first: firstRoute,
+        second: secondRoute,
+        third: thirdRoute
+    });
+    const [index, setIndex] = useState(1);
+    const [routes] = useState([
+        { key: 'first', title: 'Me' },
+        { key: 'second', title: 'Friends' },
+        { key: 'third', title: 'Add' },
+    ]);
+
+    const renderTabBar = props => (
+        <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'pink' }}
+        />
+    )
+
+
+
+
+
+    //console.log(state.userSessions)
     return (
-        <View>
+        <TabView
+            renderTabBar={renderTabBar}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}>
+        </TabView>
 
-            {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
-            <FlatList
-                style={styles.flatlistStyle}
-                horizontal={false}
-                data={state.userSessions}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(result) => result.activity_id}
-                renderItem={({ item }) => {
-                    return (
-                        <View style={styles.container}>
-                            <View style={styles.pfpcontainer}>
-                                <View style={styles.pfp}>
 
-                                </View>
-                            </View>
-                            <View style={styles.listItem}>
-                                <Text>
-                                    <Text style={styles.bolded}>{item.username}</Text>
-                                    <Text> finished </Text>
-                                    <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
-                                    <Text> seconds</Text>
-                                </Text>
-                                <Text>
-                                    <Text>of </Text>
-                                    {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
-                                    <Text style={[styles.bolded]}>{item.category_name}</Text>
-                                    <Text> {daysAgo(item.time_end)} days ago</Text>
-                                </Text>
-
-                                <View style={styles.likeContainer}>
-                                    <Text style={styles.likeCount}>{item.reaction_count}</Text>
-                                    <Pressable
-                                        onPress={() => {
-                                            let is_like = true
-                                            if (JSON.stringify(state.userReaction).includes(item.activity_id)) {
-                                                is_like = false
-                                            }
-                                            reactToActivity(item.activity_id, is_like, reactCallback)
-                                        }}>
-                                        {JSON.stringify(state.userReaction).includes(item.activity_id) ?
-                                            <Icon
-                                                name="heart"
-                                                type='font-awesome'
-                                                color='purple' /> :
-                                            <Icon
-                                                name="heart-o"
-                                                type='font-awesome' />}
-                                    </Pressable>
-                                </View>
-                            </View>
-                        </View>
-                    )
-                }}
-            >
-            </FlatList>
-        </View>
     )
 }
 

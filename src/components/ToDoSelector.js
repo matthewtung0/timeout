@@ -149,12 +149,16 @@ const styles = StyleSheet.create({
     backButton: {
         width: 40,
         height: 40,
-        backgroundColor: 'green',
+        backgroundColor: '#ABC57E',
         justifyContent: 'center',
         borderRadius: 500,
     },
     backButtonText: {
         alignSelf: 'center',
+        fontWeight: 'bold',
+        fontSize: 20,
+        color: 'white',
+
     },
     backContainer: {
         flex: 1,
