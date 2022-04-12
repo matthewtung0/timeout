@@ -1,16 +1,29 @@
-import React, { useRef, useState, Component } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 
-const DrawerProfileView = ({ friends, username }) => {
+const DrawerProfileView = ({ friends, username, totalTasks, totalTime }) => {
+    const [h, setH] = useState(0)
+    const [m, setM] = useState(0)
+    const [s, setS] = useState(0)
+    var { hours, minutes, seconds } = totalTime
+
+    useFocusEffect(
+        useCallback(() => {
+            if (hours) { setH(hours) }
+            if (minutes) { setM(minutes) }
+            if (seconds) { setS(seconds) }
+        }, [hours, minutes, seconds])
+    )
     return (
         <View style={styles.outerContainer}>
             <View style={styles.pfp}>
 
             </View>
             <Text style={styles.username}>{username}</Text>
-            <Text style={styles.text}>_ _ _H _ _M</Text>
-            <Text style={styles.text}># tasks completed</Text>
+            <Text style={styles.text}>{h}h {m}m {s}s</Text>
+            <Text style={styles.text}>{totalTasks} tasks completed</Text>
             <Text style={[styles.text, { marginBottom: 20, }]}>{friends.length} Friends</Text>
         </View>
 

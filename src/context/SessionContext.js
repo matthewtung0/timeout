@@ -9,6 +9,8 @@ const sessionReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_sessions':
             return { ...state, userSessions: action.payload }
+        case 'fetch_sessions_batch':
+            return { ...state, userSessions: [...state.userSessions, ...action.payload] }
         case 'fetch_monthly':
             return { ...state, monthSessions: action.payload.monthlyData, calendarDate: action.payload.startOfMonth }
         case 'fetch_reaction':
@@ -66,9 +68,17 @@ const sessionReducer = (state, action) => {
     }
 }
 
+const fetchSessionsNextBatch = dispatch => async (startIndex = 0) => {
+    const response = await timeoutApi.get('/session', { params: { startIndex } })
+    dispatch({ type: 'fetch_sessions_batch', payload: response.data })
+    console.log(response.data)
+    return response.data
+}
+
 const fetchSessions = dispatch => async () => {
     const response = await timeoutApi.get('/session')
     dispatch({ type: 'fetch_sessions', payload: response.data })
+    return response.data
 }
 
 // fetch all tasks in the given day
@@ -135,7 +145,7 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
 
 export const { Provider, Context } = createDataContext(
     sessionReducer,
-    { fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity },
+    { fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch },
     {
         userSessions: [],
         userReaction: [],

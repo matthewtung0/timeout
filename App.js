@@ -4,8 +4,9 @@ import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -16,6 +17,7 @@ import {
 import { setNavigator } from './src/navigationRef';
 
 import SessionSelectScreen from './src/screens/SessionSelectScreen';
+import SessionRewardScreen from './src/screens/SessionRewardScreen';
 import FriendFeedScreen from './src/screens/FriendFeedScreen'
 import ProfileScreen from './src/screens/ProfileScreen';
 import SessionOngoingScreen from './src/screens/SessionOngoingScreen';
@@ -48,15 +50,12 @@ import FriendScreen from './src/screens/FriendScreen';
 import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
 import { Context as UserContext } from './src/context/userContext';
-import { color } from 'react-native-elements/dist/helpers';
-
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const defaultOptions = {
-  headerRight: () => (
+  headerLeft: () => (
     <Button
-      onPress={() => { }}
-      title="Settings"
+      onPress={() => navigation.navigate('mainFlow')}
+      title="Go bakc"
       color="#fff"
     />
   ),
@@ -98,16 +97,53 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-function CreateProfileStack() {
+function CreateCategoryStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
-      />
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('mainFlow')}>
+            <Ionicons
+              name='arrow-back-outline'
+              size={24}
+              color='black' />
+
+          </TouchableOpacity>
+        ),
+        headerTransparent: false,
+        headerTitle: 'My Categories',
+      })}>
       <Stack.Screen
         name="AddCategory"
         component={AddCategoryScreen}
+      />
+
+
+    </Stack.Navigator>
+  )
+}
+
+function CreateProfileStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('mainFlow')}>
+            <Ionicons
+              name='arrow-back-outline'
+              size={24}
+              color='black' />
+
+          </TouchableOpacity>
+        ),
+        headerTransparent: true,
+        headerTitle: '',
+      })}>
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
       />
       <Stack.Screen
         name="Friend"
@@ -116,6 +152,11 @@ function CreateProfileStack() {
       <Stack.Screen
         name="userFriendsFlow"
         component={CreateFriendsFlowStack}
+      />
+      <Stack.Screen
+        name="FriendList"
+        component={FriendListScreen}
+        options={pageOptions}
       />
       <Stack.Screen
         name="TodoFlow"
@@ -130,7 +171,6 @@ function CreateProfileStack() {
 }
 
 function CustomDrawerContent(props) {
-  console.log("Passed props is", props.friends);
   const [modalVis, setModalVis] = useState(false)
   const { signout } = useContext(AuthContext);
   return (
@@ -141,11 +181,15 @@ function CustomDrawerContent(props) {
         <Text>modal text</Text>
         <Button title="Close" onPress={() => setModalVis(false)} />
       </Modal>
+      <TouchableOpacity
+        onPress={() => props.navigation.navigate('Profile temp')}>
+        <DrawerProfileView friends={props.friends} username={props.username}
+          totalTasks={props.totalTasks} totalTime={props.totalTime} />
+      </TouchableOpacity>
 
-      <DrawerProfileView friends={props.friends} username={props.username} />
 
       <DrawerItemList {...props} />
-      <DrawerItem
+      {/*<DrawerItem
         label="Open modal"
         onPress={() => setModalVis(true)}
       />
@@ -153,7 +197,7 @@ function CustomDrawerContent(props) {
 
         label="Toggle drawer"
         onPress={() => props.navigation.toggleDrawer()}
-      />
+  />*/}
       <DrawerItem
         label="Sign out"
         onPress={signout} />
@@ -163,29 +207,43 @@ function CustomDrawerContent(props) {
 
 function CreateDrawer() {
   const { state: userState } = useContext(UserContext)
-  //console.log("Friends is", userState.friends);
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent
-        {...props} friends={userState.friends} username={userState.username} />}
-      screenOptions={mainOptions(userState.points)}
+        {...props}
+        friends={userState.friends}
+        username={userState.username}
+        totalTime={userState.totalTime}
+        totalTasks={userState.totalTasks} />}
+      screenOptions={{ headerTintColor: '#67806D', }}
     >
+      {/*<Drawer.Screen
+        name="SessionSelect"
+        component={SessionSelectScreen}
+        options={mainOptions(userState.points)}
+      />*/}
+      {/*<Drawer.Screen 
+      name="sessionFlow"
+        component={CreateSessionStack}
+        options={mainOptions(userState.points)}
+      />*/}
+
       <Drawer.Screen name="mainFlow"
         component={CreateMainFlowTab}
-        options={{ drawerLabel: 'Back', title: '', drawerItemStyle: { display: "flex" } }} />
-      {/*<Drawer.Screen name="AddTodo"
-        component={AddTodoItemScreen}
-      options={{ drawerLabel: 'Add Todo Item', title: '', }} />*/}
-      <Drawer.Screen name="AddCategory"
-        component={AddCategoryScreen}
+        options={mainOptions(userState.points)}
+      //options={[{ drawerLabel: 'Back', title: '', drawerItemStyle: { display: "flex" } },]} />
+      />
+
+      <Drawer.Screen name="categoryFlow"
+        component={CreateCategoryStack}
         options={{
-          //drawerLabel: ({ focused, color }) => <Text style={{ color }}>{focused ? 'Focused text' : 'Unfocused text'}</Text>,
           drawerLabel: 'My Categories',
           title: 'My Categories',
+          headerShown: false,
         }} />
       <Drawer.Screen name="Profile temp"
         component={CreateProfileStack}
-        options={{ drawerLabel: 'Profile temp', title: '', }} />
+        options={{ drawerLabel: 'Profile temp', title: '', drawerItemStyle: { display: "none" }, headerShown: false }} />
     </Drawer.Navigator>
   );
 }
@@ -212,15 +270,25 @@ function CreateLoginStack() {
     </Stack.Navigator>
   )
 }
+
 function CreateSessionStack() {
   return (
     <Stack.Navigator
       screenOptions={pageOptions}>
+
       <Stack.Screen
+        name="drawer"
+        component={CreateDrawer}
+        options={pageOptions} />
+      {/*<Stack.Screen
         name="SessionSelect"
         component={SessionSelectScreen}
         options={pageOptions}
-      />
+  />*/}
+      {/*<Stack.Screen
+        name="mainFlow"
+        component={CreateMainFlowTab}
+options={pageOptions} />*/}
       <Stack.Screen
         name="SessionOngoing"
         component={SessionOngoingScreen}
@@ -231,13 +299,18 @@ function CreateSessionStack() {
         component={SessionEvalScreen}
         options={pageOptions}
       />
+      <Stack.Screen
+        name="SessionReward"
+        component={SessionRewardScreen}
+        options={pageOptions}
+      />
     </Stack.Navigator>
   )
 }
 function CreateFriendFeedStack() {
   return (
     <Stack.Navigator
-      options={pageOptions}>
+      screenOptions={pageOptions}>
       <Stack.Screen
         name="FriendFeed"
         component={FriendFeedScreen}
@@ -247,6 +320,10 @@ function CreateFriendFeedStack() {
         name="FriendProfile"
         component={FriendProfileScreen}
         options={pageOptions}
+      />
+      <Stack.Screen
+        name="Friend"
+        component={FriendScreen}
       />
 
     </Stack.Navigator>
@@ -345,14 +422,20 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
     </View>
   );
 }
-
+//options={mainOptions(userState.points)}
 function CreateMainFlowTab() {
   return (
     <Tab.Navigator tabBar={(props) => <MyTabBar {...props} />}
       screenOptions={pageOptions}
     >
       {/*<Tab.Navigator>*/}
-      <Tab.Screen name="sessionFlow" component={CreateSessionStack}
+
+      {/*<Tab.Screen name="sessionFlow" component={CreateSessionStack}
+        options={{
+          tabBarLabel: 'Timer',
+          tabBarIconLabel: 'time-outline',
+        }} />*/}
+      <Tab.Screen name="SessionSelect" component={SessionSelectScreen}
         options={{
           tabBarLabel: 'Timer',
           tabBarIconLabel: 'time-outline',
@@ -423,14 +506,16 @@ function CreateMainNavigator() {
           options={pageOptions} />
 
       ) : (
-        // need to pass username, total num tasks, total num friends
         <Stack.Screen
+          name="sessionFlow"
+          component={CreateSessionStack}
+          options={pageOptions} />)}
+      {/*<Stack.Screen
           name="drawer"
           component={CreateDrawer}
           options={pageOptions}
-        />
+      />*/}
 
-      )}
     </Stack.Navigator>
 
   )

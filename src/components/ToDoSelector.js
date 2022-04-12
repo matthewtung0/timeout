@@ -35,6 +35,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                         "cat_id": item.category_id,
                                         "item_id": item.item_id,
                                         "cat_name": item.category_name,
+                                        "color_id": item.color_id,
                                     })
                                     toggleFunction()
                                 }}>

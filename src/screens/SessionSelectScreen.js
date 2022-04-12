@@ -18,6 +18,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const [customActivity, setCustomActivity] = useState('')
     const [catId, setCatId] = useState(3)
     const [catName, setCatName] = useState('unsorted')
+    const [colorId, setColorId] = useState('c0')
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -39,6 +40,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         setCatName(button.buttonName)
         setSelectedButton(button);
         setChosen(button)
+        setColorId(button.buttonColor)
     }
 
     const circularRef = useRef()
@@ -49,14 +51,15 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
 
     // callback from modal selection
     const fillInWithItem = (returned_info) => {
-        const { item_desc, cat_id, item_id, cat_name } = returned_info
+        const { item_desc, cat_id, item_id, cat_name, color_id } = returned_info
         setCustomActivity(item_desc)
         setCatId(cat_id)
         setCatName(cat_name)
+        setColorId(color_id)
 
         // for context uses, might delete later
         setActivityName(item_desc)
-        setChosen({ buttonName: cat_name, buttonId: cat_id })
+        setChosen({ buttonName: cat_name, buttonId: cat_id, })
     }
 
     const validateInputs = () => {
@@ -129,7 +132,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                             <CategoryButton
                                 id={item.category_id}
                                 catName={item.category_name}
-                                bgColor={item.color_id}
+                                colorId={item.color_id}
                                 callback={updateButton} />
                         </View>
                     )
@@ -153,6 +156,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                 numMins: timer_Time,
                                 categoryId: cat_Id,
                                 categoryName: cat_Name,
+                                activityName: customActivity,
+                                colorId: colorId,
                             })
                         }}>
                         <Text style={styles.startText}>Start</Text>

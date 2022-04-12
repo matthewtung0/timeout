@@ -6,10 +6,13 @@ const userReducer = (state, action) => {
         case 'fetch_self':
             return {
                 ...state,
-                firstName: action.payload.first_name,
-                lastName: action.payload.last_name,
-                username: action.payload.username,
-                points: action.payload.points,
+                firstName: action.payload.user_info.first_name,
+                lastName: action.payload.user_info.last_name,
+                username: action.payload.user_info.username,
+                friendCode: action.payload.user_info.friend_code,
+                points: action.payload.user_info.points,
+                totalTime: action.payload.user_stats.total_time,
+                totalTasks: action.payload.user_stats.num_tasks,
             }
         case 'add_error':
             console.log("ERROR: ", action.payload)
@@ -157,6 +160,10 @@ const addPoints = dispatch => async (pointsToAdd, callback) => {
     }
 }
 
+/*const updateStats = dispatch => async (startTime, endTime) => {
+
+}*/
+
 const clearResponseMessage = dispatch => () => {
     dispatch({ type: 'clear_response', payload: {} })
 }
@@ -181,7 +188,10 @@ export const { Provider, Context } = createDataContext(
         firstName: '',
         lastName: '',
         username: '',
+        friendCode: '',
         points: 0,
         responseMessage: '',
+        totalTasks: 0,
+        totalTime: 0,
     }
 );

@@ -55,7 +55,6 @@ const setStartTime = dispatch => (startTime) => {
 }
 
 const setActivityName = dispatch => (activityName) => {
-    console.log("setting activity name to ", activityName);
     try {
         dispatch({ type: 'set_activity_name', payload: activityName })
     } catch (err) {

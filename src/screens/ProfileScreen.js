@@ -4,31 +4,29 @@ import { Button, Text } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { useFocusEffect } from '@react-navigation/native';
 
+import DrawerProfileView from '../components/DrawerProfileView';
+
 const ProfileScreen = ({ navigation }) => {
     const { state, fetchSelf } = useContext(UserContext)
 
-    useFocusEffect(
-
+    /*useFocusEffect(
         useCallback(() => {
             console.log("use focus effect")
             fetchSelf();
             //return () => test();
         }, [])
-    )
+    )*/
 
     return (
         <View>
 
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-            <Text>First name: {state.firstName}</Text>
-            <Text>Last name: {state.lastName}</Text>
-            <Text>Username: {state.username}</Text>
-            <Text>Points: {state.points} </Text>
 
-            <Button
-                style={styles.button}
-                title="Add category (temp)"
-                onPress={() => navigation.navigate('AddCategory')} />
+            <DrawerProfileView
+                friends={state.friends}
+                username={state.username}
+                totalTasks={state.totalTasks}
+                totalTime={state.totalTime} />
 
             <Button
                 style={styles.button}
@@ -43,6 +41,10 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="Edit Profile (temp)"
                 onPress={() => navigation.navigate('EditProfile')} />
+            <Button
+                style={styles.button}
+                title="TESTING TEMPORARY"
+                onPress={() => navigation.navigate('FriendList')} />
         </View>
     )
 }

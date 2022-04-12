@@ -4,10 +4,20 @@ import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import Slider from '@react-native-community/slider'
 import timeoutApi from '../api/timeout';
-import { format } from 'date-fns';
 import { useFocusEffect } from '@react-navigation/native';
 
-const SessionEvalScreen = ({ navigation: { navigate } }) => {
+const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
+    const { sessionObj, sessionEndTime, endEarlyFlag } = params;
+    const [sessionObjEval, setSessionObjEval] = useState({
+        ...sessionObj,
+        sessionEndTime: sessionEndTime,
+        endEarlyFlag: endEarlyFlag
+    })
+
+    console.log("Intermediate:", sessionObj)
+    console.log(sessionEndTime)
+    console.log(endEarlyFlag);
+
     const { state: s, setProdRating, deleteTodoItem, addTodoItem } = useContext(CategoryContext)
     const { state: userState, addPoints } = useContext(UserContext)
     const [prodRatingNum, setProdRatingNum] = useState(50)
@@ -71,42 +81,55 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
     )
 
     return (
-        <View>
-            <Text>Congrats!</Text>
-            <Text>You've finished!</Text>
-            <Text>Now be honest..</Text>
-            <Text>How productive were you?</Text>
-            <Text>{prodRatingNum}</Text>
-            <View style={{ alignItems: 'center' }}>
-                <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={100}
-                    minimumTrackTintColor="#90AB72"
-                    maximumTrackTintColor="#F5BBAE"
-                    value={50}
-                    onSlidingStart={() => {
-                        console.log("sliding started")
-                    }}
-                    onSlidingComplete={() => {
-                        setProdRating(Math.round(prodRatingNum))
-                        console.log("sliding completed")
-                    }}
-                    onValueChange={setProdRatingNum}
-                />
+        <View style={styles.container}>
+
+            <View style={{ flex: 2 }} />
+            <View style={{ flex: 1 }}>
+                <Text style={styles.text}>Congratulations for finishing!</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+                <Text style={styles.text}>Now be honest..</Text>
+            </View>
+
+            <View style={{ flex: 1 }}>
+                <Text style={styles.text}>How productive were you?</Text>
             </View>
 
 
-            <Text>You just completed category:</Text>
+            <View style={{ flex: 2 }}>
+                <Text>{prodRatingNum}</Text>
+                <View style={{ alignItems: 'center' }}>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={100}
+                        minimumTrackTintColor="#90AB72"
+                        maximumTrackTintColor="#F5BBAE"
+                        value={50}
+                        onSlidingStart={() => {
+                        }}
+                        onSlidingComplete={() => {
+                            setSessionObjEval({ ...sessionObjEval, prodRating: prodRatingNum })
+                            //setProdRating(Math.round(prodRatingNum))
+                        }}
+                        onValueChange={setProdRatingNum}
+                    />
+                </View>
+            </View>
+
+
+            {/*<Text>You just completed category:</Text>
             <Text>{s.chosenCategory}</Text>
             <Text>Your activity was {s.customActivity}</Text>
             <Text>starting at {format(s.sessionStartTime, 'M-dd-yyyy')}
                 and ending at {format(s.sessionEndTime, 'M-dd-yyyy')}, for a duration of
             </Text>
-            <Text>End early flag is {s.endEarlyFlag.toString()}</Text>
+                <Text>End early flag is {s.endEarlyFlag.toString()}</Text>*/}
             {/*if it was, show option to remove from todo items
             it it was not, show option to add this to todo item*/}
-            {existingItem ? (<View>
+
+
+            {/*{existingItem ? (<View>
                 <Text>Enable if you want to remove this item from your todo list.</Text>
                 <Switch
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -126,28 +149,48 @@ const SessionEvalScreen = ({ navigation: { navigate } }) => {
                         value={toAdd}
                     />
                 </View>)
-            }
+            }*/}
+            <View style={{ flex: 1 }}>
+                <TouchableOpacity
+                    style={styles.buttonStyle}
+                    onPress={() => {
+                        //saveSession()
+                        navigate('SessionReward', { sessionObjEval })
+                    }
+                    }>
+                    <Text style={styles.buttonTextStyle}>Ok</Text>
+                </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity
-                style={styles.buttonStyle}
-                onPress={() => {
-                    saveSession()
-                }
-                }>
-                <Text style={styles.buttonTextStyle}>Finish</Text>
-            </TouchableOpacity>
+            <View style={{ flex: 2 }} />
+
         </View>
     )
 }
+//EXAMPLE PASS PARAMS IN NAVIGATE
+/*navigate('SessionOngoing', {
+                                numMins: timer_Time,
+                                categoryId: cat_Id,
+                                categoryName: cat_Name,
+                                activityName: customActivity,
+                                colorId: colorId,
+                            })*/
 
 const styles = StyleSheet.create({
-    title: {
-        margin: 30,
-        fontSize: 40,
+    container: {
+        marginTop: 70,
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     slider: {
         width: 300,
         height: 40,
+    },
+    text: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#67806D'
     },
     buttonStyle: {
         backgroundColor: '#FCC859',

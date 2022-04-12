@@ -5,12 +5,12 @@ const constants = require('../components/constants.json')
 const { height, width } = Dimensions.get('window');
 
 
-const CategoryButton = ({ id, catName, bgColor, callback }) => {
-    let bgColorHex = constants.colors[bgColor]
+const CategoryButton = ({ id, catName, colorId, callback }) => {
+    let bgColorHex = constants.colors[colorId]
     return (
 
         <TouchableOpacity
-            onPress={() => { callback({ buttonName: catName, buttonId: id }) }}>
+            onPress={() => { callback({ buttonName: catName, buttonId: id, buttonColor: colorId }) }}>
             <View style={[styles.square, { backgroundColor: bgColorHex }]}>
                 <Text style={styles.text} >{catName}</Text>
             </View>
