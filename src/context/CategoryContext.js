@@ -40,6 +40,24 @@ const categoryReducer = (state, action) => {
                 ...state,
                 userCategories: state.userCategories.filter((req) => req.category_id != action.payload.categoryId)
             }
+        case 'archive_category':
+            return {
+                ...state, userCategories: state.userCategories.map(item => {
+                    if (item.category_id == action.payload.categoryId) {
+                        return { ...item, archived: action.payload.archived }
+                    }
+                    return item
+                })
+            }
+        case 'change_color':
+            return {
+                ...state, userCategories: state.userCategories.map(item => {
+                    if (item.category_id == action.payload.categoryId) {
+                        return { ...item, color_id: action.payload.colorId }
+                    }
+                    return item
+                })
+            }
         default:
             return state;
     }
@@ -170,12 +188,37 @@ const deleteCategory = dispatch => async (categoryId, callback = null) => {
     }
 }
 
+const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null) => {
+    console.log("trying to archive category");
+    try {
+        const response = await timeoutApi.patch('/category', { categoryId, archived: toArchive })
+        dispatch({ type: 'archive_category', payload: { categoryId, archived: toArchive } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing archive status:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
+    }
+}
+
+const changeColorCategory = dispatch => async (categoryId, newColorId, callback = null) => {
+    console.log("trying to change color");
+    try {
+        const response = await timeoutApi.patch('/category', { categoryId, colorId: newColorId })
+        dispatch({ type: 'change_color', payload: { categoryId, colorId: newColorId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing color id:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
+    }
+}
+
 
 export const { Provider, Context } = createDataContext(
     categoryReducer,
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
-        fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem
+        fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem,
+        changeArchiveCategory, changeColorCategory
     },
     {
         userCategories: [],

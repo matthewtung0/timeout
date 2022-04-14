@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
 
@@ -128,7 +128,8 @@ function CreateProfileStack() {
   return (
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
-        headerLeft: () => (
+        headerShown: false
+        /*headerLeft: () => (
           <TouchableOpacity
             onPress={() => navigation.navigate('mainFlow')}>
             <Ionicons
@@ -139,7 +140,7 @@ function CreateProfileStack() {
           </TouchableOpacity>
         ),
         headerTransparent: true,
-        headerTitle: '',
+        headerTitle: '',*/
       })}>
       <Stack.Screen
         name="Profile"
@@ -198,9 +199,26 @@ function CustomDrawerContent(props) {
         label="Toggle drawer"
         onPress={() => props.navigation.toggleDrawer()}
   />*/}
+
+      <View
+        style={{
+          borderBottomColor: 'grey',
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        }}
+      />
+      <DrawerItem
+        label="Help and Support"
+        onPress={() => { }} />
+      <DrawerItem
+        label="Privacy Policy"
+        onPress={() => { }} />
+      <DrawerItem
+        label="Terms of Use"
+        onPress={() => { }} />
       <DrawerItem
         label="Sign out"
         onPress={signout} />
+
     </DrawerContentScrollView>
   );
 }
@@ -217,16 +235,6 @@ function CreateDrawer() {
         totalTasks={userState.totalTasks} />}
       screenOptions={{ headerTintColor: '#67806D', }}
     >
-      {/*<Drawer.Screen
-        name="SessionSelect"
-        component={SessionSelectScreen}
-        options={mainOptions(userState.points)}
-      />*/}
-      {/*<Drawer.Screen 
-      name="sessionFlow"
-        component={CreateSessionStack}
-        options={mainOptions(userState.points)}
-      />*/}
 
       <Drawer.Screen name="mainFlow"
         component={CreateMainFlowTab}
@@ -241,9 +249,36 @@ function CreateDrawer() {
           title: 'My Categories',
           headerShown: false,
         }} />
+
+      {/* this one is hidden */}
       <Drawer.Screen name="Profile temp"
         component={CreateProfileStack}
         options={{ drawerLabel: 'Profile temp', title: '', drawerItemStyle: { display: "none" }, headerShown: false }} />
+
+      <Drawer.Screen name="notificationFlow"
+        component={CreateCategoryStack}
+        options={{
+          drawerLabel: 'Notifications',
+          title: 'Notifications',
+          headerShown: false,
+        }} />
+
+      <Drawer.Screen name="exportFlow"
+        component={CreateCategoryStack}
+        options={{
+          drawerLabel: 'Export Statistics',
+          title: 'Export Statistics',
+          headerShown: false,
+        }} />
+
+      <Drawer.Screen name="inviteFlow"
+        component={CreateCategoryStack}
+        options={{
+          drawerLabel: 'Invite a Friend',
+          title: 'Invite a Friend',
+          headerShown: false,
+        }} />
+
     </Drawer.Navigator>
   );
 }

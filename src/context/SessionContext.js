@@ -11,6 +11,10 @@ const sessionReducer = (state, action) => {
             return { ...state, userSessions: action.payload }
         case 'fetch_sessions_batch':
             return { ...state, userSessions: [...state.userSessions, ...action.payload] }
+        case 'fetch_self_sessions':
+            return { ...state, selfOnlySessions: action.payload }
+        case 'fetch_self_sessions_batch':
+            return { ...state, selfOnlySessions: [...state.selfOnlySessions, ...action.payload] }
         case 'fetch_monthly':
             return { ...state, monthSessions: action.payload.monthlyData, calendarDate: action.payload.startOfMonth }
         case 'fetch_reaction':
@@ -68,16 +72,27 @@ const sessionReducer = (state, action) => {
     }
 }
 
-const fetchSessionsNextBatch = dispatch => async (startIndex = 0) => {
-    const response = await timeoutApi.get('/session', { params: { startIndex } })
-    dispatch({ type: 'fetch_sessions_batch', payload: response.data })
-    console.log(response.data)
+const fetchSessionsNextBatch = dispatch => async (startIndex = 0, selfOnly = false) => {
+    console.log("Getting next batch with selfOnly", selfOnly)
+    const response = await timeoutApi.get('/session', { params: { startIndex, selfOnly } })
+    if (!selfOnly) {
+        dispatch({ type: 'fetch_sessions_batch', payload: response.data })
+    } else {
+        dispatch({ type: 'fetch_self_sessions_batch', payload: response.data })
+    }
+
+    //console.log(response.data)
     return response.data
 }
 
-const fetchSessions = dispatch => async () => {
-    const response = await timeoutApi.get('/session')
-    dispatch({ type: 'fetch_sessions', payload: response.data })
+const fetchSessions = dispatch => async (selfOnly = false) => {
+    const response = await timeoutApi.get('/session', { params: { selfOnly } })
+    if (!selfOnly) {
+        dispatch({ type: 'fetch_sessions', payload: response.data })
+    } else {
+        dispatch({ type: 'fetch_self_sessions', payload: response.data })
+    }
+
     return response.data
 }
 
@@ -152,5 +167,6 @@ export const { Provider, Context } = createDataContext(
         daySessions: [],
         monthSessions: [],
         calendarDate: '',
+        selfOnlySessions: [],
     }
 );
