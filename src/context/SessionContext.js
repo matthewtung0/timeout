@@ -72,29 +72,52 @@ const sessionReducer = (state, action) => {
     }
 }
 
-const fetchSessionsNextBatch = dispatch => async (startIndex = 0, selfOnly = false) => {
-    console.log("Getting next batch with selfOnly", selfOnly)
-    const response = await timeoutApi.get('/session', { params: { startIndex, selfOnly } })
-    if (!selfOnly) {
-        dispatch({ type: 'fetch_sessions_batch', payload: response.data })
-    } else {
-        dispatch({ type: 'fetch_self_sessions_batch', payload: response.data })
+const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
+    var friendsArr = []
+    for (var i in friends) {
+        friendsArr.push(friends[i]['friend'])
     }
+    const response = await timeoutApi.get('/session', { params: { startIndex, friends: friendsArr } })
+
+    dispatch({ type: 'fetch_sessions_batch', payload: response.data })
+
+    //dispatch({ type: 'fetch_self_sessions_batch', payload: response.data })
+
 
     //console.log(response.data)
     return response.data
 }
 
-const fetchSessions = dispatch => async (selfOnly = false) => {
-    const response = await timeoutApi.get('/session', { params: { selfOnly } })
-    if (!selfOnly) {
-        dispatch({ type: 'fetch_sessions', payload: response.data })
-    } else {
-        dispatch({ type: 'fetch_self_sessions', payload: response.data })
+const fetchSessionsNextBatchSelf = dispatch => async (startIndex = 0) => {
+    const response = await timeoutApi.get('/session', { params: { startIndex, friends: [] } })
+    dispatch({ type: 'fetch_self_sessions_batch', payload: response.data })
+    return response.data
+}
+
+const fetchSessions = dispatch => async (friends) => {
+    // clean up friends array
+    var friendsArr = []
+    for (var i in friends) {
+        friendsArr.push(friends[i]['friend'])
     }
+
+    const response = await timeoutApi.get('/session', { params: { friends: friendsArr } })
+    console.log("got this response", response.data)
+    dispatch({ type: 'fetch_sessions', payload: response.data })
+
+    //dispatch({ type: 'fetch_self_sessions', payload: response.data })
 
     return response.data
 }
+
+const fetchSessionsSelf = dispatch => async () => {
+    const response = await timeoutApi.get('/session', { params: { friends: [] } })
+    dispatch({ type: 'fetch_self_sessions', payload: response.data })
+
+    return response.data
+}
+
+
 
 // fetch all tasks in the given day
 const fetchMonthly = dispatch => async (date) => {
@@ -119,7 +142,8 @@ const fetchMonthly = dispatch => async (date) => {
 
 const postSession = dispatch => async () => { };
 
-const fetchFriendSession = dispatch => async () => { };
+const fetchFriendSession = dispatch => async () => {
+};
 
 const fetchOwnSession = dispatch => async () => { };
 
@@ -160,7 +184,10 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
 
 export const { Provider, Context } = createDataContext(
     sessionReducer,
-    { fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch },
+    {
+        fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
+        fetchSessionsSelf, fetchSessionsNextBatchSelf
+    },
     {
         userSessions: [],
         userReaction: [],

@@ -110,7 +110,10 @@ const SignupScreen = ({ navigation }) => {
 
                 <TouchableOpacity
                     style={styles.signUpBoxStyle}
-                    onPress={() => signup({ email, password, username, firstName, lastName })}>
+                    onPress={() => {
+                        navigation.navigate('OnboardCategory', { email, password, username, firstName, lastName })
+                        //signup({ email, password, username, firstName, lastName})
+                    }}>
                     <Text style={styles.signUpTextStyle}>Sign Up</Text>
                 </TouchableOpacity>
                 {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}

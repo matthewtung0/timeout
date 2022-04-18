@@ -4,12 +4,16 @@ import Slider from '@react-native-community/slider'
 import { useFocusEffect } from '@react-navigation/native';
 
 const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { sessionObj, sessionEndTime, endEarlyFlag } = params;
+    const { sessionObj, sessionEndTime, endEarlyFlag, plannedMin } = params;
     const [sessionObjEval, setSessionObjEval] = useState({
         ...sessionObj,
         sessionEndTime: sessionEndTime,
-        endEarlyFlag: endEarlyFlag
+        endEarlyFlag: endEarlyFlag,
+        plannedMin: plannedMin,
+        prodRating: 50, // 50 if user doesn't pick productivity
     })
+    console.log("planned min:", plannedMin)
+    console.log("End time:", sessionEndTime)
     const [prodRatingNum, setProdRatingNum] = useState(50)
 
     return (

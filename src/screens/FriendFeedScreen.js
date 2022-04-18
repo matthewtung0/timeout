@@ -4,6 +4,7 @@ import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Context as SessionContext } from '../context/SessionContext';
+import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
 
 import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
@@ -13,6 +14,7 @@ import timeoutApi from '../api/timeout';
 
 const FriendFeedScreen = ({ navigation }) => {
     const { state: sessionState, fetchSessions, fetchSessionsNextBatch, fetchUserReactions, reactToActivity } = useContext(SessionContext)
+    const { state: userState } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [offset, setOffset] = useState(0)
     const [userSessions, setUserSessions] = useState([])
@@ -30,7 +32,7 @@ const FriendFeedScreen = ({ navigation }) => {
             // reset the offset
             setOffset(0)
             setUserSessions([])
-            let temp = await fetchSessions()
+            let temp = await fetchSessions(userState.friends)
             setUserSessions(temp)
             setOffset(offset + 10)
             await fetchUserReactions()
@@ -65,7 +67,7 @@ const FriendFeedScreen = ({ navigation }) => {
     const getData = async () => {
         console.log("Loading 10 more..");
         try {
-            let temp2 = await fetchSessionsNextBatch(offset)
+            let temp2 = await fetchSessionsNextBatch(offset, userState.friends)
             //setUserSessions([...userSessions, ...temp2]);
             setOffset(offset + 10)
         } catch (err) {

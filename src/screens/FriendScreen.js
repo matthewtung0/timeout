@@ -2,19 +2,46 @@ import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text, FlatList, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
+import Modal from 'react-native-modal'
+import AddFriendModal from '../components/AddFriendModal';
 
 const FriendScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
     const [friendCode, setFriendCode] = useState('')
     const { state, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends } = useContext(userContext)
+    const [modalVisible, setModalVisible] = useState(false)
 
+    console.log(state)
     const resetInputs = async () => {
         setFriendCode('')
-        alert("Success");
+        alert('Success!')
     }
+    const acceptFriendCallback = async () => {
+        await fetchFriends()
+        alert("Friend req successfully accepted.");
+    }
+
+
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
+
+    const modalCallback = () => {
+    }
+
     return (
         <View style={styles.container}>
+
+            <Modal isVisible={modalVisible}
+                animationIn='slideInLeft'
+                animationOut='slideOutLeft'>
+                <AddFriendModal
+                    toggleFunction={toggleModal}
+                    callback={modalCallback} />
+            </Modal>
+
+
             <ScrollView>
 
                 <View style={styles.makeshiftTabBarContainer}>
@@ -30,127 +57,129 @@ const FriendScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                <View style={{ borderWidth: 1, borderRadius: 5, borderColor: 'black', margin: 5, padding: 5, marginBottom: 10 }}>
-                    <Text>Add friend using friend code here:</Text>
-                    <Input
-                        containerStyle={styles.nameInputStyleContainer}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Friend Code to add'
-                        autoCorrect={false}
-                        value={friendCode}
-                        onChangeText={setFriendCode}
-                    />
 
-                    <TouchableOpacity
-                        style={[styles.addFriend, { width: width / 1.8, height: height / 12 }]}
-                        onPress={() => {
-                            requestFriend(friendCode, resetInputs)
-                        }}>
-                        <View style={styles.addFriendContainer}>
-                            <Icon
-                                name="person-add"
-                                type='ionicon'
-                                color='white' />
-                            <Text style={styles.addFriendText}>Add Friend</Text>
-                        </View>
-                    </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.addFriend, { width: width / 1.8, height: height / 12 }]}
+                    onPress={() => {
+                        toggleModal()
+                    }}>
+                    <View style={styles.addFriendContainer}>
+                        <Icon
+                            name="person-add"
+                            type='ionicon'
+                            color='white' />
+                        <Text style={styles.addFriendText}>Add Friend</Text>
+                    </View>
+                </TouchableOpacity>
 
-                    {state.errorMessage ? <Text>Error message here:{state.errorMessage}</Text> : null}
-                </View>
 
                 <Text>My friend code is {state.friendCode}</Text>
 
-                {/*<Button title="Get Current Friends"
-                    onPress={() => {
-                        fetchFriends(resetInputs)
-                    }} />*/}
-                <FlatList
-                    style={styles.flatlistStyle}
-                    horizontal={true}
-                    data={state.friends}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.friend}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={styles.listItem}>
-                                <Text>Username: {item.username}</Text>
-                                <Text>Friend User Id: {item.friend}</Text>
+                <Text>My Friends:</Text>
+                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
+                    {state.friends
+                        .map((item) => {
+                            return (
+                                <View
+                                    key={item.friend}
+                                    style={[styles.categoryStyle, { height: 30, }]}>
+                                    <View style={{ flexDirection: 'row', flex: 1, }}>
 
-                                {/* unfriending is equivalent of rejecting frnd request */}
-                                <Button title="Remove friend"
-                                    onPress={() => {
-                                        rejectFriendRequest(item.friend, resetInputs)
-                                    }} />
-                            </View>
+                                        <View style={{ flex: 8, }}>
+                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
+                                            <Text style={[styles.categoryText]}>Friend since {item['time_created']}</Text>
+                                        </View>
 
+                                        <View style={{ flex: 3, }}>
+                                            <TouchableOpacity
+                                                style={{ borderWidth: 1, }}
+                                                onPress={() => {
+                                                    rejectFriendRequest(item.friend, resetInputs)
+                                                }}>
+                                                <Text>Unfriend</Text>
+                                            </TouchableOpacity>
+                                        </View>
 
-                        )
-                    }}
-                >
-                </FlatList>
-
-
-                {/*<Button title="See outgoing friend requests "
-                    onPress={() => {
-                        fetchOutgoingRequests(resetInputs)
-                    }}></Button>*/}
-                <Text>Sent friend requests, awaiting reply:</Text>
-
-                <FlatList
-                    style={styles.flatlistStyle}
-                    horizontal={true}
-                    data={state.outgoingFriendReqs}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.friend_b}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={styles.listItem}>
-                                <Text>Username: {item.username}</Text>
-                                <Text>User Id: {item.friend_b}</Text>
-
-                                {/* undo frnd request is equivalent of rejecting it */}
-                                <Button title="Undo sending this request "
-                                    onPress={() => {
-                                        rejectFriendRequest(item.friend_b, resetInputs)
-                                    }} />
-                            </View>
-                        )
-                    }}
-                >
-                </FlatList>
-
-                {/*<Button title="See incoming friend requests "
-                    onPress={() => {
-                        fetchIncomingRequests(resetInputs)
-                    }}></Button>*/}
-                <Text>People who've sent you a friend request:</Text>
-                <FlatList
-                    style={styles.flatlistStyle}
-                    horizontal={true}
-                    data={state.incomingFriendReqs}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.friend_a}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={styles.listItem}>
-                                <Text>Username: {item.username}</Text>
-                                <Text>User Id: {item.friend_a}</Text>
-
-                                <Button title="Accept this request "
-                                    onPress={() => {
-                                        acceptFriendRequest(item.friend_a, item.username, resetInputs)
-                                    }} />
-
-                                <Button title="Reject this request "
-                                    onPress={() => {
-                                        rejectFriendRequest(item.friend_a, resetInputs)
-                                    }} />
+                                    </View>
+                                </View>
+                            )
+                        })}
+                </View>
 
 
-                            </View>
-                        )
-                    }}
-                />
+                <Text>Outgoing friend requests, awaiting reply:</Text>
+
+                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
+                    {state.outgoingFriendReqs
+                        .map((item) => {
+                            return (
+                                <View
+                                    key={item.friend_b}
+                                    style={[styles.categoryStyle, { height: 30, }]}>
+                                    <View style={{ flexDirection: 'row', flex: 1, }}>
+
+                                        <View style={{ flex: 8, }}>
+                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
+                                        </View>
+
+                                        <View style={{ flex: 3, }}>
+                                            <TouchableOpacity
+                                                style={{ borderWidth: 1, }}
+                                                onPress={() => {
+                                                    rejectFriendRequest(item.friend_b, resetInputs)
+                                                }}>
+                                                <Text>Undo send</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                    </View>
+                                </View>
+                            )
+                        })}
+                </View>
+
+                <Text>Incoming friend requests:</Text>
+
+                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
+                    {state.incomingFriendReqs
+                        .map((item) => {
+                            return (
+                                <View
+                                    key={item.friend_a}
+                                    style={[styles.categoryStyle, { height: 30, }]}>
+                                    <View style={{ flexDirection: 'row', flex: 1, }}>
+
+                                        <View style={{ flex: 8, }}>
+                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
+                                        </View>
+
+                                        <View style={{ flex: 3, }}>
+                                            <TouchableOpacity
+                                                style={{ borderWidth: 1, }}
+                                                onPress={() => {
+                                                    acceptFriendRequest(item.friend_a, item.username, acceptFriendCallback)
+                                                }}>
+                                                <Text>Accept</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        <View style={{ flex: 3, }}>
+                                            <TouchableOpacity
+                                                style={{ borderWidth: 1, }}
+                                                onPress={() => {
+                                                    rejectFriendRequest(item.friend_a, resetInputs)
+                                                }}>
+                                                <Text>Reject</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+
+
+                                    </View>
+                                </View>
+                            )
+                        })}
+                </View>
             </ScrollView>
         </View>
     )
@@ -159,6 +188,7 @@ const FriendScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         marginTop: 70,
+        flex: 1,
     },
     title: {
         margin: 30,
@@ -190,6 +220,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
+        marginTop: 10,
         marginBottom: 20,
         shadowOffset: {
             width: 2,
@@ -223,7 +254,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         fontSize: 13,
-    }
+    },
+    categoryContainer: {
+        marginVertical: 20,
+        marginHorizontal: 25,
+    },
 })
 
 export default FriendScreen;

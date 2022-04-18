@@ -58,6 +58,20 @@ const categoryReducer = (state, action) => {
                     return item
                 })
             }
+        case 'clear_context':
+            return {
+                userCategories: [],
+                chosenCategory: 'unsorted',
+                chosenCatId: 3,
+                inSession: false,
+                errorMessage: '',
+                customActivity: '',
+                sessionStartTime: 0,
+                sessionEndTime: 0,
+                endEarlyFlag: false,
+                prodRating: 50,
+                userTodoItems: [],
+            }
         default:
             return state;
     }
@@ -164,11 +178,11 @@ const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     }
 }
 
-const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, callback = null) => {
+const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, isPublic, callback = null) => {
     console.log("trying to add category");
     try {
-        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted, chosenColor })
-        dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted, chosenColor } })
+        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted, chosenColor, isPublic })
+        dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted, chosenColor, isPublic } })
         if (callback) { callback() }
     } catch (err) {
         console.log("error adding category:", err);
@@ -212,13 +226,21 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
     }
 }
 
+const clearCategoryContext = dispatch => async () => {
+    try {
+        dispatch({ type: 'clear_context' })
+    } catch (err) {
+
+    }
+}
+
 
 export const { Provider, Context } = createDataContext(
     categoryReducer,
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
         fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem,
-        changeArchiveCategory, changeColorCategory
+        changeArchiveCategory, changeColorCategory, clearCategoryContext
     },
     {
         userCategories: [],

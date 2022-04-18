@@ -24,12 +24,14 @@ const userReducer = (state, action) => {
         case 'accept_friend':
             return {
                 ...state, incomingFriendReqs: state.incomingFriendReqs.filter((req) => req.friend_a != action.payload.idToAccept),
-                friends: [...state.friends, { userId: action.payload.idToAccept, username: action.payload.usernameToAccept }]
-                , errorMessage: ''
+                //friends: [...state.friends, { userId: action.payload.idToAccept, username: action.payload.usernameToAccept }],
+                errorMessage: ''
             }
         case 'reject_friend':
             return {
                 ...state, incomingFriendReqs: state.incomingFriendReqs.filter((req) => req.friend_a != action.payload.idToReject),
+                friends: state.friends.filter((req) => req.friend != action.payload.idToReject),
+                outgoingFriendReqs: state.outgoingFriendReqs.filter((req) => req.friend_b != action.payload.idToReject),
                 errorMessage: ''
             }
         case 'fetch_friends':
@@ -48,6 +50,21 @@ const userReducer = (state, action) => {
             return { ...state, points: parseInt(state.points) + parseInt(action.payload.pointsToAdd) }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
+        case 'clear_context':
+            return {
+                outgoingFriendReqs: [],
+                incomingFriendReqs: [],
+                friends: [],
+                errorMessage: '',
+                firstName: '',
+                lastName: '',
+                username: '',
+                friendCode: '',
+                points: 0,
+                responseMessage: '',
+                totalTasks: 0,
+                totalTime: 0,
+            }
         default:
             return state;
     }
@@ -172,13 +189,21 @@ const deleteSelf = dispatch => async () => { }
 
 const editFriends = dispatch => async () => { }
 
+const clearUserContext = dispatch => async () => {
+    try {
+        dispatch({ type: 'clear_context' })
+    } catch (err) {
+
+    }
+}
+
 
 export const { Provider, Context } = createDataContext(
     userReducer,
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
-        addPoints, clearResponseMessage
+        addPoints, clearResponseMessage, clearUserContext
     },
     {
         outgoingFriendReqs: [],

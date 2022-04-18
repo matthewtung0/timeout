@@ -16,6 +16,10 @@ const authReducer = (state, action) => {
 
         case 'tempVarSet':
             return { ...state, tempVar: false }
+        case 'doneLoading':
+            return { ...state, doneLoading: true }
+        case 'resetDoneLoading':
+            return { ...state, doneLoading: false }
         default:
             return state
     }
@@ -45,13 +49,13 @@ const signupValidation = (email, password) => {
     return (email_re.test(email) && password_re.test(password));
 }
 
-const signup = (dispatch) => async ({ email, password, username, firstName, lastName }) => {
+const signup = (dispatch) => async ({ email, password, username, firstName, lastName, categoryArr }) => {
     /*if (!signupValidation(email, password)) {
         dispatch({ type: 'add_error', payload: 'Invalid username or password!' })
         return
     }*/
     try {
-        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName });
+        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName, categoryArr });
         res = await AsyncStorage.setItem('token', response.data.token);
 
         //sign up successful
@@ -67,14 +71,22 @@ const clearErrorMessage = dispatch => () => {
     dispatch({ type: 'clear_error_message' })
 }
 
-const signin = (dispatch) => async ({ email, password }) => {
+const signin = (dispatch) => async (email, password, callback = null) => {
     console.log("signin client side");
     try {
+
         const response = await timeoutApi.post('/signin', { email, password });
         await AsyncStorage.setItem('token', response.data.token);
-        console.log("SIGN IN SUCCESSFUL. TOKEN IS " + response.data.token);
         dispatch({ type: 'signin', payload: response.data.token });
+        console.log("SIGN IN SUCCESSFUL. TOKEN IS " + response.data.token);
+
         //navigate('profileFlow');
+        if (callback) { callback() }
+        else {
+            console.log("no callback?? wtf")
+        }
+
+
     } catch (err) {
         console.log(err)
         dispatch({ type: 'add_error', payload: 'Something went wrong with sign in' })
@@ -95,9 +107,15 @@ const changePassword = (dispatch) => async (oldPassword, newPassword, callback) 
     }
 }
 
-const signout = dispatch => async () => {
-    await AsyncStorage.removeItem('token');
+const signout = dispatch => async (callback = null) => {
+    console.log("SIGNING OUT")
+
+    // need to clear out the user info
     dispatch({ type: 'signout' });
+    await AsyncStorage.removeItem('token');
+
+    if (callback) { callback() }
+
     //navigate('SignIn');
 };
 
@@ -115,11 +133,25 @@ const tempVarSet = (dispatch) => () => {
     dispatch({ type: 'tempVarSet' });
 }
 
+const doneLoading = (dispatch) => () => {
+    dispatch({ type: 'doneLoading' })
+}
+const resetDoneLoading = (dispatch) => () => {
+    console.log("resetting done loadin")
+    dispatch({ type: 'resetDoneLoading' })
+}
+
 export const { Provider, Context } = createDataContext(
     authReducer,
     {
         signup, signin, signout, clearErrorMessage,
-        tryLocalSignin, forgot_password, tempVarSet, changePassword
+        tryLocalSignin, forgot_password, tempVarSet, changePassword, doneLoading, resetDoneLoading
     },
-    { token: null, errorMessage: '', isLoading: true, tempVar: true }
+    {
+        token: null,
+        errorMessage: '',
+        isLoading: true,
+        tempVar: true,
+        doneLoading: false,
+    }
 )

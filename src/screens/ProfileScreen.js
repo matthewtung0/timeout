@@ -14,7 +14,7 @@ const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
     const { state, fetchSelf } = useContext(UserContext)
     const { state: catState } = useContext(CategoryContext)
-    const { state: sessionState, fetchSessions, fetchSessionsNextBatch } = useContext(SessionContext)
+    const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
     const [h, setH] = useState(0)
     const [m, setM] = useState(0)
     const [s, setS] = useState(0)
@@ -39,7 +39,7 @@ const ProfileScreen = ({ navigation }) => {
             if (minutes) { setM(minutes) }
             if (seconds) { setS(seconds) }
             setOffset(0)
-            let temp = await fetchSessions(true)
+            let temp = await fetchSessionsSelf()
             setOffset(offset + 10)
             //await fetchUserReactions()
         } catch (err) {
@@ -50,7 +50,7 @@ const ProfileScreen = ({ navigation }) => {
     const getData = async () => {
         console.log("Loading 10 more..");
         try {
-            let temp2 = await fetchSessionsNextBatch(offset, true)
+            let temp2 = await fetchSessionsNextBatchSelf(offset)
             setOffset(offset + 10)
         } catch (err) {
             console.log("Problem loading more self sessions", err)

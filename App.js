@@ -28,6 +28,7 @@ import SignupScreen from './src/screens/SignupScreen';
 import SigninScreen from './src/screens/SigninScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
+import OnboardCategoryScreen from './src/screens/OnboardCategoryScreen'
 
 import FriendListScreen from './src/screens/FriendListScreen';
 import AddFriendScreen from './src/screens/AddFriendScreen';
@@ -174,6 +175,15 @@ function CreateProfileStack() {
 function CustomDrawerContent(props) {
   const [modalVis, setModalVis] = useState(false)
   const { signout } = useContext(AuthContext);
+
+  const { clearCategoryContext } = useContext(CategoryContext)
+  const { clearUserContext } = useContext(UserContext)
+
+  const signoutCallback = async () => {
+    await clearCategoryContext
+    await clearUserContext
+    console.log("all context cleared!")
+  }
   return (
     <DrawerContentScrollView {...props}>
       <Modal
@@ -217,7 +227,9 @@ function CustomDrawerContent(props) {
         onPress={() => { }} />
       <DrawerItem
         label="Sign out"
-        onPress={signout} />
+        onPress={() => {
+          signout(signoutCallback)
+        }} />
 
     </DrawerContentScrollView>
   );
@@ -295,6 +307,11 @@ function CreateLoginStack() {
       <Stack.Screen
         name="SignUp"
         component={SignupScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="OnboardCategory"
+        component={OnboardCategoryScreen}
         options={pageOptions}
       />
       <Stack.Screen
@@ -499,6 +516,8 @@ function CreateMainNavigator() {
     let firstTime = new Date()
     let splashDisplayTime = 2000;
     if (res) {
+      await fetchSelf()
+      console.log('fetched self');
       await fetchUserCategories();
       console.log('fetched categories');
       await fetchUserTodoItems();
@@ -509,8 +528,7 @@ function CreateMainNavigator() {
       console.log('fetched outgoing friend requests');
       await fetchIncomingRequests();
       console.log('fetched incoming friend requests');
-      await fetchSelf()
-      console.log('fetched self');
+
       let secondTime = new Date();
       let timeDiff = (secondTime.getTime() - firstTime.getTime());
       console.log("millisec that api calls took up: ", timeDiff);
@@ -527,8 +545,11 @@ function CreateMainNavigator() {
   }, [])
 
   return (
+    // true || not false
+    // turns to false || not true
     <Stack.Navigator>
-      {state.tempVar ? (
+
+      {(state.tempVar) ? (
         <Stack.Screen
           name="SplashScreen"
           component={ResolveAuthScreen}

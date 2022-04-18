@@ -15,27 +15,24 @@ const CategoryButton = ({ id, catName, colorId, callback }) => {
                 <Text style={styles.text} >{catName}</Text>
             </View>
         </TouchableOpacity>
-
-
     )
-
 }
 
 const styles = StyleSheet.create({
     square: {
-        width: width / 4.5,
-        height: width / 6.5,
+        width: width / 3.7,
+        height: width / 5.5,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-        margin: 5,
+        margin: 3,
         padding: 2,
     },
     text: {
         textAlign: 'center',
         alignSelf: 'center',
         color: 'white',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
     }
 

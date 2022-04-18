@@ -95,7 +95,7 @@ const AddTodoComponent = ({ title, callback, item }) => {
                         <CategoryButton
                             id={item.category_id}
                             catName={item.category_name}
-                            bgColor={item.color_id}
+                            colorId={item.color_id}
                             callback={updateButton} />
                     )
                 }}

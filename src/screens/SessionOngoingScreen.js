@@ -2,30 +2,29 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import {
     fromUnixTime, getUnixTime, isThisSecond, format,
-    differenceInMilliseconds, addSeconds
+    differenceInMilliseconds, addSeconds, addMinutes
 } from 'date-fns';
-import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { height, width } = Dimensions.get('window');
-    const { numMins, categoryId, categoryName, activityName, colorId } = params;
     let bgColorHex = constants.colors[colorId]
+    const { height, width } = Dimensions.get('window');
+
+    const { numMins, categoryId, categoryName, activityName, colorId } = params;
 
     const [min, setMin] = useState(numMins);
     const [sec, setSec] = useState(0);
 
+    const [plannedMin, setPlannedMin] = useState(numMins)
+
     const [formattedTime, setFormattedTime] = useState('00:00');
 
     const [secLeft, setSecLeft] = useState(numMins * 60);
-    let endThis = false;
-    const { state: categoryState, setEndTime, setStartTime } = useContext(CategoryContext)
+
     const increment = useRef(null);
-
-
-
     let now_dt = getUnixTime(new Date())
-    let endTime = getUnixTime(addSeconds(fromUnixTime(now_dt), numMins * 60 + 1))
+    const [endTime, setEndTime] = useState(getUnixTime(addSeconds(fromUnixTime(now_dt), numMins * 60 + 1)))
+
     //let bgColorHex = constants.colors[bgColor]
 
     const [sessionObj, setSessionObj] = useState({
@@ -38,27 +37,29 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         prodRating: '',
     })
 
-    const handleStart = () => {
+    const handleStart = (_endTime, plannedNumMinutes) => {
+        setPlannedMin(plannedNumMinutes)
+        setEndTime(_endTime)
         increment.current = setInterval(() => {
             let dt = new Date();
-            var diff = differenceInMilliseconds(fromUnixTime(endTime), dt)
+            var diff = differenceInMilliseconds(fromUnixTime(_endTime), dt)
             if (diff < 0) {
-                handleReset(false)
+                handleReset(false, plannedNumMinutes)
             }
             //console.log("difference in sec:", diff / 1000)
             setSecLeft(Math.floor(diff / 1000));
         }, 100)
     }
 
-    const handleReset = (endEarly = false) => {
+    const handleReset = (endEarly = false, plannedNumMinutes) => {
         clearInterval(increment.current)
 
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
-            navigate('SessionEval', { sessionObj, sessionEndTime: fromUnixTime(now_dt), endEarlyFlag: true })
+            navigate('SessionEval', { sessionObj, sessionEndTime: new Date(), endEarlyFlag: true, plannedMin: plannedNumMinutes })
             //setEndTime(fromUnixTime(now_dt), true)
         } else {
-            navigate('SessionEval', { sessionObj, sessionEndTime: fromUnixTime(endTime), endEarlyFlag: false })
+            navigate('SessionEval', { sessionObj, sessionEndTime: new Date(), endEarlyFlag: false, plannedMin: plannedNumMinutes })
             //setEndTime(fromUnixTime(endTime), false)
         }
         alert('Time end')
@@ -69,66 +70,24 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         setSessionObj({ ...sessionObj, sessionStartTime: fromUnixTime(now_dt) })
 
         if (isThisSecond(fromUnixTime(endTime))) {
-            handleReset()
+            handleReset(false, numMins)
         }
 
         // temporary comment this out to work on it
-        handleStart();
+        handleStart(endTime, numMins);
 
     }, [])
 
-    // useEffect second try
-    /*useEffect(() => {
-        console.log("useEffect activiated and endThis is " + endThis)
-        if (endThis || isThisSecond(fromUnixTime(endTime))) {
-            if (timerId) {
-                clearInterval(timerId)
-            }
-            alert('Time end')
-            return
-        }
-
-
-        const timerId = setInterval(
-            () => {
-                let dt = new Date();
-                setTime(getUnixTime(dt));
-                setSecLeft(differenceInSeconds(fromUnixTime(endTime), dt));
-            }, 1000)
-        return () => {
-            clearInterval(timerId);
-        }
-    }, [time])*/
-
-    // useEffect first try
-    /*useEffect(() => {
-        if (min <= 0 && sec <= 0) {
-            if (timerId) {
-                clearInterval(timerId)
-            }
-            alert('Time end')
-            return
-        }
-        console.log("useEffect activated")
-        const timerId = setInterval(
-            () => {
-                if (sec > 0) {
-                    setSec(s => s - 1)
-                } else {
-                    setSec(59)
-                    setMin(m => m - 1)
-                }
-            },
-            1000)
-
-        return () => {
-            clearInterval(timerId)
-        }
-
-    }, [min, sec])*/
-
     const twoDigits = (num) => {
         return ("0" + num).slice(-2)
+    }
+
+    const addFiveMin = () => {
+        console.log("Setting end time")
+        var newTime = getUnixTime(addSeconds(fromUnixTime(endTime), 5 * 60))
+        //setEndTime(newTime)
+        clearInterval(increment.current)
+        handleStart(newTime, plannedMin + 5)
     }
 
     const areYouSureEndEarly = () => {
@@ -144,7 +103,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                 },
                 {
                     text: "End early", onPress: () => {
-                        handleReset(true)
+                        handleReset(true, plannedMin)
                     }
                 }
             ]
@@ -158,13 +117,12 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             [
                 {
                     text: "Never mind, keep the same time",
-                    onPress: () => { },
+                    onPress: {},
                     style: "cancel"
                 },
                 {
-                    text: "Add 5 minutes", onPress: () => {
-                        console.log("add 5 min")
-                    }
+                    text: "Add 5 minutes",
+                    onPress: () => { addFiveMin() }
                 }
             ]
         );

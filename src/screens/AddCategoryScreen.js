@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
+import ColorSelectModal from '../components/ColorSelectModal';
+import Modal from 'react-native-modal'
 const constants = require('../components/constants.json')
 
 const AddCategoryScreen = () => {
@@ -11,6 +13,12 @@ const AddCategoryScreen = () => {
         changeColorCategory } = useContext(CategoryContext)
 
     const [chosenColor, setChosenColor] = useState('c0')
+    const [isEnabled, setIsEnabled] = useState(true);
+
+    const [selectedCatId, setSelectedCatId] = useState('')
+    const [modalVisible, setModalVisible] = useState(false)
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
 
     const resetInputs = async () => {
         setCategoryName('')
@@ -39,8 +47,27 @@ const AddCategoryScreen = () => {
         }
     }
 
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
+
+    const modalCallback = async (chosenColorId) => {
+        await changeColorCategory(selectedCatId, chosenColorId)
+    }
+
     return (
         <ScrollView>
+
+            <Modal isVisible={modalVisible}
+                animationIn='slideInLeft'
+                animationOut='slideOutLeft'>
+                <ColorSelectModal
+                    toggleFunction={toggleModal}
+                    colorArr={colorArr}
+                    callback={modalCallback} />
+            </Modal>
+
+
             <Text style={{ marginLeft: 25, marginTop: 10, fontSize: 20, }}>Active Categories</Text>
 
             <View style={styles.categoryContainer}>
@@ -62,7 +89,10 @@ const AddCategoryScreen = () => {
 
                                     <View style={{ flex: 1, }}>
                                         <TouchableOpacity
-                                            onPress={() => { }}>
+                                            onPress={() => {
+                                                setSelectedCatId(item.category_id)
+                                                toggleModal()
+                                            }}>
                                             <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
                                         </TouchableOpacity>
                                     </View>
@@ -148,7 +178,7 @@ const AddCategoryScreen = () => {
 
                 </View>
 
-                <Text>Color for this category:</Text>
+                <Text>Choose a color:</Text>
                 < FlatList
                     style
                     horizontal={true}
@@ -166,11 +196,21 @@ const AddCategoryScreen = () => {
                     }}
                 >
                 </FlatList>
+
+                <Text>Public Category (visible on your profile)</Text>
+                <Switch
+                    style={{ marginTop: 10, }}
+                    trackColor={{ false: '#cdd5a0', true: '#90AB72' }}
+                    thumbColor={isEnabled ? "#67806D" : "#f6F2DF"}
+                    ios_backgroundColor="#f6F2DF"
+                    onValueChange={toggleSwitch}
+                    value={isEnabled} />
+
             </View>
 
             <TouchableOpacity style={styles.addCategoryButton}
                 onPress={() => {
-                    addCategory(categoryName, new Date(), chosenColor, resetInputs)
+                    addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
                 }}>
                 <Text style={styles.addCategoryText}>Add Category</Text>
             </TouchableOpacity>

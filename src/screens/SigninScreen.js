@@ -3,17 +3,41 @@ import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image 
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 
+import { Context as CategoryContext } from '../context/CategoryContext'
+import { Context as UserContext } from '../context/userContext'
+
 const img_src = require('../../assets/signin_background.png');
 
 const SigninScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
     const { state, signin, signout, tryLocalSignin, clearErrorMessage } = useContext(AuthContext);
+
+    const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+    const { fetchOutgoingRequests, fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const imgWidth = Image.resolveAssetSource(img_src).width
     const imgHeight = Image.resolveAssetSource(img_src).height
     const heightSet = width * (imgHeight / imgWidth)
+
+    const signInCallback = async () => {
+        console.log("SIGN IN CALLBACK??")
+        await fetchSelf()
+        console.log('fetched self');
+        await fetchUserCategories();
+        console.log('fetched categories');
+        await fetchUserTodoItems();
+        console.log('fetched todo items');
+        await fetchFriends();
+        console.log('fetched friends');
+        await fetchOutgoingRequests();
+        console.log('fetched outgoing friend requests');
+        await fetchIncomingRequests();
+        console.log('fetched incoming friend requests');
+
+    }
 
     return (
         <View style={styles.container}>
@@ -62,7 +86,10 @@ const SigninScreen = ({ navigation }) => {
                     <View style={{ flex: 3 }}>
                         <TouchableOpacity
                             style={styles.signInBoxStyle}
-                            onPress={() => signin({ email, password })}>
+                            onPress={() => {
+                                console.log("pressed sign in button")
+                                signin(email, password, signInCallback)
+                            }}>
                             <Text style={styles.signInTextStyle}>Sign In</Text>
                         </TouchableOpacity>
                         {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}

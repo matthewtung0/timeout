@@ -68,7 +68,7 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
 
     const addItem = async () => {
         await addTodoItem(s.customActivity, new Date(), s.chosenCatId)
-        onsole.log("Added this task from todo list")
+        console.log("Added this task from todo list")
     }
 
     const offBoard = () => {

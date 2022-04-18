@@ -104,7 +104,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 placeholder="Activity"
                 rightIconContainerStyle={styles.rightIconInput}
                 inputContainerStyle={styles.inputStyleContainer}
-                autoCorrect={false}
+                autoCorrect={true}
                 value={customActivity}
                 onChangeText={(text) => {
                     setCustomActivity(text)
@@ -126,8 +126,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 renderItem={({ item }) => {
                     return (
                         <View style={{
-                            backgroundColor: (catId == item.category_id ? 'red' : 'white'),
-                            padding: 5, borderRadius: 10,
+                            backgroundColor: (catId == item.category_id ? '#67806D' : 'rgba(0,0,0,0)'), borderRadius: 10,
                         }}>
                             <CategoryButton
                                 id={item.category_id}
