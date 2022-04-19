@@ -64,7 +64,11 @@ const userReducer = (state, action) => {
                 responseMessage: '',
                 totalTasks: 0,
                 totalTime: 0,
+                base64pfp: '',
             }
+        case 'fetch_avatar':
+            console.log(action.payload.base64Icon)
+            return { ...state, base64pfp: action.payload }
         default:
             return state;
     }
@@ -80,6 +84,20 @@ const fetchSelf = dispatch => async () => {
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
+
+const fetchAvatar = dispatch => async () => {
+    console.log("fetching profile avatar")
+    try {
+        const response = await timeoutApi.get('/avatar')
+        var base64Icon = `data:image/png;base64,${response.data}`
+        //console.log(base64Icon)
+        dispatch({ type: 'fetch_avatar', payload: base64Icon })
+    } catch (err) {
+        dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+    }
+}
+
+
 
 const requestFriend = dispatch => async (codeToRequest, callback = null) => {
     try {
@@ -203,7 +221,7 @@ export const { Provider, Context } = createDataContext(
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
-        addPoints, clearResponseMessage, clearUserContext
+        addPoints, clearResponseMessage, clearUserContext, fetchAvatar
     },
     {
         outgoingFriendReqs: [],
@@ -218,5 +236,6 @@ export const { Provider, Context } = createDataContext(
         responseMessage: '',
         totalTasks: 0,
         totalTime: 0,
+        base64pfp: '',
     }
 );

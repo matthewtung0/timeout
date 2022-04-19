@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useCallback, useState } from 'react';
-import { View, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity, Pressable } from 'react-native';
+import { View, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Button, Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -7,12 +7,13 @@ import { Context as SessionContext } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
 import DrawerProfileView from '../components/DrawerProfileView';
+import AvatarComponent from '../components/AvatarComponent';
 
 const constants = require('../components/constants.json')
 
 const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
-    const { state, fetchSelf } = useContext(UserContext)
+    const { state, fetchSelf, fetchAvatar } = useContext(UserContext)
     const { state: catState } = useContext(CategoryContext)
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
     const [h, setH] = useState(0)
@@ -80,7 +81,11 @@ const ProfileScreen = ({ navigation }) => {
             <>
                 <View style={styles.banner} />
 
-                <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]} />
+                {/* MAIN PROFILE PICTURE HERE */}
+                <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
+                    <AvatarComponent w={115} />
+                </View>
+
                 <Text style={styles.username}>{state.username}</Text>
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>{state.totalTasks} Tasks</Text>
@@ -138,6 +143,15 @@ const ProfileScreen = ({ navigation }) => {
                     })}
                 </View>
 
+                <Button title="Test avatar" onPress={() => { navigation.navigate('EditAvatar') }} />
+                <Button title="Test fetch avatar" onPress={() => {
+                    fetchAvatar();
+                }} />
+                {state.base64pfp ?
+                    <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />
+                    :
+                    <Text>No image yet!</Text>
+                }
                 <Text style={styles.recent}>Recent</Text>
             </>
         )
@@ -163,8 +177,10 @@ const ProfileScreen = ({ navigation }) => {
                     return (
                         <View style={styles.recentItemContainer}>
                             <View style={styles.pfpcontainerTEMP}>
-                                <View style={styles.pfpTEMP}>
 
+                                {/* SMALLER PROFILE PICS HERE */}
+                                <View style={styles.pfpTEMP}>
+                                    <AvatarComponent w={48} />
                                 </View>
                             </View>
                             <View style={styles.listItem}>
@@ -249,7 +265,7 @@ const styles = StyleSheet.create({
     },
     banner: {
         width: '100%',
-        backgroundColor: '#F1BDD7',
+        backgroundColor: '#fdd696',
         height: 150,
         marginBottom: 10,
     },
@@ -268,10 +284,10 @@ const styles = StyleSheet.create({
     },
     pfp: {
         position: 'absolute',
-        backgroundColor: '#C3E6E7',
-        marginTop: 90,
-        height: 120,
+        //backgroundColor: '#C3E6E7',
         width: 120,
+        height: 120,
+        marginTop: 90,
         borderRadius: 100,
         borderColor: 'white',
         borderWidth: 3,

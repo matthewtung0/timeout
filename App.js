@@ -37,6 +37,7 @@ import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
 import FriendProfileScreen from './src/screens/FriendProfileScreen';
 import AddCategoryScreen from './src/screens/AddCategoryScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
+import EditAvatarScreen from './src/screens/EditAvatarScreen';
 
 import DrawerProfileView from './src/components/DrawerProfileView';
 
@@ -146,6 +147,10 @@ function CreateProfileStack() {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
+      />
+      <Stack.Screen
+        name="EditAvatar"
+        component={EditAvatarScreen}
       />
       <Stack.Screen
         name="Friend"
@@ -541,6 +546,8 @@ function CreateMainNavigator() {
         () => {
           tempVarSet()
         }, splashDisplayTime);
+    } else {
+      tempVarSet()
     }
   }, [])
 
