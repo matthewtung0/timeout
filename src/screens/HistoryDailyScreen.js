@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, FlatList, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator } from 'react-native';
 import {
     compareAsc, format, endOfDay, startOfDay, parseISO
 } from 'date-fns';
@@ -50,6 +50,8 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const { state, fetchMonthly } = useContext(SessionContext)
 
+    const [isLoading, setIsLoading] = useState(true)
+
     const longMonth = (date) => {
         return new Intl.DateTimeFormat('en-US', options).format(date)
     }
@@ -79,6 +81,7 @@ const HistoryDailyScreen = ({ navigation }) => {
     }
 
     const fetchMonthlyCallback = async (month) => {
+        setIsLoading(true)
         console.log("Month is", month)
         var month_dateObj = parseISO(month.dateString)
         // format is:
@@ -95,6 +98,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         setDisplayedYear(month_dateObj.getFullYear())
 
         setTestMonth(month)
+        setIsLoading(false)
     }
 
     const setMonthlyCallback = () => {
@@ -110,10 +114,12 @@ const HistoryDailyScreen = ({ navigation }) => {
     useFocusEffect(
 
         useCallback(() => {
+            setIsLoading(true)
             var dt = new Date()
             fetchMonthly(dt)
             setDisplayedMonth(longMonth(dt))
             setDisplayedYear(dt.getFullYear())
+            setIsLoading(false)
         }, [])
     )
 
@@ -144,12 +150,19 @@ const HistoryDailyScreen = ({ navigation }) => {
 
                     ListFooterComponent={() =>
                         <View>
-                            <Text style={styles.overviewTitle}>
-                                {displayedMonth} {displayedYear} Overview</Text>
-                            {state.monthSessions.length > 0 ?
-                                <MonthlySumComponent monthBatch={state.monthSessions} />
+                            {isLoading ?
+                                <ActivityIndicator size="large" />
                                 :
-                                <Text style={styles.overviewTitle}>Nothing for this month!</Text>}
+                                <><Text style={styles.overviewTitle}>
+                                    {displayedMonth} {displayedYear} Overview</Text>
+
+                                    {state.monthSessions.length > 0 ?
+                                        <MonthlySumComponent monthBatch={state.monthSessions} />
+                                        :
+                                        <Text style={styles.overviewTitle}>Nothing for this month!</Text>}
+                                </>
+
+                            }
                         </View>
                     }
                 />

@@ -207,6 +207,16 @@ const deleteSelf = dispatch => async () => { }
 
 const editFriends = dispatch => async () => { }
 
+const updateLastSignin = dispatch => async (callback = null) => {
+    try {
+        const response = await timeoutApi.patch('/self_user/lastsignin')
+        console.log("updated last sign in")
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("can't update last sign in", err)
+    }
+}
+
 const clearUserContext = dispatch => async () => {
     try {
         dispatch({ type: 'clear_context' })
@@ -221,7 +231,7 @@ export const { Provider, Context } = createDataContext(
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
-        addPoints, clearResponseMessage, clearUserContext, fetchAvatar
+        addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin
     },
     {
         outgoingFriendReqs: [],

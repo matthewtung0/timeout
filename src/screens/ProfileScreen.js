@@ -147,6 +147,8 @@ const ProfileScreen = ({ navigation }) => {
                 <Button title="Test fetch avatar" onPress={() => {
                     fetchAvatar();
                 }} />
+
+
                 {state.base64pfp ?
                     <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />
                     :

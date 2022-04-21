@@ -8,10 +8,7 @@ import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-naviga
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
+  createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem,
 } from '@react-navigation/drawer';
 
 import { setNavigator } from './src/navigationRef';
@@ -37,7 +34,9 @@ import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
 import FriendProfileScreen from './src/screens/FriendProfileScreen';
 import AddCategoryScreen from './src/screens/AddCategoryScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
+
 import EditAvatarScreen from './src/screens/EditAvatarScreen';
+import ShopScreen from './src/screens/ShopScreen';
 
 import DrawerProfileView from './src/components/DrawerProfileView';
 
@@ -151,6 +150,10 @@ function CreateProfileStack() {
       <Stack.Screen
         name="EditAvatar"
         component={EditAvatarScreen}
+      />
+      <Stack.Screen
+        name="Shop"
+        component={ShopScreen}
       />
       <Stack.Screen
         name="Friend"
@@ -513,7 +516,7 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-  const { fetchOutgoingRequests, fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
+  const { updateLastSignin, fetchOutgoingRequests, fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
 
   useEffect(async () => {
     console.log("trying local sign in ")
@@ -521,6 +524,7 @@ function CreateMainNavigator() {
     let firstTime = new Date()
     let splashDisplayTime = 2000;
     if (res) {
+      await updateLastSignin()
       await fetchSelf()
       console.log('fetched self');
       await fetchUserCategories();
