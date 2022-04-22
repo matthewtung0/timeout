@@ -247,5 +247,67 @@ export const { Provider, Context } = createDataContext(
         totalTasks: 0,
         totalTime: 0,
         base64pfp: '',
+        /*eqipped: {
+            glasses: {
+                type: 0,
+                color:0,
+            },
+            piercings:{
+                type:0,
+                color:0,
+            },
+            hair:{
+                color:0,
+                frontType:0,
+                sideType:0,
+                backType:0,
+                genType:0,
+            },
+            outerwear:{
+                type:0,
+                color:0,
+            },
+            accessory:{
+                type:0,
+                color:0,
+            },
+            top:{
+                type:0,
+                color:0,
+            },
+            underlayer:{
+                type:0,
+                color:0,
+            },
+            mouth:{
+                type:0,
+                color:0,
+            },
+            eyes:{
+                type:0,
+                color:0,
+            },
+            makeup:{
+                type:0,
+                color:0,
+            },
+            eyebrows:{
+                type:0,
+                color:0,
+            },
+            base:{
+                type:0,
+                color:0,
+            },
+            hairAccessories:{
+                type:0,
+                color:0,
+            },
+            overlay:{
+                type:0,
+                color:0,
+            },
+            background: 0,
+        }*/
     }
 );

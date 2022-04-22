@@ -2,8 +2,8 @@ import React from 'react';
 import { View, StyleSheet, Text, Image, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
-const flagpfp1 = require('../../assets/avatar/17_BACKGROUND/7_genderfluid-01-01.png');
-const hairback = require('../../assets/avatar/16_hair_back/3_down-fluffy_brown-01.png');
+const flagpfp1 = require('../../assets/avatar/20_BACKGROUND/7_lgbtq.png');
+/*const hairback = require('../../assets/avatar/16_hair_back/3_down-fluffy_brown-01.png');
 const base = require('../../assets/avatar/15_base/1.png');
 const eyebrows = require('../../assets/avatar/14_eyebrows/1_neutral-thick_brown-01.png')
 const makeup = require('../../assets/avatar/13_makeup/1_eyeliner_black-01.png')
@@ -18,7 +18,7 @@ const hair_side = require('../../assets/avatar/5_hair_side/2_coversneck_brown-01
 const hair_front = require('../../assets/avatar/4_hair_front/2_bangs-full_brown.png')
 const ear = require('../../assets/avatar/3_ear/1.png')
 const piercings = require('../../assets/avatar/2_piercings/7_earcuff-chain_black.png')
-const glasses = require('../../assets/avatar/1_glasses/2_rectangle_shade-01.png')
+const glasses = require('../../assets/avatar/1_glasses/2_rectangle_shade-01.png')*/
 
 const AvatarComponent = ({ w }) => {
     const { width, height } = Dimensions.get('window')
