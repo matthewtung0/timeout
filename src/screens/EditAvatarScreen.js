@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text, Image, Dimensions, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
+import { Context as UserContext } from '../context/userContext';
 //import Images from 'images'
 
 const unknown = require('../../assets/avatar/20_BACKGROUND/1_pink.png')
-
 
 const base1 = require('../../assets/avatar/16_base/1.png');
 const base2 = require('../../assets/avatar/16_base/2.png');
@@ -184,7 +184,7 @@ const makeup1 = require('../../assets/avatar/13_eye_makeup/1_silver.png')
 const makeup2 = require('../../assets/avatar/13_eye_makeup/2_black.png')
 const makeup3 = require('../../assets/avatar/13_eye_makeup/3_gold.png')
 const makeup4 = require('../../assets/avatar/13_eye_makeup/4_pink.png')
-const makeupTypes = [[makeup1], [makeup2], [makeup3], [makeup4]]
+const makeupTypes = [[unknown], [makeup1], [makeup2], [makeup3], [makeup4]]
 
 // -------------------------------------- EYEBROWS  -----------------------------------------
 const browThick1 = require('../../assets/avatar/15_eyebrows/1_neutral-thick_1_black-01.png')
@@ -404,8 +404,24 @@ const underlayerTypes = [uspag, tank, turtleSleeveless, widecut, vneck, tshirt, 
 const accessoryChoker = require('../../assets/avatar/8_accessories/1_choker.png')
 const accessoryPendant = require('../../assets/avatar/8_accessories/2_pendant.png')
 const accessoryDogtag = require('../../assets/avatar/8_accessories/3_dogtags.png')
-const accessoryTypes = [[accessoryChoker], [accessoryPendant], [accessoryDogtag]]
+const accessoryTypes = [[unknown], [accessoryChoker], [accessoryPendant], [accessoryDogtag]]
 
+// ------------------------------------HAIR ACCESSORIES ------------------------------------------
+const ponytailRibbon1 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_1_black.png')
+const ponytailRibbon2 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_2_white.png')
+const ponytailRibbon3 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_3_pink.png')
+const ponytailRibbon4 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_4_red.png')
+const ponytailRibbon5 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_5_purple.png')
+const ponytailRibbon6 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_6_darkblue.png')
+const ponytailRibbon7 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_7_lightblue.png')
+const ponytailRibbon8 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_8_darkyellow.png')
+const ponytailRibbon9 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_9_lightyellow.png')
+const ponytailRibbon10 = require('../../assets/avatar/17_hair_accessories/1_ponytail-ribbon_10_green.png')
+const ponytailRibbon = [ponytailRibbon1, ponytailRibbon2, ponytailRibbon3, ponytailRibbon4, ponytailRibbon5,
+    ponytailRibbon6, ponytailRibbon7, ponytailRibbon8, ponytailRibbon9, ponytailRibbon10]
+
+const hairAccessoryTypes = [[unknown], ponytailRibbon]
+// same color as outerwearColors
 
 // ---------------------------------------- BASE ----------------------------------------------
 const baseColors = ['#FBE8D9', '#FFCDAA', '#C38168', '#75443D', '#3A231D']
@@ -440,7 +456,7 @@ const bgTypes = [[bg1], [bg2], [bg3], [bg4], [bg5], [bg6], [bg7], [bg8],
 // 1. GLASSES: type -> 3
 // 2. PIERCINGS: type: 7, colors:3
 
-const colorView = (data, setCallback) => {
+const colorView = ({ data, setCallback, select }) => {
     return (
         <View>
             < FlatList
@@ -452,7 +468,7 @@ const colorView = (data, setCallback) => {
                 renderItem={({ item, index }) => {
                     return (<View>
                         <TouchableOpacity
-                            style={{ padding: 5, }}
+                            style={select(index) ? { padding: 5, backgroundColor: 'orange' } : { padding: 5, }}
                             onPress={() => { setCallback(index) }}>
                             <View style={[styles.preview, { backgroundColor: item }]}
                                 source={item} />
@@ -464,7 +480,8 @@ const colorView = (data, setCallback) => {
         </View>
     )
 }
-const typeView = (data, setCallback, firstIsDisable = false, disableCallback = null) => {
+const typeView = ({ data, setCallback, firstIsDisable = false,
+    isActive = true, disableCallback = null, select }) => {
     return (
         <View>
             < FlatList
@@ -476,7 +493,9 @@ const typeView = (data, setCallback, firstIsDisable = false, disableCallback = n
                 renderItem={({ item, index }) => {
                     return (<View>
                         <TouchableOpacity
-                            style={{ padding: 5, }}
+                            style={(select(index) && isActive) || (!isActive && index == 0) ?
+                                { padding: 5, backgroundColor: 'orange' } :
+                                { padding: 5, }}
                             onPress={() => {
                                 if (firstIsDisable && index == 0) {
                                     disableCallback(false)
@@ -501,16 +520,21 @@ const typeView = (data, setCallback, firstIsDisable = false, disableCallback = n
 const EditAvatarScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
     const [activeMenu, setActiveMenu] = useState(1)
-    const [hasOuterwear, setHasOuterwear] = useState(true)
-    const [hasTop, setHasTop] = useState(true)
-    const [hasGlasses, setHasGlasses] = useState(true)
-    const [hasPiercings, setHasPiercings] = useState(true)
-    const [hasHairFront, setHasHairFront] = useState(true)
-    const [hasHairBack, setHasHairBack] = useState(true)
-    const [hasHairSide, setHasHairSide] = useState(true)
-    const [avatarItems, setAvatarItems] = useState(
+    const { state: userState, saveAvatar } = useContext(UserContext)
+    const [hasOuterwear, setHasOuterwear] = useState(userState.hasItems.hasOuterwear)
+    const [hasTop, setHasTop] = useState(userState.hasItems.hasTop)
+    const [hasGlasses, setHasGlasses] = useState(userState.hasItems.hasGlasses)
+    const [hasPiercings, setHasPiercings] = useState(userState.hasItems.hasPiercings)
+    const [hasHairFront, setHasHairFront] = useState(userState.hasItems.hasHairFront)
+    const [hasHairBack, setHasHairBack] = useState(userState.hasItems.hasHairBack)
+    const [hasHairSide, setHasHairSide] = useState(userState.hasItems.hasHairSide)
+    const [hasMakeup, setHasMakeup] = useState(userState.hasItems.hasMakeup)
+    const [hasAccessories, setHasAccessories] = useState(userState.hasItems.hasAccessories)
+    const [hasHairAccessories, setHasHairAccessories] = useState(userState.hasItems.hasHairAccessories)
+
+    /*const [avatarItems, setAvatarItems] = useState(
         {
-            face: { ears: 0, mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
+            face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
             accessories: { glasses: 1, piercings: 1, accessories: 0 },
             clothing: { outerwear: 1, top: 1, under: 0, },
             hair: { front: 1, back: 1, side: 1, general: 0, },
@@ -518,12 +542,63 @@ const EditAvatarScreen = ({ navigation }) => {
         })
     const [avatarColors, setAvatarColors] = useState(
         {
-            face: { ears: 0, mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
+            face: { mouth: 0, eyes: 0, eyebrows: 0, base: 0, },
             accessories: { piercings: 0 },
             clothing: { outerwear: 0, top: 0, under: 0, },
             hair: { front: 0, back: 0, side: 0, general: 0, },
             background: 0
-        })
+        })*/
+
+    const [avatarItems, setAvatarItems] = useState(userState.avatarItems)
+    const [avatarColors, setAvatarColors] = useState(userState.avatarColors)
+    console.log("ITEMS:", avatarItems)
+    console.log("COLORS:", avatarColors)
+
+
+    const saveAvatarCallback = () => {
+        console.log("AVATAR SUCCESSFULLY SAVED")
+        //alert("Avatar successfully saved!")
+    }
+
+    const saveAvatarHelper = async () => {
+        console.log("STARTING AVATAR SAVING")
+        let hasItems = {
+            hasOuterwear, hasTop, hasGlasses, hasPiercings, hasHairFront, hasHairBack,
+            hasHairSide, hasMakeup, hasHairAccessories, hasAccessories,
+        }
+        await saveAvatar(avatarItems, avatarColors, hasItems, saveAvatarCallback)
+    }
+
+    const mouthSelectionColor = (id) => { return ((id == avatarColors.face.mouth) ? true : false) }
+    const eyeSelectionColor = (id) => { return ((id == avatarColors.face.eyes) ? true : false) }
+    const makeupSelectionColor = (id) => { return ((id == avatarColors.face.makeup) ? true : false) }
+    const eyebrowSelectionColor = (id) => { return ((id == avatarColors.face.eyebrows) ? true : false) }
+    const baseSelectionColor = (id) => { return ((id == avatarColors.face.base) ? true : false) }
+    const piercingSelectionColor = (id) => { return ((id == avatarColors.accessories.piercings) ? true : false) }
+    const outerwearSelectionColor = (id) => { return ((id == avatarColors.clothing.outerwear) ? true : false) }
+    const hairAccessorySelectionColor = (id) => { return ((id == avatarColors.accessories.hairAccessories) ? true : false) }
+    const topSelectionColor = (id) => { return ((id == avatarColors.clothing.top) ? true : false) }
+    const underSelectionColor = (id) => { return ((id == avatarColors.clothing.under) ? true : false) }
+    const hairGenSelectionColor = (id) => { return ((id == avatarColors.hair.general) ? true : false) }
+
+    const eyeSelection = (id) => { return ((id == avatarItems.face.eyes) ? true : false) }
+    const mouthSelection = (id) => { return ((id == avatarItems.face.mouth) ? true : false) }
+    const makeupSelection = (id) => { return ((id == avatarItems.face.makeup) ? true : false) }
+    const eyebrowSelection = (id) => { return ((id == avatarItems.face.eyebrows) ? true : false) }
+    const baseSelection = (id) => { return ((id == avatarItems.face.base) ? true : false) }
+    const glassesSelection = (id) => { return ((id == avatarItems.accessories.glasses) ? true : false) }
+    const piercingSelection = (id) => { return ((id == avatarItems.accessories.piercings) ? true : false) }
+    const accessorySelection = (id) => { return ((id == avatarItems.accessories.accessories) ? true : false) }
+    const hairAccessorySelection = (id) => { return ((id == avatarItems.accessories.hairAccessories) ? true : false) }
+    const outerwearSelection = (id) => { return ((id == avatarItems.clothing.outerwear) ? true : false) }
+    const topSelection = (id) => { return ((id == avatarItems.clothing.top) ? true : false) }
+    const underSelection = (id) => { return ((id == avatarItems.clothing.under) ? true : false) }
+    const hairFrontSelection = (id) => { return ((id == avatarItems.hair.front) ? true : false) }
+    const hairBackSelection = (id) => { return ((id == avatarItems.hair.back) ? true : false) }
+    const hairSideSelection = (id) => { return ((id == avatarItems.hair.side) ? true : false) }
+    const hairGenSelection = (id) => { return ((id == avatarItems.hair.general) ? true : false) }
+    const bgSelection = (id) => { return ((id == avatarItems.background) ? true : false) }
+    const overlaySelection = (id) => { return ((id == avatarItems.overlay) ? true : false) }
 
     const setBrowType = (browType) => {
         setAvatarItems({ ...avatarItems, face: { ...avatarItems.face, eyebrows: browType } })
@@ -537,7 +612,16 @@ const EditAvatarScreen = ({ navigation }) => {
         setAvatarItems({ ...avatarItems, accessories: { ...avatarItems.accessories, glasses: glassesType } })
     }
     const setAccessoryType = (accesoryType) => {
+        setHasAccessories(true)
         setAvatarItems({ ...avatarItems, accessories: { ...avatarItems.accessories, accessories: accesoryType } })
+    }
+
+    const setHairAccessoryType = (accesoryType) => {
+        setHasHairAccessories(true)
+        setAvatarItems({ ...avatarItems, accessories: { ...avatarItems.accessories, hairAccessories: accesoryType } })
+    }
+    const setHairAccesoryColor = (accesoryColor) => {
+        setAvatarColors({ ...avatarColors, accessories: { ...avatarColors.accessories, hairAccessories: accesoryColor } })
     }
 
     const setUnderColor = (underColor) => {
@@ -616,6 +700,7 @@ const EditAvatarScreen = ({ navigation }) => {
         setAvatarItems({ ...avatarItems, background: backgroundType })
     }
     const setMakeupType = (makeupType) => {
+        setHasMakeup(true)
         setAvatarItems({ ...avatarItems, face: { ...avatarItems.face, makeup: makeupType } })
     }
     //console.log(avatarColors)
@@ -635,15 +720,20 @@ const EditAvatarScreen = ({ navigation }) => {
                 <Image
                     style={styles.default}
                     source={backHairTypes[avatarItems.hair.back][avatarColors.hair.back]} /> : null}
+            {hasHairAccessories ?
+                <Image
+                    style={styles.default}
+                    source={hairAccessoryTypes[avatarItems.accessories.hairAccessories][avatarColors.accessories.hairAccessories]} /> : null}
             <Image
                 style={styles.default}
                 source={baseTypes[avatarColors.face.base]} />
             <Image
                 style={styles.default}
                 source={browTypes[avatarItems.face.eyebrows][avatarColors.face.eyebrows]} />
-            <Image
-                style={styles.default}
-                source={makeupTypes[avatarItems.face.makeup][0]} />
+            {hasMakeup ?
+                <Image
+                    style={styles.default}
+                    source={makeupTypes[avatarItems.face.makeup][0]} /> : null}
             <Image
                 style={styles.default}
                 source={eyeTypes[avatarItems.face.eyes][avatarColors.face.eyes]} />
@@ -658,9 +748,10 @@ const EditAvatarScreen = ({ navigation }) => {
                     style={styles.default}
                     source={topTypes[avatarItems.clothing.top][avatarColors.clothing.top]} />
                 : null}
-            <Image
-                style={styles.default}
-                source={accessoryTypes[avatarItems.accessories.accessories][0]} />
+            {hasAccessories ?
+                <Image
+                    style={styles.default}
+                    source={accessoryTypes[avatarItems.accessories.accessories][0]} /> : null}
             {hasOuterwear ?
                 <Image
                     style={styles.default}
@@ -729,60 +820,72 @@ const EditAvatarScreen = ({ navigation }) => {
                 </View>
             </View>
             <View style={{ flex: 1, }}>
-                <ScrollView style={{ padding: 10, }}>
+                <ScrollView style={{ padding: 10, marginBottom: 5, }}>
                     {/*Face */}
                     {activeMenu == 1 ?
                         <View>
                             <Text>Mouth</Text>
                             <Text>Pick mouth color</Text>
-                            {colorView(mouthColors, setMouthColor,)}
+                            {colorView({ data: mouthColors, setCallback: setMouthColor, select: mouthSelectionColor })}
                             <Text>Pick mouth type</Text>
-                            {typeView(mouthTypes, setMouthType)}
+                            {typeView({ data: mouthTypes, setCallback: setMouthType, select: mouthSelection },)}
 
                             <Text>Eyes</Text>
                             <Text>Pick eye color</Text>
-                            {colorView(eyeColors, setEyeColor,)}
+                            {colorView({ data: eyeColors, setCallback: setEyeColor, select: eyeSelectionColor },)}
 
                             <Text>Pick eye type</Text>
-                            {typeView(eyeTypes, setEyeType)}
+                            {typeView({ data: eyeTypes, setCallback: setEyeType, select: eyeSelection })}
 
                             <Text>Makeup</Text>
                             <Text>Pick makeup type</Text>
-                            {typeView(makeupTypes, setMakeupType)}
+                            {typeView({
+                                data: makeupTypes, setCallback: setMakeupType, select: makeupSelection, firstIsDisable: true,
+                                isActive: hasMakeup, disableCallback: setHasMakeup, select: makeupSelection
+                            })}
 
                             <Text>Eyebrows</Text>
                             <Text>Pick eyebrow color</Text>
-                            {colorView(hairFrontColors, setBrowColor,)}
+                            {colorView({ data: hairFrontColors, setCallback: setBrowColor, select: eyebrowSelectionColor },)}
 
                             <Text>Pick eyebrow type</Text>
-                            {typeView(browTypes, setBrowType)}
+                            {typeView({ data: browTypes, setCallback: setBrowType, select: eyebrowSelection })}
 
                             <Text>base (skin color)</Text>
                             <Text>Pick body color</Text>
-                            {colorView(baseColors, setBaseColor)}
+                            {colorView({ data: baseColors, setCallback: setBaseColor, select: baseSelectionColor })}
                         </View>
                         :
                         activeMenu == 2 ?
                             <View>
                                 <Text>Pick hair</Text>
-                                {colorView(hairFrontColors, setHairColor,)}
+                                {colorView({ data: hairFrontColors, setCallback: setHairColor, select: hairGenSelectionColor },)}
 
                                 <Text>Hair (general)</Text>
 
                                 <Text>Pick hair type</Text>
-                                {typeView(hairTypes, setStdHairType,)}
+                                {typeView({ data: hairTypes, setCallback: setStdHairType, select: hairGenSelection },)}
 
                                 <Text>Hair (front)</Text>
                                 <Text>Pick hair front type</Text>
-                                {typeView(hairFrontTypes, setFrontHairType, true, setHasHairFront)}
+                                {typeView({
+                                    data: hairFrontTypes, setCallback: setFrontHairType, firstIsDisable: true,
+                                    isActive: hasHairFront, disableCallback: setHasHairFront, select: hairFrontSelection
+                                })}
 
                                 <Text>Hair(side)</Text>
                                 <Text>Pick hair side type</Text>
-                                {typeView(hairSideTypes, setSideHairType, true, setHasHairSide)}
+                                {typeView({
+                                    data: hairSideTypes, setCallback: setSideHairType, firstIsDisable: true,
+                                    isActive: hasHairSide, disableCallback: setHasHairSide, select: hairSideSelection
+                                })}
                                 <Text>Hair(back)</Text>
 
                                 <Text>Pick hair back type</Text>
-                                {typeView(backHairTypes, setBackHairType, true, setHasHairBack)}
+                                {typeView({
+                                    data: backHairTypes, setCallback: setBackHairType, firstIsDisable: true,
+                                    isActive: hasHairBack, disableCallback: setHasHairBack, select: hairBackSelection
+                                })}
                             </View>
 
 
@@ -791,25 +894,31 @@ const EditAvatarScreen = ({ navigation }) => {
                                 <View>
                                     <Text>Outerwear</Text>
                                     <Text>Pick outerwear color</Text>
-                                    {colorView(outerwearColors, setOuterwearColor,)}
+                                    {colorView({ data: outerwearColors, setCallback: setOuterwearColor, select: outerwearSelectionColor },)}
 
                                     <Text>Pick outerwear type</Text>
-                                    {typeView(outerwearTypes, setOuterwearType, true, setHasOuterwear)}
+                                    {typeView({
+                                        data: outerwearTypes, setCallback: setOuterwearType, firstIsDisable: true,
+                                        isActive: hasOuterwear, disableCallback: setHasOuterwear, select: outerwearSelection
+                                    })}
                                     <Text>Top layer</Text>
 
                                     <Text>Pick top color</Text>
-                                    {colorView(outerwearColors, setTopColor,)}
+                                    {colorView({ data: outerwearColors, setCallback: setTopColor, select: topSelectionColor },)}
 
                                     <Text>Pick top type</Text>
-                                    {typeView(topTypes, setTopType, true, setHasTop)}
+                                    {typeView({
+                                        data: topTypes, setCallback: setTopType, firstIsDisable: true,
+                                        isActive: hasTop, disableCallback: setHasTop, select: topSelection
+                                    })}
 
                                     <Text>Underlayer</Text>
 
                                     <Text>Pick underlayer color</Text>
-                                    {colorView(outerwearColors, setUnderColor,)}
+                                    {colorView({ data: outerwearColors, setCallback: setUnderColor, select: underSelectionColor },)}
 
                                     <Text>Pick underlayer type</Text>
-                                    {typeView(underlayerTypes, setUnderType)}
+                                    {typeView({ data: underlayerTypes, setCallback: setUnderType, select: underSelection })}
                                 </View>
                                 :
                                 activeMenu == 4 ?
@@ -817,31 +926,53 @@ const EditAvatarScreen = ({ navigation }) => {
                                         <Text>Glasses</Text>
 
                                         <Text>Pick glasses type</Text>
-                                        {typeView(glassesTypes, setGlassesType, true, setHasGlasses)}
+                                        {typeView({
+                                            data: glassesTypes, setCallback: setGlassesType, firstIsDisable: true,
+                                            isActive: hasGlasses, disableCallback: setHasGlasses, select: glassesSelection
+                                        })}
 
                                         <Text>Piercings</Text>
 
                                         <Text>Pick piercing color</Text>
-                                        {colorView(piercingsColors, setPiercingColor)}
+                                        {colorView({ data: piercingsColors, setCallback: setPiercingColor, select: piercingSelectionColor })}
 
                                         <Text>Pick piercing type</Text>
-                                        {typeView(piercingsTypes, setPiercingType, true, setHasPiercings)}
+                                        {typeView({
+                                            data: piercingsTypes, setCallback: setPiercingType, firstIsDisable: true,
+                                            isActive: hasPiercings, disableCallback: setHasPiercings, select: piercingSelection
+                                        })}
 
                                         <Text>Accessories</Text>
                                         <Text>Pick accessory type</Text>
-                                        {typeView(accessoryTypes, setAccessoryType,)}
+                                        {typeView({
+                                            data: accessoryTypes, setCallback: setAccessoryType, firstIsDisable: true,
+                                            isActive: hasAccessories, disableCallback: setHasAccessories, select: accessorySelection
+                                        })}
+
+                                        <Text>Hair Accessories</Text>
+                                        <Text>Pick Hair Accessory color</Text>
+                                        {colorView({ data: outerwearColors, setCallback: setHairAccesoryColor, select: hairAccessorySelectionColor })}
+
+
+                                        <Text>Pick hair accessory type</Text>
+                                        {typeView({
+                                            data: hairAccessoryTypes, setCallback: setHairAccessoryType, firstIsDisable: true,
+                                            isActive: hasHairAccessories, disableCallback: setHasHairAccessories, select: hairAccessorySelection
+                                        })}
+
+
                                     </View>
                                     :
                                     <View>
                                         <Text>Background</Text>
-                                        {typeView(bgTypes, setBackgroundType)}
+                                        {typeView({ data: bgTypes, setCallback: setBackgroundType, select: bgSelection })}
                                     </View>
                     }
 
 
                 </ScrollView>
             </View>
-
+            <Button onPress={() => { saveAvatarHelper() }} title="Save selection" />
         </View>
     )
 }

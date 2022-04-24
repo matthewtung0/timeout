@@ -1,9 +1,9 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 
-const DrawerProfileView = ({ friends, username, totalTasks, totalTime }) => {
+const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc }) => {
     const [h, setH] = useState(0)
     const [m, setM] = useState(0)
     const [s, setS] = useState(0)
@@ -18,8 +18,10 @@ const DrawerProfileView = ({ friends, username, totalTasks, totalTime }) => {
     )
     return (
         <View style={styles.outerContainer}>
-            <View style={styles.pfp}>
-
+            <View>
+                <Image
+                    style={[styles.default]}
+                    source={{ uri: pfpSrc }} />
             </View>
             <Text style={styles.username}>{username}</Text>
             <Text style={styles.text}>{h}h {m}m {s}s</Text>
@@ -43,6 +45,14 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 3,
         marginVertical: 15,
+    },
+    default: {
+        marginVertical: 15,
+        borderWidth: 1,
+        borderColor: 'white',
+        borderRadius: 100,
+        height: 80,
+        width: 80,
     },
     username: {
         fontWeight: 'bold',

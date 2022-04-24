@@ -13,6 +13,10 @@ const userReducer = (state, action) => {
                 points: action.payload.user_info.points,
                 totalTime: action.payload.user_stats.total_time,
                 totalTasks: action.payload.user_stats.num_tasks,
+                avatarItems: action.payload.user_avatar.avatarItems,
+                avatarColors: action.payload.user_avatar.avatarColors,
+                hasItems: action.payload.user_avatar.hasItems,
+
             }
         case 'add_error':
             console.log("ERROR: ", action.payload)
@@ -48,6 +52,12 @@ const userReducer = (state, action) => {
             }
         case 'add_points':
             return { ...state, points: parseInt(state.points) + parseInt(action.payload.pointsToAdd) }
+        case 'save_avatar':
+            return {
+                ...state, avatarColors: action.payload.colors, avatarItems: action.payload.items,
+                hasItems: action.payload.hasItems,
+                base64pfp: action.payload.avatarBase64Data
+            }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
         case 'clear_context':
@@ -67,7 +77,6 @@ const userReducer = (state, action) => {
                 base64pfp: '',
             }
         case 'fetch_avatar':
-            console.log(action.payload.base64Icon)
             return { ...state, base64pfp: action.payload }
         default:
             return state;
@@ -169,15 +178,28 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
+const saveAvatar = dispatch => async (items, colors, hasItems, callback = null) => {
+    try {
+        const response = await timeoutApi.post('/self_user/avatar', { items, colors, hasItems })
+        var avatarBase64Data = `data:image/png;base64,${response.data}`
+        dispatch({ type: 'save_avatar', payload: { items, colors, hasItems, avatarBase64Data } })
+        console.log("saving done")
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem saving avatar:", err)
+        dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
+    }
+}
+
 const fetchEveryone = dispatch => async () => { };
 
 const postSelf = dispatch => async () => { }
 
-const editSelf = dispatch => async ({ firstName, lastName, username }) => {
+const editSelf = dispatch => async ({ firstName, lastName, username, callback = null }) => {
     try {
         const response = await timeoutApi.patch('/self_user', { firstName, lastName, username })
         dispatch({ type: 'edit_self', payload: { firstName, lastName, username } })
-        //callback()
+        //if (callback) {callback()}
     } catch (err) {
         console.log("Problem editing self user info:", err)
         dispatch({ type: 'add_error', payload: 'Problem updating info!' })
@@ -231,7 +253,8 @@ export const { Provider, Context } = createDataContext(
     {
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
-        addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin
+        addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
+        saveAvatar
     },
     {
         outgoingFriendReqs: [],
@@ -247,6 +270,25 @@ export const { Provider, Context } = createDataContext(
         totalTasks: 0,
         totalTime: 0,
         base64pfp: '',
+        avatarItems: {
+            face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
+            accessories: { glasses: 1, piercings: 1, accessories: 0, hairAccessories: 0, },
+            clothing: { outerwear: 1, top: 1, under: 0, },
+            hair: { front: 1, back: 1, side: 1, general: 0, },
+            background: 0, overlay: 0,
+        },
+        avatarColors: {
+            face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
+            accessories: { piercings: 0, hairAccessories: 0, },
+            clothing: { outerwear: 0, top: 0, under: 0, },
+            hair: { front: 0, back: 0, side: 0, general: 0, },
+            background: 0
+        },
+        hasItems: {
+            hasOuterwear: false, hasTop: false, hasGlasses: false, hasPiercings: false,
+            hasMakeup: false, hasHairFront: false, hasHairBack: false, hasHairSide: false,
+            hasHairAccessories: false, hasAccessories: false,
+        }
         /*eqipped: {
             glasses: {
                 type: 0,

@@ -83,7 +83,7 @@ const ProfileScreen = ({ navigation }) => {
 
                 {/* MAIN PROFILE PICTURE HERE */}
                 <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
-                    <AvatarComponent w={115} />
+                    <AvatarComponent w={115} pfpSrc={state.base64pfp} />
                 </View>
 
                 <Text style={styles.username}>{state.username}</Text>

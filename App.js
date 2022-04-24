@@ -203,7 +203,7 @@ function CustomDrawerContent(props) {
       <TouchableOpacity
         onPress={() => props.navigation.navigate('Profile temp')}>
         <DrawerProfileView friends={props.friends} username={props.username}
-          totalTasks={props.totalTasks} totalTime={props.totalTime} />
+          totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} />
       </TouchableOpacity>
 
 
@@ -252,7 +252,8 @@ function CreateDrawer() {
         friends={userState.friends}
         username={userState.username}
         totalTime={userState.totalTime}
-        totalTasks={userState.totalTasks} />}
+        totalTasks={userState.totalTasks}
+        pfpSrc={userState.base64pfp} />}
       screenOptions={{ headerTintColor: '#67806D', }}
     >
 
@@ -516,7 +517,8 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-  const { updateLastSignin, fetchOutgoingRequests, fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
+  const { fetchAvatar, updateLastSignin, fetchOutgoingRequests,
+    fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
 
   useEffect(async () => {
     console.log("trying local sign in ")
@@ -527,6 +529,8 @@ function CreateMainNavigator() {
       await updateLastSignin()
       await fetchSelf()
       console.log('fetched self');
+      await fetchAvatar()
+      console.log("fetched avatar");
       await fetchUserCategories();
       console.log('fetched categories');
       await fetchUserTodoItems();
