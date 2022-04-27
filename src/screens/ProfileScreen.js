@@ -8,6 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
 import DrawerProfileView from '../components/DrawerProfileView';
 import AvatarComponent from '../components/AvatarComponent';
+import timeoutApi from '../api/timeout';
 
 const constants = require('../components/constants.json')
 
@@ -16,33 +17,77 @@ const ProfileScreen = ({ navigation }) => {
     const { state, fetchSelf, fetchAvatar } = useContext(UserContext)
     const { state: catState } = useContext(CategoryContext)
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
-    const [h, setH] = useState(0)
-    const [m, setM] = useState(0)
-    const [s, setS] = useState(0)
     const [offset, setOffset] = useState(0)
     const [privateVisible, setPrivateVisible] = useState(false)
-    var { hours, minutes, seconds } = state.totalTime
+    const [profileSessions, setProfileSessions] = useState([])
+    const [profileCategories, setProfileCategories] = useState([])
+    const [profileStats, setProfileStats] = useState({
+        totalTime: { hours: 0, minutes: 0, seconds: 0 },
+        totalTasks: 0,
+        bio: '',
+        last_signin: '',
+        time_created: '',
+        username: ''
+    })
 
     useFocusEffect(
         useCallback(() => {
+            console.log("Getting feed with", state.idToView)
             getFeed()
-        }, [])
-    )
 
-    //console.log(sessionState.selfOnlySessions)
+            return () => {
+                console.log("cleaning up")
+                setProfileStats({
+                    totalTime: { hours: 0, minutes: 0, seconds: 0 },
+                    totalTasks: 0,
+                    bio: '', last_signin: '', time_created: '', username: ''
+                })
+                setProfileSessions([])
+                setProfileCategories([])
+            }
+        }, [state.idToView])
+    )
 
     const togglePrivateVisible = () => { setPrivateVisible(!privateVisible) }
 
+    const fetchStatsProfile = async (id) => {
+        console.log("Fetching stats")
+        try {
+            const response = await timeoutApi.get('/user/stats', { params: { id } })
+            console.log("stats", response.data)
+            setProfileStats({
+                totalTime: response.data.total_time,
+                totalTasks: response.data.num_tasks,
+                bio: response.data.bio,
+                last_signin: response.data.last_signin,
+                time_created: response.data.time_created,
+                username: response.data.username
+            })
+        } catch (err) { console.log("PROBLEM FETCHING STATS", err) }
+    }
+
+    const fetchCategoriesProfile = async (id, getPrivate) => {
+        console.log("trying to fetch user categories");
+        try {
+            const response = await timeoutApi.get('/category', { params: { id, getPrivate } })
+            setProfileCategories(response.data)
+        } catch (err) {
+            console.log("error fetching categories", err);
+        }
+    }
+
+    const fetchSessionsProfile = async (id, getPrivate) => {
+        const response = await timeoutApi.get('/session', { params: { id, getPrivate } })
+        setProfileSessions(response.data)
+    }
+
     const getFeed = async () => {
         try {
-
-            if (hours) { setH(hours) }
-            if (minutes) { setM(minutes) }
-            if (seconds) { setS(seconds) }
             setOffset(0)
-            let temp = await fetchSessionsSelf()
+            await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
             setOffset(offset + 10)
-            //await fetchUserReactions()
+            await fetchStatsProfile(state.idToView)
+            await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
         } catch (err) {
             console.log("Problem retrieving self feed", err)
         }
@@ -81,16 +126,13 @@ const ProfileScreen = ({ navigation }) => {
             <>
                 <View style={styles.banner} />
 
-                {/* MAIN PROFILE PICTURE HERE */}
-                <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
-                    <AvatarComponent w={115} pfpSrc={state.base64pfp} />
-                </View>
 
-                <Text style={styles.username}>{state.username}</Text>
+
+                <Text style={styles.username}>{profileStats.username}</Text>
                 <View style={styles.textContainer}>
-                    <Text style={styles.text}>{state.totalTasks} Tasks</Text>
+                    <Text style={styles.text}>{profileStats.totalTasks} Tasks</Text>
                     <Text style={styles.text}> - </Text>
-                    <Text style={styles.text}>{h}h {m}m {s}s</Text>
+                    <Text style={styles.text}>{profileStats.totalTime.hours}h {profileStats.totalTime.minutes}m {profileStats.totalTime.seconds}s</Text>
 
                 </View>
                 <TouchableOpacity
@@ -126,7 +168,7 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.categoryContainer}>
-                    {catState.userCategories.map((item) => {
+                    {profileCategories.map((item) => {
                         return (
                             <View
                                 key={item.category_id}
@@ -144,16 +186,17 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
 
                 <Button title="Test avatar" onPress={() => { navigation.navigate('EditAvatar') }} />
-                <Button title="Test fetch avatar" onPress={() => {
+
+                {/*<Button title="Test fetch avatar" onPress={() => {
                     fetchAvatar();
-                }} />
+                }} />*/}
 
 
-                {state.base64pfp ?
+                {/*{state.base64pfp ?
                     <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />
                     :
                     <Text>No image yet!</Text>
-                }
+                }*/}
                 <Text style={styles.recent}>Recent</Text>
             </>
         )
@@ -170,7 +213,8 @@ const ProfileScreen = ({ navigation }) => {
 
             <FlatList
                 style={styles.flatlistStyle}
-                data={sessionState.selfOnlySessions}
+                //data={sessionState.selfOnlySessions}
+                data={profileSessions}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.activity_id}
                 ListHeaderComponent={renderHeader}
@@ -182,7 +226,8 @@ const ProfileScreen = ({ navigation }) => {
 
                                 {/* SMALLER PROFILE PICS HERE */}
                                 <View style={styles.pfpTEMP}>
-                                    <AvatarComponent w={48} />
+                                    {/*<AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={true} />*/}
+                                    <AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={false} id={state.idToView} />
                                 </View>
                             </View>
                             <View style={styles.listItem}>
@@ -247,6 +292,12 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.button}
                 title="TESTING TEMPORARY"
     onPress={() => navigation.navigate('FriendList')} />*/}
+
+            {/* MAIN PROFILE PICTURE HERE */}
+            <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
+                <AvatarComponent w={115} pfpSrc={state.base64pfp} isSelf={false}
+                    id={state.idToView} />
+            </View>
         </View>
     )
 }
@@ -381,7 +432,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pfpTEMP: {
-        backgroundColor: '#C3E6E7',
         height: 50,
         width: 50,
         borderRadius: 100,

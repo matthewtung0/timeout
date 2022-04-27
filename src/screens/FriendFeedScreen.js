@@ -7,35 +7,61 @@ import { Context as SessionContext } from '../context/SessionContext';
 import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
 
-import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
+import { differenceInDays, parseISO, differenceInSeconds, isThisMinute } from 'date-fns';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import timeoutApi from '../api/timeout';
+import AvatarComponent from '../components/AvatarComponent';
 
 const FriendFeedScreen = ({ navigation }) => {
-    const { state: sessionState, fetchSessions, fetchSessionsNextBatch, fetchUserReactions, reactToActivity } = useContext(SessionContext)
-    const { state: userState } = useContext(UserContext)
+    const { state: sessionState, fetchSessions,
+        fetchSessionsNextBatch, fetchUserReactions,
+        reactToActivity, fetchAvatars } = useContext(SessionContext)
+    const { state: userState, setIdToView } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [offset, setOffset] = useState(0)
-    const [userSessions, setUserSessions] = useState([])
+    const [friendsPfpMap, setFriendsPfpMap] = useState({})
+
 
     useFocusEffect(
         useCallback(() => {
-            console.log("use focus effect")
+            //buildFriendsMap();
             getFeed();
         }, [])
     )
 
+    const buildFriendsMap = () => {
+        var j = {}
+        for (var i = 0; i < userState.friends.length; i++) {
+            j[userState.friends[i].friend] = 'unknown'
+        }
+        setFriendsPfpMap(j)
+    }
+
     const getFeed = async () => {
         try {
-            //await fetchSessions()
-            // reset the offset
             setOffset(0)
-            setUserSessions([])
             let temp = await fetchSessions(userState.friends)
-            setUserSessions(temp)
             setOffset(offset + 10)
             await fetchUserReactions()
+            /*for (let i = 0; i < userState.friends.length; i++) {
+                var friend_id = userState.friends[i].friend
+                console.log("Fetching avatar for ", friend_id)
+
+                try {
+                    const response = await timeoutApi.get('/avatar', { params: { friend: friend_id } })
+
+                    var base64Icon = `data:image/png;base64,${response.data}`
+                    var friendsPfpMapTemp = friendsPfpMap
+                    friendsPfpMapTemp[friend_id] = base64Icon
+                    setFriendsPfpMap(friendsPfpMapTemp)
+                    console.log(base64Icon.length)
+                } catch (err) {
+                    console.log(err)
+                }
+
+                //fetchAvatars(userState.friends[i].friend)
+            }*/
         } catch (err) {
             console.log("Problem retrieving feed", err)
         }
@@ -119,6 +145,18 @@ const FriendFeedScreen = ({ navigation }) => {
                                 <View style={styles.container}>
                                     <View style={styles.pfpcontainer}>
                                         <View style={styles.pfp}>
+                                            {/* friend thumbnails */}
+                                            <TouchableOpacity
+                                                onPress={() => {
+
+                                                    setIdToView({ username: item.username, user_id: item.user_id })
+                                                    navigation.navigate('Profile temp')
+                                                }}>
+                                                <AvatarComponent w={50}
+                                                    isSelf={item.username == userState.username}
+                                                    id={item.user_id}
+                                                    pfpSrc={userState.base64pfp} />
+                                            </TouchableOpacity>
 
                                         </View>
                                     </View>
@@ -203,7 +241,6 @@ const FriendFeedScreen = ({ navigation }) => {
         />
     )
 
-    //console.log(state.userSessions)
     return (
         secondRoute()
         /*<TabView
@@ -251,7 +288,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pfp: {
-        backgroundColor: 'brown',
         height: 50,
         width: 50,
         borderRadius: 100,

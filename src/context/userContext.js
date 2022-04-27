@@ -16,6 +16,7 @@ const userReducer = (state, action) => {
                 avatarItems: action.payload.user_avatar.avatarItems,
                 avatarColors: action.payload.user_avatar.avatarColors,
                 hasItems: action.payload.user_avatar.hasItems,
+                user_id: action.payload.user_info.user_id,
 
             }
         case 'add_error':
@@ -65,6 +66,7 @@ const userReducer = (state, action) => {
                 outgoingFriendReqs: [],
                 incomingFriendReqs: [],
                 friends: [],
+                user_id: '',
                 errorMessage: '',
                 firstName: '',
                 lastName: '',
@@ -75,9 +77,12 @@ const userReducer = (state, action) => {
                 totalTasks: 0,
                 totalTime: 0,
                 base64pfp: '',
+                idToView: '', usernameToView: '',
             }
         case 'fetch_avatar':
             return { ...state, base64pfp: action.payload }
+        case 'set_id_to_view':
+            return { ...state, idToView: action.payload.user_id, usernameToView: action.payload.username }
         default:
             return state;
     }
@@ -247,6 +252,15 @@ const clearUserContext = dispatch => async () => {
     }
 }
 
+const setIdToView = dispatch => async (obj) => {
+    try {
+        dispatch({ type: 'set_id_to_view', payload: obj })
+        console.log("Successfully set", id)
+    } catch (err) {
+
+    }
+}
+
 
 export const { Provider, Context } = createDataContext(
     userReducer,
@@ -254,7 +268,7 @@ export const { Provider, Context } = createDataContext(
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
-        saveAvatar
+        saveAvatar, setIdToView
     },
     {
         outgoingFriendReqs: [],
@@ -264,6 +278,7 @@ export const { Provider, Context } = createDataContext(
         firstName: '',
         lastName: '',
         username: '',
+        user_id: '',
         friendCode: '',
         points: 0,
         responseMessage: '',
@@ -288,7 +303,8 @@ export const { Provider, Context } = createDataContext(
             hasOuterwear: false, hasTop: false, hasGlasses: false, hasPiercings: false,
             hasMakeup: false, hasHairFront: false, hasHairBack: false, hasHairSide: false,
             hasHairAccessories: false, hasAccessories: false,
-        }
+        },
+        idToView: '', usernameToView: '',
         /*eqipped: {
             glasses: {
                 type: 0,

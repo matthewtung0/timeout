@@ -101,8 +101,8 @@ const fetchSessions = dispatch => async (friends) => {
         friendsArr.push(friends[i]['friend'])
     }
 
-    const response = await timeoutApi.get('/session', { params: { friends: friendsArr } })
-    console.log("got this response", response.data)
+    const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+    //console.log("got this response", response.data)
     dispatch({ type: 'fetch_sessions', payload: response.data })
 
     //dispatch({ type: 'fetch_self_sessions', payload: response.data })
@@ -110,11 +110,24 @@ const fetchSessions = dispatch => async (friends) => {
     return response.data
 }
 
-const fetchSessionsSelf = dispatch => async () => {
-    const response = await timeoutApi.get('/session', { params: { friends: [] } })
+const fetchSessionsSelf = dispatch => async (id) => {
+    const response = await timeoutApi.get('/session', { params: { id } })
     dispatch({ type: 'fetch_self_sessions', payload: response.data })
 
     return response.data
+}
+
+const fetchAvatars = dispatch => async (friendId) => {
+    console.log("fetching friend avatars")
+    try {
+        console.log(friendId)
+        const response = await timeoutApi.get('/avatar', { params: { friend: friendId } })
+
+        //var base64Icon = `data:image/png;base64,${response.data}`
+        //dispatch({ type: 'fetch_avatar', payload: base64Icon })
+    } catch (err) {
+        dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+    }
 }
 
 
@@ -186,7 +199,7 @@ export const { Provider, Context } = createDataContext(
     sessionReducer,
     {
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
-        fetchSessionsSelf, fetchSessionsNextBatchSelf
+        fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars
     },
     {
         userSessions: [],

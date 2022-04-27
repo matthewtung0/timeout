@@ -121,10 +121,10 @@ const setChosen = dispatch => (button) => {
     }
 }
 
-const fetchUserCategories = dispatch => async () => {
+const fetchUserCategories = dispatch => async (id) => {
     console.log("trying to fetch user categories");
     try {
-        const response = await timeoutApi.get('/category')
+        const response = await timeoutApi.get('/category', { params: { id } })
         dispatch({ type: 'fetch_categories', payload: response.data })
     } catch (err) {
         console.log("error fetching categories", err);

@@ -128,7 +128,7 @@ function CreateCategoryStack() {
 function CreateProfileStack() {
   return (
     <Stack.Navigator
-      screenOptions={({ navigation }) => ({
+      screenOptions={() => ({
         headerShown: false
         /*headerLeft: () => (
           <TouchableOpacity
@@ -185,7 +185,7 @@ function CustomDrawerContent(props) {
   const { signout } = useContext(AuthContext);
 
   const { clearCategoryContext } = useContext(CategoryContext)
-  const { clearUserContext } = useContext(UserContext)
+  const { clearUserContext, setIdToView } = useContext(UserContext)
 
   const signoutCallback = async () => {
     await clearCategoryContext
@@ -201,7 +201,10 @@ function CustomDrawerContent(props) {
         <Button title="Close" onPress={() => setModalVis(false)} />
       </Modal>
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('Profile temp')}>
+        onPress={() => {
+          setIdToView({ username: props.username, user_id: props.userId })
+          props.navigation.navigate('Profile temp')
+        }}>
         <DrawerProfileView friends={props.friends} username={props.username}
           totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} />
       </TouchableOpacity>
@@ -249,6 +252,7 @@ function CreateDrawer() {
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent
         {...props}
+        userId={userState.user_id}
         friends={userState.friends}
         username={userState.username}
         totalTime={userState.totalTime}
