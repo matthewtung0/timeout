@@ -19,6 +19,7 @@ const ProfileScreen = ({ navigation }) => {
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
     const [offset, setOffset] = useState(0)
     const [privateVisible, setPrivateVisible] = useState(false)
+    const [isMe, setIsMe] = useState(false)
     const [profileSessions, setProfileSessions] = useState([])
     const [profileCategories, setProfileCategories] = useState([])
     const [profileStats, setProfileStats] = useState({
@@ -29,6 +30,7 @@ const ProfileScreen = ({ navigation }) => {
         time_created: '',
         username: ''
     })
+    console.log(state.totalTime)
 
     useFocusEffect(
         useCallback(() => {
@@ -44,6 +46,7 @@ const ProfileScreen = ({ navigation }) => {
                 })
                 setProfileSessions([])
                 setProfileCategories([])
+                setIsMe(false)
             }
         }, [state.idToView])
     )
@@ -63,6 +66,8 @@ const ProfileScreen = ({ navigation }) => {
                 time_created: response.data.time_created,
                 username: response.data.username
             })
+
+            if (response.data.username == state.username) { setIsMe(true) }
         } catch (err) { console.log("PROBLEM FETCHING STATS", err) }
     }
 
@@ -132,8 +137,12 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>{profileStats.totalTasks} Tasks</Text>
                     <Text style={styles.text}> - </Text>
-                    <Text style={styles.text}>{profileStats.totalTime.hours}h {profileStats.totalTime.minutes}m {profileStats.totalTime.seconds}s</Text>
-
+                    {profileStats.totalTime ?
+                        <Text style={styles.text}>
+                            {profileStats.totalTime.hours ? profileStats.totalTime.hours + 'h ' : '0h '}
+                            {profileStats.totalTime.minutes ? profileStats.totalTime.minutes + 'm ' : '0m '}
+                            {profileStats.totalTime.seconds ? profileStats.totalTime.seconds + 's ' : '0s '}</Text>
+                        : <Text style={styles.text}>0h 0m 0s</Text>}
                 </View>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -144,26 +153,30 @@ const ProfileScreen = ({ navigation }) => {
                         size={24}
                         color='#67806D' />
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => { navigation.navigate('EditProfile') }}>
-                    <Icon
-                        name='pencil-outline'
-                        type='ionicon'
-                        size={24}
-                        color='#67806D' />
-                </TouchableOpacity>
+
+                {isMe ?
+                    <TouchableOpacity
+                        style={styles.editButton}
+                        onPress={() => { navigation.navigate('EditProfile') }}>
+                        <Icon
+                            name='pencil-outline'
+                            type='ionicon'
+                            size={24}
+                            color='#67806D' />
+                    </TouchableOpacity> : null}
 
 
                 {/*<Text style={[styles.text, { marginBottom: 20, }]}>{state.friends.length} Friends</Text>*/}
                 <View style={{ flexDirection: 'row', flex: 1, }}>
                     <Text style={styles.bioText}>Founder, CEO of Time Out. wish I had a bonded pair of cats to take care of but it'll happen when the time is right :)</Text>
+
+
                     <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', }}>
-                        <TouchableOpacity
+                        {isMe ? <TouchableOpacity
                             onPress={togglePrivateVisible}>
                             {privateVisible ? <Icon name="eye-outline" type='ionicon' color='#67806D' /> :
                                 <Icon name="eye-off-outline" type='ionicon' color='#67806D' />}
-                        </TouchableOpacity>
+                        </TouchableOpacity> : null}
                     </View>
                 </View>
 
@@ -184,8 +197,9 @@ const ProfileScreen = ({ navigation }) => {
 
                     })}
                 </View>
-
-                <Button title="Test avatar" onPress={() => { navigation.navigate('EditAvatar') }} />
+                {isMe ?
+                    <Button title="Test avatar" onPress={() => { navigation.navigate('EditAvatar') }} /> : null}
+                <Button title="Fetch avatar.." onPress={() => { fetchAvatar() }} />
 
                 {/*<Button title="Test fetch avatar" onPress={() => {
                     fetchAvatar();

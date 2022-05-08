@@ -1,15 +1,16 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator, ScrollView } from 'react-native';
 import {
-    compareAsc, format, endOfDay, startOfDay, parseISO
+    compareAsc, format, endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
 } from 'date-fns';
+import { Calendar } from 'react-native-calendars';
 import CalendarComponent from '../components/CalendarComponent';
 import PastActivityCard from '../components/PastActivityCard';
 import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
-
+const MARGIN_HORIZONTAL = 20
 const today_date = () => {
     let date = format(new Date(), 'M-dd-yyyy z')
     return date;
@@ -40,21 +41,42 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [displayedMonth, setDisplayedMonth] = useState(new Intl.DateTimeFormat('en-US', options).format(new Date()))
     const [displayedYear, setDisplayedYear] = useState(new Date().getFullYear())
 
-    const [dispMessage, setDispMessage] = useState('')
-
     const [daySessions, setDaySessions] = useState([])
-    const [monthSessions, setMonthSessions] = useState([])
 
     const [calendarDate, setCalendarDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [useMonthly, setUseMonthly] = useState(true);
 
-    const { state, fetchMonthly } = useContext(SessionContext)
+    const { state, fetchMonthly, resetCalendarDate } = useContext(SessionContext)
 
     const [isLoading, setIsLoading] = useState(true)
+    const [markedDatesTemp, setMarkedDatesTemp] = useState({})
 
     const longMonth = (date) => {
         return new Intl.DateTimeFormat('en-US', options).format(date)
     }
+
+    const [monthlyCounters, setMonthlyCounters] = useState([])
+    const [dayCounters, setDayCounters] = useState([])
+
+    console.log("Calendar Date", state.calendarDate)
+
+
+
+    const fetchMonthlyCounters = async (date) => {
+        //let date = parseISO(dayObject.dateString)
+        let startOfMonthTemp = startOfMonth(date)
+        try {
+            let startRange = startOfMonth(date)
+            let endRange = endOfMonth(date)
+
+            const response = await timeoutApi.get('/counter/month', { params: { startTime: startRange, endTime: endRange } })
+            setMonthlyCounters(response.data)
+        } catch (err) {
+            console.log("Problem getting month's counters", err)
+        }
+    }
+
+
 
     const filterOnDay = (dayObject) => {
         setSelectedDay(dayObject)
@@ -78,10 +100,30 @@ const HistoryDailyScreen = ({ navigation }) => {
         })
         setUseMonthly(false)
         setDaySessions(daySessions);
+
+        filterCounterOnDay(dayObject)
+    }
+
+    const filterCounterOnDay = (dayObject) => {
+        let date = parseISO(dayObject.dateString)
+        console.log("BEFORE FILTERING", monthlyCounters)
+
+        let startTime = startOfDay(date)
+        let endTime = endOfDay(date)
+        console.log("start", startTime)
+        console.log("end", endTime)
+        let dayCounters = monthlyCounters.filter(a => {
+            let compare_dt = parseISO(a.time_created)
+            return (compareAsc(compare_dt, startTime) >= 0 &&
+                compareAsc(endTime, compare_dt) > 0)
+        })
+        //setUseMonthly(false)
+        setDayCounters(dayCounters);
     }
 
     const fetchMonthlyCallback = async (month) => {
         setIsLoading(true)
+        setUseMonthly(true)
         console.log("Month is", month)
         var month_dateObj = parseISO(month.dateString)
         // format is:
@@ -93,6 +135,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             "year": 2022,
         }*/
         await fetchMonthly(month_dateObj)
+        await fetchMonthlyCounters(month_dateObj)
 
         setDisplayedMonth(longMonth(month_dateObj))
         setDisplayedYear(month_dateObj.getFullYear())
@@ -114,91 +157,177 @@ const HistoryDailyScreen = ({ navigation }) => {
     useFocusEffect(
 
         useCallback(() => {
+            console.log("date is", state.calendarDate)
+            //setUseMonthly(true)
             setIsLoading(true)
-            var dt = new Date()
-            fetchMonthly(dt)
-            setDisplayedMonth(longMonth(dt))
-            setDisplayedYear(dt.getFullYear())
+
+            fetchMonthly(state.calendarDate)
+
+            fetchMonthlyCounters(state.calendarDate)
+
+            setDisplayedMonth(longMonth(state.calendarDate))
+            setDisplayedYear(state.calendarDate.getFullYear())
             setIsLoading(false)
-        }, [])
+
+            return () => {
+                //setMarkedDatesTemp({})
+                //setCalendarDate(format(new Date(), 'yyyy-MM-dd'))
+                //resetCalendarDate(format(new Date(), 'yyyy-MM-dd'))
+            }
+        }, [state.calendarDate])
     )
 
     return (
-        <View style={styles.viewContainer}>
+        <ScrollView style={styles.viewContainer}>
+
+            <Calendar
+                current={calendarDate}
+                markedDates={markedDatesTemp}
+                onDayPress={day => {
+                    var temp = {}
+                    temp[day.dateString] = { selected: true, selectedColor: '#F5BBAE' }
+                    setMarkedDatesTemp(temp)
+                    filterOnDay(day);
+                }}
+                onMonthChange={month => {
+                    console.log("Setting calendar date to", month.dateString)
+
+                    resetCalendarDate(new Date(month.dateString))
+
+                    setCalendarDate(month.dateString)
+                    //fetchMonthlyCallback(month);
+                    setUseMonthly(true)
+                    setMarkedDatesTemp({})
+                }}
+                style={{
+                    borderRadius: 10, width: width / 1.1, alignSelf: 'center'
+                }}
+                theme={{
+                    calendarBackground: '#F6F2DF',
+                    textDayFontSize: 15,
+                    textMonthFontSize: 18,
+                    textDayHeaderFontSize: 15,
+                    todayTextColor: 'black',
+                    dayTextColor: '#67806D',
+                    monthTextColor: '#67806D',
+                    arrowColor: '#67806D',
+                    textSectionTitleColor: '#67806D',
+                    selectedDayTextColor: 'black',
+                    textMonthFontWeight: 'bold',
+                }}>
+
+            </Calendar>
 
             {useMonthly ?
-                <FlatList
-                    horizontal={false}
-                    data={undefined}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.activity_id}
-                    renderItem={({ item }) => {
-                        return (
-                            <></>
-                        )
-                    }}
-                    ListHeaderComponent={() =>
-                        <View style={styles.cal}>
-                            <CalendarComponent
-                                curDate={state.calendarDate}
-                                updateCallback={filterOnDay}
-                                updateMonth={fetchMonthlyCallback}
-                                setMonthlyCallback={setMonthlyCallback} />
-                        </View>
+                /*<View style={styles.cal}>
+                    <CalendarComponent
+                        curDate={state.calendarDate}
+                        updateCallback={filterOnDay}
+                        updateMonth={fetchMonthlyCallback}
+                        setMonthlyCallback={setMonthlyCallback} />
+        </View>*/
+                // MONTHLY VIEW
+
+                <View>
+                    {isLoading ?
+                        <ActivityIndicator size="large" />
+                        :
+                        <><Text style={[styles.overviewTitle, { marginHorizontal: MARGIN_HORIZONTAL }]}>
+                            {displayedMonth} {displayedYear} Overview</Text>
+                            <Text style={[styles.overviewTitle, { fontSize: 18, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL }]}>{state.monthSessions.length} Timed Tasks</Text>
+                            <View
+                                style={{
+                                    borderBottomColor: 'grey',
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
+                                    marginHorizontal: MARGIN_HORIZONTAL,
+                                    marginBottom: 5,
+                                }}
+                            />
+                            {state.monthSessions.length > 0 ?
+                                <MonthlySumComponent monthBatch={state.monthSessions} />
+                                : null}
+
+
+                            <Text style={[styles.overviewTitle, {
+                                fontSize: 18, alignSelf: 'auto',
+                                marginHorizontal: MARGIN_HORIZONTAL
+                            }]}>{monthlyCounters.length} Counters</Text>
+                            <View
+                                style={{
+                                    borderBottomColor: 'grey',
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
+                                    marginHorizontal: MARGIN_HORIZONTAL
+                                }}
+                            />
+                        </>
 
                     }
+                </View>
 
-                    ListFooterComponent={() =>
-                        <View>
-                            {isLoading ?
-                                <ActivityIndicator size="large" />
-                                :
-                                <><Text style={styles.overviewTitle}>
-                                    {displayedMonth} {displayedYear} Overview</Text>
-
-                                    {state.monthSessions.length > 0 ?
-                                        <MonthlySumComponent monthBatch={state.monthSessions} />
-                                        :
-                                        <Text style={styles.overviewTitle}>Nothing for this month!</Text>}
-                                </>
-
-                            }
-                        </View>
-                    }
-                />
+                // DAILY VIEW
                 :
-                <FlatList
-                    horizontal={false}
-                    data={daySessions}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.activity_id}
-                    renderItem={({ item }) => {
-                        return (
-                            <PastActivityCard session={item} />
-                        )
-                    }}
+                <>
+                    <Text style={[styles.overviewTitle, { marginHorizontal: MARGIN_HORIZONTAL }]}>
+                        {selectedDay.month}/{selectedDay.day}/{selectedDay.year}</Text>
+                    <Text style={{
+                        fontSize: 20, marginHorizontal: MARGIN_HORIZONTAL,
+                        marginBottom: 5,
+                    }}>{daySessions.length} Timed Tasks:</Text>
+                    <View
+                        style={{
+                            borderBottomColor: 'grey',
+                            borderBottomWidth: 2,
+                            marginHorizontal: MARGIN_HORIZONTAL,
+                        }}
+                    />
+                    <View
+                        style={{ marginBottom: 10, }}>
 
-                    ListHeaderComponent={() =>
-                        <View style={styles.cal}>
-                            <CalendarComponent
-                                curDate={state.calendarDate}
-                                updateCallback={filterOnDay}
-                                updateMonth={fetchMonthly}
-                                setMonthlyCallback={setMonthlyCallback} />
-                            <Text style={styles.overviewTitle}>
-                                {selectedDay.month}/{selectedDay.day}/{selectedDay.year}</Text>
-                        </View>
-                    }
+                        {daySessions
+                            .map((item) => {
+                                return (
+                                    <View
+                                        key={item.activity_id}
+                                        style={{ marginHorizontal: MARGIN_HORIZONTAL, }}>
+                                        <PastActivityCard session={item} />
+                                        <View
+                                            style={{
+                                                borderBottomColor: 'grey',
+                                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                            }}
+                                        />
+                                    </View>
 
-                    ListFooterComponent={() =>
-                        <View>
-                            {daySessions.length > 0 ?
-                                null : <Text style={[styles.overviewTitle, { fontSize: 16 }]}>Nothing for this day!</Text>}
-                        </View>
-                    }
-                />}
+                                )
+                            })}
+                    </View>
+                    <Text style={{
+                        fontSize: 20, marginHorizontal: MARGIN_HORIZONTAL,
+                        marginBottom: 5,
+                    }}>{dayCounters.length} Counters:</Text>
+                    <View
+                        style={{
+                            borderBottomColor: 'grey',
+                            borderBottomWidth: 2,
+                            marginHorizontal: MARGIN_HORIZONTAL,
+                        }}
+                    />
+                    <View>
+                        {dayCounters
+                            .map((item) => {
+                                return (
+                                    <View
+                                        key={item.counter_id}>
+                                        <Text>{item.counter_name}: {item.daily_count} tallies today</Text>
+                                    </View>
 
-        </View>
+                                )
+                            })}
+                    </View>
+                </>
+            }
+
+        </ScrollView>
     )
 }
 
@@ -215,6 +344,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginBottom: 5,
     },
+    calTwo: {
+        marginHorizontal: 20,
+        marginBottom: 5,
+        height: 150,
+    },
     viewContainer: {
         flex: 1,
         marginTop: 70,
@@ -222,7 +356,6 @@ const styles = StyleSheet.create({
     overviewTitle: {
         fontWeight: 'bold',
         fontSize: 22,
-        alignSelf: 'center',
         color: '#67806D',
         marginTop: 10,
         marginBottom: 8,

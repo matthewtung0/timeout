@@ -16,7 +16,9 @@ const sessionReducer = (state, action) => {
         case 'fetch_self_sessions_batch':
             return { ...state, selfOnlySessions: [...state.selfOnlySessions, ...action.payload] }
         case 'fetch_monthly':
-            return { ...state, monthSessions: action.payload.monthlyData, calendarDate: action.payload.startOfMonth }
+            return { ...state, monthSessions: action.payload.monthlyData }//, calendarDate: action.payload.startOfMonth }
+        case 'reset_calendar_date':
+            return { ...state, calendarDate: action.payload }
         case 'fetch_reaction':
             return { ...state, userReaction: action.payload }
         case 'preemptive_like':
@@ -77,7 +79,7 @@ const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
     for (var i in friends) {
         friendsArr.push(friends[i]['friend'])
     }
-    const response = await timeoutApi.get('/session', { params: { startIndex, friends: friendsArr } })
+    const response = await timeoutApi.get('/sessionFeed', { params: { startIndex, friends: friendsArr } })
 
     dispatch({ type: 'fetch_sessions_batch', payload: response.data })
 
@@ -153,6 +155,13 @@ const fetchMonthly = dispatch => async (date) => {
     }
 }
 
+const resetCalendarDate = dispatch => async (reset_dt) => {
+    console.log("Resetting calendar date to", reset_dt)
+    dispatch({
+        type: 'reset_calendar_date', payload: reset_dt
+    })
+}
+
 const postSession = dispatch => async () => { };
 
 const fetchFriendSession = dispatch => async () => {
@@ -199,14 +208,15 @@ export const { Provider, Context } = createDataContext(
     sessionReducer,
     {
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
-        fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars
+        fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
+        resetCalendarDate
     },
     {
         userSessions: [],
         userReaction: [],
         daySessions: [],
         monthSessions: [],
-        calendarDate: '',
+        calendarDate: new Date(),
         selfOnlySessions: [],
     }
 );

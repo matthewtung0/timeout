@@ -1,5 +1,8 @@
 import React, { useContext, useState, useCallback, useRef } from 'react';
-import { View, SafeAreaView, StyleSheet, Text, FlatList, Pressable, TouchableOpacity } from 'react-native';
+import {
+    View, SafeAreaView, StyleSheet, Text, FlatList, Pressable,
+    TouchableOpacity, ActivityIndicator, Dimensions
+} from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -14,21 +17,60 @@ import timeoutApi from '../api/timeout';
 import AvatarComponent from '../components/AvatarComponent';
 
 const FriendFeedScreen = ({ navigation }) => {
-    const { state: sessionState, fetchSessions,
-        fetchSessionsNextBatch, fetchUserReactions,
+    const { width, height } = Dimensions.get('window');
+    const { state: sessionState, fetchUserReactions,
         reactToActivity, fetchAvatars } = useContext(SessionContext)
     const { state: userState, setIdToView } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [offset, setOffset] = useState(0)
+    const [atEnd, setAtEnd] = useState(false)
     const [friendsPfpMap, setFriendsPfpMap] = useState({})
+    const [feed, setFeed] = useState([])
+
+
+    const [isLoading, setIsLoading] = useState(false)
 
 
     useFocusEffect(
         useCallback(() => {
             //buildFriendsMap();
             getFeed();
+
+            return () => {
+                console.log("cleaning up")
+                setIsLoading(false)
+                setOffset(0)
+                setDisableTouch(false)
+                setAtEnd(false)
+            }
         }, [])
     )
+    console.log("rendering friend feeed")
+
+
+    const fetchSessions = async (friends) => {
+        // clean up friends array
+        var friendsArr = []
+        for (var i in friends) {
+            friendsArr.push(friends[i]['friend'])
+        }
+        const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+        //console.log("got this response", response.data)
+        setFeed(response.data)
+    }
+
+    const fetchSessionsNextBatch = async (startIndex = 0, friends) => {
+        var friendsArr = []
+        for (var i in friends) {
+            friendsArr.push(friends[i]['friend'])
+        }
+        const response = await timeoutApi.get('/sessionFeed', { params: { startIndex, friends: friendsArr } })
+        setFeed(prevState => [...prevState, ...response.data])
+
+        //setFeed([...feed, ...response.data])
+        console.log("Feed is now ", feed)
+        return response.data
+    }
 
     const buildFriendsMap = () => {
         var j = {}
@@ -70,7 +112,7 @@ const FriendFeedScreen = ({ navigation }) => {
     /*const fetchSessionsNextBatch = async (startIndex = 0) => {
         const response = await timeoutApi.get('/session', { params: { startIndex } })
         console.log(response.data)
-        return response.data
+        return response.data 
     }
 
     const fetchSessions = async () => {
@@ -92,27 +134,101 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const getData = async () => {
         console.log("Loading 10 more..");
+        setIsLoading(true)
         try {
             let temp2 = await fetchSessionsNextBatch(offset, userState.friends)
-            //setUserSessions([...userSessions, ...temp2]);
-            setOffset(offset + 10)
+            //console.log("temp2 is", temp2)
+            if (temp2.length == 0) { setAtEnd(true) } else {
+                setOffset(offset + 10)
+            }
+
+            setIsLoading(false)
         } catch (err) {
             console.log("Problem loading more data", err)
+            setIsLoading(false)
         }
     }
 
     const renderFooter = () => {
         return (
             <View>
-                <TouchableOpacity style={styles.loadMore}
-                    onPress={getData}>
-                    <Text style={styles.loadMoreText}>Load More</Text>
-                </TouchableOpacity>
+                {atEnd ?
+                    <Text>ALl caught up!</Text> :
+                    <>{isLoading ? <ActivityIndicator size="large" /> :
+
+                        <TouchableOpacity style={styles.loadMore}
+                            onPress={getData}>
+                            <Text style={styles.loadMoreText}>Load More</Text>
+                        </TouchableOpacity>
+                    }
+                    </>
+                }
             </View>
         )
     }
 
     const flatListRef = useRef();
+
+    const Asdf = React.memo(({ item }) => (
+
+        (
+            <View style={styles.container}>
+                {console.log("item rendering..", item.activity_id)}
+                <View style={styles.pfpcontainer}>
+                    <View style={styles.pfp}>
+                        {/* friend thumbnails */}
+                        <TouchableOpacity
+                            onPress={() => {
+
+                                setIdToView({ username: item.username, user_id: item.user_id })
+                                navigation.navigate('Profile temp')
+                            }}>
+                            <AvatarComponent w={50}
+                                isSelf={item.username == userState.username}
+                                id={item.user_id}
+                                pfpSrc={userState.base64pfp} />
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+                <View style={styles.listItem}>
+                    <Text>
+                        <Text style={styles.bolded}>{item.username}</Text>
+                        <Text> finished </Text>
+                        <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
+                        <Text> seconds</Text>
+                    </Text>
+                    <Text>
+                        <Text>of </Text>
+                        {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
+                        <Text style={[styles.bolded]}>{item.category_name}</Text>
+                        <Text> {daysAgo(item.time_end)} days ago</Text>
+                    </Text>
+
+                    <View style={styles.likeContainer}>
+                        <Text style={styles.likeCount}>{item.reaction_count}</Text>
+                        <Pressable
+                            onPress={() => {
+                                let is_like = true
+                                if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
+                                    is_like = false
+                                }
+                                reactToActivity(item.activity_id, is_like, reactCallback)
+                            }}>
+                            {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
+                                <Icon
+                                    name="heart"
+                                    type='font-awesome'
+                                    color='#F5BBAE' /> :
+                                <Icon
+                                    name="heart-o"
+                                    type='font-awesome' />}
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
+        )
+    ), (() => { return true }))
 
     const secondRoute = () => {
         return (
@@ -136,68 +252,12 @@ const FriendFeedScreen = ({ navigation }) => {
                         ref={flatListRef}
                         style={styles.flatlistStyle}
                         horizontal={false}
-                        data={sessionState.userSessions}
+                        //data={sessionState.userSessions}
+                        data={feed}
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={(item) => item.activity_id}
                         ListFooterComponent={renderFooter}
-                        renderItem={({ item }) => {
-                            return (
-                                <View style={styles.container}>
-                                    <View style={styles.pfpcontainer}>
-                                        <View style={styles.pfp}>
-                                            {/* friend thumbnails */}
-                                            <TouchableOpacity
-                                                onPress={() => {
-
-                                                    setIdToView({ username: item.username, user_id: item.user_id })
-                                                    navigation.navigate('Profile temp')
-                                                }}>
-                                                <AvatarComponent w={50}
-                                                    isSelf={item.username == userState.username}
-                                                    id={item.user_id}
-                                                    pfpSrc={userState.base64pfp} />
-                                            </TouchableOpacity>
-
-                                        </View>
-                                    </View>
-                                    <View style={styles.listItem}>
-                                        <Text>
-                                            <Text style={styles.bolded}>{item.username}</Text>
-                                            <Text> finished </Text>
-                                            <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
-                                            <Text> seconds</Text>
-                                        </Text>
-                                        <Text>
-                                            <Text>of </Text>
-                                            {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
-                                            <Text style={[styles.bolded]}>{item.category_name}</Text>
-                                            <Text> {daysAgo(item.time_end)} days ago</Text>
-                                        </Text>
-
-                                        <View style={styles.likeContainer}>
-                                            <Text style={styles.likeCount}>{item.reaction_count}</Text>
-                                            <Pressable
-                                                onPress={() => {
-                                                    let is_like = true
-                                                    if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
-                                                        is_like = false
-                                                    }
-                                                    reactToActivity(item.activity_id, is_like, reactCallback)
-                                                }}>
-                                                {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
-                                                    <Icon
-                                                        name="heart"
-                                                        type='font-awesome'
-                                                        color='#F5BBAE' /> :
-                                                    <Icon
-                                                        name="heart-o"
-                                                        type='font-awesome' />}
-                                            </Pressable>
-                                        </View>
-                                    </View>
-                                </View>
-                            )
-                        }}
+                        renderItem={({ item }) => <Asdf item={item} />}
                     >
                     </FlatList>
                 </View>
@@ -280,6 +340,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
+        height: 80,
     },
     pfpcontainer: {
         flex: 0.25,

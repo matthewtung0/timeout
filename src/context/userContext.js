@@ -81,6 +81,8 @@ const userReducer = (state, action) => {
             }
         case 'fetch_avatar':
             return { ...state, base64pfp: action.payload }
+        case 'fetch_items_owned':
+            return { ...state, avatarItemsOwned: action.payload }
         case 'set_id_to_view':
             return { ...state, idToView: action.payload.user_id, usernameToView: action.payload.username }
         default:
@@ -102,11 +104,24 @@ const fetchSelf = dispatch => async () => {
 const fetchAvatar = dispatch => async () => {
     console.log("fetching profile avatar")
     try {
-        const response = await timeoutApi.get('/avatar')
+        const response = await timeoutApi.get('/avatar1')
+        console.log("response is ..... ", response)
         var base64Icon = `data:image/png;base64,${response.data}`
         //console.log(base64Icon)
         dispatch({ type: 'fetch_avatar', payload: base64Icon })
     } catch (err) {
+        dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+    }
+}
+
+const fetchAvatarItemsOwned = dispatch => async () => {
+    try {
+        console.log("Fetching avatar items owned")
+        const response = await timeoutApi.get('/user/owned')
+        //console.log(base64Icon)
+        dispatch({ type: 'fetch_items_owned', payload: response.data })
+    } catch (err) {
+        console.log(err)
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
@@ -195,6 +210,20 @@ const saveAvatar = dispatch => async (items, colors, hasItems, callback = null) 
         dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
     }
 }
+const purchaseItems = dispatch => async (itemArr, callback = null) => {
+    try {
+        const response = await timeoutApi.post('/user/owned', { itemArr })
+        dispatch({ type: 'fetch_items_owned', payload: response.data })
+        console.log("done purchasing items")
+        console.log("updated owned items...", response.data)
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem purchasing items:", err)
+        dispatch({ type: 'add_error', payload: 'Problem purchasing items!' })
+    }
+}
+
+
 
 const fetchEveryone = dispatch => async () => { };
 
@@ -268,7 +297,7 @@ export const { Provider, Context } = createDataContext(
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
-        saveAvatar, setIdToView
+        saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems
     },
     {
         outgoingFriendReqs: [],
@@ -304,6 +333,15 @@ export const { Provider, Context } = createDataContext(
             hasMakeup: false, hasHairFront: false, hasHairBack: false, hasHairSide: false,
             hasHairAccessories: false, hasAccessories: false,
         },
+        avatarItemsOwned: {
+            face: { mouth: [], eyes: [], makeup: [], eyebrows: [], base: [], },
+            accessories: { glasses: [], piercings: [], accessories: [], hairAccessories: [], },
+            clothing: { outerwear: [], top: [], under: [], },
+            hair: { front: [], back: [], side: [], general: [], },
+            background: [], overlay: [],
+        },
+
+
         idToView: '', usernameToView: '',
         /*eqipped: {
             glasses: {

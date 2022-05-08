@@ -8,8 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) => {
     const { sessionObjEval } = params;
     console.log("This object made it here", sessionObjEval);
-    const { state: s, deleteTodoItem, addTodoItem } = useContext(CategoryContext)
-    const { state: userState, addPoints } = useContext(UserContext)
+    const { state: s, deleteTodoItem, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
+    const { state: userState, addPoints, fetchSelf } = useContext(UserContext)
 
     let energyBase = 100;
 
@@ -38,7 +38,9 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
                 await addItem()
             }
 
-            // after save session, update the points
+            // after save session, fetch self to update stats, and then update the points
+            await fetchSelf()
+            await fetchUserTodoItems()
             const res = addPoints(100000, offBoard())
         } catch (err) {
             console.log("Problem adding session", err)

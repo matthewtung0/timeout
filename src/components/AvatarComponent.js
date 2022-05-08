@@ -12,9 +12,10 @@ const AvatarComponent = ({ w, pfpSrc, isSelf, id }) => {
 
     const pullPfp = async () => {
         try {
-            const response = await timeoutApi.get('/avatar', { params: { friend: id } })
+            const response = await timeoutApi.get('/avatar1', { params: { friend: id } })
 
             var base64Icon = `data:image/png;base64,${response.data}`
+            console.log(base64Icon)
             setPngData(base64Icon)
             //console.log(base64Icon.length)
         } catch (err) {

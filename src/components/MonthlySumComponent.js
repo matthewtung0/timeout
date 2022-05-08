@@ -38,8 +38,34 @@ const MonthlySumComponent = ({ monthBatch }) => {
         return num / maxTime
     }
     return (
+
         <View>
-            {/*<Text>{JSON.stringify(monthBatch)}</Text>*/}
+            {sortedRes
+                .map((item) => {
+                    return (
+                        <View
+                            style={styles.container}
+                            key={item[0]}>
+                            <View style={styles.textContainer}>
+                                <Text style={styles.barLabel}>{item[0]}</Text>
+                            </View>
+
+                            {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
+                                <View style={styles.barContainer}>
+                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
+                                    <Text style={styles.timeLabel}>{item[1]}s</Text>
+                                </View> :
+                                <View style={styles.barContainerRelative}>
+                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
+                                    <Text style={styles.timeLabelRelative}>{item[1]}s</Text>
+                                </View>}
+                        </View>
+
+                    )
+                })}
+        </View>
+
+        /*<View>
             <FlatList
                 horizontal={false}
                 data={sortedRes}
@@ -65,7 +91,7 @@ const MonthlySumComponent = ({ monthBatch }) => {
                 }}
             >
             </FlatList>
-        </View>
+        </View>*/
     )
 }
 

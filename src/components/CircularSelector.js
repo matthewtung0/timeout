@@ -6,18 +6,24 @@ import Svg, {
 } from 'react-native-svg';
 import { Text } from 'react-native-svg';
 
-const img_timer = require('../../assets/clock_bg.png');
+const img_timer = require('../../assets/clock_middle.png');
+const clock_bottom = require('../../assets/clock_bottom.png');
+const clock_top = require('../../assets/clock_top.png');
+
+
 const { height, width } = Dimensions.get('window');
 const picked_width = width / 2 / 0.8
 
 const CircularSelector = forwardRef(({ updateCallback }, ref) => {
-    const timer_radius_pct = 0.4 // fraction of screen that the radius takes
+    const timer_radius_pct = 0.45 // fraction of screen that the radius takes
     const radius = (width * timer_radius_pct) * 100 / width // ex. 40 for 0.4 timer_radius_pct
     const [st, setSt] = useState({ cx: width / 2, cy: height / 2 });
     const [theta, setTheta] = useState(0);
 
     const [time, setTime] = useState(0)
-    const [formattedTime, setFormattedTime] = useState('00:00');
+    const [formattedTime, setFormattedTime] = useState('00');
+    const [formattedTens, setFormattedTens] = useState('0')
+    const [formattedOnes, setFormattedOnes] = useState('0')
 
     const maxTime = 60;
     const [pathToPtX, setPathToPtX] = useState(50)
@@ -46,7 +52,9 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
             minimumIntegerDigits: 2,
             useGrouping: false
         })
-        return formatted_mins + ":00"
+        setFormattedTens(formatted_mins.charAt(0))
+        setFormattedOnes(formatted_mins.charAt(1))
+        return formatted_mins
 
     }
 
@@ -262,7 +270,10 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                         {/* circular knob */}
                         <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
 
-                        <Text x={50} y={55} fontSize={20} textAnchor="middle" fill="#90AB72">{formattedTime}</Text>
+                        <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">{formattedTens}</Text>
+                        <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">{formattedOnes}</Text>
+                        <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">:</Text>
+                        <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">00</Text>
 
                         {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>
                         <Text x={50} y={65} fontSize={5} textAnchor="middle" fill="black">{"x position is " + st.cx}</Text>
@@ -286,8 +297,6 @@ const styles = StyleSheet.create({
     container: {
         alignSelf: 'stretch',
         alignItems: 'center',
-        marginBottom: 5,
-        marginTop: 40,
     },
     wrappedView: {
         aspectRatio: 1,

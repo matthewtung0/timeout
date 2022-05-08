@@ -7,21 +7,28 @@ const PastActivityCard = ({ session }) => {
     const { height, width } = Dimensions.get('window');
     let timeDiffSec = differenceInSeconds(parseISO(session.time_end), parseISO(session.time_start))
     let bgColorHex = constants.colors[session.color_id]
+
     return (
 
-        <View style={[styles.container, { width: width * 0.8 }]}>
-            <View style={[styles.overlapContainer, {
+        <View style={[styles.container]}>
+            {/*<View style={[styles.overlapContainer, {
                 width: width * 0.8,
                 height: height * 0.1,
                 backgroundColor: bgColorHex
             }]}>
-                <View style={[styles.tab, { width: width * 0.08, backgroundColor: bgColorHex }]}></View>
+            <View style={[styles.tab, { width: width * 0.08, backgroundColor: bgColorHex }]}></View>*/}
 
-                <View style={[styles.bg, { width: width * 0.71, height: height * 0.09 }]}>
-                    <Text style={styles.title}>{session.activity_name}</Text>
-                    <Text style={styles.time}>{timeDiffSec} sec</Text>
+            <View style={{
+                backgroundColor: bgColorHex, justifyContent: 'center',
+                borderRadius: 10, flex: 1, alignItems: 'center', padding: 4,
+            }}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 13, }}>{session.category_name}</Text>
+            </View>
+            <View style={[styles.bg, { flex: 3, }]}>
+                <Text style={[styles.title, { color: bgColorHex }]}>{session.activity_name}</Text>
+                <Text style={styles.time}>{timeDiffSec} sec</Text>
 
-                </View>
+
             </View>
         </View>
 
@@ -33,7 +40,9 @@ const PastActivityCard = ({ session }) => {
 
 const styles = StyleSheet.create({
     container: {
-        margin: 5,
+        paddingVertical: 12,
+        flex: 1,
+        flexDirection: 'row',
         alignSelf: 'center',
         borderRadius: 10,
     },
@@ -46,7 +55,6 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
     },
     bg: {
-        backgroundColor: 'white',
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         alignSelf: 'center',
@@ -54,10 +62,11 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 16,
         marginLeft: 6,
     },
     time: {
+        color: 'gray',
         marginLeft: 6,
     },
 })

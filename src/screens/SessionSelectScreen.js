@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions, Image } from 'react-native';
 import { Text, Input } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
@@ -8,6 +8,9 @@ import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 
 const table_bg = require('../../assets/sessionselect_tablebg.png');
+
+const clock_bottom = require('../../assets/clock_bottom.png');
+const clock_top = require('../../assets/clock_top.png');
 
 const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const { height, width } = Dimensions.get('window');
@@ -86,18 +89,23 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                         callback={fillInWithItem} />
                 </Modal>
             </View>
+            <Image
+                source={clock_top}
+                style={{
+                    width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
+                    marginTop: 30,
+                }}
+                resizeMode="contain" />
+            <CircularSelector
+                minSet={0}
+                updateCallback={updateTime}
+                ref={circularRef} />
+            <Image
+                source={clock_bottom}
+                style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                resizeMode="contain" />
 
-
-            <ImageBackground
-                source={table_bg}
-                style={[styles.image]}
-                resizeMode='stretch'>
-                <CircularSelector
-                    minSet={0}
-                    updateCallback={updateTime}
-                    ref={circularRef} />
-
-            </ImageBackground>
+            {/*</ImageBackground>*/}
 
             <Input
                 style={styles.input}
@@ -116,8 +124,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
             {/*<Icon type='ionicon' name='create-outline' />*/}
 
             <FlatList
-                columnWrapperStyle={{ justifyContent: 'space-between', flex: 1, marginVertical: 5, marginHorizontal: 10 }}
-                style
+                columnWrapperStyle={{ flex: 1, marginVertical: 5, }}
+                style={{ alignSelf: 'center', }}
                 horizontal={false}
                 data={categoryState.userCategories}
                 numColumns='3'
@@ -126,7 +134,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 renderItem={({ item }) => {
                     return (
                         <View style={{
-                            backgroundColor: (catId == item.category_id ? '#67806D' : 'rgba(0,0,0,0)'), borderRadius: 10,
+                            backgroundColor: (catId == item.category_id ? 'gray' : 'rgba(0,0,0,0)'), borderRadius: 10,
+                            marginHorizontal: 4,
                         }}>
                             <CategoryButton
                                 id={item.category_id}
@@ -206,6 +215,11 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginHorizontal: 27,
         paddingHorizontal: 17,
+        shadowOffset: {
+            width: 0.1,
+            height: 0.1,
+        },
+        shadowOpacity: 0.2,
     },
     inputContainer: {
         flex: 1,
@@ -255,15 +269,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 20,
         shadowOffset: {
-            width: 1,
-            height: 1,
+            width: 0.5,
+            height: 0.5,
         },
-        shadowOpacity: 0.8,
+        shadowOpacity: 0.5,
 
     },
     startText: {
         color: 'white',
-        fontSize: 20,
+        fontSize: 25,
         fontWeight: 'bold'
     }
 })

@@ -11,7 +11,7 @@ const CategoryButton = ({ id, catName, colorId, callback }) => {
 
         <TouchableOpacity
             onPress={() => { callback({ buttonName: catName, buttonId: id, buttonColor: colorId }) }}>
-            <View style={[styles.square, { backgroundColor: bgColorHex }]}>
+            <View style={[styles.square, { backgroundColor: bgColorHex, }]}>
                 <Text style={styles.text} >{catName}</Text>
             </View>
         </TouchableOpacity>
@@ -22,11 +22,11 @@ const styles = StyleSheet.create({
     square: {
         width: width / 3.7,
         height: width / 5.5,
-        alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         borderRadius: 10,
         margin: 3,
-        padding: 2,
+        paddingVertical: 7,
+        paddingHorizontal: 4,
     },
     text: {
         textAlign: 'center',

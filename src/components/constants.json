@@ -23,5 +23,117 @@
         "d9": "Stream",
         "d10": "Art",
         "d11": "Self-care"
+    },
+    "avatarItemsFree": {
+        "face": {
+            "mouth": [
+                0,
+                1,
+                2
+            ],
+            "eyes": [
+                0,
+                1
+            ],
+            "makeup": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "eyebrows": [
+                0,
+                1
+            ],
+            "base": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        "accessories": {
+            "glasses": [
+                1,
+                2,
+                3
+            ],
+            "piercings": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "accessories": [
+                1,
+                2,
+                3
+            ],
+            "hairAccessories": [
+                1
+            ]
+        },
+        "clothing": {
+            "outerwear": [
+                1
+            ],
+            "top": [
+                1,
+                2,
+                3
+            ],
+            "under": [
+                0,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+            ]
+        },
+        "hair": {
+            "front": [
+                1,
+                2,
+                3
+            ],
+            "back": [
+                1,
+                2
+            ],
+            "side": [
+                1,
+                2
+            ],
+            "general": [
+                0,
+                1
+            ]
+        },
+        "background": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+        ],
+        "overlay": []
     }
 }

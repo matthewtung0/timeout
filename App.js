@@ -14,6 +14,7 @@ import {
 import { setNavigator } from './src/navigationRef';
 
 import SessionSelectScreen from './src/screens/SessionSelectScreen';
+import CounterScreen from './src/screens/CounterScreen';
 import SessionRewardScreen from './src/screens/SessionRewardScreen';
 import FriendFeedScreen from './src/screens/FriendFeedScreen'
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -44,12 +45,14 @@ import { Provider as SessionProvider } from './src/context/SessionContext';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/userContext';
 import { Provider as CategoryProvider } from './src/context/CategoryContext';
+import { Provider as CounterProvider } from './src/context/CounterContext'
 
 import { Ionicons } from "@expo/vector-icons";
 import FriendScreen from './src/screens/FriendScreen';
 
 import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
+import { Context as CounterContext } from './src/context/CounterContext'
 import { Context as UserContext } from './src/context/userContext';
 
 const defaultOptions = {
@@ -505,6 +508,11 @@ function CreateMainFlowTab() {
           tabBarLabel: 'Timer',
           tabBarIconLabel: 'time-outline',
         }} />
+      <Tab.Screen name="CounterFlow" component={CounterScreen}
+        options={{
+          tabBarLabel: 'Counter',
+          tabBarIconLabel: 'copy-outline',
+        }} />
       <Tab.Screen name="friendFeedFlow" component={CreateFriendFeedStack}
         options={{
           tabBarLabel: 'Friends',
@@ -521,8 +529,9 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+  const { fetchUserCounters } = useContext(CounterContext)
   const { fetchAvatar, updateLastSignin, fetchOutgoingRequests,
-    fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
+    fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
 
   useEffect(async () => {
     console.log("trying local sign in ")
@@ -537,6 +546,10 @@ function CreateMainNavigator() {
       console.log("fetched avatar");
       await fetchUserCategories();
       console.log('fetched categories');
+      await fetchUserCounters();
+      console.log('fetched counters')
+      await fetchAvatarItemsOwned();
+      console.log('fetched avatar items owned')
       await fetchUserTodoItems();
       console.log('fetched todo items');
       await fetchFriends();
@@ -602,24 +615,28 @@ export default () => {
 
     <UserProvider>
       <AuthProvider>
-        <CategoryProvider>
+        <CounterProvider>
+          <CategoryProvider>
 
-          <SessionProvider>
+            <SessionProvider>
 
-            <NavigationContainer>
+              <NavigationContainer>
 
-              <Stack.Navigator>
+                <Stack.Navigator>
 
-                <Stack.Screen
-                  name="MainStack"
-                  component={CreateMainNavigator}
-                  options={pageOptions} />
+                  <Stack.Screen
+                    name="MainStack"
+                    component={CreateMainNavigator}
+                    options={pageOptions} />
 
-              </Stack.Navigator>
+                </Stack.Navigator>
 
-            </NavigationContainer>
-          </SessionProvider>
-        </CategoryProvider>
+              </NavigationContainer>
+            </SessionProvider>
+          </CategoryProvider>
+
+        </CounterProvider>
+
       </AuthProvider>
     </UserProvider>
   )
