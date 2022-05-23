@@ -23,6 +23,9 @@ import SessionEvalScreen from './src/screens/SessionEvalScreen';
 import HistoryDailyScreen from './src/screens/HistoryDailyScreen';
 
 import SignupScreen from './src/screens/SignupScreen';
+import SignupScreen2 from './src/screens/SignupScreen2';
+import SignupScreen3 from './src/screens/SignupScreen3';
+
 import SigninScreen from './src/screens/SigninScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
@@ -323,6 +326,16 @@ function CreateLoginStack() {
       <Stack.Screen
         name="SignUp"
         component={SignupScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="SignUp2"
+        component={SignupScreen2}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="SignUp3"
+        component={SignupScreen3}
         options={pageOptions}
       />
       <Stack.Screen

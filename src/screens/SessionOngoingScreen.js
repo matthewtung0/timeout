@@ -7,11 +7,11 @@ import {
 const constants = require('../components/constants.json')
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
-    let bgColorHex = constants.colors[colorId]
+
     const { height, width } = Dimensions.get('window');
 
     const { numMins, categoryId, categoryName, activityName, colorId } = params;
-
+    let bgColorHex = constants.colors[colorId]
     const [min, setMin] = useState(numMins);
     const [sec, setSec] = useState(0);
 

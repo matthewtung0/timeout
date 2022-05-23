@@ -9,7 +9,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 
 const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
     const setHeight = 50
-    const { email, password, username, firstName, lastName } = params;
+    const { email, password, username, firstName, lastName, bio } = params;
 
     const { signup } = useContext(AuthContext);
     // [0, defaultCat[0], chosen or not (t/f), colorId]
@@ -70,7 +70,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
 
             <Text style={styles.title}>Onboard Category Screen</Text>
             <Button title="Go back"
-                onPress={() => { navigation.navigate('SignUp') }} />
+                onPress={() => { navigation.navigate('SignUp3', { email, firstName, lastName, bio, password, username }) }} />
             <Text>Select some categories to track. You can always add more later.</Text>
 
             <View style={styles.categoryContainer}>

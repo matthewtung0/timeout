@@ -1,5 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image } from 'react-native';
+import {
+    View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image,
+    Keyboard, TouchableWithoutFeedback
+} from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 
@@ -7,6 +10,12 @@ import { Context as CategoryContext } from '../context/CategoryContext'
 import { Context as UserContext } from '../context/userContext'
 
 const img_src = require('../../assets/signin_background.png');
+
+const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+);
 
 const SigninScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
@@ -40,73 +49,75 @@ const SigninScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <HideKeyboard>
+            <View style={styles.container}>
 
-            <ImageBackground
-                source={img_src}
-                style={[styles.image,
-                { width: width, height: height }]}
-                resizeMode='stretch'>
+                <ImageBackground
+                    source={img_src}
+                    style={[styles.image,
+                    { width: width, height: height }]}
+                    resizeMode='stretch'>
 
-                <View style={styles.inputContainer}>
-                    <View style={{ flex: 8 }} />
-                    <View style={{ flex: 1.7 }}>
-                        <Input
-                            style={styles.inputStyle}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                            value={email}
-                            placeholder="Email"
-                            onChangeText={setEmail}
-                        />
+                    <View style={styles.inputContainer}>
+                        <View style={{ flex: 8 }} />
+                        <View style={{ flex: 1.7 }}>
+                            <Input
+                                style={styles.inputStyle}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={email}
+                                placeholder="Email"
+                                onChangeText={setEmail}
+                            />
+                        </View>
+
+                        <View style={{ flex: 3 }}>
+                            <Input
+
+                                style={styles.inputStyle}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                secureTextEntry={true}
+                                placeholder="Password"
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+                            <TouchableOpacity onPress={() =>
+                                navigation.navigate('ForgotPassword')
+                            }
+                            >
+                                <Text style={styles.button}>Forgot your password?</Text>
+
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ flex: 3 }}>
+                            <TouchableOpacity
+                                style={styles.signInBoxStyle}
+                                onPress={() => {
+                                    console.log("pressed sign in button")
+                                    signin(email, password, signInCallback)
+                                }}>
+                                <Text style={styles.signInTextStyle}>Sign In</Text>
+                            </TouchableOpacity>
+                            {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('SignUp')}
+                            >
+
+                                <Text style={styles.redirectToSignInStyleWhite}>Don't have an account?
+                                    <Text style={styles.redirectToSignInStyleYellow}> Sign up here!</Text>
+                                </Text>
+                            </TouchableOpacity>
+
+                        </View>
                     </View>
-
-                    <View style={{ flex: 3 }}>
-                        <Input
-
-                            style={styles.inputStyle}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            secureTextEntry={true}
-                            placeholder="Password"
-                            autoCapitalize='none'
-                            autoCorrect={false}
-                            value={password}
-                            onChangeText={setPassword}
-                        />
-                        <TouchableOpacity onPress={() =>
-                            navigation.navigate('ForgotPassword')
-                        }
-                        >
-                            <Text style={styles.button}>Forgot your password?</Text>
-
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={{ flex: 3 }}>
-                        <TouchableOpacity
-                            style={styles.signInBoxStyle}
-                            onPress={() => {
-                                console.log("pressed sign in button")
-                                signin(email, password, signInCallback)
-                            }}>
-                            <Text style={styles.signInTextStyle}>Sign In</Text>
-                        </TouchableOpacity>
-                        {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('SignUp')}
-                        >
-
-                            <Text style={styles.redirectToSignInStyleWhite}>Don't have an account?
-                                <Text style={styles.redirectToSignInStyleYellow}> Sign up here!</Text>
-                            </Text>
-                        </TouchableOpacity>
-
-                    </View>
-                </View>
-            </ImageBackground>
-        </View >
+                </ImageBackground>
+            </View >
+        </HideKeyboard>
     )
 }
 

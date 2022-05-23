@@ -1,7 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Text, Button, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import {
+    View, StyleSheet, Text, Button, TouchableOpacity, FlatList, Dimensions, Image,
+    Keyboard, TouchableWithoutFeedback
+} from 'react-native';
+import { Icon } from 'react-native-elements'
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
+
+const img = require('../../assets/tasks_topbar.png')
 
 const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     const [showChild, setShowChild] = useState(false)
@@ -13,21 +19,33 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
         setEditItem(item)
         setChildTitle('Edit Task')
         setShowChild(true)
-
     }
 
     const parentView = () => {
         return (
+
             <View style={styles.parentContainer}>
-                <Text style={styles.title}>Tasks</Text>
+                <Text style={styles.title}></Text>
                 <FlatList
                     style
                     horizontal={false}
                     data={todoItems}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(result) => result.item_id}
+                    ItemSeparatorComponent={() => {
+                        return (<View
+                            style={{
+                                borderBottomColor: 'white',
+                                //borderBottomWidth: StyleSheet.hairlineWidth,
+                                borderBottomWidth: 0.8,
+                                marginHorizontal: 15,
+                            }}
+                        />)
+
+                    }}
                     renderItem={({ item }) => {
                         return (
+                            // SELECT THE OBJECT, TO GO BACK TO SESSION SELECT SCREEN
                             <TouchableOpacity
                                 onPress={() => {
                                     callback({
@@ -53,9 +71,11 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                     ListFooterComponent={() =>
                         <View>
 
+                            {/* button to add a new todo item */}
                             <TouchableOpacity
                                 style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
                                 onPress={() => {
+                                    setChildTitle('Add Task')
                                     setShowChild(true)
 
                                 }}>
@@ -64,6 +84,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                         </View>
                     }
                 />
+
             </View>
         )
     }
@@ -76,40 +97,71 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
         }
         return (
             <>
+
                 <AddTodoComponent
                     title={childTitle}
                     item={editItem}
                     callback={addTodoCallback} />
-                <View style={{ backgroundColor: '#90AB72' }}>
-                    <TouchableOpacity
-                        style={styles.goBackChild}
-                        onPress={() => {
-                            setShowChild(false)
-                            setEditItem(null)
-                        }}>
-                        <Text style={styles.goBackText}>Go back</Text>
-
-                    </TouchableOpacity>
-                </View>
 
             </>
         )
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.dummy} />
-            <View style={styles.modal}>
-                {showChild ? childView() : parentView()}
+        <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
 
+
+            {/*<View style={styles.dummy} />*/}
+            <View style={styles.modal}>
+
+
+                {showChild ? childView() : parentView()}
             </View>
+
+            <Image
+                source={img}
+                resizeMode='stretch'
+                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+
+            <Text style={[styles.title, { position: 'absolute', }]}>{showChild ? childTitle : "Tasks"}</Text>
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={toggleFunction}>
-                    <Text style={styles.backButtonText}>X</Text>
+
+                    <Icon
+                        name="close-outline"
+                        type='ionicon'
+                        size={35}
+                        color='white' />
+                    {/*<Text style={styles.backButtonText}>X</Text>*/}
                 </TouchableOpacity>
             </View>
+
+            {/* go back button */}
+            {showChild ?
+                <View style={{
+                    flex: 1, position: 'absolute', width: '50%',
+                    alignItems: 'flex-start', justifyContent: 'flex-start',
+                }}>
+
+                    <TouchableOpacity
+                        style={styles.goBackChild}
+                        onPress={() => {
+                            setShowChild(false)
+                            setEditItem(null)
+                        }}>
+                        <Icon
+                            name="arrow-back-outline"
+                            type='ionicon'
+                            size={35}
+                            color='white' />
+                        {/*<Text style={styles.goBackText}>Go back</Text>*/}
+
+                    </TouchableOpacity>
+                </View> : null}
+
+
         </View>
     )
 
@@ -133,56 +185,53 @@ const styles = StyleSheet.create({
     },
     modal: {
         flex: 1,
-        borderWidth: 1,
-        borderColor: 'black',
         backgroundColor: '#FFFFFF',
     },
     title: {
         alignSelf: 'center',
-        margin: 15,
-        fontSize: 20,
+        margin: 20,
+        marginBottom: 50,
+        fontSize: 25,
         fontWeight: 'bold',
-        color: '#67806D',
+        color: 'white',
     },
     toDoComponent: {
         marginHorizontal: 15,
     },
     backButton: {
-        width: 40,
-        height: 40,
-        backgroundColor: '#ABC57E',
+        width: 50,
+        height: 50,
         justifyContent: 'center',
-        borderRadius: 500,
     },
     backButtonText: {
         alignSelf: 'center',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 25,
         color: 'white',
 
     },
     backContainer: {
         flex: 1,
-        width: '100%',
+        width: '50%',
         position: 'absolute',
-        justifyContent: 'flex-start',
+        alignSelf: 'flex-end',
+        justifyContent: 'flex-end',
         alignItems: 'flex-end'
     },
     dummy: {
         flex: 0.03,
     },
     goBackChild: {
-        backgroundColor: '#90AB72',
+        width: 50,
+        height: 50,
         alignItems: 'center',
-        width: 60,
-        borderRadius: 5,
         justifyContent: 'center',
         alignContent: 'center',
-        alignSelf: 'center'
     },
     goBackText: {
         color: 'white',
         paddingBottom: 3,
+        fontSize: 20,
     },
     plus: {
         backgroundColor: '#ABC57E',

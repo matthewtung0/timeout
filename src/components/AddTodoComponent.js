@@ -1,17 +1,28 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
-    View, StyleSheet, Text, FlatList, TextInput,
-    KeyboardAvoidingView, TouchableOpacity, Dimensions
+    View, StyleSheet, Text, TextInput, TouchableOpacity, Dimensions, Keyboard, TouchableWithoutFeedback
 } from 'react-native';
 import { Input } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
-import CategoryButton from './CategoryButton';
+import DropDownComponent from '../components/DropDownComponent';
 
-// DOUBLES AS ADD NEW ITEM AND EDIT EXISTING ONES!
+const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+);
+
+// double as add new item and editing existing items
 const AddTodoComponent = ({ title, callback, item }) => {
     const { height, width } = Dimensions.get('window');
+
     const [toDoItemName, setToDoItemName] = useState('')
+
+    const [categoryName, setCategoryName] = useState(item ? item.category_name : 'Unsorted')
+    const [colorId, setColorId] = useState(item ? item.color_id : 'c6')
+    const [categoryId, setCategoryId] = useState(item ? item.category_id : '3')
+
     const [resMessage, setResMessage] = useState('')
     const { state, addTodoItem, editTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
 
@@ -40,11 +51,14 @@ const AddTodoComponent = ({ title, callback, item }) => {
         }
         return true
     }
+    console.log("this item is", item)
+
 
     // initialize data if this is an edit of existing task
     useFocusEffect(
         useCallback(() => {
             if (item) {
+
                 setToDoItemName(item.item_desc)
                 setNotes(item.notes)
                 setSelectedButton({ buttonName: item.category_name, buttonId: item.category_id })
@@ -54,74 +68,72 @@ const AddTodoComponent = ({ title, callback, item }) => {
 
     return (
 
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <Text style={styles.title}>{title}</Text>
+        <HideKeyboard>
 
-            < Input
-                inputContainerStyle={styles.inputStyleContainer}
-                style={styles.inputStyle}
-                placeholder='Task'
-                autoCorrect={false}
-                value={toDoItemName}
-                onChangeText={setToDoItemName}
-            />
-            <TextInput
-                style={styles.notes}
-                multiline={true}
-                numberOfLines={4}
-                maxHeight={120}
-                editable
-                maxLength={150}
-                value={notes}
-                textAlignVertical='top'
-                onChangeText={setNotes}
+            <View
+                style={styles.container}
+            >
+                {/*<Text style={styles.title}>{title}</Text>*/}
+                <Text style={styles.title}></Text>
 
-            />
+                < Input
+                    inputContainerStyle={styles.inputStyleContainer}
+                    style={styles.inputStyle}
+                    placeholder='Task'
+                    autoCorrect={false}
+                    value={toDoItemName}
+                    onChangeText={setToDoItemName}
+                />
+                <TextInput
+                    style={styles.notes}
+                    multiline={true}
+                    numberOfLines={4}
+                    maxHeight={120}
+                    editable
+                    maxLength={150}
+                    value={notes}
+                    textAlignVertical='top'
+                    onChangeText={setNotes}
 
-            <Text>selected button is {selectedButton.buttonName}</Text>
-            < FlatList
-                columnWrapperStyle={{ justifyContent: 'space-between', flex: 1, marginVertical: 5, marginHorizontal: 10 }}
-                style={styles.catButtons}
-                horizontal={false}
-                data={state.userCategories}
-                numColumns='3'
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(result) => result.category_id}
-                renderItem={({ item }) => {
-                    return (
-                        <CategoryButton
-                            id={item.category_id}
-                            catName={item.category_name}
-                            colorId={item.color_id}
-                            callback={updateButton} />
-                    )
-                }}
-            />
+                />
 
-            <TouchableOpacity
-                style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
-                onPress={() => {
-                    if (!validateInputs()) { return }
-                    if (item) {
-                        editTodoItem(toDoItemName, selectedButton.buttonId, notes,
-                            item.item_desc, resetInputs);
-                    } else {
-                        addTodoItem(toDoItemName, new Date(), selectedButton.buttonId, notes, resetInputs);
-                    }
+                {/*<Text>selected button is {selectedButton.buttonName}</Text>*/}
 
-                }}>
-                <Text style={styles.plusText}>+</Text>
-            </TouchableOpacity>
+                <DropDownComponent
+                    isInModal={true}
+                    categoryId={categoryId}
+                    catName={categoryName}
+                    colorId={colorId}
+                    setCatNameCallback={setCategoryName}
+                    setColorIdCallback={setColorId}
+                    setCategoryIdCallback={setCategoryId}
+                />
 
-            {
-                resMessage ? <Text>{resMessage} </Text> : null}
-            {
-                state.errorMessage ? <Text>{state.errorMessage} </Text> : null}
+                {/* add or edit the item */}
+                <TouchableOpacity
+                    style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
+                    onPress={() => {
+                        if (!validateInputs()) { return }
+                        if (item) {
+                            //editTodoItem(toDoItemName, selectedButton.buttonId, notes, item.item_desc, resetInputs);
+                            //toDoItemName, categoryId, notes, oldToDoName, callback = null
 
-        </KeyboardAvoidingView>
+                            editTodoItem(toDoItemName, categoryId, notes, item.item_desc, resetInputs)
+                        } else {
+                            addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs);
+                        }
+
+                    }}>
+                    <Text style={styles.plusText}>+</Text>
+                </TouchableOpacity>
+
+                {
+                    resMessage ? <Text>{resMessage} </Text> : null}
+                {
+                    state.errorMessage ? <Text>{state.errorMessage} </Text> : null}
+
+            </View>
+        </HideKeyboard>
 
     )
 }
@@ -130,7 +142,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'space-around',
-        backgroundColor: '#90AB72'
+        backgroundColor: '#83B569'
     },
     title: {
         alignSelf: 'center',

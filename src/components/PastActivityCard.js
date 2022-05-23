@@ -27,8 +27,6 @@ const PastActivityCard = ({ session }) => {
             <View style={[styles.bg, { flex: 3, }]}>
                 <Text style={[styles.title, { color: bgColorHex }]}>{session.activity_name}</Text>
                 <Text style={styles.time}>{timeDiffSec} sec</Text>
-
-
             </View>
         </View>
 

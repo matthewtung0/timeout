@@ -1,16 +1,27 @@
 import React, { useState, useContext, useRef } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions, Image } from 'react-native';
+import {
+    View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions, Image, TextInput,
+    Keyboard, TouchableWithoutFeedback
+} from 'react-native';
 import { Text, Input } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
+import DropDownComponent from '../components/DropDownComponent';
+const constants = require('../components/constants.json')
 
 const table_bg = require('../../assets/sessionselect_tablebg.png');
 
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
+
+const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+);
 
 const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const { height, width } = Dimensions.get('window');
@@ -19,9 +30,27 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     //const { state, fetchSelf } = useContext(UserContext)
     const { state: categoryState, setChosen, setActivityName, setStartTime } = useContext(CategoryContext)
     const [customActivity, setCustomActivity] = useState('')
+
     const [catId, setCatId] = useState(3)
     const [catName, setCatName] = useState('unsorted')
-    const [colorId, setColorId] = useState('c0')
+    const [colorId, setColorId] = useState('c6')
+
+    const [open, setOpen] = useState(false);
+    const [categoryId, setCategoryId] = useState("3");
+
+    const [items, setItems] = useState(
+        categoryState.userCategories.map(item => {
+            return {
+                label: item.category_name,
+                value: item.category_id,
+                color: item.color_id,
+                containerStyle: { backgroundColor: constants.colors[item.color_id] }
+            }
+        })
+    )
+
+    const [newCatName, setNewCatName] = useState('unsorted')
+    const [newColorId, setNewColorId] = useState('c6')
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -63,6 +92,11 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         // for context uses, might delete later
         setActivityName(item_desc)
         setChosen({ buttonName: cat_name, buttonId: cat_id, })
+
+        // for new dropdown selector
+        setNewCatName(cat_name)
+        setNewColorId(color_id)
+        setCategoryId(cat_id)
     }
 
     const validateInputs = () => {
@@ -77,115 +111,100 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     }
 
     return (
-        <View style={styles.viewContainer}>
+        <HideKeyboard>
+            <View style={styles.viewContainer}>
 
-            <View>
-                <Modal isVisible={modalVisible}
-                    animationIn='slideInLeft'
-                    animationOut='slideOutLeft'>
-                    <ToDoSelector
-                        toggleFunction={toggleModal}
-                        todoItems={categoryState.userTodoItems}
-                        callback={fillInWithItem} />
-                </Modal>
-            </View>
-            <Image
-                source={clock_top}
-                style={{
-                    width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
-                    marginTop: 30,
-                }}
-                resizeMode="contain" />
-            <CircularSelector
-                minSet={0}
-                updateCallback={updateTime}
-                ref={circularRef} />
-            <Image
-                source={clock_bottom}
-                style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
-                resizeMode="contain" />
+                <View>
+                    <Modal isVisible={modalVisible}
+                        animationIn='slideInLeft'
+                        animationOut='slideOutLeft'
+                    >
+                        <ToDoSelector
+                            toggleFunction={toggleModal}
+                            todoItems={categoryState.userTodoItems}
+                            callback={fillInWithItem} />
+                    </Modal>
+                </View>
+                <Image
+                    source={clock_top}
+                    style={{
+                        width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
+                        marginTop: 30,
+                    }}
+                    resizeMode="contain" />
+                <CircularSelector
+                    minSet={0}
+                    updateCallback={updateTime}
+                    ref={circularRef} />
+                <Image
+                    source={clock_bottom}
+                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                    resizeMode="contain" />
 
-            {/*</ImageBackground>*/}
+                {/*</ImageBackground>*/}
 
-            <Input
-                style={styles.input}
-                placeholder="Activity"
-                rightIconContainerStyle={styles.rightIconInput}
-                inputContainerStyle={styles.inputStyleContainer}
-                autoCorrect={true}
-                value={customActivity}
-                onChangeText={(text) => {
-                    setCustomActivity(text)
-                    setActivityName(text)
-                }
-                }
-            />
-
-            {/*<Icon type='ionicon' name='create-outline' />*/}
-
-            <FlatList
-                columnWrapperStyle={{ flex: 1, marginVertical: 5, }}
-                style={{ alignSelf: 'center', }}
-                horizontal={false}
-                data={categoryState.userCategories}
-                numColumns='3'
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(result) => result.category_id}
-                renderItem={({ item }) => {
-                    return (
-                        <View style={{
-                            backgroundColor: (catId == item.category_id ? 'gray' : 'rgba(0,0,0,0)'), borderRadius: 10,
-                            marginHorizontal: 4,
-                        }}>
-                            <CategoryButton
-                                id={item.category_id}
-                                catName={item.category_name}
-                                colorId={item.color_id}
-                                callback={updateButton} />
-                        </View>
-                    )
-                }}
-
-                ListFooterComponent={() =>
-                    <TouchableOpacity
-                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
-                        onPress={() => {
-                            if (!validateInputs()) {
-                                return;
-                            }
-                            let cat_Name = catName
-                            let cat_Id = catId
-                            let timer_Time = time
-
-                            clearInputs()
-                            circularRef.current.resetSlider()
-
-                            navigate('SessionOngoing', {
-                                numMins: timer_Time,
-                                categoryId: cat_Id,
-                                categoryName: cat_Name,
-                                activityName: customActivity,
-                                colorId: colorId,
-                            })
-                        }}>
-                        <Text style={styles.startText}>Start</Text>
-
-                    </TouchableOpacity>
-                }
-
-            >
-            </FlatList>
-
-            <View style={styles.modalContainer}>
-                <View style={styles.modalDummy} />
+                <Text>{categoryId}</Text>
+                <Text>{"Category name: " + newCatName}</Text>
+                <Text>{"Color id: " + newColorId}</Text>
+                <TextInput
+                    style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
+                    placeholder="Activity"
+                    rightIconContainerStyle={styles.rightIconInput}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    autoCorrect={true}
+                    value={customActivity}
+                    onChangeText={(text) => {
+                        setCustomActivity(text)
+                        setActivityName(text)
+                    }
+                    }
+                />
+                <DropDownComponent
+                    isInModal={false}
+                    categoryId={categoryId}
+                    catName={newCatName}
+                    colorId={newColorId}
+                    setCatNameCallback={setNewCatName}
+                    setColorIdCallback={setNewColorId}
+                    setCategoryIdCallback={setCategoryId}
+                />
 
                 <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={toggleModal}>
-                    <Text style={styles.modalButtonText}>+</Text>
+                    style={[styles.start, { width: width / 2.2, height: height / 12 }]}
+                    onPress={() => {
+                        if (!validateInputs()) {
+                            return;
+                        }
+                        let cat_Name = newCatName
+                        let cat_Id = categoryId
+                        let timer_Time = time
+
+                        clearInputs()
+                        circularRef.current.resetSlider()
+
+                        navigate('SessionOngoing', {
+                            numMins: timer_Time,
+                            categoryId: cat_Id,
+                            categoryName: cat_Name,
+                            activityName: customActivity,
+                            colorId: newColorId,
+                        })
+                    }}>
+                    <Text style={styles.startText}>Start</Text>
+
                 </TouchableOpacity>
+
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalDummy} />
+
+                    <TouchableOpacity
+                        style={styles.modalButton}
+                        onPress={toggleModal}>
+                        <Text style={styles.modalButtonText}>+</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </HideKeyboard>
     )
 }
 
@@ -211,15 +230,18 @@ const styles = StyleSheet.create({
         flex: 1
     },
     input: {
+        alignSelf: 'center',
         backgroundColor: 'white',
         borderRadius: 15,
-        marginHorizontal: 27,
         paddingHorizontal: 17,
+        paddingVertical: 10,
         shadowOffset: {
             width: 0.1,
             height: 0.1,
         },
         shadowOpacity: 0.2,
+        color: 'gray',
+        fontSize: 18,
     },
     inputContainer: {
         flex: 1,
