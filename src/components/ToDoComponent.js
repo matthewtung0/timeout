@@ -53,11 +53,13 @@ const styles = StyleSheet.create({
     text: {
         color: '#67806D',
         fontSize: 18,
+        fontWeight: '600',
     },
     categoryText: {
         color: 'white',
         fontSize: 14,
         textAlign: 'center',
+        fontWeight: '800',
     },
     container: {
         flex: 1,

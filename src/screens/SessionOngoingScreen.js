@@ -1,29 +1,25 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import {
     fromUnixTime, getUnixTime, isThisSecond, format,
     differenceInMilliseconds, addSeconds, addMinutes
 } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 const constants = require('../components/constants.json')
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
-
     const { height, width } = Dimensions.get('window');
-
     const { numMins, categoryId, categoryName, activityName, colorId } = params;
     let bgColorHex = constants.colors[colorId]
-    const [min, setMin] = useState(numMins);
-    const [sec, setSec] = useState(0);
 
     const [plannedMin, setPlannedMin] = useState(numMins)
-
-    const [formattedTime, setFormattedTime] = useState('00:00');
 
     const [secLeft, setSecLeft] = useState(numMins * 60);
 
     const increment = useRef(null);
     let now_dt = getUnixTime(new Date())
     const [endTime, setEndTime] = useState(getUnixTime(addSeconds(fromUnixTime(now_dt), numMins * 60 + 1)))
+    const [startTime, setStartTime] = useState(new Date())
 
     //let bgColorHex = constants.colors[bgColor]
 
@@ -31,7 +27,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         chosenCategory: categoryName,
         chosenCatId: categoryId,
         customActivity: activityName,
-        sessionStartTime: '',
+        //sessionStartTime: '',
         //sessionEndTime: '',
         //endEarlyFlag: '',
         prodRating: '',
@@ -56,16 +52,22 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
-            navigate('SessionEval', { sessionObj, sessionEndTime: new Date(), endEarlyFlag: true, plannedMin: plannedNumMinutes })
+            navigate('SessionEval', {
+                sessionObj, sessionEndTime: getUnixTime(new Date()),
+                endEarlyFlag: true, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
+            })
             //setEndTime(fromUnixTime(now_dt), true)
         } else {
-            navigate('SessionEval', { sessionObj, sessionEndTime: new Date(), endEarlyFlag: false, plannedMin: plannedNumMinutes })
+            navigate('SessionEval', {
+                sessionObj, sessionEndTime: getUnixTime(new Date()),
+                endEarlyFlag: false, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
+            })
             //setEndTime(fromUnixTime(endTime), false)
         }
         alert('Time end')
     }
 
-    useEffect(() => {
+    /*useEffect(() => {
         //setStartTime(fromUnixTime(now_dt))
         setSessionObj({ ...sessionObj, sessionStartTime: fromUnixTime(now_dt) })
 
@@ -76,7 +78,27 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         // temporary comment this out to work on it
         handleStart(endTime, numMins);
 
-    }, [])
+    }, [])*/
+
+
+    useFocusEffect(
+
+        useCallback(() => {
+            setStartTime(new Date())
+            //setSessionObj({ ...sessionObj, sessionStartTime: now_dt })
+
+            if (isThisSecond(fromUnixTime(endTime))) {
+                handleReset(false, numMins)
+            }
+
+            // temporary comment this out to work on it
+            handleStart(endTime, numMins);
+
+            return () => {
+                setEndTime(0)
+            }
+        }, [])
+    )
 
     const twoDigits = (num) => {
         return ("0" + num).slice(-2)
@@ -132,7 +154,29 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         <View style={styles.container}>
 
             <Text style={styles.timeLeft}>Time Left</Text>
-            <Text style={styles.time}>{twoDigits(Math.floor(secLeft / 60)) + ":" + twoDigits(secLeft % 60)}</Text>
+            {/*<Text style={styles.time}>{twoDigits(Math.floor(secLeft / 60)) + ":" + twoDigits(secLeft % 60)}</Text>*/}
+
+            <View style={{
+                flex: 1, flexDirection: 'row', alignItems: 'center',
+                marginBottom: 50, marginTop: 50,
+            }}>
+                <View style={{ flex: 1.2 }} />
+                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
+                    {twoDigits(Math.floor(secLeft / 60))[0]}
+                </Text>
+                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
+                    {twoDigits(Math.floor(secLeft / 60))[1]}
+                </Text>
+                <Text style={{ flex: 0.5, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>:</Text>
+                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
+                    {twoDigits(secLeft % 60)[0]}
+                </Text>
+                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
+                    {twoDigits(secLeft % 60)[1]}
+                </Text>
+                <View style={{ flex: 1.2 }} />
+            </View>
+
 
             <View style={[styles.gotThisContainer, { width: width / 1.5, height: height / 10 }]}>
                 <Text style={styles.gotThis}>You got this!</Text>
@@ -187,7 +231,7 @@ const styles = StyleSheet.create({
     },
     timeLeft: {
         color: '#90AB72',
-        fontSize: 18,
+        fontSize: 28,
         fontWeight: 'bold',
         alignSelf: 'center'
     },

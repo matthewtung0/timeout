@@ -22,7 +22,6 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     )
     let selectedWidth = width * 0.9
     if (isInModal) selectedWidth = width * 0.8
-    console.log(colorId, categoryId)
 
     return (
         <DropDownPicker
@@ -32,8 +31,8 @@ const DropDownComponent = ({ catName, colorId, categoryId,
             open={open}
             value={categoryId}
             setValue={setCategoryIdCallback}
-            labelStyle={{ color: 'gray' }}
-            textStyle={{ fontSize: 18, color: 'gray', }}
+            labelStyle={{ color: 'white' }}
+            textStyle={{ fontSize: 18, color: 'white', fontWeight: '600', }}
             containerStyle={{
                 borderWidth: 0,
                 width: selectedWidth,
@@ -46,7 +45,6 @@ const DropDownComponent = ({ catName, colorId, categoryId,
                 backgroundColor: constants.colors[colorId],
             }]}
             onSelectItem={(item) => {
-                console.log(item)
                 setCatNameCallback(item.label)
                 setColorIdCallback(item.color)
             }} />

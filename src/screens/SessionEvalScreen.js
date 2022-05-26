@@ -2,16 +2,22 @@ import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider'
 import { useFocusEffect } from '@react-navigation/native';
+import { fromUnixTime } from 'date-fns';
 
 const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { sessionObj, sessionEndTime, endEarlyFlag, plannedMin } = params;
+    const { sessionObj, sessionEndTime, sessionStartTime, endEarlyFlag, plannedMin } = params;
     const [sessionObjEval, setSessionObjEval] = useState({
         ...sessionObj,
-        sessionEndTime: sessionEndTime,
+        //sessionEndTime: sessionEndTime,
         endEarlyFlag: endEarlyFlag,
         plannedMin: plannedMin,
         prodRating: 50, // 50 if user doesn't pick productivity
+
+
+        //sessionStartTime: fromUnixTime(sessionObj.sessionStartTime),
+        //sessionEndTime: fromUnixTime(sessionEndTime)
     })
+    console.log(sessionObjEval)
     console.log("planned min:", plannedMin)
     console.log("End time:", sessionEndTime)
     const [prodRatingNum, setProdRatingNum] = useState(50)
@@ -19,21 +25,21 @@ const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
     return (
         <View style={styles.container}>
 
-            <View style={{ flex: 2 }} />
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 0.3 }} />
+            <View style={{ flex: 3 }}>
                 <Text style={styles.text}>Congratulations for finishing!</Text>
             </View>
             <View style={{ flex: 1 }}>
-                <Text style={styles.text}>Now be honest..</Text>
+                <Text style={[styles.text, { fontSize: 27, }]}>Now be honest..</Text>
             </View>
-
-            <View style={{ flex: 1 }}>
-                <Text style={styles.text}>How productive were you?</Text>
-            </View>
-
 
             <View style={{ flex: 2 }}>
-                <Text>{prodRatingNum}</Text>
+                <Text style={[styles.text, { fontSize: 35, }]}>How productive were you?</Text>
+            </View>
+
+
+            <View style={{ flex: 1.7 }}>
+                <Text>{Math.round(prodRatingNum)}</Text>
                 <View style={{ alignItems: 'center' }}>
                     <Slider
                         style={styles.slider}
@@ -45,7 +51,9 @@ const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
                         onSlidingStart={() => {
                         }}
                         onSlidingComplete={() => {
-                            setSessionObjEval({ ...sessionObjEval, prodRating: Math.round(prodRatingNum) })
+                            setSessionObjEval({
+                                ...sessionObjEval, prodRating: Math.round(prodRatingNum),
+                            })
                             //setProdRating(Math.round(prodRatingNum))
                         }}
                         onValueChange={setProdRatingNum}
@@ -58,10 +66,14 @@ const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
                     style={styles.buttonStyle}
                     onPress={() => {
                         //saveSession()
-                        navigate('SessionReward', { sessionObjEval })
+                        navigate('SessionReward', {
+                            sessionObjEval,
+                            sessionStartTime: sessionStartTime,
+                            sessionEndTime: sessionEndTime
+                        })
                     }
                     }>
-                    <Text style={styles.buttonTextStyle}>Ok</Text>
+                    <Text style={styles.buttonTextStyle}>Continue</Text>
                 </TouchableOpacity>
             </View>
 
@@ -83,9 +95,11 @@ const styles = StyleSheet.create({
         height: 40,
     },
     text: {
-        fontWeight: 'bold',
-        fontSize: 18,
-        color: '#67806D'
+        fontWeight: '500',
+        fontSize: 40,
+        color: '#67806D',
+        alignSelf: 'center',
+        textAlign: 'center',
     },
     buttonStyle: {
         backgroundColor: '#FCC859',
@@ -94,12 +108,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        shadowOffset: {
+            width: 0.1,
+            height: 0.1,
+        },
+        shadowOpacity: 0.2,
+        color: 'gray',
+        fontSize: 18,
     },
     buttonTextStyle: {
         color: '#F6F2DF',
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+
 
     },
 })

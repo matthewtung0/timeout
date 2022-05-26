@@ -9,6 +9,7 @@ import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
 import DrawerProfileView from '../components/DrawerProfileView';
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
+import Header from '../components/Header';
 
 const constants = require('../components/constants.json')
 
@@ -144,15 +145,8 @@ const ProfileScreen = ({ navigation }) => {
                             {profileStats.totalTime.seconds ? profileStats.totalTime.seconds + 's ' : '0s '}</Text>
                         : <Text style={styles.text}>0h 0m 0s</Text>}
                 </View>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => { navigation.navigate('mainFlow') }}>
-                    <Icon
-                        name='arrow-back-outline'
-                        type='ionicon'
-                        size={24}
-                        color='#67806D' />
-                </TouchableOpacity>
+                <Header
+                    navigation={navigation} />
 
                 {isMe ?
                     <TouchableOpacity

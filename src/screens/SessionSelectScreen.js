@@ -62,7 +62,12 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         setSelectedButton({ buttonName: 'unsorted', buttonId: 3 })
         setCatId(3)
         setCatName('unsorted')
+
+        setCategoryId("3")
+
         setTime(0)
+        updateTime(0)
+        setNewCatName('c6')
         setCustomActivity('')
     }
 
@@ -143,15 +148,16 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
 
                 {/*</ImageBackground>*/}
 
-                <Text>{categoryId}</Text>
+                {/*<Text>{categoryId}</Text>
                 <Text>{"Category name: " + newCatName}</Text>
-                <Text>{"Color id: " + newColorId}</Text>
+                <Text>{"Color id: " + newColorId}</Text>*/}
                 <TextInput
                     style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
                     placeholder="Activity"
                     rightIconContainerStyle={styles.rightIconInput}
                     inputContainerStyle={styles.inputStyleContainer}
                     autoCorrect={true}
+                    maxLength={30}
                     value={customActivity}
                     onChangeText={(text) => {
                         setCustomActivity(text)
@@ -289,10 +295,10 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 20,
-        marginTop: 20,
+        marginTop: 30,
         shadowOffset: {
-            width: 0.5,
-            height: 0.5,
+            width: 0.3,
+            height: 0.3,
         },
         shadowOpacity: 0.5,
 

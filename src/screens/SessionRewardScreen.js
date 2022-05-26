@@ -1,13 +1,23 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Switch } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Switch, ActivityIndicator } from 'react-native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
+import { fromUnixTime, toDate } from 'date-fns';
 
 const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { sessionObjEval } = params;
+    const { sessionObjEval, sessionStartTime, sessionEndTime } = params;
     console.log("This object made it here", sessionObjEval);
+    console.log("Session start time", fromUnixTime(sessionStartTime));
+    console.log("Session end time", fromUnixTime(sessionEndTime));
+
+    const [sessionObjReward, setSessionObjReward] = useState({
+        ...sessionObjEval,
+        sessionStartTime: fromUnixTime(sessionStartTime),
+        sessionEndTime: fromUnixTime(sessionEndTime)
+    })
+
     const { state: s, deleteTodoItem, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
     const { state: userState, addPoints, fetchSelf } = useContext(UserContext)
 
@@ -19,22 +29,32 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
 
     const [toKeep, setToKeep] = useState(true);
     const [toAdd, setToAdd] = useState(false)
-    const toggleRemoveTodo = () => setToKeep(previousState => !previousState);
-    const toggleAddTodo = () => setToAdd(previousState => !previousState);
+    const toggleRemoveTodo = () => {
+        setToKeep(previousState => !previousState);
+    }
+    const toggleAddTodo = () => {
+        setToAdd(previousState => !previousState);
+    }
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    console.log("tokeep is", toKeep);
+    console.log("toAdd is ", toAdd)
+    console.log("existing id", existingId)
 
     const saveSession = async () => {
 
-
-
         try {
-            const response = await timeoutApi.post('/save_session', sessionObjEval)
+            const response = await timeoutApi.post('/save_session', sessionObjReward)
             console.log("Session save successful!")
 
             // deleting an existing task
             if (existingItem && !toKeep) {
+                console.log("DELETING ITEM")
                 await deleteItem()
                 // adding a new task
             } else if (!existingItem && toAdd) {
+
                 await addItem()
             }
 
@@ -54,7 +74,7 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
             var _catId = curTodoItems[i]['category_id']
             var _itemDesc = curTodoItems[i]['item_desc']
 
-            if (_catId == sessionObjEval.chosenCatId && _itemDesc == sessionObjEval.customActivity) {
+            if (_catId == sessionObjReward.chosenCatId && _itemDesc == sessionObjReward.customActivity) {
                 setExistingItem(true)
                 setExistingId(curTodoItems[i]['item_id'])
                 return
@@ -69,11 +89,12 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
     }
 
     const addItem = async () => {
-        await addTodoItem(s.customActivity, new Date(), s.chosenCatId)
+        await addTodoItem(sessionObjReward.customActivity, new Date(), sessionObjReward.chosenCatId)
         console.log("Added this task from todo list")
     }
 
     const offBoard = () => {
+        setIsLoading(false)
         navigate('SessionSelect')
     }
 
@@ -85,47 +106,71 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
     )
     return (
         <View style={styles.container}>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 0.4 }}>
                 <Text style={styles.text}>You have earned {energyBase.toString()} energy!</Text>
             </View>
 
 
-            {existingItem ? (<View style={styles.toggleContainer}>
-
-                <Switch
-                    style={styles.toggleSwitch}
-                    trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
-                    thumbColor={toKeep ? "#67806D" : "#67806D"}
-                    ios_backgroundColor="#ABC57E"
-                    onValueChange={toggleRemoveTodo}
-                    value={toKeep}
-                />
-                <Text style={styles.toggleText}>Disable this if you want to take this off your tasks list.</Text>
-            </View>) :
+            {existingItem ? (
+                <View style={styles.toggleContainer}>
+                    <Text style={{ marginBottom: 10, }}>This task is currently on your task list.</Text>
+                    <Text>If you want to remove it, just disable the switch below.</Text>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 20, }}>
+                        <Switch
+                            style={{ flex: 0.3, marginRight: 20, }}
+                            trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
+                            thumbColor={toKeep ? "#67806D" : "#67806D"}
+                            ios_backgroundColor="#ABC57E"
+                            onValueChange={toggleRemoveTodo}
+                            value={toKeep}
+                        />
+                        {toKeep ? <Text style={{ flex: 1, }}>Keep it, I'm still working on it!</Text> :
+                            <Text style={{ flex: 1, }}>Remove this from my task list.</Text>}
+                    </View>
+                </View>) :
                 (<View style={styles.toggleContainer}>
+                    <Text style={{ marginBottom: 10, }}>This task isn't on your task list.</Text>
+                    <Text>If you want to add it, just enable the switch below (you can always delete it again later).</Text>
 
-                    <Switch
-                        style={styles.toggleSwitch}
-                        trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
-                        thumbColor={toAdd ? "#67806D" : "#67806D"}
-                        ios_backgroundColor="#ABC57E"
-                        onValueChange={toggleAddTodo}
-                        value={toAdd}
-                    />
-                    <Text>Enable this if you want to add this to your tasks list.</Text>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 20, }}>
+                        <Switch
+                            style={{ flex: 0.3, marginRight: 20, }}
+                            trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
+                            thumbColor={toAdd ? "#67806D" : "#67806D"}
+                            ios_backgroundColor="#ABC57E"
+                            onValueChange={toggleAddTodo}
+                            value={toAdd}
+                        />
+                        {toAdd ? <Text style={{ flex: 1, }}>Yes, add it!</Text> :
+                            <Text style={{ flex: 1, }}>I'm good for now.</Text>}
+
+
+                    </View>
+
+
                 </View>)
             }
 
-            <View style={{ flex: 1 }}>
+            <View opacity={isLoading ? 0.3 : 1}
+                style={{ flex: 0.5 }}>
                 <TouchableOpacity
                     style={styles.buttonStyle}
                     onPress={() => {
+                        setIsLoading(true)
                         saveSession()
                     }
                     }>
                     <Text style={styles.buttonTextStyle}>Done</Text>
                 </TouchableOpacity>
             </View>
+            <View style={{ flex: 0.5 }}>
+                {isLoading ?
+                    <><Text style={{ textAlign: 'center', marginBottom: 10, }}>Saving . . .</Text>
+                        <ActivityIndicator size="large" />
+                    </>
+                    : null}
+            </View>
+
         </View>
     )
 }
@@ -151,10 +196,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
         shadowOffset: {
-            width: 1,
-            height: 1,
+            width: 0.5,
+            height: 0.5,
         },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.3,
     },
     buttonTextStyle: {
         color: '#F6F2DF',
@@ -163,8 +208,7 @@ const styles = StyleSheet.create({
     },
     toggleContainer: {
         flex: 1,
-        flexDirection: 'row',
-        margin: 30,
+        margin: 15,
 
     },
     toggleText: {
@@ -173,8 +217,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#67806D'
     },
-    toggleSwitch: {
-    }
 
 })
 

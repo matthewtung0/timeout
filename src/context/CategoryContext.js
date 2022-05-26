@@ -169,7 +169,7 @@ const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDo
 
 const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     try {
-        const response = await timeoutApi.delete('/todoItem', { toDoId })
+        const response = await timeoutApi.delete('/todoItem', { params: { toDoId } })
         dispatch({ type: 'delete_todo_item', payload: { toDoId } })
         if (callback) { callback() }
     } catch (err) {

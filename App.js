@@ -108,7 +108,8 @@ function CreateCategoryStack() {
   return (
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
-        headerLeft: () => (
+        headerShown: false,
+        /*headerLeft: () => (
           <TouchableOpacity
             onPress={() => navigation.navigate('mainFlow')}>
             <Ionicons
@@ -119,7 +120,7 @@ function CreateCategoryStack() {
           </TouchableOpacity>
         ),
         headerTransparent: false,
-        headerTitle: 'My Categories',
+        headerTitle: 'My Categories',*/
       })}>
       <Stack.Screen
         name="AddCategory"

@@ -66,65 +66,10 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
 
         <HideKeyboard>
 
-            <View
-                style={styles.container}
-            >
+            <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
                 <Text style={styles.title}></Text>
 
-                < TextInput
-                    inputContainerStyle={styles.inputStyleContainer}
-                    style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
-                    placeholder='Task'
-                    maxLength={30}
-                    autoCorrect={false}
-                    value={toDoItemName}
-                    onChangeText={setToDoItemName}
-                />
-                <TextInput
-                    style={[styles.notes, { width: INPUT_WIDTH }]}
-                    multiline={true}
-                    numberOfLines={4}
-                    maxHeight={120}
-                    editable
-                    maxLength={150}
-                    placeholder={'Enter notes (optional)'}
-                    value={notes}
-                    textAlignVertical='top'
-                    onChangeText={setNotes}
-
-                />
-
-                <DropDownComponent
-                    isInModal={true}
-                    categoryId={categoryId}
-                    catName={categoryName}
-                    colorId={colorId}
-                    setCatNameCallback={setCategoryName}
-                    setColorIdCallback={setColorId}
-                    setCategoryIdCallback={setCategoryId}
-                />
-
-                {/* add or edit the item */}
-                <View opacity={isLoading ? 0.3 : 1}>
-                    <TouchableOpacity
-                        style={[styles.plus, { width: width / 2.2, height: height / 12, }]}
-                        onPress={() => {
-                            if (!validateInputs()) { return }
-                            setIsLoading(true)
-
-                            if (item) {
-                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc, resetInputs)
-                            } else {
-                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs);
-                            }
-
-                        }}>
-                        <Text style={styles.plusText}>{buttonText}</Text>
-                    </TouchableOpacity>
-                </View>
-                {isLoading ?
-                    <ActivityIndicator size="large" color="white" /> : null}
-
+                {children}
             </View>
         </HideKeyboard>
 

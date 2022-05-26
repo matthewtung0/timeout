@@ -39,6 +39,8 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
             setPathToPtX(50)
             setPathToPtY(50 - radius)
             setFormattedTime('00:00')
+            setFormattedTens('0')
+            setFormattedOnes('0')
             setTheta(0)
         },
     }))

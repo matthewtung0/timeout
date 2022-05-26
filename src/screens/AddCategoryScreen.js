@@ -1,32 +1,31 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ScrollView, Switch } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import {
+    View, StyleSheet, Text, TouchableOpacity, ScrollView,
+    Keyboard, TouchableWithoutFeedback, Image, Dimensions
+} from 'react-native';
+import { Input, Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import ColorSelectModal from '../components/ColorSelectModal';
 import Modal from 'react-native-modal'
+import AddCategoryModal from '../components/AddCategoryModal';
+import Header from '../components/Header';
 const constants = require('../components/constants.json')
+const img = require('../../assets/tasks_topbar.png')
 
-const AddCategoryScreen = () => {
-    const [categoryName, setCategoryName] = useState('')
-    const [resMessage, setResMessage] = useState('')
-    const { state: catState, addCategory, fetchUserCategories, changeArchiveCategory,
+const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+);
+
+const AddCategoryScreen = ({ navigation }) => {
+    const { height, width } = Dimensions.get('window');
+    const { state: catState, changeArchiveCategory,
         changeColorCategory } = useContext(CategoryContext)
-
-    const [chosenColor, setChosenColor] = useState('c0')
-    const [isEnabled, setIsEnabled] = useState(true);
 
     const [selectedCatId, setSelectedCatId] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-
-
-    const resetInputs = async () => {
-        setCategoryName('')
-        setResMessage("Category set successfully!")
-
-        // repull the list now that we've added to it
-        await fetchUserCategories();
-    }
+    const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false)
 
     var colorArr = []
     //let colors = JSON.parse(constants.colors)
@@ -51,172 +50,170 @@ const AddCategoryScreen = () => {
         setModalVisible(!modalVisible);
     };
 
+    const toggleAddCategoryModal = () => {
+        setAddCategoryModalVisible(!addCategoryModalVisible)
+    }
+
     const modalCallback = async (chosenColorId) => {
         await changeColorCategory(selectedCatId, chosenColorId)
     }
 
     return (
-        <ScrollView>
+        <HideKeyboard>
+            <>
+                <ScrollView
+                    style={{ backgroundColor: '#F9EAD3', }}>
 
-            <Modal isVisible={modalVisible}
-                animationIn='slideInLeft'
-                animationOut='slideOutLeft'>
-                <ColorSelectModal
-                    toggleFunction={toggleModal}
-                    colorArr={colorArr}
-                    callback={modalCallback} />
-            </Modal>
+                    <Modal isVisible={modalVisible}
+                        animationIn='slideInLeft'
+                        animationOut='slideOutLeft'>
+                        <ColorSelectModal
+                            toggleFunction={toggleModal}
+                            colorArr={colorArr}
+                            callback={modalCallback} />
+                    </Modal>
 
+                    <Modal isVisible={addCategoryModalVisible}
+                        animationIn='slideInUp'
+                        animationOut='slideOutUp'>
+                        <AddCategoryModal
+                            toggleFunction={toggleAddCategoryModal}
+                            colorArr={colorArr}
 
-            <Text style={{ marginLeft: 25, marginTop: 10, fontSize: 20, }}>Active Categories</Text>
-
-            <View style={styles.categoryContainer}>
-                {catState.userCategories.filter((item) => !item.archived)
-                    .map((item) => {
-                        return (
-                            <View
-                                key={item.category_id}
-                                style={[styles.categoryStyle, { height: 30, }]}>
-                                <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                    <View style={{ flex: 8, }}>
-                                        <Text style={[styles.categoryText]}>{item['category_name']}</Text>
-                                    </View>
-
-                                    <View style={{ flex: 1, }}>
-                                        <View style={{ backgroundColor: constants.colors[item['color_id']], height: 20, width: 20, }} />
-                                    </View>
-
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setSelectedCatId(item.category_id)
-                                                toggleModal()
-                                            }}>
-                                            <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
-                                        </TouchableOpacity>
-                                    </View>
-
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity
-                                            onPress={() => { archiveCategory(item.category_id, true) }}>
-                                            <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
-                        )
-                    })}
-            </View>
-
-            <View
-                style={{
-                    borderBottomColor: 'grey',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-            />
-
-            <Text style={{ marginLeft: 25, marginTop: 10, fontSize: 20, }}>Archived Categories</Text>
-
-            <View style={styles.categoryContainer}>
-                {catState.userCategories.filter((item) => item.archived)
-                    .map((item) => {
-                        return (
-                            <View
-                                key={item.category_id}
-                                style={[styles.categoryStyle, { height: 30, }]}>
-                                <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                    <View style={{ flex: 8, }}>
-                                        <Text style={[styles.categoryText]}>{item['category_name']}</Text>
-                                    </View>
-
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity>
-                                            <View style={{ backgroundColor: constants.colors[item['color_id']], height: 20, width: 20, }} />
-                                        </TouchableOpacity>
-
-                                    </View>
-
-                                    <View style={{ flex: 1, }}>
-                                        <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
-                                    </View>
-
-                                </View>
-
-                            </View>
-                        )
-                    })}
-            </View>
-
-            <View
-                style={{
-                    borderBottomColor: 'grey',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-            />
-
-
-
-            <Text style={{ marginLeft: 30, marginTop: 10, fontSize: 20, }}>Add a New Category</Text>
-
-            <View style={{ marginHorizontal: 20, marginTop: 10, }}>
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 7 }}>
-                        <Input
-                            containerStyle={styles.nameInputStyleContainer}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            placeholder='Category name'
-                            autoCorrect={false}
-                            value={categoryName}
-                            onChangeText={setCategoryName}
                         />
+                    </Modal>
+
+                    <Text style={{ marginLeft: 25, marginTop: 90, fontSize: 20, }}>Active Categories</Text>
+                    <View style={styles.categoryContainer}>
+                        {catState.userCategories.filter((item) => !item.archived)
+                            .map((item) => {
+                                return (
+                                    <View
+                                        key={item.category_id}
+                                        style={{ height: 35, }}>
+                                        <View style={{ flexDirection: 'row', flex: 1, marginBottom: 5, }}>
+
+                                            <View style={{ flex: 8, }}>
+                                                <Text style={[styles.categoryText]}>{item['category_name']}</Text>
+                                            </View>
+
+                                            <View style={{ flex: 1, }}>
+                                                <View style={{ backgroundColor: constants.colors[item['color_id']], height: 20, width: 20, }} />
+                                            </View>
+
+                                            <View style={{ flex: 1, }}>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        setSelectedCatId(item.category_id)
+                                                        toggleModal()
+                                                    }}>
+                                                    <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
+                                                </TouchableOpacity>
+                                            </View>
+
+                                            <View style={{ flex: 1, }}>
+                                                <TouchableOpacity
+                                                    onPress={() => { archiveCategory(item.category_id, true) }}>
+                                                    <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                borderBottomColor: '#DCDBDB',
+                                                //borderBottomWidth: StyleSheet.hairlineWidth,
+                                                borderBottomWidth: 1.5,
+                                                marginBottom: 10,
+                                            }}
+                                        />
+                                    </View>
+                                )
+                            })}
                     </View>
 
-                    <View style={{ flex: 1, height: 40, backgroundColor: constants.colors[chosenColor] }}></View>
+                    <View
+                        style={{
+                            borderBottomColor: 'grey',
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                    />
+
+                    <Text style={{ marginLeft: 25, marginTop: 10, fontSize: 20, }}>Archived Categories</Text>
+
+                    <View style={styles.categoryContainer}>
+                        {catState.userCategories.filter((item) => item.archived)
+                            .map((item) => {
+                                return (
+                                    <View
+                                        key={item.category_id}
+                                        style={{ height: 35, }}>
+                                        <View style={{ flexDirection: 'row', flex: 1, marginBottom: 5, }}>
+
+                                            <View style={{ flex: 8, }}>
+                                                <Text style={[styles.categoryText]}>{item['category_name']}</Text>
+                                            </View>
+
+                                            <View style={{ flex: 1, }}>
+                                                <TouchableOpacity>
+                                                    <View style={{ backgroundColor: constants.colors[item['color_id']], height: 20, width: 20, }} />
+                                                </TouchableOpacity>
+
+                                            </View>
+
+                                            <View style={{ flex: 1, }}>
+                                                <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
+                                            </View>
+
+                                        </View>
+
+                                        <View
+                                            style={{
+                                                borderBottomColor: '#DCDBDB',
+                                                //borderBottomWidth: StyleSheet.hairlineWidth,
+                                                borderBottomWidth: 1.5,
+                                                marginBottom: 10,
+                                            }}
+                                        />
+                                    </View>
+                                )
+                            })}
+                    </View>
 
 
-                </View>
+                    <TouchableOpacity style={[styles.addCategoryButton, { width: width / 1.8 }]}
+                        onPress={() => {
+                            toggleAddCategoryModal();
 
-                <Text>Choose a color:</Text>
-                < FlatList
-                    style
-                    horizontal={true}
-                    data={colorArr}
-                    keyExtractor={(item) => item[0]}
-                    renderItem={({ item }) => {
-                        return (
-                            < >
-                                <TouchableOpacity
-                                    style={[styles.colorSquare, { backgroundColor: item[1] }]}
-                                    onPress={() => { setChosenColor(item[0]) }}
-                                />
-                            </>
-                        )
-                    }}
-                >
-                </FlatList>
+                            //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
+                        }}>
+                        <Text style={styles.addCategoryText}>Add New Category</Text>
+                    </TouchableOpacity>
 
-                <Text>Public Category (visible on your profile)</Text>
-                <Switch
-                    style={{ marginTop: 10, }}
-                    trackColor={{ false: '#cdd5a0', true: '#90AB72' }}
-                    thumbColor={isEnabled ? "#67806D" : "#f6F2DF"}
-                    ios_backgroundColor="#f6F2DF"
-                    onValueChange={toggleSwitch}
-                    value={isEnabled} />
+                </ScrollView>
 
-            </View>
+                <><Image
+                    source={img}
+                    resizeMode='stretch'
+                    style={{ maxHeight: 75, position: 'absolute' }} />
+                    <Text style={{
+                        position: 'absolute',
+                        alignSelf: 'center',
+                        marginTop: 33,
+                        marginBottom: 15,
+                        fontSize: 23,
+                        fontWeight: '600',
+                        color: 'white',
+                    }}>My Categories</Text>
+                    <Header
+                        navigation={navigation} />
+                </>
 
-            <TouchableOpacity style={styles.addCategoryButton}
-                onPress={() => {
-                    addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
-                }}>
-                <Text style={styles.addCategoryText}>Add Category</Text>
-            </TouchableOpacity>
 
-            {resMessage ? <Text>{resMessage}</Text> : null}
-        </ScrollView>
+
+            </>
+
+        </HideKeyboard>
     )
 }
 
@@ -224,12 +221,6 @@ const styles = StyleSheet.create({
     title: {
         margin: 30,
         fontSize: 40,
-    },
-    colorSquare: {
-        width: 50,
-        height: 50,
-        marginHorizontal: 5,
-        marginVertical: 20,
     },
     categoryContainer: {
         marginVertical: 20,
@@ -242,13 +233,14 @@ const styles = StyleSheet.create({
         height: 40,
         backgroundColor: '#ABC57E',
         alignItems: 'center',
+        alignSelf: 'center',
         justifyContent: 'center',
         borderRadius: 10,
     },
     addCategoryText: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         color: 'white',
-        fontSize: 13,
+        fontSize: 18,
     }
 })
 

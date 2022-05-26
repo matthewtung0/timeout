@@ -13,11 +13,13 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     const [showChild, setShowChild] = useState(false)
     const { height, width } = Dimensions.get('window');
     const [childTitle, setChildTitle] = useState('Add Task')
+    const [buttonText, setButtonText] = useState('Submit')
     const [editItem, setEditItem] = useState(null)
 
     const editTask = (item) => {
         setEditItem(item)
         setChildTitle('Edit Task')
+        setButtonText('Save Changes')
         setShowChild(true)
     }
 
@@ -35,9 +37,9 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                     ItemSeparatorComponent={() => {
                         return (<View
                             style={{
-                                borderBottomColor: 'white',
+                                borderBottomColor: '#DCDBDB',
                                 //borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderBottomWidth: 0.8,
+                                borderBottomWidth: 1.5,
                                 marginHorizontal: 15,
                             }}
                         />)
@@ -76,10 +78,18 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                 style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
                                 onPress={() => {
                                     setChildTitle('Add Task')
+                                    setButtonText('Submit')
                                     setShowChild(true)
 
                                 }}>
-                                <Text style={styles.plusText}>+</Text>
+                                <View style={{
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                    <Text style={styles.plusText}>Add New</Text>
+                                </View>
+
                             </TouchableOpacity>
                         </View>
                     }
@@ -100,6 +110,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
 
                 <AddTodoComponent
                     title={childTitle}
+                    buttonText={buttonText}
                     item={editItem}
                     callback={addTodoCallback} />
 
@@ -235,17 +246,20 @@ const styles = StyleSheet.create({
     },
     plus: {
         backgroundColor: '#ABC57E',
-        alignItems: 'center',
-        justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 20,
         marginTop: 20,
+        shadowOffset: {
+            width: 0.05,
+            height: 0.05,
+        },
+        shadowOpacity: 0.3,
     },
     plusText: {
         color: 'white',
-        fontSize: 50,
-        fontWeight: 'bold'
+        fontSize: 25,
+        fontWeight: 'bold',
     },
 })
 
