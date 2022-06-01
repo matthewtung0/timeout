@@ -50,9 +50,12 @@ const categoryReducer = (state, action) => {
                 })
             }
         case 'change_color':
+            console.log("CHANGING THE COLOR")
             return {
                 ...state, userCategories: state.userCategories.map(item => {
                     if (item.category_id == action.payload.categoryId) {
+                        console.log("Changing ", item.category_id)
+                        console.log("To", action.payload.colorId)
                         return { ...item, color_id: action.payload.colorId }
                     }
                     return item
@@ -222,7 +225,7 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
         if (callback) { callback() }
     } catch (err) {
         console.log("error changing color id:", err);
-        dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
+        dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
     }
 }
 

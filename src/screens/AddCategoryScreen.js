@@ -3,7 +3,7 @@ import {
     View, StyleSheet, Text, TouchableOpacity, ScrollView,
     Keyboard, TouchableWithoutFeedback, Image, Dimensions
 } from 'react-native';
-import { Input, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import ColorSelectModal from '../components/ColorSelectModal';
 import Modal from 'react-native-modal'
@@ -20,10 +20,11 @@ const HideKeyboard = ({ children }) => (
 
 const AddCategoryScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
-    const { state: catState, changeArchiveCategory,
-        changeColorCategory } = useContext(CategoryContext)
+    const { state: catState } = useContext(CategoryContext)
 
     const [selectedCatId, setSelectedCatId] = useState('')
+    const [selectedColorId, setSelectedColorId] = useState('')
+    const [selectedName, setSelectedName] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false)
 
@@ -34,18 +35,6 @@ const AddCategoryScreen = ({ navigation }) => {
     }
     console.log(catState.userCategories)
 
-    const archiveCallback = () => {
-        alert("Category successfully archived!");
-    }
-
-    const archiveCategory = async (categoryId, toArchive) => {
-        try {
-            await changeArchiveCategory(categoryId, toArchive, archiveCallback)
-        } catch (err) {
-            console.log("can't archive category", err);
-        }
-    }
-
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
@@ -54,23 +43,35 @@ const AddCategoryScreen = ({ navigation }) => {
         setAddCategoryModalVisible(!addCategoryModalVisible)
     }
 
-    const modalCallback = async (chosenColorId) => {
-        await changeColorCategory(selectedCatId, chosenColorId)
-    }
-
     return (
         <HideKeyboard>
             <>
                 <ScrollView
                     style={{ backgroundColor: '#F9EAD3', }}>
 
+
                     <Modal isVisible={modalVisible}
                         animationIn='slideInLeft'
                         animationOut='slideOutLeft'>
-                        <ColorSelectModal
-                            toggleFunction={toggleModal}
-                            colorArr={colorArr}
-                            callback={modalCallback} />
+
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                        }}>
+                            <View style={{
+                                height: 500
+                            }}>
+                                <ColorSelectModal
+                                    toggleFunction={toggleModal}
+                                    colorArr={colorArr}
+                                    selectedColorId={selectedColorId}
+                                    selectedCategoryName={selectedName}
+                                    selectedCatId={selectedCatId} />
+                            </View>
+
+                        </View>
+
                     </Modal>
 
                     <Modal isVisible={addCategoryModalVisible}
@@ -105,18 +106,14 @@ const AddCategoryScreen = ({ navigation }) => {
                                                 <TouchableOpacity
                                                     onPress={() => {
                                                         setSelectedCatId(item.category_id)
+                                                        setSelectedColorId(item.color_id)
+                                                        setSelectedName(item.category_name)
                                                         toggleModal()
                                                     }}>
                                                     <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
                                                 </TouchableOpacity>
                                             </View>
 
-                                            <View style={{ flex: 1, }}>
-                                                <TouchableOpacity
-                                                    onPress={() => { archiveCategory(item.category_id, true) }}>
-                                                    <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
-                                                </TouchableOpacity>
-                                            </View>
                                         </View>
 
                                         <View
@@ -208,9 +205,6 @@ const AddCategoryScreen = ({ navigation }) => {
                     <Header
                         navigation={navigation} />
                 </>
-
-
-
             </>
 
         </HideKeyboard>

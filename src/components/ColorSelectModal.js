@@ -1,35 +1,170 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-    View, StyleSheet, Text, Button, FlatList, Dimensions,
-    TouchableOpacity
+    View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
+    TouchableOpacity, Alert
 } from 'react-native';
+import { Icon } from 'react-native-elements'
+import { Context as CategoryContext } from '../context/CategoryContext';
+const constants = require('../components/constants.json')
 
-const ColorSelectModal = ({ toggleFunction, colorArr, categoryArr, callback }) => {
+const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedCategoryName, selectedCatId }) => {
     const { height, width } = Dimensions.get('window');
+    const INPUT_WIDTH = width * 0.8
     const [editItem, setEditItem] = useState(null)
+    const [chosenColorId, setChosenColorId] = useState(selectedColorId)
+
+    const { state: catState, changeArchiveCategory,
+        changeColorCategory } = useContext(CategoryContext)
+    const [isLoading, setIsLoading] = useState(false)
+    const [isArchiving, setIsArchiving] = useState(false)
+
+
+    let colorSquare = (item) => {
+        return (
+            <TouchableOpacity
+                style={[styles.colorSquare, { backgroundColor: item[1] }]}
+                onPress={() => {
+                    setChosenColorId(item[0])
+                    /*var chosenColorId = item[0]
+                    callback(chosenColorId)
+                    toggleFunction();*/
+                }}
+            />
+        )
+    }
+
+    const submitColorChange = async () => {
+        setIsLoading(true)
+        await changeColorCategory(selectedCatId, chosenColorId, colorChangeCallback)
+        //toggleFunction();
+    }
+
+    const colorChangeCallback = () => {
+        setIsLoading(false)
+        alert("Color changed successfully")
+    }
+
+    const submitArchive = async () => {
+        setIsArchiving(true)
+        try {
+            await changeArchiveCategory(selectedCatId, true, archiveCallback)
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+
+    const archiveCallback = () => {
+        setIsArchiving(false)
+        alert("Archived successfully")
+    }
+
+    const areYouSureArchive = () => {
+        Alert.alert(
+            "Are you sure you want to archive this?",
+            "",
+            [
+                {
+                    text: "Go back",
+                    onPress: () => { },
+                    style: "cancel"
+                },
+                {
+                    text: "Archive", onPress: () => {
+                        submitArchive()
+                    }
+                }
+            ]
+        );
+    }
+
+    const separator = () => {
+        return (
+            <View
+                style={{
+                    borderBottomColor: '#DCDBDB',
+                    //borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomWidth: 1.5,
+                    marginBottom: 10,
+                }}
+            />
+
+        )
+    }
 
     return (
         <View style={styles.container}>
+
+            <View style={{ backgroundColor: '#abc57e' }}>
+                <Text style={{
+                    alignSelf: 'center', margin: 20, fontSize: 25, fontWeight: 'bold', color: 'white',
+                }}>Edit Category</Text>
+            </View>
+
+
+            <View
+                style={[styles.titleContainer, {
+                    width: INPUT_WIDTH, height: 45,
+                    backgroundColor: constants.colors[chosenColorId],
+                }]}>
+                <Text style={styles.title}>{selectedCategoryName}</Text>
+            </View>
+            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Change Color</Text>
             < FlatList
+                style={{ paddingBottom: 5, }}
+                horizontal={true}
                 data={colorArr}
                 keyExtractor={(item) => item[0]}
                 renderItem={({ item }) => {
                     return (
-                        < >
-                            <TouchableOpacity
-                                style={[styles.colorSquare, { backgroundColor: item[1] }]}
-                                onPress={() => {
-                                    var chosenColorId = item[0]
-                                    callback(chosenColorId)
-                                    toggleFunction();
-
-                                }}
-                            />
-                        </>
+                        <View style={item[0] === chosenColorId ? [styles.selectOutline, { backgroundColor: 'gray' }] :
+                            styles.selectOutline} >
+                            {colorSquare(item)}
+                        </View>
                     )
                 }}
             >
             </FlatList>
+            <View opacity={isLoading ? 0.3 : 1}>
+                <TouchableOpacity style={[styles.updateColorButton, { width: width / 1.8 }]}
+                    onPress={submitColorChange}>
+                    <Text style={styles.addCategoryText}>Update Color</Text>
+                </TouchableOpacity>
+            </View>
+
+            <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
+
+            {separator()}
+
+            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Archive Category</Text>
+            <Text style={[styles.modalMargin, { marginBottom: 10, }]}>You can archive categories to hide them from your summary views and dropdown list. They will still be counted in your statistics.</Text>
+
+            <TouchableOpacity style={[styles.updateColorButton, {
+                width: width / 1.8, backgroundColor: '#F5BBAE',
+            }]}
+                onPress={() => {
+
+                    areYouSureArchive()
+                }}>
+                <Text style={styles.addCategoryText}>Archive Category</Text>
+            </TouchableOpacity>
+
+            <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
+
+
+            <View style={styles.backContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={toggleFunction}>
+
+                    <Icon
+                        name="close-outline"
+                        type='ionicon'
+                        size={35}
+                        color='black' />
+                    {/*<Text style={styles.backButtonText}>X</Text>*/}
+                </TouchableOpacity>
+            </View>
         </View>
     )
 
@@ -37,14 +172,69 @@ const ColorSelectModal = ({ toggleFunction, colorArr, categoryArr, callback }) =
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#f6F2DF',
         alignContent: 'center'
     }, colorSquare: {
+        width: 40,
+        height: 40,
+    },
+    modalMargin: {
+        marginHorizontal: 10,
+    },
+    selectOutline: {
+        width: 45, height: 45, marginHorizontal: 5,
+        marginVertical: 5, justifyContent: 'center', alignItems: 'center'
+    },
+    backContainer: {
+        flex: 1,
+        width: '50%',
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end'
+    },
+    backButton: {
         width: 50,
         height: 50,
-        marginHorizontal: 5,
-        marginVertical: 20,
+        justifyContent: 'center',
+    },
+    updateColorButton: {
+        marginVertical: 10,
+        padding: 10,
+        backgroundColor: '#ABC57E',
+        alignItems: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        shadowOffset: {
+            width: 0.05,
+            height: 0.05,
+        },
+        shadowOpacity: 0.6,
+    },
+    addCategoryText: {
+        fontWeight: '600',
+        color: 'white',
+        fontSize: 18,
+    },
+    title: {
+        alignSelf: 'center',
+        fontSize: 18,
+        fontWeight: '600',
+        color: 'gray',
+    },
+    titleContainer: {
+        marginTop: 20,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        paddingHorizontal: 10,
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+        color: 'gray',
+        fontSize: 18,
+        fontWeight: '600',
     },
 })
 

@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useContext, useCallback } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -22,6 +23,24 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     )
     let selectedWidth = width * 0.9
     if (isInModal) selectedWidth = width * 0.8
+
+    // refresh the data
+    useFocusEffect(
+        useCallback(() => {
+            console.log("Setting items to these categories", categoryState.userCategories)
+            setItems(
+                categoryState.userCategories.map(item => {
+                    return {
+                        label: item.category_name,
+                        value: item.category_id,
+                        color: item.color_id,
+                        containerStyle: { backgroundColor: constants.colors[item.color_id] }
+                    }
+                })
+            )
+
+        }, [categoryState.userCategories])
+    )
 
     return (
         <DropDownPicker

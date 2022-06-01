@@ -38,17 +38,6 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const [open, setOpen] = useState(false);
     const [categoryId, setCategoryId] = useState("3");
 
-    const [items, setItems] = useState(
-        categoryState.userCategories.map(item => {
-            return {
-                label: item.category_name,
-                value: item.category_id,
-                color: item.color_id,
-                containerStyle: { backgroundColor: constants.colors[item.color_id] }
-            }
-        })
-    )
-
     const [newCatName, setNewCatName] = useState('unsorted')
     const [newColorId, setNewColorId] = useState('c6')
 
