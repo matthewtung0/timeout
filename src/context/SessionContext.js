@@ -90,8 +90,8 @@ const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
     return response.data
 }
 
-const fetchSessionsNextBatchSelf = dispatch => async (startIndex = 0) => {
-    const response = await timeoutApi.get('/session', { params: { startIndex, friends: [] } })
+const fetchSessionsNextBatchSelf = dispatch => async (startIndex = 0, id) => {
+    const response = await timeoutApi.get('/session', { params: { startIndex, friends: [], id } })
     dispatch({ type: 'fetch_self_sessions_batch', payload: response.data })
     return response.data
 }

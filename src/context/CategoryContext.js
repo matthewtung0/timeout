@@ -49,6 +49,15 @@ const categoryReducer = (state, action) => {
                     return item
                 })
             }
+        case 'public_category':
+            return {
+                ...state, userCategories: state.userCategories.map(item => {
+                    if (item.category_id == action.payload.categoryId) {
+                        return { ...item, public: action.payload.isPublic }
+                    }
+                    return item
+                })
+            }
         case 'change_color':
             console.log("CHANGING THE COLOR")
             return {
@@ -205,6 +214,18 @@ const deleteCategory = dispatch => async (categoryId, callback = null) => {
     }
 }
 
+const changePublicCategory = dispatch => async (categoryId, toPublic, callback = null) => {
+    try {
+        const response = await timeoutApi.patch('/category', { categoryId, isPublic: toPublic })
+        dispatch({ type: 'public_category', payload: { categoryId, isPublic: toPublic } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing public status:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem toggling the public status.' })
+    }
+
+}
+
 const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null) => {
     console.log("trying to archive category");
     try {
@@ -243,7 +264,7 @@ export const { Provider, Context } = createDataContext(
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
         fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem,
-        changeArchiveCategory, changeColorCategory, clearCategoryContext
+        changeArchiveCategory, changeColorCategory, clearCategoryContext, changePublicCategory
     },
     {
         userCategories: [],

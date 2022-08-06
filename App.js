@@ -488,7 +488,7 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
             testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{ flex: 1, backgroundColor: '#67806D', alignItems: 'center', }}
+            style={{ flex: 1, backgroundColor: '#67806D', alignItems: 'center', paddingBottom: 30, paddingTop: 10, }}
           >
 
             <Ionicons
@@ -520,7 +520,7 @@ function CreateMainFlowTab() {
       <Tab.Screen name="SessionSelect" component={SessionSelectScreen}
         options={{
           tabBarLabel: 'Timer',
-          tabBarIconLabel: 'time-outline',
+          tabBarIconLabel: 'time-outline'
         }} />
       <Tab.Screen name="CounterFlow" component={CounterScreen}
         options={{

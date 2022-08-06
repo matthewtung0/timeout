@@ -66,9 +66,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
 
         <HideKeyboard>
 
-            <View
-                style={styles.container}
-            >
+            <View style={styles.container}>
                 <Text style={styles.title}></Text>
 
                 < TextInput
@@ -107,7 +105,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                 {/* add or edit the item */}
                 <View opacity={isLoading ? 0.3 : 1}>
                     <TouchableOpacity
-                        style={[styles.plus, { width: width / 2.2, height: height / 12, }]}
+                        style={[styles.plus, { width: width / 2.5, }]}
                         onPress={() => {
                             if (!validateInputs()) { return }
                             setIsLoading(true)
@@ -144,12 +142,12 @@ const styles = StyleSheet.create({
         color: '#F6F2DF',
     },
     inputStyle: {
-        marginTop: 20,
+        marginTop: 5,
         backgroundColor: 'white',
         borderRadius: 15,
         paddingHorizontal: 10,
         alignSelf: 'center',
-        marginBottom: 40,
+        marginBottom: 20,
     },
     notes: {
         alignSelf: 'center',
@@ -158,7 +156,7 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         borderRadius: 10,
         marginHorizontal: 25,
-        marginBottom: 40,
+        marginBottom: 20,
         height: 120,
     }, inputStyleContainer: {
         borderBottomWidth: 0,
@@ -179,17 +177,18 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 40,
-        marginTop: 40,
+        marginTop: 30,
         shadowOffset: {
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
     },
     plusText: {
         color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold'
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingVertical: 10,
     }
 })
 

@@ -4,6 +4,7 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
+import AvatarComponent from '../components/AvatarComponent';
 
 const FriendScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
@@ -12,7 +13,7 @@ const FriendScreen = ({ navigation }) => {
         acceptFriendRequest, rejectFriendRequest, fetchFriends } = useContext(userContext)
     const [modalVisible, setModalVisible] = useState(false)
 
-    console.log(state)
+    console.log(state.friends)
     const resetInputs = async () => {
         setFriendCode('')
         alert('Success!')
@@ -30,15 +31,38 @@ const FriendScreen = ({ navigation }) => {
     const modalCallback = () => {
     }
 
+    const separator = () => {
+        return (
+            <View
+                style={{
+                    borderBottomColor: '#DCDBDB',
+                    //borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomWidth: 1.5,
+                    marginBottom: 10,
+                }}
+            />
+
+        )
+    }
+
+    const formatDate = (dt) => {
+        var date = new Date(dt)
+        return date.toLocaleDateString("en-US")
+    }
+
     return (
         <View style={styles.container}>
 
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
                 animationOut='slideOutLeft'>
-                <AddFriendModal
-                    toggleFunction={toggleModal}
-                    callback={modalCallback} />
+                <View style={{ height: 200, }}>
+                    <AddFriendModal
+                        toggleFunction={toggleModal}
+                        //onShow={() => { firstRef.focus() }}
+                        callback={modalCallback} />
+                </View>
+
             </Modal>
 
 
@@ -72,37 +96,64 @@ const FriendScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
 
+                {/* MY FRIEND CARD */}
+                <View style={{
+                    borderWidth: 1, borderColor: '#90AB72', borderRadius: 10,
+                    alignItems: 'center', marginHorizontal: 50, backgroundColor: '#CDD5A0',
+                    padding: 10, marginBottom: 10,
+                }}>
+                    <Text>Add me! My friend code is:</Text>
+                    <Text style={{ fontSize: 30, }}>{state.friendCode}</Text>
+                </View>
 
-                <Text>My friend code is {state.friendCode}</Text>
 
-                <Text>My Friends:</Text>
-                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
+                <Text style={{ marginLeft: 25, fontSize: 20, }}>My Friends:</Text>
+
+                <View style={{ marginHorizontal: 20, marginVertical: 20 }}>
                     {state.friends
                         .map((item) => {
-                            return (
-                                <View
-                                    key={item.friend}
-                                    style={[styles.categoryStyle, { height: 30, }]}>
-                                    <View style={{ flexDirection: 'row', flex: 1, }}>
+                            return <View
+                                key={item.friend}
+                                style={[styles.categoryStyle, { height: 70, }]}>
+                                <View style={{ flexDirection: 'row', flex: 1, }}>
 
-                                        <View style={{ flex: 8, }}>
-                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
-                                            <Text style={[styles.categoryText]}>Friend since {item['time_created']}</Text>
-                                        </View>
-
-                                        <View style={{ flex: 3, }}>
-                                            <TouchableOpacity
-                                                style={{ borderWidth: 1, }}
-                                                onPress={() => {
-                                                    rejectFriendRequest(item.friend, resetInputs)
-                                                }}>
-                                                <Text>Unfriend</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
+                                    {/* AVATAR */}
+                                    <View style={{ flex: 2 }}>
+                                        <AvatarComponent
+                                            w={50}
+                                            isSelf={false}
+                                            id={item.friend}
+                                            pfpSrc={state.base64pfp} />
                                     </View>
+
+                                    {/* NAME // FRIEND SINCE- */}
+                                    <View style={{ flex: 5, justifyContent: 'space-around' }}>
+                                        <Text style={{ fontWeight: '600', fontSize: 18, }}>{item['username']}</Text>
+                                        <Text style={{ fontSize: 12, fontWeight: '300', }}>
+                                            {"Friend since " + formatDate(item['time_created'])}
+                                        </Text>
+                                    </View>
+
+                                    {/* UNFRIEND BUTTON */}
+                                    <View style={{ flex: 2, justifyContent: 'flex-end' }}>
+                                        <TouchableOpacity
+                                            style={{
+                                                borderWidth: 1, borderRadius: 15, alignItems: 'center',
+                                                marginBottom: 10, borderColor: 'gray',
+                                            }}
+                                            onPress={() => {
+                                                rejectFriendRequest(item.friend, resetInputs)
+                                            }}>
+                                            <Text style={{ padding: 3, fontSize: 12, fontWeight: '300', }}>Unfriend</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
                                 </View>
-                            )
+                                {separator()}
+                            </View>
+
+
+
                         })}
                 </View>
 

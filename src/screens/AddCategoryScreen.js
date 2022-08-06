@@ -77,14 +77,24 @@ const AddCategoryScreen = ({ navigation }) => {
                     <Modal isVisible={addCategoryModalVisible}
                         animationIn='slideInUp'
                         animationOut='slideOutUp'>
-                        <AddCategoryModal
-                            toggleFunction={toggleAddCategoryModal}
-                            colorArr={colorArr}
 
-                        />
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                        }}>
+                            <View style={{
+                                height: 500
+                            }}>
+                                <AddCategoryModal
+                                    toggleFunction={toggleAddCategoryModal}
+                                    colorArr={colorArr}
+
+                                />
+                            </View></View>
                     </Modal>
 
-                    <Text style={{ marginLeft: 25, marginTop: 90, fontSize: 20, }}>Active Categories</Text>
+                    <Text style={{ marginLeft: 25, marginTop: 120, fontSize: 20, }}>Active Categories</Text>
                     <View style={styles.categoryContainer}>
                         {catState.userCategories.filter((item) => !item.archived)
                             .map((item) => {
@@ -192,11 +202,11 @@ const AddCategoryScreen = ({ navigation }) => {
                 <><Image
                     source={img}
                     resizeMode='stretch'
-                    style={{ maxHeight: 75, position: 'absolute' }} />
+                    style={{ maxHeight: 100, position: 'absolute' }} />
                     <Text style={{
                         position: 'absolute',
                         alignSelf: 'center',
-                        marginTop: 33,
+                        marginTop: 60,
                         marginBottom: 15,
                         fontSize: 23,
                         fontWeight: '600',

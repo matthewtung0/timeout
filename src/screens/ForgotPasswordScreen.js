@@ -1,5 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import {
+    View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions,
+    Image
+} from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 
@@ -16,45 +19,46 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 onWillFocus={clearErrorMessage}
     />*/}
 
-            <ImageBackground
-                source={img_src}
-                style={[styles.image,
-                { width: width, height: height }]}
-                resizeMode='stretch'>
+            <View style={{ flex: 3, justifyContent: 'center', backgroundColor: '#67806D' }}>
+                <Text style={styles.title}> Enter your email to reset password:</Text>
+                <Input
+                    style={[styles.inputStyle, { marginBottom: 10, }]}
+                    inputContainerStyle={styles.inputStyleContainer}
+                    placeholder='Email'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
-                <View style={{ flex: 1 }}>
-
-                    <Text style={styles.title}> Enter your email to get a reset link.</Text>
-                </View>
-
-
-
-                <View style={{ flex: 1 }}>
-                    <Input
-                        placeholder='Email'
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={email}
-                        onChangeText={setEmail}
-                    />
-                    {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-
-                    <TouchableOpacity
-                        style={styles.signUpBoxStyle}
-                        onPress={() => forgot_password(email)}>
-                        <Text style={styles.signUpTextStyle}>Send Reset Link</Text>
-                    </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.signUpBoxStyle}
+                    onPress={() => forgot_password(email)}>
+                    <Text style={styles.signUpTextStyle}>Send Reset Link</Text>
+                </TouchableOpacity>
 
 
-                    <TouchableOpacity onPress={() =>
-                        navigation.navigate('SignIn')
-                    }
-                    >
-                        <Text style={styles.button}>Go back to sign in page</Text>
+                <TouchableOpacity onPress={() =>
+                    navigation.navigate('SignIn')
+                }
+                >
+                    <Text style={styles.button}>Go back to sign in page</Text>
 
-                    </TouchableOpacity>
-                </View>
-            </ImageBackground>
+                </TouchableOpacity>
+            </View>
+
+            <View style={{ flex: 2 }}>
+                <Image
+                    style={{ width: width, height: height / 2.5, }}
+                    source={img_src}
+                    resizeMode="stretch"
+                />
+
+            </View>
+
+
+
         </View>
     )
 
@@ -70,6 +74,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    inputStyle: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginHorizontal: 25,
+        paddingHorizontal: 17,
+    },
     errorMessage: {
         fontSize: 16,
         color: 'red',
@@ -77,14 +87,17 @@ const styles = StyleSheet.create({
         marginTop: 15
     },
     button: {
-        color: 'blue',
+        color: 'purple',
         justifyContent: 'center',
-        margin: 10,
+        marginTop: 25,
+        alignSelf: 'center',
     },
     title: {
-        fontSize: 30,
+        fontSize: 20,
         justifyContent: 'center',
         margin: 20,
+        marginLeft: 35,
+        color: 'white',
     },
     signUpBoxStyle: {
         backgroundColor: '#FCC859',
@@ -100,6 +113,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold'
 
+    },
+    inputStyleContainer: {
+        borderBottomWidth: 0,
     },
 })
 

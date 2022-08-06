@@ -5,7 +5,7 @@ import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as SessionContext } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
-import { differenceInDays, parseISO, differenceInSeconds } from 'date-fns';
+import { differenceInDays, parseISO, differenceInSeconds, differenceInMinutes } from 'date-fns';
 import DrawerProfileView from '../components/DrawerProfileView';
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
@@ -31,7 +31,7 @@ const ProfileScreen = ({ navigation }) => {
         time_created: '',
         username: ''
     })
-    console.log(state.totalTime)
+    console.log(profileStats)
 
     useFocusEffect(
         useCallback(() => {
@@ -87,10 +87,16 @@ const ProfileScreen = ({ navigation }) => {
         setProfileSessions(response.data)
     }
 
+    const fetchAllSessions = async (id) => {
+        const response = await timeoutApi.get(`/session/${id}`)
+        setProfileSessions(response.data)
+    }
+
     const getFeed = async () => {
         try {
             setOffset(0)
-            await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
+            //await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
+            await fetchAllSessions(state.user_id);
             setOffset(offset + 10)
             await fetchStatsProfile(state.idToView)
             await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
@@ -102,7 +108,7 @@ const ProfileScreen = ({ navigation }) => {
     const getData = async () => {
         console.log("Loading 10 more..");
         try {
-            let temp2 = await fetchSessionsNextBatchSelf(offset)
+            let temp2 = await fetchSessionsNextBatchSelf(offset, state.user_id)
             setOffset(offset + 10)
         } catch (err) {
             console.log("Problem loading more self sessions", err)
@@ -112,6 +118,11 @@ const ProfileScreen = ({ navigation }) => {
     const duration = (startTime, endTime) => {
         return differenceInSeconds(parseISO(endTime), parseISO(startTime))
     }
+
+    const duration_min = (startTime, endTime) => {
+        return differenceInMinutes(parseISO(endTime), parseISO(startTime))
+    }
+
     const daysAgo = (endTime) => {
         return differenceInDays(new Date(), parseISO(endTime))
     }
@@ -130,9 +141,14 @@ const ProfileScreen = ({ navigation }) => {
     const renderHeader = () => {
         return (
             <>
+
                 <View style={styles.banner} />
 
-
+                {/* MAIN PROFILE PICTURE HERE */}
+                <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
+                    <AvatarComponent w={115} pfpSrc={state.base64pfp} isSelf={false}
+                        id={state.idToView} />
+                </View>
 
                 <Text style={styles.username}>{profileStats.username}</Text>
                 <View style={styles.textContainer}>
@@ -148,6 +164,8 @@ const ProfileScreen = ({ navigation }) => {
                 <Header
                     navigation={navigation} />
 
+
+
                 {isMe ?
                     <TouchableOpacity
                         style={styles.editButton}
@@ -159,11 +177,9 @@ const ProfileScreen = ({ navigation }) => {
                             color='#67806D' />
                     </TouchableOpacity> : null}
 
-
                 {/*<Text style={[styles.text, { marginBottom: 20, }]}>{state.friends.length} Friends</Text>*/}
                 <View style={{ flexDirection: 'row', flex: 1, }}>
-                    <Text style={styles.bioText}>Founder, CEO of Time Out. wish I had a bonded pair of cats to take care of but it'll happen when the time is right :)</Text>
-
+                    <Text style={styles.bioText}>{profileStats.bio}</Text>
 
                     <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', }}>
                         {isMe ? <TouchableOpacity
@@ -242,8 +258,8 @@ const ProfileScreen = ({ navigation }) => {
                                 <Text>
                                     <Text style={styles.bolded}>{item.username}</Text>
                                     <Text> worked on </Text>
-                                    <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
-                                    <Text> seconds</Text>
+                                    <Text style={styles.bolded}>{duration_min(item.time_start, item.time_end)}</Text>
+                                    <Text> minutes</Text>
                                 </Text>
                                 <Text>
                                     <Text>of </Text>
@@ -301,11 +317,7 @@ const ProfileScreen = ({ navigation }) => {
                 title="TESTING TEMPORARY"
     onPress={() => navigation.navigate('FriendList')} />*/}
 
-            {/* MAIN PROFILE PICTURE HERE */}
-            <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
-                <AvatarComponent w={115} pfpSrc={state.base64pfp} isSelf={false}
-                    id={state.idToView} />
-            </View>
+
         </View>
     )
 }
@@ -340,19 +352,18 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'flex-end',
         //borderWidth: 1,
-        marginTop: 25,
-        paddingHorizontal: 15,
+        marginTop: 55,
+        paddingHorizontal: 25,
     },
     pfp: {
         position: 'absolute',
         //backgroundColor: '#C3E6E7',
         width: 120,
         height: 120,
-        marginTop: 90,
         borderRadius: 100,
         borderColor: 'white',
         borderWidth: 3,
-        marginVertical: 15,
+        marginTop: 90,
     },
     username: {
         position: 'absolute',

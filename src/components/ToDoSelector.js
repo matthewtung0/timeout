@@ -48,26 +48,15 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                     renderItem={({ item }) => {
                         return (
                             // SELECT THE OBJECT, TO GO BACK TO SESSION SELECT SCREEN
-                            <TouchableOpacity
-                                onPress={() => {
-                                    callback({
-                                        "item_desc": item.item_desc,
-                                        "cat_id": item.category_id,
-                                        "item_id": item.item_id,
-                                        "cat_name": item.category_name,
-                                        "color_id": item.color_id,
-                                    })
-                                    toggleFunction()
-                                }}>
-                                <View style={styles.toDoComponent}>
-                                    <ToDoComponent
-                                        item={item}
-                                        callback={callback}
-                                        toggleFunction={toggleFunction}
-                                        editTask={editTask}
-                                    />
-                                </View>
-                            </TouchableOpacity>
+
+                            <View style={styles.toDoComponent}>
+                                <ToDoComponent
+                                    item={item}
+                                    callback={callback}
+                                    toggleFunction={toggleFunction}
+                                    editTask={editTask}
+                                />
+                            </View>
                         )
                     }}
                     ListFooterComponent={() =>
@@ -75,7 +64,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
 
                             {/* button to add a new todo item */}
                             <TouchableOpacity
-                                style={[styles.plus, { width: width / 2.2, height: height / 12 }]}
+                                style={[styles.plus, { width: width / 2.2, }]}
                                 onPress={() => {
                                     setChildTitle('Add Task')
                                     setButtonText('Submit')
@@ -87,7 +76,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}>
-                                    <Text style={styles.plusText}>Add New</Text>
+                                    <Text style={styles.plusText}>Add New Task</Text>
                                 </View>
 
                             </TouchableOpacity>
@@ -258,8 +247,9 @@ const styles = StyleSheet.create({
     },
     plusText: {
         color: 'white',
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold',
+        paddingVertical: 10,
     },
 })
 

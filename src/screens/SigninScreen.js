@@ -50,81 +50,81 @@ const SigninScreen = ({ navigation }) => {
 
     return (
         <HideKeyboard>
-            <View style={styles.container}>
+            <View style={{ flex: 1 }}>
 
-                <ImageBackground
-                    source={img_src}
-                    style={[styles.image,
-                    { width: width, height: height }]}
-                    resizeMode='stretch'>
+                <View style={styles.inputContainer}>
+                    <Input
+                        style={[styles.inputStyle, { marginBottom: 10, }]}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={email}
+                        placeholder="Email"
+                        onChangeText={setEmail}
+                    />
 
-                    <View style={styles.inputContainer}>
-                        <View style={{ flex: 8 }} />
-                        <View style={{ flex: 1.7 }}>
-                            <Input
-                                style={styles.inputStyle}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                value={email}
-                                placeholder="Email"
-                                onChangeText={setEmail}
-                            />
-                        </View>
+                    <Input
 
-                        <View style={{ flex: 3 }}>
-                            <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        secureTextEntry={true}
+                        placeholder="Password"
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    <TouchableOpacity onPress={() =>
+                        navigation.navigate('ForgotPassword')
+                    }
+                    >
+                        <Text style={styles.button}>Forgot your password?</Text>
 
-                                style={styles.inputStyle}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                secureTextEntry={true}
-                                placeholder="Password"
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                value={password}
-                                onChangeText={setPassword}
-                            />
-                            <TouchableOpacity onPress={() =>
-                                navigation.navigate('ForgotPassword')
-                            }
-                            >
-                                <Text style={styles.button}>Forgot your password?</Text>
+                    </TouchableOpacity>
 
-                            </TouchableOpacity>
-                        </View>
+                    <TouchableOpacity
+                        style={styles.signInBoxStyle}
+                        onPress={() => {
+                            console.log("pressed sign in button")
+                            signin(email, password, signInCallback)
+                        }}>
+                        <Text style={styles.signInTextStyle}>Sign In</Text>
+                    </TouchableOpacity>
+                    {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
 
-                        <View style={{ flex: 3 }}>
-                            <TouchableOpacity
-                                style={styles.signInBoxStyle}
-                                onPress={() => {
-                                    console.log("pressed sign in button")
-                                    signin(email, password, signInCallback)
-                                }}>
-                                <Text style={styles.signInTextStyle}>Sign In</Text>
-                            </TouchableOpacity>
-                            {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('SignUp')}
+                    >
 
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('SignUp')}
-                            >
+                        <Text style={styles.redirectToSignInStyleWhite}>Don't have an account?
+                            <Text style={styles.redirectToSignInStyleYellow}> Sign up here!</Text>
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
-                                <Text style={styles.redirectToSignInStyleWhite}>Don't have an account?
-                                    <Text style={styles.redirectToSignInStyleYellow}> Sign up here!</Text>
-                                </Text>
-                            </TouchableOpacity>
 
-                        </View>
-                    </View>
-                </ImageBackground>
-            </View >
+                <View style={{ flex: 2 }}>
+
+                    <Image
+                        style={{ width: width, height: height / 2.5, }}
+                        source={img_src}
+                        resizeMode="stretch"
+                    />
+                </View>
+
+                <View style={{
+                    position: 'absolute', top: height * 3.7 / 5, left: 50, right: 125, bottom: height * 0.8 / 5,
+                    borderWidth: 1, borderColor: 'gray',
+                }}>
+                    <Text>Message here</Text>
+                </View>
+            </View>
         </HideKeyboard>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        alignItems: 'flex-start'
     },
     image: {
     },
@@ -140,8 +140,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 17,
     },
     inputContainer: {
-        flex: 1,
-        flexDirection: 'column',
+        backgroundColor: '#67806D',
+        flex: 3,
+        justifyContent: 'center',
     },
     errorMessage: {
         fontSize: 16,
@@ -151,7 +152,8 @@ const styles = StyleSheet.create({
     },
     button: {
         color: 'orange',
-        marginHorizontal: 30,
+        alignSelf: 'center',
+        marginBottom: 15,
     },
     inputStyleContainer: {
         borderBottomWidth: 0,

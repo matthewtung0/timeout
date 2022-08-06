@@ -9,12 +9,12 @@ const constants = require('../components/constants.json')
 
 const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedCategoryName, selectedCatId }) => {
     const { height, width } = Dimensions.get('window');
-    const INPUT_WIDTH = width * 0.8
+    const INPUT_WIDTH = width * 0.65
     const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
 
     const { state: catState, changeArchiveCategory,
-        changeColorCategory } = useContext(CategoryContext)
+        changeColorCategory, deleteCategory, changePublicCategory } = useContext(CategoryContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
 
@@ -95,11 +95,11 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     return (
         <View style={styles.container}>
 
-            <View style={{ backgroundColor: '#abc57e' }}>
+            {/*<View style={{ backgroundColor: '#abc57e' }}>
                 <Text style={{
                     alignSelf: 'center', margin: 20, fontSize: 25, fontWeight: 'bold', color: 'white',
                 }}>Edit Category</Text>
-            </View>
+            </View>*/}
 
 
             <View
@@ -109,9 +109,9 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 }]}>
                 <Text style={styles.title}>{selectedCategoryName}</Text>
             </View>
-            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Change Color</Text>
+            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 5, }]}>Color Selection</Text>
             < FlatList
-                style={{ paddingBottom: 5, }}
+                style={{ paddingBottom: 3, marginLeft: 5, width: width / 2 }}
                 horizontal={true}
                 data={colorArr}
                 keyExtractor={(item) => item[0]}
@@ -133,7 +133,8 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             </View>
 
             <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
-
+            {separator()}
+            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Public Category</Text>
             {separator()}
 
             <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Archive Category</Text>
@@ -151,6 +152,8 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
             <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
 
+            {separator()}
+            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Delete Category</Text>
 
             <View style={styles.backContainer}>
                 <TouchableOpacity
@@ -162,7 +165,6 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                         type='ionicon'
                         size={35}
                         color='black' />
-                    {/*<Text style={styles.backButtonText}>X</Text>*/}
                 </TouchableOpacity>
             </View>
         </View>
@@ -175,14 +177,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#f6F2DF',
         alignContent: 'center'
     }, colorSquare: {
-        width: 40,
-        height: 40,
+        width: 35,
+        height: 35,
     },
     modalMargin: {
         marginHorizontal: 10,
     },
     selectOutline: {
-        width: 45, height: 45, marginHorizontal: 5,
+        width: 40, height: 40, marginHorizontal: 5,
         marginVertical: 5, justifyContent: 'center', alignItems: 'center'
     },
     backContainer: {
@@ -194,8 +196,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end'
     },
     backButton: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
     },
     updateColorButton: {

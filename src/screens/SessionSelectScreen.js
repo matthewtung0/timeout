@@ -108,86 +108,103 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         <HideKeyboard>
             <View style={styles.viewContainer}>
 
-                <View>
-                    <Modal isVisible={modalVisible}
-                        animationIn='slideInLeft'
-                        animationOut='slideOutLeft'
-                    >
-                        <ToDoSelector
-                            toggleFunction={toggleModal}
-                            todoItems={categoryState.userTodoItems}
-                            callback={fillInWithItem} />
-                    </Modal>
+                <View style={{ flex: 6 }}>
+                    <View>
+                        <Modal isVisible={modalVisible}
+                            animationIn='slideInLeft'
+                            animationOut='slideOutLeft'
+                        >
+
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'column',
+                                justifyContent: 'center'
+                            }}>
+                                <View style={{
+                                    height: 500
+                                }}>
+
+                                    <ToDoSelector
+                                        toggleFunction={toggleModal}
+                                        todoItems={categoryState.userTodoItems}
+                                        callback={fillInWithItem} />
+
+                                </View>
+                            </View>
+                        </Modal>
+                    </View>
+                    <Image
+                        source={clock_top}
+                        style={{
+                            width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
+                            marginTop: 30,
+                        }}
+                        resizeMode="contain" />
+                    <CircularSelector
+                        minSet={0}
+                        updateCallback={updateTime}
+                        ref={circularRef} />
+                    <Image
+                        source={clock_bottom}
+                        style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                        resizeMode="contain" />
                 </View>
-                <Image
-                    source={clock_top}
-                    style={{
-                        width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
-                        marginTop: 30,
-                    }}
-                    resizeMode="contain" />
-                <CircularSelector
-                    minSet={0}
-                    updateCallback={updateTime}
-                    ref={circularRef} />
-                <Image
-                    source={clock_bottom}
-                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
-                    resizeMode="contain" />
 
-                {/*</ImageBackground>*/}
-
-                {/*<Text>{categoryId}</Text>
-                <Text>{"Category name: " + newCatName}</Text>
-                <Text>{"Color id: " + newColorId}</Text>*/}
-                <TextInput
-                    style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
-                    placeholder="Activity"
-                    rightIconContainerStyle={styles.rightIconInput}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCorrect={true}
-                    maxLength={30}
-                    value={customActivity}
-                    onChangeText={(text) => {
-                        setCustomActivity(text)
-                        setActivityName(text)
-                    }
-                    }
-                />
-                <DropDownComponent
-                    isInModal={false}
-                    categoryId={categoryId}
-                    catName={newCatName}
-                    colorId={newColorId}
-                    setCatNameCallback={setNewCatName}
-                    setColorIdCallback={setNewColorId}
-                    setCategoryIdCallback={setCategoryId}
-                />
-
-                <TouchableOpacity
-                    style={[styles.start, { width: width / 2.2, height: height / 12 }]}
-                    onPress={() => {
-                        if (!validateInputs()) {
-                            return;
+                <View style={{ flex: 1.2 }}>
+                    <TextInput
+                        style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
+                        placeholder="Activity"
+                        rightIconContainerStyle={styles.rightIconInput}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCorrect={true}
+                        maxLength={30}
+                        value={customActivity}
+                        onChangeText={(text) => {
+                            setCustomActivity(text)
+                            setActivityName(text)
                         }
-                        let cat_Name = newCatName
-                        let cat_Id = categoryId
-                        let timer_Time = time
+                        }
+                    />
+                </View>
 
-                        clearInputs()
-                        circularRef.current.resetSlider()
+                <View style={{ flex: 4 }}>
 
-                        navigate('SessionOngoing', {
-                            numMins: timer_Time,
-                            categoryId: cat_Id,
-                            categoryName: cat_Name,
-                            activityName: customActivity,
-                            colorId: newColorId,
-                        })
-                    }}>
-                    <Text style={styles.startText}>Start</Text>
+                    <DropDownComponent
+                        isInModal={false}
+                        categoryId={categoryId}
+                        catName={newCatName}
+                        colorId={newColorId}
+                        setCatNameCallback={setNewCatName}
+                        setColorIdCallback={setNewColorId}
+                        setCategoryIdCallback={setCategoryId}
+                    />
 
-                </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
+                        onPress={() => {
+                            if (!validateInputs()) {
+                                return;
+                            }
+                            let cat_Name = newCatName
+                            let cat_Id = categoryId
+                            let timer_Time = time
+
+                            clearInputs()
+                            circularRef.current.resetSlider()
+
+                            navigate('SessionOngoing', {
+                                numMins: timer_Time,
+                                categoryId: cat_Id,
+                                categoryName: cat_Name,
+                                activityName: customActivity,
+                                colorId: newColorId,
+                            })
+                        }}>
+                        <Text style={styles.startText}>Start</Text>
+
+                    </TouchableOpacity>
+                </View>
 
                 <View style={styles.modalContainer}>
                     <View style={styles.modalDummy} />
@@ -220,7 +237,7 @@ const styles = StyleSheet.create({
         borderColor: 'green'
     },
     viewContainer: {
-        marginTop: 35,
+        marginTop: 55,
         flexDirection: 'column',
         flex: 1
     },
@@ -273,7 +290,7 @@ const styles = StyleSheet.create({
 
     // decides how high up the modal tab is
     modalDummy: {
-        flex: 0.1,
+        flex: 0.2,
     },
     clockBackground: {
     },

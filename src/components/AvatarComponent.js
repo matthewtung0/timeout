@@ -12,12 +12,12 @@ const AvatarComponent = ({ w, pfpSrc, isSelf, id }) => {
 
     const pullPfp = async () => {
         try {
-            const response = await timeoutApi.get('/avatar1', { params: { friend: id } })
+            console.log("retrieving avatar")
+            const response = await timeoutApi.get(`/avatar12345/${id}`)
 
             var base64Icon = `data:image/png;base64,${response.data}`
-            console.log(base64Icon)
             setPngData(base64Icon)
-            //console.log(base64Icon.length)
+            console.log("Image data received length: " + base64Icon.length)
         } catch (err) {
             console.log(err)
         }
@@ -26,8 +26,13 @@ const AvatarComponent = ({ w, pfpSrc, isSelf, id }) => {
     useFocusEffect(
         useCallback(() => {
             setIdDisplay(id)
+
             if (!isSelf) {
+                var startTime = performance.now()
+
                 pullPfp()
+                var endTime = performance.now()
+                console.log(`Call to pull pfp took ${endTime - startTime} milliseconds`)
             }
 
             return () => {

@@ -33,7 +33,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
             <View style={{ flex: 1, backgroundColor: '#F9EAD3' }}>
-                <View style={{ marginHorizontal: 20, marginTop: 150, }}>
+                <View style={{ marginHorizontal: 20, marginTop: 90, }}>
                     <Text style={styles.labelText}>Category Name</Text>
                     <TextInput
                         style={[styles.inputStyle, {
@@ -76,7 +76,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
 
                     <View opacity={isLoading ? 0.3 : 1}>
                         <TouchableOpacity
-                            style={[styles.submit, { width: width / 2.2, height: height / 12, }]}
+                            style={[styles.submit, { width: width / 2.6, }]}
                             onPress={() => {
                                 if (!validateInputs()) { return }
                                 setIsLoading(true)
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 40,
-        marginTop: 40,
+        marginTop: 30,
         shadowOffset: {
             width: 0.05,
             height: 0.05,
@@ -190,7 +190,8 @@ const styles = StyleSheet.create({
     submitText: {
         color: 'white',
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        padding: 10,
     },
     inputStyleContainer: {
         borderBottomWidth: 0,
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         paddingHorizontal: 10,
         alignSelf: 'center',
-        marginBottom: 40,
+        marginBottom: 20,
         color: 'gray',
         fontSize: 18,
         fontWeight: '600',
