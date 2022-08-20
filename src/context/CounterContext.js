@@ -12,7 +12,21 @@ const counterReducer = (state, action) => {
                 ...state,
                 userCounters: state.userCounters.map(item => {
                     if (item.counter_id == action.payload.counterId) {
-                        return { ...item, point_count: parseInt(item.point_count) + parseInt(action.payload.updateAmount) }
+                        return {
+                            ...item, cur_count: parseInt(item.cur_count) +
+                                parseInt(action.payload.updateAmount),
+                            point_count: parseInt(item.point_count) + parseInt(action.payload.updateAmount)
+                        }
+                    }
+                    return item;
+                })
+            }
+        case 'reset_tally':
+            return {
+                ...state,
+                userCounters: state.userCounters.map(item => {
+                    if (item.counter_id == action.payload.counterId) {
+                        return { ...item, cur_count: 0 }
                     }
                     return item;
                 })
@@ -57,10 +71,21 @@ const addTally = dispatch => async (counterId, updateAmount, callback = null) =>
     }
 }
 
+const resetTally = dispatch => async (counterId, callback = null) => {
+    try {
+        const response = await timeoutApi.post('/counter/reset', { counterId })
+        dispatch({ type: 'reset_tally', payload: { counterId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error resetting counter:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem resetting counter.' })
+    }
+}
+
 export const { Provider, Context } = createDataContext(
     counterReducer,
     {
-        fetchUserCounters, addCounter, addTally
+        fetchUserCounters, addCounter, addTally, resetTally
     },
     {
         userCounters: [],

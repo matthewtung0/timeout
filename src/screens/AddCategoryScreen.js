@@ -33,7 +33,7 @@ const AddCategoryScreen = ({ navigation }) => {
     for (var i in constants['colors']) {
         colorArr.push([i, constants['colors'][i]])
     }
-    console.log(catState.userCategories)
+    console.log("User categories", catState.userCategories)
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);

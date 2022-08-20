@@ -544,7 +544,7 @@ function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
   const { fetchUserCounters } = useContext(CounterContext)
-  const { fetchAvatar, updateLastSignin, fetchOutgoingRequests,
+  const { state: userState, fetchAvatar, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
 
   useEffect(async () => {
@@ -558,7 +558,7 @@ function CreateMainNavigator() {
       console.log('fetched self');
       await fetchAvatar()
       console.log("fetched avatar");
-      await fetchUserCategories();
+      await fetchUserCategories(userState.user_id);
       console.log('fetched categories');
       await fetchUserCounters();
       console.log('fetched counters')

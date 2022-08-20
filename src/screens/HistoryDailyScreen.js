@@ -56,11 +56,10 @@ const HistoryDailyScreen = ({ navigation }) => {
     }
 
     const [monthlyCounters, setMonthlyCounters] = useState([])
+    const [monthlyCountersGrouped, setMonthlyCountersGrouped] = useState([])
     const [dayCounters, setDayCounters] = useState([])
 
     console.log("Calendar Date", state.calendarDate)
-
-
 
     const fetchMonthlyCounters = async (date) => {
         //let date = parseISO(dayObject.dateString)
@@ -69,14 +68,28 @@ const HistoryDailyScreen = ({ navigation }) => {
             let startRange = startOfMonth(date)
             let endRange = endOfMonth(date)
 
+            console.log("Monthly counter start", startRange)
+            console.log("Monthly counter end", endRange)
+
             const response = await timeoutApi.get('/counter/month', { params: { startTime: startRange, endTime: endRange } })
+            //console.log("mONTHLY COUNTERS:", response.data)
             setMonthlyCounters(response.data)
+            groupMonthlyCounters(response.data);
         } catch (err) {
             console.log("Problem getting month's counters", err)
         }
     }
 
-
+    const groupMonthlyCounters = (ungroupedArr) => {
+        const map = new Map();
+        for (const { counter_name, daily_count } of ungroupedArr) {
+            const currSum = map.get(counter_name) || 0
+            map.set(counter_name, +currSum + +daily_count)
+        }
+        const res = Array.from(map, ([counter_name, daily_count]) => ({ counter_name, daily_count }))
+        console.log("Grouped monthly data", res)
+        setMonthlyCountersGrouped(res)
+    }
 
     const filterOnDay = (dayObject) => {
         setSelectedDay(dayObject)
@@ -106,7 +119,7 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const filterCounterOnDay = (dayObject) => {
         let date = parseISO(dayObject.dateString)
-        console.log("BEFORE FILTERING", monthlyCounters)
+        //console.log("BEFORE FILTERING", monthlyCounters)
 
         let startTime = startOfDay(date)
         let endTime = endOfDay(date)
@@ -251,7 +264,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                             <Text style={[styles.overviewTitle, {
                                 fontSize: 18, alignSelf: 'auto',
                                 marginHorizontal: MARGIN_HORIZONTAL
-                            }]}>{monthlyCounters.length} Counters</Text>
+                            }]}>{monthlyCountersGrouped.length} Counters Worked On</Text>
                             <View
                                 style={{
                                     borderBottomColor: 'grey',
@@ -259,6 +272,20 @@ const HistoryDailyScreen = ({ navigation }) => {
                                     marginHorizontal: MARGIN_HORIZONTAL
                                 }}
                             />
+
+                            <View>
+                                {monthlyCountersGrouped
+                                    .map((item) => {
+                                        return (
+                                            <View
+                                                key={item.counter_name}>
+                                                <Text>{item.counter_name}: {item.daily_count}</Text>
+                                            </View>
+                                        )
+                                    })}
+                            </View>
+
+
                         </>
 
                     }
@@ -320,7 +347,6 @@ const HistoryDailyScreen = ({ navigation }) => {
                                         key={item.counter_id}>
                                         <Text>{item.counter_name}: {item.daily_count} tallies today</Text>
                                     </View>
-
                                 )
                             })}
                     </View>
@@ -351,7 +377,7 @@ const styles = StyleSheet.create({
     },
     viewContainer: {
         flex: 1,
-        marginTop: 70,
+        marginTop: 110,
     },
     overviewTitle: {
         fontWeight: 'bold',

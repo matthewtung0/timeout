@@ -16,7 +16,7 @@ const constants = require('../components/constants.json')
 const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
     const { state, fetchSelf, fetchAvatar } = useContext(UserContext)
-    const { state: catState } = useContext(CategoryContext)
+    const { state: catState, } = useContext(CategoryContext)
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
     const [offset, setOffset] = useState(0)
     const [privateVisible, setPrivateVisible] = useState(false)
@@ -75,7 +75,7 @@ const ProfileScreen = ({ navigation }) => {
     const fetchCategoriesProfile = async (id, getPrivate) => {
         console.log("trying to fetch user categories");
         try {
-            const response = await timeoutApi.get('/category', { params: { id, getPrivate } })
+            const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate } })
             setProfileCategories(response.data)
         } catch (err) {
             console.log("error fetching categories", err);
