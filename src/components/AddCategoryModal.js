@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
+import { Context as UserContext } from '../context/userContext'
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 
@@ -19,9 +20,10 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const { addCategory, fetchUserCategories } = useContext(CategoryContext)
+    const { userState } = useContext(UserContext)
 
     const resetInputs = async () => {
-        await fetchUserCategories()
+        await fetchUserCategories(userState.user_id)
         alert("Category added successfuly!")
         setIsLoading(false)
         toggleFunction()

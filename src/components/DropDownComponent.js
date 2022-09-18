@@ -27,7 +27,7 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     // refresh the data
     useFocusEffect(
         useCallback(() => {
-            console.log("Setting items to these categories", categoryState.userCategories)
+            //console.log("Setting items to these categories", categoryState.userCategories)
             setItems(
                 categoryState.userCategories.map(item => {
                     return {

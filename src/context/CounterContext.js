@@ -40,7 +40,6 @@ const fetchUserCounters = dispatch => async (id) => {
     console.log("trying to fetch user counters");
     try {
         const response = await timeoutApi.get('/counter', { params: { id } })
-        console.log("counters", response.data)
         dispatch({ type: 'fetch_counters', payload: response.data })
     } catch (err) {
         console.log("error fetching counters", err);

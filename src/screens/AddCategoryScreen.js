@@ -20,7 +20,7 @@ const HideKeyboard = ({ children }) => (
 
 const AddCategoryScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
-    const { state: catState } = useContext(CategoryContext)
+    const { state: catState, changeArchiveCategory } = useContext(CategoryContext)
 
     const [selectedCatId, setSelectedCatId] = useState('')
     const [selectedColorId, setSelectedColorId] = useState('')
@@ -33,7 +33,6 @@ const AddCategoryScreen = ({ navigation }) => {
     for (var i in constants['colors']) {
         colorArr.push([i, constants['colors'][i]])
     }
-    console.log("User categories", catState.userCategories)
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
@@ -169,7 +168,17 @@ const AddCategoryScreen = ({ navigation }) => {
                                             </View>
 
                                             <View style={{ flex: 1, }}>
-                                                <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        try {
+                                                            // UNARCHIVE THIS CATEGORY
+                                                            changeArchiveCategory(item.category_id, false)
+                                                        } catch (e) {
+                                                            console.log(e)
+                                                        }
+                                                    }}>
+                                                    <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
+                                                </TouchableOpacity>
                                             </View>
 
                                         </View>

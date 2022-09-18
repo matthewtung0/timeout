@@ -22,7 +22,8 @@ const SigninScreen = ({ navigation }) => {
     const { state, signin, signout, tryLocalSignin, clearErrorMessage } = useContext(AuthContext);
 
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-    const { fetchOutgoingRequests, fetchIncomingRequests, fetchFriends, fetchSelf } = useContext(UserContext)
+    const { state: userState, fetchOutgoingRequests, fetchIncomingRequests,
+        fetchFriends, fetchSelf } = useContext(UserContext)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

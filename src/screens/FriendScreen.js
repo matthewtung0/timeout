@@ -238,7 +238,7 @@ const FriendScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 70,
+        marginTop: 110,
         flex: 1,
     },
     title: {

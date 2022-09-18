@@ -44,19 +44,50 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
         alert("Color changed successfully")
     }
 
-    const submitArchive = async () => {
+    const submitArchive = async (archiveBool) => {
         setIsArchiving(true)
         try {
-            await changeArchiveCategory(selectedCatId, true, archiveCallback)
+            await changeArchiveCategory(selectedCatId, archiveBool, archiveCallback)
         } catch (e) {
             console.log(e)
         }
+    }
 
+    // can only delete category if user does not currently have to-do items with that category
+    const validateDelete = async () => {
+        var userItems = catState.userTodoItems
+        userItemsSameCat = userItems.filter((req) => (req.category_id == selectedCatId && req.is_active == true))
+        if (userItemsSameCat.length > 0) {
+            console.log("VALIDATE IS FALSE")
+            return false
+        }
+        console.log("VALIDATE IS TRUE")
+        return true
+    }
+
+    const submitDelete = async () => {
+        if (!validateDelete()) {
+            Alert.alert(
+                "You currently have to-do items with this category. Delete those first before deleting this category"
+            )
+            return
+        }
+        setIsArchiving(true)
+        try {
+            await deleteCategory(selectedCatId, deleteCallback)
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     const archiveCallback = () => {
         setIsArchiving(false)
         alert("Archived successfully")
+    }
+    const deleteCallback = () => {
+        setIsArchiving(false)
+        toggleFunction()
+        alert("Deleted successfully")
     }
 
     const areYouSureArchive = () => {
@@ -65,14 +96,25 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             "",
             [
                 {
-                    text: "Go back",
-                    onPress: () => { },
-                    style: "cancel"
+                    text: "Go back", onPress: () => { }, style: "cancel"
                 },
                 {
-                    text: "Archive", onPress: () => {
-                        submitArchive()
-                    }
+                    text: "Archive", onPress: () => { submitArchive(true) }
+                }
+            ]
+        );
+    }
+
+    const areYouSureDelete = () => {
+        Alert.alert(
+            "Are you sure you want to delete this category?",
+            "",
+            [
+                {
+                    text: "Go back", onPress: () => { }, style: "cancel"
+                },
+                {
+                    text: "Delete", onPress: () => { submitDelete() }
                 }
             ]
         );
@@ -153,7 +195,15 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
 
             {separator()}
-            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Delete Category</Text>
+
+            <TouchableOpacity style={[styles.updateColorButton, {
+                width: width / 1.8, backgroundColor: '#F5BBAE',
+            }]}
+                onPress={() => {
+                    areYouSureDelete()
+                }}>
+                <Text style={styles.addCategoryText}>Delete Category</Text>
+            </TouchableOpacity>
 
             <View style={styles.backContainer}>
                 <TouchableOpacity
@@ -169,7 +219,6 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             </View>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({

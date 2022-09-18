@@ -57,7 +57,7 @@ const ProfileScreen = ({ navigation }) => {
     const fetchStatsProfile = async (id) => {
         console.log("Fetching stats")
         try {
-            const response = await timeoutApi.get('/user/stats', { params: { id } })
+            const response = await timeoutApi.get(`/stats/${id}`)
             console.log("stats", response.data)
             setProfileStats({
                 totalTime: response.data.total_time,

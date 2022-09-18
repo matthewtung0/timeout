@@ -273,13 +273,15 @@ const HistoryDailyScreen = ({ navigation }) => {
                                 }}
                             />
 
-                            <View>
+                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
                                 {monthlyCountersGrouped
                                     .map((item) => {
                                         return (
                                             <View
-                                                key={item.counter_name}>
-                                                <Text>{item.counter_name}: {item.daily_count}</Text>
+                                                key={item.counter_name}
+                                                style={{ flex: 1, flexDirection: 'row', }}>
+                                                <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
+                                                <Text style={{ flex: 1, }}>{item.daily_count}</Text>
                                             </View>
                                         )
                                     })}

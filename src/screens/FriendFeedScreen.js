@@ -315,7 +315,7 @@ const FriendFeedScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     outerContainer: {
-        marginTop: 70, //here because header is transparent
+        marginTop: 110, //here because header is transparent
         flex: 1,
         flexDirection: 'column',
     },

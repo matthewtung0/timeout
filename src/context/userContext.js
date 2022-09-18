@@ -91,9 +91,8 @@ const userReducer = (state, action) => {
 }
 
 const fetchSelf = dispatch => async () => {
-    console.log("fetching self in profile screen")
     try {
-        const response = await timeoutApi.get('/self_user')
+        const response = await timeoutApi.get(`/info/self`)
         console.log("setting self info to", response.data)
         dispatch({ type: 'fetch_self', payload: response.data })
     } catch (err) {
@@ -240,9 +239,9 @@ const editSelf = dispatch => async ({ firstName, lastName, username, callback = 
     }
 }
 
-const addPoints = dispatch => async (pointsToAdd, callback) => {
+const addPoints = dispatch => async (id, pointsToAdd, callback) => {
     try {
-        const response = await timeoutApi.patch('/self_user/points', { pointsToAdd })
+        const response = await timeoutApi.patch(`/points/${id}`, { pointsToAdd })
         dispatch({ type: 'add_points', payload: { pointsToAdd } })
         if (callback) { callback() }
     } catch (err) {

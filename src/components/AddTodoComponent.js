@@ -24,16 +24,16 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
     const [colorId, setColorId] = useState(item ? item.color_id : 'c6')
     const [categoryId, setCategoryId] = useState(item ? item.category_id : '3')
 
-    const { state, addTodoItem, editTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
+    const { state, addTodoItem, editTodoItem, fetchUserTodoItems, deleteTodoItem } = useContext(CategoryContext)
 
     const [notes, setNotes] = useState('')
 
     const INPUT_WIDTH = width * 0.8
 
-    const resetInputs = async () => {
+    const resetInputs = async (msg) => {
         setToDoItemName('')
         setIsLoading(false)
-        alert("Information added successfully!")
+        alert(msg)
 
         // repull the list now that we've added to it
         await fetchUserTodoItems();
@@ -49,6 +49,25 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
         return true
     }
     console.log("this item is", item)
+
+    const areYouSureDelete = (item_id, reset_msg) => {
+        Alert.alert(
+            "Are you sure you want to delete this task?",
+            "",
+            [
+                {
+                    text: "Go back",
+                    onPress: () => { },
+                    style: "cancel"
+                },
+                {
+                    text: "Delete", onPress: () => {
+                        deleteTodoItem(item_id, resetInputs(reset_msg))
+                    }
+                }
+            ]
+        );
+    }
 
 
     // initialize data if this is an edit of existing task
@@ -111,15 +130,30 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                             setIsLoading(true)
 
                             if (item) {
-                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc, resetInputs)
+                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc, resetInputs("Task edited successfully"))
                             } else {
-                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs);
+                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs("Task added successfully"));
                             }
 
                         }}>
                         <Text style={styles.plusText}>{buttonText}</Text>
                     </TouchableOpacity>
                 </View>
+
+                {/* delete the item */}
+
+                {item ?
+                    <TouchableOpacity
+                        style={[styles.delete, { width: width / 3.5, }]}
+                        onPress={() => {
+                            setIsLoading(true)
+                            areYouSureDelete(item.item_id, resetInputs("Task deleted successfully"))
+                        }}>
+                        <Text style={styles.deleteText}>Delete task</Text>
+                    </TouchableOpacity>
+                    : null}
+
+
                 {isLoading ?
                     <ActivityIndicator size="large" color="white" /> : null}
 
@@ -176,7 +210,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
-        marginBottom: 40,
+        marginBottom: 10,
         marginTop: 30,
         shadowOffset: {
             width: 0.05,
@@ -189,7 +223,26 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         paddingVertical: 10,
-    }
+    },
+    deleteText: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: '400',
+        paddingVertical: 5,
+    },
+    delete: {
+        backgroundColor: '#F5BBAE',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 15,
+        alignSelf: 'center',
+        marginTop: 10,
+        shadowOffset: {
+            width: 0.05,
+            height: 0.05,
+        },
+        shadowOpacity: 0.1,
+    },
 })
 
 export default AddTodoComponent;

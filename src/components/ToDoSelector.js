@@ -171,7 +171,6 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
     } else {
         return parentView()
     }
-
 }
 
 const styles = StyleSheet.create({

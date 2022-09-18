@@ -61,7 +61,7 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
             // after save session, fetch self to update stats, and then update the points
             await fetchSelf()
             await fetchUserTodoItems()
-            const res = addPoints(100000, offBoard())
+            const res = addPoints(userState.user_id, 100000, offBoard())
         } catch (err) {
             console.log("Problem adding session", err)
         }

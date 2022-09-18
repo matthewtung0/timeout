@@ -193,7 +193,8 @@ const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
 const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, isPublic, callback = null) => {
     console.log("trying to add category");
     try {
-        const response = await timeoutApi.post('/category', { categoryName, timeSubmitted, chosenColor, isPublic })
+        const response = await timeoutApi.post('/category/',
+            { categoryName, timeSubmitted, chosenColor, isPublic })
         dispatch({ type: 'add_category', payload: { categoryName, timeSubmitted, chosenColor, isPublic } })
         if (callback) { callback() }
     } catch (err) {
@@ -203,9 +204,8 @@ const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor,
 }
 
 const deleteCategory = dispatch => async (categoryId, callback = null) => {
-    console.log("trying to delete category");
     try {
-        const response = await timeoutApi.delete('/category', { categoryId })
+        const response = await timeoutApi.delete('/category', { params: { categoryId } })
         dispatch({ type: 'delete_category', payload: { categoryId } })
         if (callback) { callback() }
     } catch (err) {
@@ -227,7 +227,7 @@ const changePublicCategory = dispatch => async (categoryId, toPublic, callback =
 }
 
 const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null) => {
-    console.log("trying to archive category");
+    console.log("trying to change archive category to ", toArchive);
     try {
         const response = await timeoutApi.patch('/category', { categoryId, archived: toArchive })
         dispatch({ type: 'archive_category', payload: { categoryId, archived: toArchive } })
