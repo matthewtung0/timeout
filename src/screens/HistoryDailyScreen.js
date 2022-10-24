@@ -1,16 +1,18 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator, ScrollView, Button, TouchableOpacity } from 'react-native';
 import {
-    compareAsc, format, endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
+    compareAsc, format, endOfDay, startOfDay, parseISO, startOfMonth,
+    endOfMonth, addMonths, subMonths, differenceInSeconds
 } from 'date-fns';
-import { Calendar } from 'react-native-calendars';
-import CalendarComponent from '../components/CalendarComponent';
+import { Icon } from 'react-native-elements'
 import PastActivityCard from '../components/PastActivityCard';
 import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
 const MARGIN_HORIZONTAL = 20
+import HistoryComponent from '../components/HistoryComponent';
+
 const today_date = () => {
     let date = format(new Date(), 'M-dd-yyyy z')
     return date;
@@ -57,7 +59,11 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const [monthlyCounters, setMonthlyCounters] = useState([])
     const [monthlyCountersGrouped, setMonthlyCountersGrouped] = useState([])
+
+    const [monthlyTasksGrouped, setMonthlyTasksGrouped] = useState([])
     const [dayCounters, setDayCounters] = useState([])
+    const [monthlySummaryVisible, setMonthlySummaryVisible] = useState(true)
+    const [dailySummaryVisible, setDailySummaryVisible] = useState(true)
 
     console.log("Calendar Date", state.calendarDate)
 
@@ -72,7 +78,6 @@ const HistoryDailyScreen = ({ navigation }) => {
             console.log("Monthly counter end", endRange)
 
             const response = await timeoutApi.get('/counter/month', { params: { startTime: startRange, endTime: endRange } })
-            //console.log("mONTHLY COUNTERS:", response.data)
             setMonthlyCounters(response.data)
             groupMonthlyCounters(response.data);
         } catch (err) {
@@ -87,51 +92,33 @@ const HistoryDailyScreen = ({ navigation }) => {
             map.set(counter_name, +currSum + +daily_count)
         }
         const res = Array.from(map, ([counter_name, daily_count]) => ({ counter_name, daily_count }))
-        console.log("Grouped monthly data", res)
         setMonthlyCountersGrouped(res)
     }
 
-    const filterOnDay = (dayObject) => {
-        setSelectedDay(dayObject)
-        /* format:
-        Object {
-            "dateString": "2022-03-10",
-            "day": 10,
-            "month": 3,
-            "timestamp": 1646870400000,
-            "year": 2022,
-        }
-        */
-        let date = parseISO(dayObject.dateString)
-        let startTime = startOfDay(date)
-        let endTime = endOfDay(date)
-
-        let daySessions = state.monthSessions.filter(a => {
-            let compare_dt = parseISO(a.time_start)
-            return (compareAsc(compare_dt, startTime) >= 0 &&
-                compareAsc(endTime, compare_dt) > 0)
-        })
-        setUseMonthly(false)
-        setDaySessions(daySessions);
-
-        filterCounterOnDay(dayObject)
+    const goToNextMonth = async () => {
+        var dt = addMonths(startOfMonth(state.calendarDate), 1)
+        setIsLoading(true)
+        setUseMonthly(true)
+        resetCalendarDate(dt)
+        await fetchMonthly(dt)
+        await fetchMonthlyCounters(dt)
+        setDisplayedMonth(longMonth(dt))
+        setDisplayedYear(dt.getFullYear())
+        //setTestMonth(month)
+        setIsLoading(false)
     }
 
-    const filterCounterOnDay = (dayObject) => {
-        let date = parseISO(dayObject.dateString)
-        //console.log("BEFORE FILTERING", monthlyCounters)
-
-        let startTime = startOfDay(date)
-        let endTime = endOfDay(date)
-        console.log("start", startTime)
-        console.log("end", endTime)
-        let dayCounters = monthlyCounters.filter(a => {
-            let compare_dt = parseISO(a.time_created)
-            return (compareAsc(compare_dt, startTime) >= 0 &&
-                compareAsc(endTime, compare_dt) > 0)
-        })
-        //setUseMonthly(false)
-        setDayCounters(dayCounters);
+    const goToPrevMonth = async () => {
+        var dt = subMonths(startOfMonth(state.calendarDate), 1)
+        setIsLoading(true)
+        setUseMonthly(true)
+        resetCalendarDate(dt)
+        await fetchMonthly(dt)
+        await fetchMonthlyCounters(dt)
+        setDisplayedMonth(longMonth(dt))
+        setDisplayedYear(dt.getFullYear())
+        //setTestMonth(month)
+        setIsLoading(false)
     }
 
     const fetchMonthlyCallback = async (month) => {
@@ -147,7 +134,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             "timestamp": 1646092800000,
             "year": 2022,
         }*/
-        await fetchMonthly(month_dateObj)
+        await fetchMonthly(month_dateObj, groupMonthlyTasks)
         await fetchMonthlyCounters(month_dateObj)
 
         setDisplayedMonth(longMonth(month_dateObj))
@@ -167,6 +154,45 @@ const HistoryDailyScreen = ({ navigation }) => {
         setDaySessions(res)
     }
 
+    const date_Subtitle = (dt) => {
+        var parts = dt.split('T')
+        var actual_date = parts[0]
+        var actual_parts = actual_date.split('-')
+        var yr = actual_parts[0]
+        var month = actual_parts[1]
+        var day = actual_parts[2]
+
+        return (month + "/" + day + "/" + yr)
+
+    }
+
+    const toggleSummaryDisplay = () => {
+        setMonthlySummaryVisible(!monthlySummaryVisible)
+    }
+    const toggleDailyDisplay = () => {
+        setDailySummaryVisible(!dailySummaryVisible)
+    }
+
+    const groupMonthlyTasks = (monthSessions) => {
+        var taskMap = {}
+        for (var i = 0; i < monthSessions.length; i++) {
+            var session = monthSessions[i]
+            var formattedTime = date_Subtitle(session.time_start)
+            //timeDiffSec = differenceInSeconds(parseISO(act.time_end), parseISO(act.time_start))
+            if (formattedTime in taskMap) {
+                taskMap[formattedTime].push(session)
+            } else {
+                taskMap[formattedTime] = [session]
+            }
+        }
+
+
+        let sortedTaskMap = Object.entries(taskMap).sort((a, b) => { return a })
+        setMonthlyTasksGrouped(sortedTaskMap)
+        console.log("GROUPED TASKS", sortedTaskMap)
+    }
+
+
     useFocusEffect(
 
         useCallback(() => {
@@ -174,7 +200,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             //setUseMonthly(true)
             setIsLoading(true)
 
-            fetchMonthly(state.calendarDate)
+            fetchMonthly(state.calendarDate, groupMonthlyTasks)
 
             fetchMonthlyCounters(state.calendarDate)
 
@@ -189,171 +215,274 @@ const HistoryDailyScreen = ({ navigation }) => {
             }
         }, [state.calendarDate])
     )
+    //console.log(state.monthSessions)
 
     return (
         <ScrollView style={styles.viewContainer}>
-
-            <Calendar
-                current={calendarDate}
-                markedDates={markedDatesTemp}
-                onDayPress={day => {
-                    var temp = {}
-                    temp[day.dateString] = { selected: true, selectedColor: '#F5BBAE' }
-                    setMarkedDatesTemp(temp)
-                    filterOnDay(day);
-                }}
-                onMonthChange={month => {
-                    console.log("Setting calendar date to", month.dateString)
-
-                    resetCalendarDate(new Date(month.dateString))
-
-                    setCalendarDate(month.dateString)
-                    //fetchMonthlyCallback(month);
-                    setUseMonthly(true)
-                    setMarkedDatesTemp({})
-                }}
-                style={{
-                    borderRadius: 10, width: width / 1.1, alignSelf: 'center'
-                }}
-                theme={{
-                    calendarBackground: '#F6F2DF',
-                    textDayFontSize: 15,
-                    textMonthFontSize: 18,
-                    textDayHeaderFontSize: 15,
-                    todayTextColor: 'black',
-                    dayTextColor: '#67806D',
-                    monthTextColor: '#67806D',
-                    arrowColor: '#67806D',
-                    textSectionTitleColor: '#67806D',
-                    selectedDayTextColor: 'black',
-                    textMonthFontWeight: 'bold',
+            <></>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1, }}>
+                    <TouchableOpacity
+                        onPress={goToPrevMonth}>
+                        <Icon
+                            name="chevron-back-outline"
+                            type='ionicon'
+                            size={35}
+                            color='black' />
+                    </TouchableOpacity>
+                </View>
+                <View style={{
+                    flex: 3,
+                    alignItems: 'center'
                 }}>
-
-            </Calendar>
-
-            {useMonthly ?
-                /*<View style={styles.cal}>
-                    <CalendarComponent
-                        curDate={state.calendarDate}
-                        updateCallback={filterOnDay}
-                        updateMonth={fetchMonthlyCallback}
-                        setMonthlyCallback={setMonthlyCallback} />
-        </View>*/
-                // MONTHLY VIEW
-
-                <View>
-                    {isLoading ?
-                        <ActivityIndicator size="large" />
-                        :
-                        <><Text style={[styles.overviewTitle, { marginHorizontal: MARGIN_HORIZONTAL }]}>
-                            {displayedMonth} {displayedYear} Overview</Text>
-                            <Text style={[styles.overviewTitle, { fontSize: 18, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL }]}>{state.monthSessions.length} Timed Tasks</Text>
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: StyleSheet.hairlineWidth,
-                                    marginHorizontal: MARGIN_HORIZONTAL,
-                                    marginBottom: 5,
-                                }}
-                            />
-                            {state.monthSessions.length > 0 ?
-                                <MonthlySumComponent monthBatch={state.monthSessions} />
-                                : null}
-
-
-                            <Text style={[styles.overviewTitle, {
-                                fontSize: 18, alignSelf: 'auto',
-                                marginHorizontal: MARGIN_HORIZONTAL
-                            }]}>{monthlyCountersGrouped.length} Counters Worked On</Text>
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: StyleSheet.hairlineWidth,
-                                    marginHorizontal: MARGIN_HORIZONTAL
-                                }}
-                            />
-
-                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                {monthlyCountersGrouped
-                                    .map((item) => {
-                                        return (
-                                            <View
-                                                key={item.counter_name}
-                                                style={{ flex: 1, flexDirection: 'row', }}>
-                                                <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
-                                                <Text style={{ flex: 1, }}>{item.daily_count}</Text>
-                                            </View>
-                                        )
-                                    })}
-                            </View>
-
-
-                        </>
-
-                    }
+                    <Text style={[styles.overviewTitle, { fontSize: 26, }]}>{displayedMonth} {displayedYear}</Text>
                 </View>
 
-                // DAILY VIEW
-                :
+                <View style={{ flex: 1, }}>
+                    <TouchableOpacity
+                        onPress={goToNextMonth}>
+                        <Icon
+                            name="chevron-forward-outline"
+                            type='ionicon'
+                            size={35}
+                            color='black' />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View>
                 <>
-                    <Text style={[styles.overviewTitle, { marginHorizontal: MARGIN_HORIZONTAL }]}>
-                        {selectedDay.month}/{selectedDay.day}/{selectedDay.year}</Text>
-                    <Text style={{
-                        fontSize: 20, marginHorizontal: MARGIN_HORIZONTAL,
-                        marginBottom: 5,
-                    }}>{daySessions.length} Timed Tasks:</Text>
-                    <View
-                        style={{
-                            borderBottomColor: 'grey',
-                            borderBottomWidth: 2,
-                            marginHorizontal: MARGIN_HORIZONTAL,
-                        }}
-                    />
-                    <View
-                        style={{ marginBottom: 10, }}>
+                    {/* ======= SUMMARY CONTAINER ======== */}
+                    <View style={{
+                        backgroundColor: 'white', borderRadius: 10, shadowOffset: {
+                            width: 0.05,
+                            height: 0.05,
+                        },
+                        shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
+                        marginTop: 15,
+                    }}>
+                        <View style={{ flex: 1, flexDirection: 'row', }}>
+                            <View style={{ flex: 4 }}>
+                                <Text style={[styles.overviewTitle,
+                                {
+                                    fontSize: 22, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
+                                    marginBottom: 3,
+                                }]}>Monthly Summary</Text>
 
-                        {daySessions
-                            .map((item) => {
-                                return (
-                                    <View
-                                        key={item.activity_id}
-                                        style={{ marginHorizontal: MARGIN_HORIZONTAL, }}>
-                                        <PastActivityCard session={item} />
-                                        <View
+                            </View>
+
+                            <View style={{ flex: 1 }}>
+                                <TouchableOpacity
+                                    onPress={toggleSummaryDisplay}>
+                                    {monthlySummaryVisible ?
+                                        <Icon
+                                            name="remove-outline"
+                                            type='ionicon'
+                                            size={23}
+                                            color='grey'
                                             style={{
-                                                borderBottomColor: 'grey',
-                                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                            }}
-                                        />
-                                    </View>
+                                                justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
+                                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
+                                            }} />
+                                        :
+                                        <Icon
+                                            name="add-outline"
+                                            type='ionicon'
+                                            size={23}
+                                            color='grey'
+                                            style={{
+                                                justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
+                                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
+                                            }} />
+                                    }
+                                </TouchableOpacity>
 
-                                )
-                            })}
-                    </View>
-                    <Text style={{
-                        fontSize: 20, marginHorizontal: MARGIN_HORIZONTAL,
-                        marginBottom: 5,
-                    }}>{dayCounters.length} Counters:</Text>
-                    <View
-                        style={{
-                            borderBottomColor: 'grey',
-                            borderBottomWidth: 2,
-                            marginHorizontal: MARGIN_HORIZONTAL,
-                        }}
-                    />
-                    <View>
-                        {dayCounters
-                            .map((item) => {
-                                return (
-                                    <View
-                                        key={item.counter_id}>
-                                        <Text>{item.counter_name}: {item.daily_count} tallies today</Text>
+                            </View>
+
+                        </View>
+
+
+                        <View
+                            style={{
+                                borderBottomColor: 'grey',
+                                borderBottomWidth: 2,
+                                marginHorizontal: MARGIN_HORIZONTAL,
+                                marginBottom: 7,
+                            }}
+                        />
+
+                        {monthlySummaryVisible ?
+                            <>
+
+                                <Text style={[styles.overviewTitle,
+                                {
+                                    fontSize: 17, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
+                                    marginTop: 2, marginBottom: 3,
+                                }]}>
+                                    Tasks ({state.monthSessions.length})</Text>
+                                <View
+                                    style={{
+                                        borderBottomColor: 'grey',
+                                        borderBottomWidth: 1,
+                                        marginHorizontal: MARGIN_HORIZONTAL,
+                                        marginBottom: 5,
+                                    }}
+                                />
+
+                                {state.monthSessions.length > 0 ?
+                                    <MonthlySumComponent monthBatch={state.monthSessions} />
+                                    :
+                                    <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                        <Text>No tasks for this month</Text>
                                     </View>
-                                )
-                            })}
+                                }
+
+                                <Text style={[styles.overviewTitle, {
+                                    fontSize: 17, alignSelf: 'auto',
+                                    marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
+                                }]}>Counters ({monthlyCountersGrouped.length}) </Text>
+                                <View
+                                    style={{
+                                        borderBottomColor: 'grey',
+                                        borderBottomWidth: 1,
+                                        marginHorizontal: MARGIN_HORIZONTAL
+                                    }}
+                                />
+
+                                {monthlyCountersGrouped.length > 0 ?
+
+                                    <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                        {monthlyCountersGrouped
+                                            .map((item) => {
+                                                return (
+                                                    <View
+                                                        key={item.counter_name}
+                                                        style={{ flex: 1, flexDirection: 'row', }}>
+                                                        <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
+                                                        <Text style={{ flex: 1, }}>{item.daily_count}</Text>
+                                                    </View>
+                                                )
+                                            })}
+                                    </View>
+                                    :
+                                    <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                        <Text>No counters for this month</Text>
+                                    </View>}
+
+                            </>
+                            : null}
+
+                    </View>
+
+
+
+                    {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
+                    <View style={{
+                        backgroundColor: 'white', borderRadius: 10, shadowOffset: {
+                            width: 0.05,
+                            height: 0.05,
+                        },
+                        shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
+                        marginTop: 15,
+                    }}>
+
+                        <View style={{ flex: 1, flexDirection: 'row', }}>
+                            <View style={{ flex: 4 }}>
+                                <Text style={[styles.overviewTitle,
+                                {
+                                    fontSize: 24, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
+                                    marginBottom: 3,
+                                }]}>Tasks Detail</Text>
+
+                            </View>
+
+                            <View style={{ flex: 1 }}>
+
+                                <TouchableOpacity
+                                    onPress={toggleDailyDisplay}>
+                                    {dailySummaryVisible ?
+                                        <Icon
+                                            name="remove-outline"
+                                            type='ionicon'
+                                            size={23}
+                                            color='grey'
+                                            style={{
+                                                justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
+                                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
+                                            }} />
+                                        :
+                                        <Icon
+                                            name="add-outline"
+                                            type='ionicon'
+                                            size={23}
+                                            color='grey'
+                                            style={{
+                                                justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
+                                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
+                                            }} />
+                                    }
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+                        <View
+                            style={{
+                                borderBottomColor: 'grey',
+                                borderBottomWidth: 2,
+                                marginHorizontal: MARGIN_HORIZONTAL
+                            }}
+                        />
+
+                        {dailySummaryVisible ?
+                            <View>
+                                {monthlyTasksGrouped.map((item) => {
+                                    return (
+                                        <View
+                                            key={item[0]}>
+                                            <Text style={[styles.overviewTitle, {
+                                                fontSize: 16, alignSelf: 'auto',
+                                                marginHorizontal: MARGIN_HORIZONTAL,
+                                                marginTop: 4, marginBottom: 2,
+                                            }]}>{item[0]}</Text>
+                                            <View
+                                                style={{
+                                                    borderBottomColor: 'grey',
+                                                    borderBottomWidth: 1.5,
+                                                    marginHorizontal: MARGIN_HORIZONTAL
+                                                }}
+                                            />
+
+                                            <View>
+                                                {item[1].map((j) => {
+                                                    return (
+                                                        <View
+                                                            key={j.activity_id}
+                                                            style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+                                                            <HistoryComponent
+                                                                session_obj={j}>
+
+                                                            </HistoryComponent>
+
+                                                        </View>
+
+
+                                                    )
+                                                })
+
+                                                }
+
+                                            </View>
+                                        </View>
+                                    )
+
+                                })}
+                            </View>
+
+                            : null}
                     </View>
                 </>
-            }
+            </View>
 
         </ScrollView>
     )
@@ -385,7 +514,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 22,
         color: '#67806D',
-        marginTop: 10,
         marginBottom: 8,
     },
 })

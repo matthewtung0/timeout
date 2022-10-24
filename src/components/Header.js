@@ -13,7 +13,7 @@ const Header = ({ navigation }) => {
                 name='arrow-back-outline'
                 type='ionicon'
                 size={35}
-                color='white' />
+                color='black' />
         </TouchableOpacity>
 
     )

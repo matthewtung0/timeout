@@ -49,7 +49,6 @@ const userReducer = (state, action) => {
                 firstName: action.payload.firstName,
                 lastName: action.payload.lastName,
                 username: action.payload.username,
-                responseMessage: 'Info updated!',
             }
         case 'add_points':
             return { ...state, points: parseInt(state.points) + parseInt(action.payload.pointsToAdd) }
@@ -228,11 +227,12 @@ const fetchEveryone = dispatch => async () => { };
 
 const postSelf = dispatch => async () => { }
 
-const editSelf = dispatch => async ({ firstName, lastName, username, callback = null }) => {
+const editSelf = dispatch => async (firstName, lastName, username, callback) => {
     try {
         const response = await timeoutApi.patch('/self_user', { firstName, lastName, username })
         dispatch({ type: 'edit_self', payload: { firstName, lastName, username } })
-        //if (callback) {callback()}
+        callback()
+
     } catch (err) {
         console.log("Problem editing self user info:", err)
         dispatch({ type: 'add_error', payload: 'Problem updating info!' })

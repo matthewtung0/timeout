@@ -4,10 +4,11 @@ import {
     TouchableOpacity, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements'
-import { Context as CategoryContext } from '../context/CategoryContext';
+import { Context as CategoryContext } from '../context/CategoryContext'
+import { Context as CounterContext } from '../context/CounterContext'
 const constants = require('../components/constants.json')
 
-const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedCategoryName, selectedCatId }) => {
+const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedCounterName, selectedCounterId }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.65
     const [editItem, setEditItem] = useState(null)
@@ -15,6 +16,8 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     const { state: catState, changeArchiveCategory,
         changeColorCategory, deleteCategory, changePublicCategory } = useContext(CategoryContext)
+
+    const { deleteCounter, changeColorCounter, changeArchiveCounter } = useContext(CounterContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
 
@@ -35,7 +38,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     const submitColorChange = async () => {
         setIsLoading(true)
-        await changeColorCategory(selectedCatId, chosenColorId, colorChangeCallback)
+        await changeColorCounter(selectedCounterId, chosenColorId, colorChangeCallback)
         //toggleFunction();
     }
 
@@ -43,51 +46,23 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
         setIsLoading(false)
         alert("Color changed successfully")
     }
-    // can only delete category if user does not currently have to-do items with that category
-    const validateDelete = () => {
-        var userItems = catState.userTodoItems
-        userItemsSameCat = userItems.filter((req) => (req.category_id == selectedCatId && req.is_active == true))
-        if (userItemsSameCat.length > 0) {
-            console.log("VALIDATE IS FALSE")
-            return false
-        }
-        console.log("VALIDATE IS TRUE")
-        return true
-    }
+
     const submitArchive = async (archiveBool) => {
-        if (validateDelete() === false) {
-            Alert.alert(
-                "You currently have to-do items with this category. Delete those first before archiving this category"
-            )
-            return
-        } else {
-            setIsArchiving(true)
-            try {
-                await changeArchiveCategory(selectedCatId, archiveBool, archiveCallback)
-            } catch (e) {
-                console.log(e)
-            }
+        setIsArchiving(true)
+        try {
+            await changeArchiveCounter(selectedCounterId, archiveBool, archiveCallback)
+        } catch (e) {
+            console.log(e)
         }
-
     }
-
-
 
     const submitDelete = async () => {
-        if (validateDelete() === false) {
-            Alert.alert(
-                "You currently have to-do items with this category. Delete those first before deleting this category"
-            )
-            return
-        } else {
-            setIsArchiving(true)
-            try {
-                await deleteCategory(selectedCatId, deleteCallback)
-            } catch (e) {
-                console.log(e)
-            }
+        setIsArchiving(true)
+        try {
+            await deleteCounter(selectedCounterId, deleteCallback)
+        } catch (e) {
+            console.log(e)
         }
-
     }
 
     const archiveCallback = () => {
@@ -117,7 +92,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     const areYouSureDelete = () => {
         Alert.alert(
-            "Are you sure you want to delete this category?",
+            "Are you sure you want to delete this counter?",
             "",
             [
                 {
@@ -146,20 +121,12 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     return (
         <View style={styles.container}>
-
-            {/*<View style={{ backgroundColor: '#abc57e' }}>
-                <Text style={{
-                    alignSelf: 'center', margin: 20, fontSize: 25, fontWeight: 'bold', color: 'white',
-                }}>Edit Category</Text>
-            </View>*/}
-
-
             <View
                 style={[styles.titleContainer, {
                     width: INPUT_WIDTH, height: 45,
                     backgroundColor: constants.colors[chosenColorId],
                 }]}>
-                <Text style={styles.title}>{selectedCategoryName}</Text>
+                <Text style={styles.title}>{selectedCounterName}</Text>
             </View>
             <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 5, }]}>Color Selection</Text>
             < FlatList
@@ -186,32 +153,11 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
             <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
             {separator()}
-            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Public Category</Text>
-            {separator()}
-
-            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Archive Category</Text>
-            <Text style={[styles.modalMargin, { marginBottom: 10, }]}>You can archive categories to hide them from your summary views and dropdown list. They will still be counted in your statistics.</Text>
 
             <TouchableOpacity style={[styles.updateColorButton, {
                 width: width / 1.8, backgroundColor: '#F5BBAE',
             }]}
-                onPress={() => {
-
-                    areYouSureArchive()
-                }}>
-                <Text style={styles.addCategoryText}>Archive Category</Text>
-            </TouchableOpacity>
-
-            <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
-
-            {separator()}
-
-            <TouchableOpacity style={[styles.updateColorButton, {
-                width: width / 1.8, backgroundColor: '#F5BBAE',
-            }]}
-                onPress={() => {
-                    areYouSureDelete()
-                }}>
+                onPress={() => { areYouSureDelete() }}>
                 <Text style={styles.addCategoryText}>Delete Category</Text>
             </TouchableOpacity>
 
@@ -299,4 +245,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ColorSelectModal;
+export default EditCounterModal;

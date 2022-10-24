@@ -5,6 +5,7 @@ import { Context as CounterContext } from '../context/CounterContext';
 import Slider from '@react-native-community/slider'
 import Modal from 'react-native-modal'
 import AddCounterModal from '../components/AddCounterModal';
+import EditCounterModal from '../components/EditCounterModal';
 const constants = require('../components/constants.json')
 
 
@@ -16,6 +17,10 @@ const CounterScreen = () => {
     const [isLoading, setIsLoading] = useState(false)
 
     const [addCounterModalVisible, setAddCounterModalVisible] = useState(false)
+    const [editCounterModalVisible, setEditCounterModalVisible] = useState(false)
+    const [selectedCounterId, setSelectedCounterId] = useState('')
+    const [selectedColorId, setSelectedColorId] = useState('')
+    const [selectedName, setSelectedName] = useState('')
 
     var colorArr = []
     //let colors = JSON.parse(constants.colors)
@@ -50,6 +55,10 @@ const CounterScreen = () => {
         setAddCounterModalVisible(!addCounterModalVisible)
     }
 
+    const toggleEditCounterModal = () => {
+        setEditCounterModalVisible(!editCounterModalVisible);
+    };
+
     return (
         <View style={{ flex: 1, }}>
 
@@ -66,6 +75,26 @@ const CounterScreen = () => {
                         <AddCounterModal
                             toggleFunction={toggleAddCounterModal}
                             colorArr={colorArr}
+                        />
+                    </View></View>
+            </Modal>
+
+            <Modal isVisible={editCounterModalVisible}
+                animationIn='slideInUp'
+                animationOut='slideOutUp'>
+
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <View style={{ height: 500 }}>
+                        <EditCounterModal
+                            toggleFunction={toggleEditCounterModal}
+                            colorArr={colorArr}
+                            selectedColorId={selectedColorId}
+                            selectedCounterName={selectedName}
+                            selectedCounterId={selectedCounterId}
                         />
                     </View></View>
             </Modal>
@@ -155,7 +184,14 @@ const CounterScreen = () => {
 
                                     <View style={{ flex: 1, }}>
                                         <TouchableOpacity
-                                            onPress={() => { }}>
+                                            onPress={() => {
+                                                setSelectedCounterId(item.counter_id)
+                                                setSelectedColorId(item.color_id)
+                                                setSelectedName(item.counter_name)
+                                                toggleEditCounterModal()
+                                            }
+
+                                            }>
                                             <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
                                         </TouchableOpacity>
                                     </View>

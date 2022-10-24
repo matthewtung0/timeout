@@ -135,7 +135,7 @@ const fetchAvatars = dispatch => async (friendId) => {
 
 
 // fetch all tasks in the given day
-const fetchMonthly = dispatch => async (date) => {
+const fetchMonthly = dispatch => async (date, callback = null) => {
     //let date = parseISO(dayObject.dateString)
     let startOfMonthTemp = startOfMonth(date)
     try {
@@ -149,7 +149,7 @@ const fetchMonthly = dispatch => async (date) => {
                 startOfMonth: format(startOfMonthTemp, 'yyyy-MM-dd')
             }
         })
-        //return response.data
+        if (callback) { callback(response.data) }
     } catch (err) {
         console.log("Problem getting month's sessions", err)
     }

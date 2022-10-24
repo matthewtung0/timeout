@@ -737,9 +737,6 @@ const EditAvatarScreen = ({ navigation }) => {
                     callback={modalCallback} />
             </Modal>
 
-
-
-
             <Button title="Go back" onPress={() => { navigation.navigate('Profile') }} />
             <Image
                 style={styles.default}

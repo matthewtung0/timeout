@@ -31,7 +31,6 @@ const ProfileScreen = ({ navigation }) => {
         time_created: '',
         username: ''
     })
-    console.log(profileStats)
 
     useFocusEffect(
         useCallback(() => {
@@ -96,7 +95,8 @@ const ProfileScreen = ({ navigation }) => {
         try {
             setOffset(0)
             //await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
-            await fetchAllSessions(state.user_id);
+            //await fetchAllSessions(state.user_id);
+            await fetchAllSessions(state.idToView);
             setOffset(offset + 10)
             await fetchStatsProfile(state.idToView)
             await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
@@ -164,8 +164,6 @@ const ProfileScreen = ({ navigation }) => {
                 <Header
                     navigation={navigation} />
 
-
-
                 {isMe ?
                     <TouchableOpacity
                         style={styles.editButton}
@@ -177,7 +175,6 @@ const ProfileScreen = ({ navigation }) => {
                             color='#67806D' />
                     </TouchableOpacity> : null}
 
-                {/*<Text style={[styles.text, { marginBottom: 20, }]}>{state.friends.length} Friends</Text>*/}
                 <View style={{ flexDirection: 'row', flex: 1, }}>
                     <Text style={styles.bioText}>{profileStats.bio}</Text>
 
@@ -394,7 +391,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginTop: 10,
+        marginTop: 40,
         padding: 2,
     },
     categoryStyle: {

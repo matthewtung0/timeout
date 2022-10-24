@@ -10,7 +10,11 @@ import { Context as SessionContext } from '../context/SessionContext';
 import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
 
-import { differenceInDays, parseISO, differenceInSeconds, isThisMinute } from 'date-fns';
+import {
+    differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
+    differenceInMinutes,
+    parseISO, differenceInSeconds, isThisMinute
+} from 'date-fns';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import timeoutApi from '../api/timeout';
@@ -128,6 +132,33 @@ const FriendFeedScreen = ({ navigation }) => {
     const duration = (startTime, endTime) => {
         return differenceInSeconds(parseISO(endTime), parseISO(startTime))
     }
+
+    const timeAgo = (endTime) => {
+        var parsedTime = parseISO(endTime)
+        var diffInYears = differenceInYears(new Date(), parsedTime)
+        var diffInMonths = differenceInMonths(new Date(), parsedTime)
+        var diffInDays = differenceInDays(new Date(), parsedTime)
+        var diffInHours = differenceInHours(new Date(), parsedTime)
+        var diffInMinutes = differenceInMinutes(new Date(), parsedTime)
+
+        if (diffInYears >= 1) {
+            return `${diffInYears} years ago`
+        } else if (diffInMonths >= 1) {
+            return `${diffInMonths} months ago`
+        } else if (diffInDays >= 1) {
+            return `${diffInDays} days ago`
+        } else if (diffInHours >= 1) {
+            return `${diffInHours} hours ago`
+        } else if (diffInMinutes >= 1) {
+            return `${diffInMinutes} hours ago`
+        } else {
+            return `Just now`
+        }
+    }
+
+
+
+
     const daysAgo = (endTime) => {
         return differenceInDays(new Date(), parseISO(endTime))
     }
@@ -153,8 +184,10 @@ const FriendFeedScreen = ({ navigation }) => {
         return (
             <View>
                 {atEnd ?
-                    <Text>ALl caught up!</Text> :
-                    <>{isLoading ? <ActivityIndicator size="large" /> :
+                    <Text>All caught up!</Text> :
+                    <>{isLoading ? <ActivityIndicator
+                        style={{ marginTop: 15 }}
+                        size="large" /> :
 
                         <TouchableOpacity style={styles.loadMore}
                             onPress={getData}>
@@ -202,10 +235,10 @@ const FriendFeedScreen = ({ navigation }) => {
                         <Text>of </Text>
                         {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
                         <Text style={[styles.bolded]}>{item.category_name}</Text>
-                        <Text> {daysAgo(item.time_end)} days ago</Text>
-                    </Text>
 
-                    <View style={styles.likeContainer}>
+                    </Text>
+                    <Text> {timeAgo(item.time_end)}</Text>
+                    {/*<View style={styles.likeContainer}>
                         <Text style={styles.likeCount}>{item.reaction_count}</Text>
                         <Pressable
                             onPress={() => {
@@ -224,7 +257,7 @@ const FriendFeedScreen = ({ navigation }) => {
                                     name="heart-o"
                                     type='font-awesome' />}
                         </Pressable>
-                    </View>
+                            </View> */}
                 </View>
             </View>
         )

@@ -12,7 +12,7 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     const { state: categoryState } = useContext(CategoryContext)
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState(
-        categoryState.userCategories.map(item => {
+        categoryState.userCategories.filter(item => item.archived !== true).map(item => {
             return {
                 label: item.category_name,
                 value: item.category_id,
@@ -29,7 +29,7 @@ const DropDownComponent = ({ catName, colorId, categoryId,
         useCallback(() => {
             //console.log("Setting items to these categories", categoryState.userCategories)
             setItems(
-                categoryState.userCategories.map(item => {
+                categoryState.userCategories.filter(item => item.archived !== true).map(item => {
                     return {
                         label: item.category_name,
                         value: item.category_id,

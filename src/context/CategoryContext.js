@@ -205,7 +205,7 @@ const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor,
 
 const deleteCategory = dispatch => async (categoryId, callback = null) => {
     try {
-        const response = await timeoutApi.delete('/category', { params: { categoryId } })
+        const response = await timeoutApi.delete(`/category/${categoryId}`, { params: { categoryId } })
         dispatch({ type: 'delete_category', payload: { categoryId } })
         if (callback) { callback() }
     } catch (err) {
@@ -216,7 +216,7 @@ const deleteCategory = dispatch => async (categoryId, callback = null) => {
 
 const changePublicCategory = dispatch => async (categoryId, toPublic, callback = null) => {
     try {
-        const response = await timeoutApi.patch('/category', { categoryId, isPublic: toPublic })
+        const response = await timeoutApi.patch(`/category/${categoryId}`, { categoryId, isPublic: toPublic })
         dispatch({ type: 'public_category', payload: { categoryId, isPublic: toPublic } })
         if (callback) { callback() }
     } catch (err) {
@@ -229,7 +229,7 @@ const changePublicCategory = dispatch => async (categoryId, toPublic, callback =
 const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null) => {
     console.log("trying to change archive category to ", toArchive);
     try {
-        const response = await timeoutApi.patch('/category', { categoryId, archived: toArchive })
+        const response = await timeoutApi.patch(`/category/${categoryId}`, { categoryId, archived: toArchive })
         dispatch({ type: 'archive_category', payload: { categoryId, archived: toArchive } })
         if (callback) { callback() }
     } catch (err) {
@@ -241,7 +241,7 @@ const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback
 const changeColorCategory = dispatch => async (categoryId, newColorId, callback = null) => {
     console.log("trying to change color");
     try {
-        const response = await timeoutApi.patch('/category', { categoryId, colorId: newColorId })
+        const response = await timeoutApi.patch(`/category/${categoryId}`, { colorId: newColorId })
         dispatch({ type: 'change_color', payload: { categoryId, colorId: newColorId } })
         if (callback) { callback() }
     } catch (err) {

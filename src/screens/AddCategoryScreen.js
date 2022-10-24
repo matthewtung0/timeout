@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, ScrollView,
-    Keyboard, TouchableWithoutFeedback, Image, Dimensions
+    Keyboard, TouchableWithoutFeedback, Image, Dimensions, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -40,6 +40,24 @@ const AddCategoryScreen = ({ navigation }) => {
 
     const toggleAddCategoryModal = () => {
         setAddCategoryModalVisible(!addCategoryModalVisible)
+    }
+    const unarchiveCallback = () => {
+        alert("Category unarchived")
+    }
+
+    const areYouSureUnarchive = (category_id) => {
+        Alert.alert(
+            "Unarchive this category?",
+            "",
+            [
+                {
+                    text: "Go back", onPress: () => { }, style: "cancel"
+                },
+                {
+                    text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) }
+                }
+            ]
+        );
     }
 
     return (
@@ -172,7 +190,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                                     onPress={() => {
                                                         try {
                                                             // UNARCHIVE THIS CATEGORY
-                                                            changeArchiveCategory(item.category_id, false)
+                                                            areYouSureUnarchive(item.category_id)
                                                         } catch (e) {
                                                             console.log(e)
                                                         }

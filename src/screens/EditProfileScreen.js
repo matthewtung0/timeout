@@ -1,35 +1,38 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { Context as AuthContext } from '../context/AuthContext';
-import { useFocusEffect } from '@react-navigation/native';
+import Header from '../components/Header';
+const MARGIN_HORIZONTAL = 20
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({ navigation }) => {
     const { state, fetchSelf, editSelf, clearResponseMessage } = useContext(UserContext)
     const { changePassword } = useContext(AuthContext)
     const [firstName, setFirstName] = useState(state.firstName)
     const [lastName, setLastName] = useState(state.lastName)
     const [username, setUsername] = useState(state.username)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [passwordMessage, setPasswordMessage] = useState('')
 
-    useFocusEffect(
+    /*useFocusEffect(
 
         useCallback(() => {
             clearResponseMessage();
             //return () => test();
         }, [])
-    )
+    )*/
+
     const resultCallback = () => {
         setPasswordMessage('Password change successful!')
         setOldPassword('')
         setNewPassword('')
     }
 
-    const areYouSure = () =>
+    const areYouSure = () => {
         Alert.alert(
             "Are you sure?",
             "All your data will be deleted. This is not un-doable.",
@@ -42,105 +45,127 @@ const EditProfileScreen = () => {
                 { text: "Delete", onPress: () => { } }
             ]
         );
+    }
+
+
+    const updateInfoCallback = () => {
+        setIsLoading(false)
+        alert("Information successfuly updated!")
+    }
 
     // firstname, lastname, username, password
     return (
-        <View>
-            <ScrollView>
 
-                <Text style={styles.title}>Edit Profile Screen</Text>
+        <>
+            <Header
+                navigation={navigation} />
+            <View style={[styles.viewContainer, { marginHorizontal: MARGIN_HORIZONTAL }]}>
 
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={firstName}
-                    placeholder="First Name"
-                    label="First Name"
-                    onChangeText={setFirstName}
-                />
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={lastName}
-                    placeholder="Last Name"
-                    label="Last Name"
-                    onChangeText={setLastName}
-                />
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={username}
-                    placeholder="username"
-                    label="Username"
-                    onChangeText={setUsername}
-                />
-                <TouchableOpacity
-                    style={styles.signInBoxStyle}
-                    onPress={() => {
-                        editSelf({ firstName, lastName, username })
-                    }}>
-                    <Text style={styles.signInTextStyle}>Update Information</Text>
-                </TouchableOpacity>
+                <ScrollView>
 
-                {state.responseMessage ? <Text>{state.responseMessage}</Text> : null}
+                    <Text style={styles.title}>Edit User Information</Text>
 
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={oldPassword}
-                    placeholder="Current Password"
-                    label="Current Password"
-                    onChangeText={setOldPassword}
-                />
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={newPassword}
-                    placeholder="New Password"
-                    label="New Password"
-                    onChangeText={setNewPassword}
-                />
-                <TouchableOpacity
-                    style={styles.signInBoxStyle}
-                    onPress={() => {
-                        changePassword(oldPassword, newPassword, resultCallback)
-                    }}>
-                    <Text style={styles.signInTextStyle}>Change Password</Text>
-                </TouchableOpacity>
+                    <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={firstName}
+                        placeholder="First name"
+                        label="First name"
+                        onChangeText={setFirstName}
+                    />
+                    <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={lastName}
+                        placeholder="Last name"
+                        label="Last name"
+                        onChangeText={setLastName}
+                    />
+                    <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={username}
+                        placeholder="username"
+                        label="Username"
+                        onChangeText={setUsername}
+                    />
+                    <TouchableOpacity
+                        style={styles.signInBoxStyle}
+                        onPress={() => {
+                            setIsLoading(true)
+                            editSelf(firstName, lastName, username, updateInfoCallback)
+                        }}>
+                        <Text style={styles.signInTextStyle}>Update Information</Text>
+                    </TouchableOpacity>
 
-                {passwordMessage ? <Text>{passwordMessage}</Text> : null}
+                    {isLoading ?
+                        <ActivityIndicator size="large" color="gray" /> : null}
 
-                <TouchableOpacity
-                    style={styles.signInBoxStyle}
-                    onPress={areYouSure}>
-                    <Text style={styles.signInTextStyle}>DELETE ACCOUNT</Text>
-                </TouchableOpacity>
+                    {/*{state.responseMessage ? <Text>{state.responseMessage}</Text> : null}*/}
 
-            </ScrollView>
-        </View>
+                    <Text style={[styles.title, { marginTop: 15 }]}>Change Password</Text>
+
+                    <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={oldPassword}
+                        placeholder="Current Password"
+                        label="Current Password"
+                        onChangeText={setOldPassword}
+                    />
+                    <Input
+                        style={styles.inputStyle}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={newPassword}
+                        placeholder="New Password"
+                        label="New Password"
+                        onChangeText={setNewPassword}
+                    />
+                    <TouchableOpacity
+                        style={styles.signInBoxStyle}
+                        onPress={() => {
+                            changePassword(oldPassword, newPassword, resultCallback)
+                        }}>
+                        <Text style={styles.signInTextStyle}>Change Password</Text>
+                    </TouchableOpacity>
+
+                    {passwordMessage ? <Text>{passwordMessage}</Text> : null}
+
+                    <TouchableOpacity
+                        style={[styles.signInBoxStyle, { marginTop: 15, }]}
+                        onPress={areYouSure}>
+                        <Text style={styles.signInTextStyle}>DELETE ACCOUNT</Text>
+                    </TouchableOpacity>
+
+                </ScrollView>
+            </View>
+        </>
+
     )
 }
 
 const styles = StyleSheet.create({
     title: {
-        margin: 15,
-        fontSize: 25,
+        color: '#67806D',
+        fontSize: 24,
+        fontWeight: '600',
+        marginBottom: 10,
     },
     inputStyle: {
         backgroundColor: 'white',
         borderRadius: 15,
-        marginHorizontal: 25,
-        paddingHorizontal: 17,
+        paddingHorizontal: 10,
+        marginTop: 5,
     },
     inputContainer: {
         flex: 1,
@@ -164,6 +189,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold'
 
+    }, viewContainer: {
+        flex: 1,
+        marginTop: 100,
     },
 })
 

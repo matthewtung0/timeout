@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
-    View, StyleSheet, Text, TextInput, TouchableOpacity, Dimensions, Keyboard, TouchableWithoutFeedback,
+    View, StyleSheet, Alert, Text, TextInput, TouchableOpacity, Dimensions, Keyboard, TouchableWithoutFeedback,
     ActivityIndicator
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -62,6 +62,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                 },
                 {
                     text: "Delete", onPress: () => {
+                        setIsLoading(true)
                         deleteTodoItem(item_id, resetInputs(reset_msg))
                     }
                 }
@@ -146,8 +147,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                     <TouchableOpacity
                         style={[styles.delete, { width: width / 3.5, }]}
                         onPress={() => {
-                            setIsLoading(true)
-                            areYouSureDelete(item.item_id, resetInputs("Task deleted successfully"))
+                            areYouSureDelete(item.item_id, "Task deleted successfully")
                         }}>
                         <Text style={styles.deleteText}>Delete task</Text>
                     </TouchableOpacity>

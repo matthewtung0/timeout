@@ -534,7 +534,7 @@ function CreateMainFlowTab() {
         }} />
       <Tab.Screen name="profileFlow" component={HistoryDailyScreen}
         options={{
-          tabBarLabel: 'Calendar',
+          tabBarLabel: 'History',
           tabBarIconLabel: 'calendar-outline',
         }} />
     </Tab.Navigator>

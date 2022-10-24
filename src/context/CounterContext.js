@@ -31,6 +31,30 @@ const counterReducer = (state, action) => {
                     return item;
                 })
             }
+        case 'delete_counter':
+            return {
+                ...state,
+                userCounters: state.userCounters.filter((req) => req.counter_id != action.payload.counterId)
+            }
+
+        case 'change_color':
+            return {
+                ...state, userCounters: state.userCounters.map(item => {
+                    if (item.counter_id == action.payload.counter_id) {
+                        return { ...item, color_id: action.payload.colorId }
+                    }
+                    return item
+                })
+            }
+        case 'archive_counter':
+            return {
+                ...state, userCounters: state.userCounters.map(item => {
+                    if (item.counter_id == action.payload.counter_id) {
+                        return { ...item, archived: action.payload.archived }
+                    }
+                    return item
+                })
+            }
         default:
             return state;
     }
@@ -59,6 +83,18 @@ const addCounter = dispatch => async (counterName, timeSubmitted, chosenColor, i
     }
 }
 
+const deleteCounter = dispatch => async (counterId, callback = null) => {
+    console.log("trying to delete counter");
+    try {
+        const response = await timeoutApi.delete(`/counter/${counterId}`)
+        dispatch({ type: 'delete_counter', payload: { counterId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error deleting counter:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem deleting the counter.' })
+    }
+}
+
 const addTally = dispatch => async (counterId, updateAmount, callback = null) => {
     try {
         const response = await timeoutApi.post('/counter/tally', { counterId, updateAmount })
@@ -81,10 +117,33 @@ const resetTally = dispatch => async (counterId, callback = null) => {
     }
 }
 
+const changeColorCounter = dispatch => async (counterId, newColorId, callback = null) => {
+    try {
+        const response = await timeoutApi.patch(`/counter/${counterId}`, { colorId: newColorId })
+        dispatch({ type: 'change_color', payload: { counterId, colorId: newColorId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing color id:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
+    }
+}
+
+const changeArchiveCounter = dispatch => async (counterId, toArchive, callback = null) => {
+    try {
+        const response = await timeoutApi.patch(`/counter/${counterId}`, { categoryId, archived: toArchive })
+        dispatch({ type: 'archive_counter', payload: { counterId, archived: toArchive } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing archive status:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
+    }
+}
+
 export const { Provider, Context } = createDataContext(
     counterReducer,
     {
-        fetchUserCounters, addCounter, addTally, resetTally
+        fetchUserCounters, addCounter, addTally, resetTally, deleteCounter,
+        changeColorCounter, changeArchiveCounter
     },
     {
         userCounters: [],
