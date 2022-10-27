@@ -30,6 +30,7 @@ const FriendFeedScreen = ({ navigation }) => {
     const [atEnd, setAtEnd] = useState(false)
     const [friendsPfpMap, setFriendsPfpMap] = useState({})
     const [feed, setFeed] = useState([])
+    const [isOnline, setIsOnline] = useState(true)
 
 
     const [isLoading, setIsLoading] = useState(false)
@@ -58,9 +59,14 @@ const FriendFeedScreen = ({ navigation }) => {
         for (var i in friends) {
             friendsArr.push(friends[i]['friend'])
         }
-        const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
-        //console.log("got this response", response.data)
-        setFeed(response.data)
+        try {
+            const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+            //console.log("got this response", response.data)
+            setFeed(response.data)
+        } catch (err) {
+            setIsOnline(false)
+        }
+
     }
 
     const fetchSessionsNextBatch = async (startIndex = 0, friends) => {
@@ -89,7 +95,9 @@ const FriendFeedScreen = ({ navigation }) => {
             setOffset(0)
             let temp = await fetchSessions(userState.friends)
             setOffset(offset + 10)
-            await fetchUserReactions()
+
+            //await fetchUserReactions()
+
             /*for (let i = 0; i < userState.friends.length; i++) {
                 var friend_id = userState.friends[i].friend
                 console.log("Fetching avatar for ", friend_id)
@@ -154,13 +162,6 @@ const FriendFeedScreen = ({ navigation }) => {
         } else {
             return `Just now`
         }
-    }
-
-
-
-
-    const daysAgo = (endTime) => {
-        return differenceInDays(new Date(), parseISO(endTime))
     }
 
     const getData = async () => {
@@ -267,34 +268,43 @@ const FriendFeedScreen = ({ navigation }) => {
         return (
             <View style={styles.outerContainer}>
 
-                <View style={styles.makeshiftTabBarContainer}>
-                    <View style={styles.makeshiftTabBar}>
-                        <TouchableOpacity style={styles.tabBarButton}>
-                            <Text style={styles.tabBarText}>Go to Me</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.tabBarButton}
-                            onPress={() => { navigation.navigate('Friend') }}>
-                            <Text style={styles.tabBarText}>Go to Friends</Text>
-                        </TouchableOpacity>
+                {!isOnline || 1 ?
+                    <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', }}>
+                        <Text style={{ textAlign: 'center', color: 'gray', fontSize: 18, }}>Friend feed is currently unavailable. Please check your internet connection</Text>
                     </View>
-                </View>
-                {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
-                <View style={styles.flatListContainer}>
-                    <FlatList
-                        ref={flatListRef}
-                        style={styles.flatlistStyle}
-                        horizontal={false}
-                        //data={sessionState.userSessions}
-                        data={feed}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item.activity_id}
-                        ListFooterComponent={renderFooter}
-                        renderItem={({ item }) => <Asdf item={item} />}
-                    >
-                    </FlatList>
-                </View>
 
+                    :
+                    <>
+                        <Text>{String(isOnline)}</Text>
+
+                        <View style={styles.makeshiftTabBarContainer}>
+                            <View style={styles.makeshiftTabBar}>
+                                <TouchableOpacity style={styles.tabBarButton}>
+                                    <Text style={styles.tabBarText}>Go to Me</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.tabBarButton}
+                                    onPress={() => { navigation.navigate('Friend') }}>
+                                    <Text style={styles.tabBarText}>Go to Friends</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
+                        <View style={styles.flatListContainer}>
+                            <FlatList
+                                ref={flatListRef}
+                                style={styles.flatlistStyle}
+                                horizontal={false}
+                                //data={sessionState.userSessions}
+                                data={feed}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item) => item.activity_id}
+                                ListFooterComponent={renderFooter}
+                                renderItem={({ item }) => <Asdf item={item} />}
+                            >
+                            </FlatList>
+                        </View>
+                    </>}
             </View>
         )
     }

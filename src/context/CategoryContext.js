@@ -1,5 +1,20 @@
 import timeoutApi from '../api/timeout';
 import createDataContext from './createDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const default_categories = [
+    {
+        "archived": false,
+        "category_id": "3",
+        "category_name": "Unsorted",
+        "color_id": "c6",
+        "is_active": true,
+        "public": true,
+        "time_created": "2022-03-16T06:07:23.199Z",
+        "user_id": "3",
+    },
+]
+
 
 const categoryReducer = (state, action) => {
     switch (action.type) {
@@ -133,30 +148,55 @@ const setChosen = dispatch => (button) => {
     }
 }
 
-const fetchUserCategories = dispatch => async (id, getPrivate = true) => {
+const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = true) => {
     console.log("trying to fetch user categories");
     try {
         const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate } })
         dispatch({ type: 'fetch_categories', payload: response.data })
+
+        // cache user's categories
+        if (isSelf) {
+            console.log("Tryign to cache categories")
+            const a = await AsyncStorage.setItem('categories', JSON.stringify(response.data));
+        }
+
     } catch (err) {
-        console.log("error fetching categories", err);
-        dispatch({ type: 'add_error', payload: 'There was a problem retrieving the categories.' })
+        console.log("error fetching categories, trying cache");
+
+        try {
+            var cached_categories = await AsyncStorage.getItem('categories');
+            dispatch({ type: 'fetch_categories', payload: JSON.parse(cached_categories) })
+        } catch (err) {
+            dispatch({ type: 'add_error', payload: 'There was a problem retrieving the categories.' })
+        }
+
+
     }
 }
 
 // putting todo items in this context for now..
-const fetchUserTodoItems = dispatch => async () => {
+const fetchUserTodoItems = dispatch => async (isSelf = true) => {
     console.log("trying to fetch todo items");
     try {
         const response = await timeoutApi.get('/todoItem')
         dispatch({ type: 'fetch_todo_items', payload: response.data })
+
+        if (isSelf) {
+            console.log("Tryign to cache todo items")
+            await AsyncStorage.setItem('todo_items', JSON.stringify(response.data));
+        }
     } catch (err) {
         console.log("error fetching todo items:", err);
-        dispatch({ type: 'add_error', payload: 'There was a problem retrieving the todo items.' })
+        try {
+            var cached_todo_items = await AsyncStorage.getItem('todo_items');
+            dispatch({ type: 'fetch_todo_items', payload: JSON.parse(cached_todo_items) })
+        } catch (err) {
+            dispatch({ type: 'add_error', payload: 'There was a problem retrieving the todo items.' })
+        }
     }
 }
 
-const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, notes, callback = null) => {
+const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, notes, callback = null, errorCallback = null) => {
     console.log("trying to add todo item");
     try {
         const response = await timeoutApi.post('/todoItem', { toDoItemName, timeSubmitted, categoryId, notes })
@@ -165,10 +205,12 @@ const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, 
     } catch (err) {
         console.log("error adding todo item:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the todo item.' })
+        alert("There was a problem adding task to your list. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 
-const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDoName, callback = null) => {
+const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDoName, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.put('/todoItem', { toDoItemName, categoryId, notes, oldToDoName })
         dispatch({ type: 'add_todo_item', payload: { toDoItemName, categoryId, notes, oldToDoName } })
@@ -176,6 +218,8 @@ const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDo
     } catch (err) {
         console.log("error editing todo item:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem editing the todo item.' })
+        alert("There was a problem editing the task. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 
@@ -190,7 +234,7 @@ const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     }
 }
 
-const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, isPublic, callback = null) => {
+const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor, isPublic, callback = null, errorCallback = null) => {
     console.log("trying to add category");
     try {
         const response = await timeoutApi.post('/category/',
@@ -200,10 +244,12 @@ const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor,
     } catch (err) {
         console.log("error adding category:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the category.' })
+        alert("There was a problem adding new category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 
-const deleteCategory = dispatch => async (categoryId, callback = null) => {
+const deleteCategory = dispatch => async (categoryId, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.delete(`/category/${categoryId}`, { params: { categoryId } })
         dispatch({ type: 'delete_category', payload: { categoryId } })
@@ -211,10 +257,12 @@ const deleteCategory = dispatch => async (categoryId, callback = null) => {
     } catch (err) {
         console.log("error deleting category:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem deleting the category.' })
+        alert("There was a problem deleting category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 
-const changePublicCategory = dispatch => async (categoryId, toPublic, callback = null) => {
+const changePublicCategory = dispatch => async (categoryId, toPublic, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.patch(`/category/${categoryId}`, { categoryId, isPublic: toPublic })
         dispatch({ type: 'public_category', payload: { categoryId, isPublic: toPublic } })
@@ -222,11 +270,13 @@ const changePublicCategory = dispatch => async (categoryId, toPublic, callback =
     } catch (err) {
         console.log("error changing public status:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem toggling the public status.' })
+        alert("There was a problem updating category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 
 }
 
-const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null) => {
+const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback = null, errorCallback = null) => {
     console.log("trying to change archive category to ", toArchive);
     try {
         const response = await timeoutApi.patch(`/category/${categoryId}`, { categoryId, archived: toArchive })
@@ -235,10 +285,12 @@ const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback
     } catch (err) {
         console.log("error changing archive status:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
+        alert("There was a problem updating category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 
-const changeColorCategory = dispatch => async (categoryId, newColorId, callback = null) => {
+const changeColorCategory = dispatch => async (categoryId, newColorId, callback = null, errorCallback = null) => {
     console.log("trying to change color");
     try {
         const response = await timeoutApi.patch(`/category/${categoryId}`, { colorId: newColorId })
@@ -247,6 +299,8 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
     } catch (err) {
         console.log("error changing color id:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
+        alert("There was a problem updating category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
     }
 }
 

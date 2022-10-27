@@ -8,13 +8,15 @@ import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
 
 const img = require('../../assets/tasks_topbar.png')
+const BANNER_IMG_HEIGHT = 75;
 
-const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
+const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
     const [showChild, setShowChild] = useState(false)
     const { height, width } = Dimensions.get('window');
     const [childTitle, setChildTitle] = useState('Add Task')
     const [buttonText, setButtonText] = useState('Submit')
     const [editItem, setEditItem] = useState(null)
+    const [sortBy, setSortBy] = useState(0); // 0 -> time created, 1-> alphabetical 2-> category
 
     const editTask = (item) => {
         setEditItem(item)
@@ -22,16 +24,50 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
         setButtonText('Save Changes')
         setShowChild(true)
     }
+    //
 
+    const sorted_todoItems = todoItems.sort(function (a, b) {
+        if (sortBy == 0) {
+            return String(a.time_created).localeCompare(String(b.time_created))
+        } else if (sortBy == 1) {
+            var comp_a = String(a.item_desc) + String(a.category_name)
+            var comp_b = String(b.item_desc) + String(b.category_name)
+            return comp_a.localeCompare(comp_b)
+        } else if (sortBy == 2) {
+            var comp_a = String(a.category_name) + String(a.item_desc)
+            var comp_b = String(b.category_name) + String(b.item_desc)
+            return comp_a.localeCompare(comp_b)
+        }
+
+        return a.time_created - b.time_created;
+    })
+    console.log(sorted_todoItems)
     const parentView = () => {
         return (
 
             <View style={styles.parentContainer}>
                 <Text style={styles.title}></Text>
+
+                <View style={{ marginVertical: 5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                    <Text>Sort by:</Text>
+                    <View style={{ borderWidth: 1 }}>
+                        <Text> time created</Text>
+                    </View>
+
+                    <View style={{ borderWidth: 1 }}>
+                        <Text>A-Z</Text>
+                    </View>
+
+                    <View style={{ borderWidth: 1 }}>
+                        <Text>Category</Text>
+                    </View>
+
+                </View>
+
                 <FlatList
                     style
                     horizontal={false}
-                    data={todoItems}
+                    data={sorted_todoItems}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(result) => result.item_id}
                     ItemSeparatorComponent={() => {
@@ -54,6 +90,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                                     item={item}
                                     callback={callback}
                                     toggleFunction={toggleFunction}
+                                    show_error={show_error}
                                     editTask={editTask}
                                 />
                             </View>
@@ -66,9 +103,17 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
                             <TouchableOpacity
                                 style={[styles.plus, { width: width / 2.2, }]}
                                 onPress={() => {
-                                    setChildTitle('Add Task')
-                                    setButtonText('Submit')
-                                    setShowChild(true)
+
+                                    if (show_error) {
+                                        alert("Currently unable to add todo items. Please check your internet connection")
+                                    } else {
+                                        setChildTitle('Add Task')
+                                        setButtonText('Submit')
+                                        setShowChild(true)
+                                    }
+
+
+
 
                                 }}>
                                 <View style={{
@@ -114,14 +159,22 @@ const ToDoSelector = ({ todoItems, toggleFunction, callback }) => {
             {/*<View style={styles.dummy} />*/}
             <View style={styles.modal}>
 
-
-                {showChild ? childView() : parentView()}
+                {show_error && 0 ?
+                    <View style={{
+                        flex: 1, marginTop: BANNER_IMG_HEIGHT,
+                        justifyContent: 'center',
+                    }}>
+                        <Text style={{ textAlign: 'center', fontSize: 18, color: 'gray', }}>Cannot retrieve your tasks at this time. Please check your internet connection</Text>
+                    </View>
+                    :
+                    showChild ? childView() : parentView()
+                }
             </View>
 
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{ maxWidth: width * 0.9, maxHeight: BANNER_IMG_HEIGHT, position: 'absolute' }} />
 
             <Text style={[styles.title, { position: 'absolute', }]}>{showChild ? childTitle : "Tasks"}</Text>
             <View style={styles.backContainer}>

@@ -6,6 +6,7 @@ import {
 import { Text, Input } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import CategoryButton from '../components/CategoryButton';
+import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
@@ -27,7 +28,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
-    //const { state, fetchSelf } = useContext(UserContext)
+    const { state, fetchSelf } = useContext(UserContext)
     const { state: categoryState, setChosen, setActivityName, setStartTime } = useContext(CategoryContext)
     const [customActivity, setCustomActivity] = useState('')
 
@@ -106,116 +107,131 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
 
     return (
         <HideKeyboard>
-            <View style={styles.viewContainer}>
+            <>
+                <View style={styles.viewContainer}>
 
-                <View style={{ flex: 6 }}>
-                    <View>
-                        <Modal isVisible={modalVisible}
-                            animationIn='slideInLeft'
-                            animationOut='slideOutLeft'
-                        >
+                    <View style={{ flex: 6 }}>
+                        <View>
+                            <Modal isVisible={modalVisible}
+                                animationIn='slideInLeft'
+                                animationOut='slideOutLeft'
+                            >
 
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'column',
-                                justifyContent: 'center'
-                            }}>
                                 <View style={{
-                                    height: 500
+                                    flex: 1,
+                                    flexDirection: 'column',
+                                    justifyContent: 'center'
                                 }}>
+                                    <View style={{
+                                        height: 500
+                                    }}>
 
-                                    <ToDoSelector
-                                        toggleFunction={toggleModal}
-                                        todoItems={categoryState.userTodoItems}
-                                        callback={fillInWithItem} />
+                                        <ToDoSelector
+                                            toggleFunction={toggleModal}
+                                            todoItems={categoryState.userTodoItems}
+                                            show_error={state.errorMessage}
+                                            callback={fillInWithItem} />
 
+                                    </View>
                                 </View>
-                            </View>
-                        </Modal>
+                            </Modal>
+                        </View>
+                        <Image
+                            source={clock_top}
+                            style={{
+                                width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
+                                marginTop: 30,
+                            }}
+                            resizeMode="contain" />
+                        <CircularSelector
+                            minSet={0}
+                            updateCallback={updateTime}
+                            ref={circularRef} />
+                        <Image
+                            source={clock_bottom}
+                            style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                            resizeMode="contain" />
                     </View>
-                    <Image
-                        source={clock_top}
-                        style={{
-                            width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
-                            marginTop: 30,
-                        }}
-                        resizeMode="contain" />
-                    <CircularSelector
-                        minSet={0}
-                        updateCallback={updateTime}
-                        ref={circularRef} />
-                    <Image
-                        source={clock_bottom}
-                        style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
-                        resizeMode="contain" />
-                </View>
 
-                <View style={{ flex: 1.2 }}>
-                    <TextInput
-                        style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
-                        placeholder="Activity"
-                        rightIconContainerStyle={styles.rightIconInput}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        autoCorrect={true}
-                        maxLength={30}
-                        value={customActivity}
-                        onChangeText={(text) => {
-                            setCustomActivity(text)
-                            setActivityName(text)
-                        }
-                        }
-                    />
-                </View>
-
-                <View style={{ flex: 4 }}>
-
-                    <DropDownComponent
-                        isInModal={false}
-                        categoryId={categoryId}
-                        catName={newCatName}
-                        colorId={newColorId}
-                        setCatNameCallback={setNewCatName}
-                        setColorIdCallback={setNewColorId}
-                        setCategoryIdCallback={setCategoryId}
-                    />
-
-
-                    <TouchableOpacity
-                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
-                        onPress={() => {
-                            if (!validateInputs()) {
-                                return;
+                    <View style={{ flex: 1.2 }}>
+                        <TextInput
+                            style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
+                            placeholder="Activity"
+                            rightIconContainerStyle={styles.rightIconInput}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            autoCorrect={true}
+                            maxLength={30}
+                            value={customActivity}
+                            onChangeText={(text) => {
+                                setCustomActivity(text)
+                                setActivityName(text)
                             }
-                            let cat_Name = newCatName
-                            let cat_Id = categoryId
-                            let timer_Time = time
+                            }
+                        />
+                    </View>
 
-                            clearInputs()
-                            circularRef.current.resetSlider()
+                    <View style={{ flex: 4 }}>
 
-                            navigate('SessionOngoing', {
-                                numMins: timer_Time,
-                                categoryId: cat_Id,
-                                categoryName: cat_Name,
-                                activityName: customActivity,
-                                colorId: newColorId,
-                            })
-                        }}>
-                        <Text style={styles.startText}>Start</Text>
+                        <DropDownComponent
+                            isInModal={false}
+                            categoryId={categoryId}
+                            catName={newCatName}
+                            colorId={newColorId}
+                            setCatNameCallback={setNewCatName}
+                            setColorIdCallback={setNewColorId}
+                            setCategoryIdCallback={setCategoryId}
+                        />
 
-                    </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.start, { width: width / 2.2, height: height / 12 }]}
+                            onPress={() => {
+                                if (!validateInputs()) {
+                                    return;
+                                }
+                                let cat_Name = newCatName
+                                let cat_Id = categoryId
+                                let timer_Time = time
+
+                                clearInputs()
+                                circularRef.current.resetSlider()
+
+                                navigate('SessionOngoing', {
+                                    numMins: timer_Time,
+                                    categoryId: cat_Id,
+                                    categoryName: cat_Name,
+                                    activityName: customActivity,
+                                    colorId: newColorId,
+                                })
+                            }}>
+                            <Text style={styles.startText}>Start</Text>
+
+                        </TouchableOpacity>
+
+                        {state.errorMessage || 1 ?
+                            <View style={{ height: 100, backgroundColor: '#F5BBAE', width: '100%', }}>
+                                <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>
+                                    No internet connection! Any sessions will not be saved.
+                                </Text>
+                            </View>
+
+                            : null}
+                    </View>
+
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalDummy} />
+
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={toggleModal}>
+                            <Text style={styles.modalButtonText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalDummy} />
+                {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
+            </>
 
-                    <TouchableOpacity
-                        style={styles.modalButton}
-                        onPress={toggleModal}>
-                        <Text style={styles.modalButtonText}>+</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
         </HideKeyboard>
     )
 }

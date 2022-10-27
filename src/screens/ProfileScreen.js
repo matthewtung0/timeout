@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useCallback, useState } from 'react';
-import { View, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useContext, useCallback, useState } from 'react';
+import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { Button, Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as SessionContext } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { differenceInDays, parseISO, differenceInSeconds, differenceInMinutes } from 'date-fns';
-import DrawerProfileView from '../components/DrawerProfileView';
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
 import Header from '../components/Header';
@@ -26,7 +25,6 @@ const ProfileScreen = ({ navigation }) => {
     const [profileStats, setProfileStats] = useState({
         totalTime: { hours: 0, minutes: 0, seconds: 0 },
         totalTasks: 0,
-        bio: '',
         last_signin: '',
         time_created: '',
         username: ''
@@ -41,8 +39,7 @@ const ProfileScreen = ({ navigation }) => {
                 console.log("cleaning up")
                 setProfileStats({
                     totalTime: { hours: 0, minutes: 0, seconds: 0 },
-                    totalTasks: 0,
-                    bio: '', last_signin: '', time_created: '', username: ''
+                    totalTasks: 0, last_signin: '', time_created: '', username: ''
                 })
                 setProfileSessions([])
                 setProfileCategories([])
@@ -61,7 +58,6 @@ const ProfileScreen = ({ navigation }) => {
             setProfileStats({
                 totalTime: response.data.total_time,
                 totalTasks: response.data.num_tasks,
-                bio: response.data.bio,
                 last_signin: response.data.last_signin,
                 time_created: response.data.time_created,
                 username: response.data.username
@@ -164,26 +160,48 @@ const ProfileScreen = ({ navigation }) => {
                 <Header
                     navigation={navigation} />
 
-                {isMe ?
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => { navigation.navigate('EditProfile') }}>
-                        <Icon
-                            name='pencil-outline'
-                            type='ionicon'
-                            size={24}
-                            color='#67806D' />
-                    </TouchableOpacity> : null}
-
-                <View style={{ flexDirection: 'row', flex: 1, }}>
-                    <Text style={styles.bioText}>{profileStats.bio}</Text>
-
-                    <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', }}>
-                        {isMe ? <TouchableOpacity
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        position: 'absolute',
+                        alignSelf: 'flex-end',
+                        marginTop: 55,
+                        paddingHorizontal: 15,
+                    }}>
+                    {isMe ?
+                        <TouchableOpacity
+                            style={{ marginHorizontal: 15, }}
                             onPress={togglePrivateVisible}>
                             {privateVisible ? <Icon name="eye-outline" type='ionicon' color='#67806D' /> :
                                 <Icon name="eye-off-outline" type='ionicon' color='#67806D' />}
                         </TouchableOpacity> : null}
+                    {isMe ?
+                        <TouchableOpacity
+                            onPress={() => { navigation.navigate('EditProfile') }}>
+                            <Icon
+                                name='pencil-outline'
+                                type='ionicon'
+                                size={24}
+                                color='#67806D' />
+                        </TouchableOpacity> : null}
+
+                </View>
+
+
+
+
+
+                <View style={{ flexDirection: 'row', flex: 1, }}>
+                    <Text style={styles.bioText}>{state.bio}</Text>
+
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                    }}>
+
+
                     </View>
                 </View>
 
@@ -351,6 +369,13 @@ const styles = StyleSheet.create({
         //borderWidth: 1,
         marginTop: 55,
         paddingHorizontal: 25,
+    },
+    eyeButton: {
+        position: 'absolute',
+        alignSelf: 'center',
+        //borderWidth: 1,
+        marginTop: 55,
+
     },
     pfp: {
         position: 'absolute',

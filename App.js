@@ -556,15 +556,14 @@ function CreateMainNavigator() {
       await updateLastSignin()
       await fetchSelf()
       console.log('fetched self');
-      await fetchAvatar()
-      console.log("fetched avatar");
-      await fetchUserCategories(userState.user_id);
+      await fetchAvatar(forceRetrieve = false)
+      await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
       console.log('fetched categories');
       await fetchUserCounters();
       console.log('fetched counters')
       await fetchAvatarItemsOwned();
       console.log('fetched avatar items owned')
-      await fetchUserTodoItems();
+      await fetchUserTodoItems(isSelf = true);
       console.log('fetched todo items');
       await fetchFriends();
       console.log('fetched friends');

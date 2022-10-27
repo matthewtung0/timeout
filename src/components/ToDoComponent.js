@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-nati
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 
-const ToDoComponent = ({ item, callback, toggleFunction, editTask }) => {
+const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask }) => {
     let bgColorHex = constants.colors[item.color_id]
     return (
         <View style={styles.container}>
@@ -34,7 +34,14 @@ const ToDoComponent = ({ item, callback, toggleFunction, editTask }) => {
 
             <View style={styles.editContainer}>
                 <TouchableOpacity
-                    onPress={() => { editTask(item) }}>
+                    onPress={() => {
+                        if (show_error) {
+                            alert("Currently unable to edit todo items. Please check your internet connection")
+                        } else {
+                            editTask(item)
+                        }
+
+                    }}>
                     <Icon
                         name="create-outline"
                         type='ionicon'

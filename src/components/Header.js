@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
         marginTop: 50,
         marginLeft: 5,
     },
-
 })
 
 export default Header;

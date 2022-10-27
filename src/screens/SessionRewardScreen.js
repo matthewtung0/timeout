@@ -64,6 +64,7 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
             const res = addPoints(userState.user_id, 100000, offBoard())
         } catch (err) {
             console.log("Problem adding session", err)
+            alert("Sorry, we ran into a problem - your session was not saved")
         }
     }
 

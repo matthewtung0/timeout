@@ -1,29 +1,62 @@
-import React, { useRef, useState, Component } from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native';
-import { Icon } from 'react-native-elements';
+import React from 'react';
+import { View, StyleSheet, Text, } from 'react-native';
 import { parseISO, differenceInSeconds } from 'date-fns';
 const constants = require('../components/constants.json')
+const PRODUCTIVITY_WIDTH = 100
 
 const timeDifference = (timeStart, timeEnd) => {
     var timeDiff = differenceInSeconds(parseISO(timeEnd), parseISO(timeStart))
-    return timeDiff + " sec"
+
+    if (timeDiff >= 7200) {
+        return String(Math.round(timeDiff / 60 / 60)) + " hrs"
+    }
+    if (timeDiff > 120) {
+        return String(Math.round(timeDiff / 60)) + " min"
+    } else {
+        return String(timeDiff) + " sec"
+    }
 }
 
 const HistoryComponent = ({ session_obj }) => {
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
-        <><View style={{ flex: 1, flexDirection: 'row', marginVertical: 5 }}>
-            {/*<View style={styles.dummy} />*/}
-            <View style={{ flex: 2, }}>
-                <Text>{session_obj.activity_name}</Text>
+        <>
+            <View style={{ flex: 1, flexDirection: 'row', marginVertical: 5 }}>
+                <View style={{ flex: 3, }}>
+                    <Text>{session_obj.activity_name}</Text>
+                </View>
+                <View style={{ flex: 3, }}></View>
+
+                <View style={{ flex: 1, alignItems: 'flex-end', }}>
+                    <Text>{timeDifference(session_obj.time_start, session_obj.time_end)}</Text>
+                </View>
             </View>
 
-            <View style={[styles.categoryStyle, { backgroundColor: bgColorHex }]}>
-                <Text>{session_obj.category_name}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', marginVertical: 5 }}>
+                <View style={{ flex: 3, }}>
+                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, }]}>
+                        <Text style={{ alignSelf: 'center', }}>{session_obj.category_name}</Text>
+                    </View>
+                </View>
+                <View style={{ flex: 3, }}></View>
+
+                <View style={{ flex: 1, alignItems: 'flex-end', }}>
+                    <View style={{ marginTop: 3, }}>
+                        <View style={{
+                            height: 15, width: PRODUCTIVITY_WIDTH, borderWidth: 1,
+                            borderRadius: 3,
+                        }}></View>
+                        <View style={{
+                            position: 'absolute', height: 15,
+                            width: PRODUCTIVITY_WIDTH * session_obj.prod_rating / 100,
+                            backgroundColor: bgColorHex, borderRadius: 3,
+                        }}></View>
+                    </View>
+
+                </View>
+
             </View>
 
-            <Text>{timeDifference(session_obj.time_start, session_obj.time_end)}</Text>
-        </View>
 
             <View
                 style={{
@@ -61,10 +94,8 @@ const styles = StyleSheet.create({
     categoryStyle: {
 
         flex: 1,
-        alignSelf: 'flex-end',
         borderRadius: 10,
-        padding: 7,
-        marginRight: 12,
+        padding: 4,
     },
 
 })

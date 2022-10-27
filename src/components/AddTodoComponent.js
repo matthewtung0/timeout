@@ -30,7 +30,12 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
 
     const INPUT_WIDTH = width * 0.8
 
+    const errorReset = () => {
+        setIsLoading(false)
+    }
+
     const resetInputs = async (msg) => {
+        var msg = "Task added successfully"
         setToDoItemName('')
         setIsLoading(false)
         alert(msg)
@@ -131,11 +136,11 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                             setIsLoading(true)
 
                             if (item) {
-                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc, resetInputs("Task edited successfully"))
+                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                    resetInputs, errorReset)
                             } else {
-                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs("Task added successfully"));
+                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
                             }
-
                         }}>
                         <Text style={styles.plusText}>{buttonText}</Text>
                     </TouchableOpacity>

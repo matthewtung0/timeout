@@ -28,6 +28,9 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
         setIsLoading(false)
         toggleFunction()
     }
+    const errorReset = () => {
+        setIsLoading(false)
+    }
     const validateInputs = () => {
         return true;
     }
@@ -82,7 +85,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
                             onPress={() => {
                                 if (!validateInputs()) { return }
                                 setIsLoading(true)
-                                addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
+                                addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs, errorReset)
 
                             }}>
                             <Text style={styles.submitText}>Submit</Text>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import {
     fromUnixTime, getUnixTime, isThisSecond, format,
-    differenceInMilliseconds, addSeconds, addMinutes
+    differenceInMilliseconds, addSeconds
 } from 'date-fns';
 import { useFocusEffect } from '@react-navigation/native';
 const constants = require('../components/constants.json')
@@ -66,20 +66,6 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         }
         alert('Time end')
     }
-
-    /*useEffect(() => {
-        //setStartTime(fromUnixTime(now_dt))
-        setSessionObj({ ...sessionObj, sessionStartTime: fromUnixTime(now_dt) })
-
-        if (isThisSecond(fromUnixTime(endTime))) {
-            handleReset(false, numMins)
-        }
-
-        // temporary comment this out to work on it
-        handleStart(endTime, numMins);
-
-    }, [])*/
-
 
     useFocusEffect(
 
@@ -185,8 +171,11 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             <View style={{ height: 70 }}>
 
                 <View style={styles.activityContainer}>
-                    <Text style={styles.activityName}>{activityName}</Text>
-                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, width: width / 3 }]}>
+                    <View style={{ flex: 3, alignContent: 'center' }}>
+                        <Text style={styles.activityName}>{activityName}</Text>
+                    </View>
+
+                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, flex: 1 }]}>
                         <Text style={[styles.categoryText]}>{categoryName}</Text>
                     </View>
                 </View>
@@ -282,10 +271,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         shadowOffset: {
-            width: 1,
-            height: 1,
+            width: 0.4,
+            height: 0.4,
         },
-        shadowOpacity: 0.7,
+        shadowOpacity: 0.5,
     },
     buttonText: {
         fontWeight: 'bold',

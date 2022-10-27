@@ -1,5 +1,6 @@
 import timeoutApi from '../api/timeout';
 import createDataContext from './createDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const userReducer = (state, action) => {
     switch (action.type) {
@@ -17,7 +18,7 @@ const userReducer = (state, action) => {
                 avatarColors: action.payload.user_avatar.avatarColors,
                 hasItems: action.payload.user_avatar.hasItems,
                 user_id: action.payload.user_info.user_id,
-
+                bio: action.payload.user_info.bio,
             }
         case 'add_error':
             console.log("ERROR: ", action.payload)
@@ -49,6 +50,7 @@ const userReducer = (state, action) => {
                 firstName: action.payload.firstName,
                 lastName: action.payload.lastName,
                 username: action.payload.username,
+                bio: action.payload.bio,
             }
         case 'add_points':
             return { ...state, points: parseInt(state.points) + parseInt(action.payload.pointsToAdd) }
@@ -70,6 +72,7 @@ const userReducer = (state, action) => {
                 firstName: '',
                 lastName: '',
                 username: '',
+                bio: '',
                 friendCode: '',
                 points: 0,
                 responseMessage: '',
@@ -99,14 +102,31 @@ const fetchSelf = dispatch => async () => {
     }
 }
 
-const fetchAvatar = dispatch => async () => {
+const fetchAvatar = dispatch => async (forceRetrieve = false) => {
     console.log("fetching profile avatar")
     try {
-        const response = await timeoutApi.get('/avatar1')
-        console.log("response is ..... ", response)
-        var base64Icon = `data:image/png;base64,${response.data}`
-        //console.log(base64Icon)
-        dispatch({ type: 'fetch_avatar', payload: base64Icon })
+        var avatar_dt = await AsyncStorage.getItem('user_avatar_date');
+        if (!avatar_dt) {
+            forceRetrieve = true
+        } else {
+            //forceRetrieve = true
+            avatar_dt = new Date(avatar_dt);
+        }
+        if (forceRetrieve) {
+            console.log("Getting avatar from server")
+            const response = await timeoutApi.get('/avatar1')
+            //console.log("response is ..... ", response)
+            var base64Icon = `data:image/png;base64,${response.data}`
+
+            await AsyncStorage.setItem('user_avatar', base64Icon);
+            await AsyncStorage.setItem('user_avatar_date', String(new Date()));
+            dispatch({ type: 'fetch_avatar', payload: base64Icon })
+        } else {
+            console.log("Getting avatar from asyncstorage");
+
+            var base64Icon_cached = await AsyncStorage.getItem('user_avatar');
+            dispatch({ type: 'fetch_avatar', payload: base64Icon_cached })
+        }
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
@@ -123,8 +143,6 @@ const fetchAvatarItemsOwned = dispatch => async () => {
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
-
-
 
 const requestFriend = dispatch => async (codeToRequest, callback = null) => {
     try {
@@ -227,10 +245,10 @@ const fetchEveryone = dispatch => async () => { };
 
 const postSelf = dispatch => async () => { }
 
-const editSelf = dispatch => async (firstName, lastName, username, callback) => {
+const editSelf = dispatch => async (firstName, lastName, username, bio, callback) => {
     try {
-        const response = await timeoutApi.patch('/self_user', { firstName, lastName, username })
-        dispatch({ type: 'edit_self', payload: { firstName, lastName, username } })
+        const response = await timeoutApi.patch('/self_user', { firstName, lastName, username, bio })
+        dispatch({ type: 'edit_self', payload: { firstName, lastName, username, bio } })
         callback()
 
     } catch (err) {
@@ -313,6 +331,7 @@ export const { Provider, Context } = createDataContext(
         totalTasks: 0,
         totalTime: 0,
         base64pfp: '',
+        bio: '',
         avatarItems: {
             face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
             accessories: { glasses: 1, piercings: 1, accessories: 0, hairAccessories: 0, },

@@ -34,6 +34,17 @@ const MonthlySumComponent = ({ monthBatch }) => {
         return constants.colors[color_id]
     }
 
+    const formatTime = (sec) => {
+        if (sec >= 7200) {
+            return String(Math.round(sec / 60 / 60)) + "h"
+        }
+        if (sec > 120) {
+            return String(Math.round(sec / 60)) + "m"
+        } else {
+            return String(sec) + "s"
+        }
+    }
+
     const getBarPct = (num) => {
         return num / maxTime
     }
@@ -53,11 +64,11 @@ const MonthlySumComponent = ({ monthBatch }) => {
                             {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
                                 <View style={styles.barContainer}>
                                     <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabel}>{item[1]}s</Text>
+                                    <Text style={styles.timeLabel}>{formatTime(item[1])}</Text>
                                 </View> :
                                 <View style={styles.barContainerRelative}>
                                     <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabelRelative}>{item[1]}s</Text>
+                                    <Text style={styles.timeLabelRelative}>{formatTime(item[1])}</Text>
                                 </View>}
                         </View>
 

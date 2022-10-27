@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements';
 import Slider from '@react-native-community/slider'
 import { useFocusEffect } from '@react-navigation/native';
 import { fromUnixTime } from 'date-fns';
+const STAR_SIZE = 30;
 
 const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
     const { sessionObj, sessionEndTime, sessionStartTime, endEarlyFlag, plannedMin } = params;
@@ -37,9 +39,71 @@ const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
                 <Text style={[styles.text, { fontSize: 35, }]}>How productive were you?</Text>
             </View>
 
+            <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    {prodRatingNum >= 25 ?
+                        <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star"
+                            type='ionicon'
+                            color='green' />
+                        : <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star-outline"
+                            type='ionicon'
+                            color='green' />
+                    }
+                    {prodRatingNum >= 50 ?
+                        <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star"
+                            type='ionicon'
+                            color='green' />
+                        : <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star-outline"
+                            type='ionicon'
+                            color='green' />
+                    }
+                    {prodRatingNum >= 75 ?
+                        <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star"
+                            type='ionicon'
+                            color='green' />
+                        : <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star-outline"
+                            type='ionicon'
+                            color='green' />
+                    }
+                    {prodRatingNum >= 100 ?
+                        <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star"
+                            type='ionicon'
+                            color='green' />
+                        : <Icon
+                            style={{ marginHorizontal: 5, }}
+                            size={STAR_SIZE}
+                            name="star-outline"
+                            type='ionicon'
+                            color='green' />
+                    }
+
+                </View>
+
+            </View>
+
 
             <View style={{ flex: 1.7 }}>
-                <Text>{Math.round(prodRatingNum)}</Text>
                 <View style={{ alignItems: 'center' }}>
                     <Slider
                         style={styles.slider}
@@ -48,6 +112,7 @@ const SessionEvalScreen = ({ navigation: { navigate }, route: { params } }) => {
                         minimumTrackTintColor="#90AB72"
                         maximumTrackTintColor="#F5BBAE"
                         value={50}
+                        step={25}
                         onSlidingStart={() => {
                         }}
                         onSlidingComplete={() => {
