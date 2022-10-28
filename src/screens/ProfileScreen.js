@@ -5,7 +5,10 @@ import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as SessionContext } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
-import { differenceInDays, parseISO, differenceInSeconds, differenceInMinutes } from 'date-fns';
+import {
+    differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
+    parseISO, differenceInSeconds, differenceInMinutes
+} from 'date-fns';
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
 import Header from '../components/Header';
@@ -26,6 +29,7 @@ const ProfileScreen = ({ navigation }) => {
         totalTime: { hours: 0, minutes: 0, seconds: 0 },
         totalTasks: 0,
         last_signin: '',
+        bio: '',
         time_created: '',
         username: ''
     })
@@ -59,6 +63,7 @@ const ProfileScreen = ({ navigation }) => {
                 totalTime: response.data.total_time,
                 totalTasks: response.data.num_tasks,
                 last_signin: response.data.last_signin,
+                bio: response.data.bio,
                 time_created: response.data.time_created,
                 username: response.data.username
             })
@@ -121,6 +126,29 @@ const ProfileScreen = ({ navigation }) => {
 
     const daysAgo = (endTime) => {
         return differenceInDays(new Date(), parseISO(endTime))
+    }
+
+    const timeAgo = (endTime) => {
+        var parsedTime = parseISO(endTime)
+        var diffInYears = differenceInYears(new Date(), parsedTime)
+        var diffInMonths = differenceInMonths(new Date(), parsedTime)
+        var diffInDays = differenceInDays(new Date(), parsedTime)
+        var diffInHours = differenceInHours(new Date(), parsedTime)
+        var diffInMinutes = differenceInMinutes(new Date(), parsedTime)
+
+        if (diffInYears >= 1) {
+            return `${diffInYears} years ago`
+        } else if (diffInMonths >= 1) {
+            return `${diffInMonths} months ago`
+        } else if (diffInDays >= 1) {
+            return `${diffInDays} days ago`
+        } else if (diffInHours >= 1) {
+            return `${diffInHours} hours ago`
+        } else if (diffInMinutes >= 1) {
+            return `${diffInMinutes} hours ago`
+        } else {
+            return `Just now`
+        }
     }
 
     const renderFooter = () => {
@@ -193,7 +221,7 @@ const ProfileScreen = ({ navigation }) => {
 
 
                 <View style={{ flexDirection: 'row', flex: 1, }}>
-                    <Text style={styles.bioText}>{state.bio}</Text>
+                    <Text style={styles.bioText}>{profileStats.bio}</Text>
 
                     <View style={{
                         flex: 1,
@@ -286,7 +314,7 @@ const ProfileScreen = ({ navigation }) => {
                                     }
 
                                 </Text>
-                                <Text> {daysAgo(item.time_end)} days ago</Text>
+                                <Text> {timeAgo(item.time_end)}</Text>
 
                                 {/*<View style={styles.likeContainer}>
                                     <Text style={styles.likeCount}>{item.reaction_count}</Text>

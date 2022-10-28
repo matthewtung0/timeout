@@ -3,10 +3,11 @@ import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { parseISO, differenceInSeconds } from 'date-fns';
 const constants = require('../components/constants.json')
 
-const BAR_MAX_WIDTH = 200
+
 
 const MonthlySumComponent = ({ monthBatch }) => {
     const { height, width } = Dimensions.get('window');
+    const BAR_MAX_WIDTH = width * 0.6
     let map = {}
     let colorMap = {}
     let act = 0

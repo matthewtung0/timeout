@@ -97,7 +97,17 @@ const fetchSelf = dispatch => async () => {
         const response = await timeoutApi.get(`/info/self`)
         console.log("setting self info to", response.data)
         dispatch({ type: 'fetch_self', payload: response.data })
+
+        await AsyncStorage.setItem('fetchSelf', JSON.stringify(response.data));
+        console.log("set asyncstorage fetchself")
+
     } catch (err) {
+        console.log("TRYING CACHED SELF INFO")
+        var self_cached = await AsyncStorage.getItem('fetchSelf');
+        if (self_cached) {
+            console.log("GETTING CACHED SELF INFO")
+            dispatch({ type: 'fetch_self', payload: JSON.parse(self_cached) })
+        }
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
@@ -220,6 +230,11 @@ const saveAvatar = dispatch => async (items, colors, hasItems, callback = null) 
         var avatarBase64Data = `data:image/png;base64,${response.data}`
         dispatch({ type: 'save_avatar', payload: { items, colors, hasItems, avatarBase64Data } })
         console.log("saving done")
+
+        // save to cache as well
+        await AsyncStorage.setItem('user_avatar', avatarBase64Data);
+        await AsyncStorage.setItem('user_avatar_date', String(new Date()));
+
         if (callback) { callback() }
     } catch (err) {
         console.log("Problem saving avatar:", err)

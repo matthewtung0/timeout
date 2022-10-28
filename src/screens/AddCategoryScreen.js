@@ -26,6 +26,7 @@ const AddCategoryScreen = ({ navigation }) => {
     const [selectedCatId, setSelectedCatId] = useState('')
     const [selectedColorId, setSelectedColorId] = useState('')
     const [selectedName, setSelectedName] = useState('')
+    const [selectedCategoryPublic, setSelectedCategoryPublic] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false)
 
@@ -50,17 +51,10 @@ const AddCategoryScreen = ({ navigation }) => {
         Alert.alert(
             "Unarchive this category?",
             "",
-            [
-                {
-                    text: "Go back", onPress: () => { }, style: "cancel"
-                },
-                {
-                    text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) }
-                }
-            ]
+            [{ text: "Go back", onPress: () => { }, style: "cancel" },
+            { text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) } }]
         );
     }
-
     return (
         <HideKeyboard>
             {userState.errorMessage && 0 ?
@@ -107,6 +101,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                         colorArr={colorArr}
                                         selectedColorId={selectedColorId}
                                         selectedCategoryName={selectedName}
+                                        selectedCategoryPublic={selectedCategoryPublic}
                                         selectedCatId={selectedCatId} />
                                 </View>
 
@@ -135,7 +130,11 @@ const AddCategoryScreen = ({ navigation }) => {
 
                         <Text style={{ marginLeft: 25, marginTop: 120, fontSize: 20, }}>Active Categories</Text>
                         <View style={styles.categoryContainer}>
-                            {catState.userCategories.filter((item) => (!item.archived && item.category_name !== 'Unsorted'))
+                            {catState.userCategories
+                                .filter((item) => (!item.archived && item.category_name !== 'Unsorted'))
+                                .sort(function (a, b) {
+                                    return String(a.category_name).localeCompare(String(b.category_name))
+                                })
                                 .map((item) => {
                                     return (
                                         <View
@@ -160,6 +159,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                                                 setSelectedCatId(item.category_id)
                                                                 setSelectedColorId(item.color_id)
                                                                 setSelectedName(item.category_name)
+                                                                setSelectedCategoryPublic(item.public)
                                                                 toggleModal()
                                                             }
 
@@ -194,6 +194,9 @@ const AddCategoryScreen = ({ navigation }) => {
 
                         <View style={styles.categoryContainer}>
                             {catState.userCategories.filter((item) => item.archived)
+                                .sort(function (a, b) {
+                                    return String(a.category_name).localeCompare(String(b.category_name))
+                                })
                                 .map((item) => {
                                     return (
                                         <View

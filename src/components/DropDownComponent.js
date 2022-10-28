@@ -11,34 +11,27 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     setCatNameCallback, setColorIdCallback, setCategoryIdCallback, isInModal }) => {
     const { state: categoryState } = useContext(CategoryContext)
     const [open, setOpen] = useState(false);
-    const [items, setItems] = useState(
-        categoryState.userCategories.filter(item => item.archived !== true).map(item => {
-            return {
-                label: item.category_name,
-                value: item.category_id,
-                color: item.color_id,
-                containerStyle: { backgroundColor: constants.colors[item.color_id] }
-            }
-        })
-    )
+
+    const [items, setItems] = useState([])
     let selectedWidth = width * 0.9
     if (isInModal) selectedWidth = width * 0.8
 
     // refresh the data
     useFocusEffect(
         useCallback(() => {
-            //console.log("Setting items to these categories", categoryState.userCategories)
-            setItems(
-                categoryState.userCategories.filter(item => item.archived !== true).map(item => {
-                    return {
-                        label: item.category_name,
-                        value: item.category_id,
-                        color: item.color_id,
-                        containerStyle: { backgroundColor: constants.colors[item.color_id] }
-                    }
-                })
-            )
+            let category_array = categoryState.userCategories.filter(item => item.archived !== true).map(item => {
+                return {
+                    label: item.category_name,
+                    value: item.category_id,
+                    color: item.color_id,
+                    containerStyle: { backgroundColor: constants.colors[item.color_id] }
+                }
+            })
 
+            category_array = category_array.sort(function (a, b) {
+                return String(a.label).localeCompare(String(b.label))
+            })
+            setItems(category_array)
         }, [categoryState.userCategories])
     )
 

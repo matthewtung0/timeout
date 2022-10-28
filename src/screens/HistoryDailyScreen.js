@@ -326,7 +326,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                     {
                                         fontSize: 24, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
                                         marginBottom: 3,
-                                    }]}>Tasks Detail</Text>
+                                    }]}>Daily Detail</Text>
 
                                 </View>
 

@@ -64,7 +64,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             })
             //setEndTime(fromUnixTime(endTime), false)
         }
-        alert('Time end')
+        //alert('Time end')
     }
 
     useFocusEffect(

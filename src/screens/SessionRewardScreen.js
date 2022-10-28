@@ -5,6 +5,7 @@ import { Context as UserContext } from '../context/userContext';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { fromUnixTime, toDate } from 'date-fns';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) => {
     const { sessionObjEval, sessionStartTime, sessionEndTime } = params;
@@ -45,9 +46,31 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
     const saveSession = async () => {
 
         try {
-            const response = await timeoutApi.post('/save_session', sessionObjReward)
+            const response = await timeoutApi.post('/save_session', [sessionObjReward])
             console.log("Session save successful!")
 
+            // after save session, fetch self to update stats, and then update the points
+            await fetchSelf()
+        } catch (err) {
+            console.log("Problem adding session", err)
+
+            // save session to asyncStorage to enter later
+            var storedSessions = await AsyncStorage.getItem('storedSessions')
+            if (storedSessions) {
+                var temp = JSON.parse(storedSessions)
+                temp.push(sessionObjReward)
+                storedSessions = JSON.stringify(temp)
+            } else {
+                storedSessions = JSON.stringify([sessionObjReward])
+            }
+            await AsyncStorage.setItem('storedSessions', storedSessions);
+
+            alert("Sorry, we ran into a problem - your session will be saved when internet connection is stored")
+
+            offBoard();
+        }
+
+        try {
             // deleting an existing task
             if (existingItem && !toKeep) {
                 console.log("DELETING ITEM")
@@ -58,13 +81,17 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
                 await addItem()
             }
 
-            // after save session, fetch self to update stats, and then update the points
-            await fetchSelf()
             await fetchUserTodoItems()
-            const res = addPoints(userState.user_id, 100000, offBoard())
         } catch (err) {
-            console.log("Problem adding session", err)
-            alert("Sorry, we ran into a problem - your session was not saved")
+            console.log("Problem updating the todo lists");
+            offBoard();
+        }
+
+        try {
+            await addPoints(userState.user_id, 100000, offBoard())
+        } catch (err) {
+            console.log("Problem adding points")
+            offBoard();
         }
     }
 
@@ -115,18 +142,18 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
             {existingItem ? (
                 <View style={styles.toggleContainer}>
                     <Text style={{ marginBottom: 10, }}>This task is currently on your task list.</Text>
-                    <Text>If you want to remove it, just disable the switch below.</Text>
+                    <Text>If you want to remove it, just disable the switch below. Otherwise, no action needed.</Text>
                     <View style={{ flex: 1, flexDirection: 'row', marginTop: 20, }}>
                         <Switch
                             style={{ flex: 0.3, marginRight: 20, }}
                             trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
                             thumbColor={toKeep ? "#67806D" : "#67806D"}
-                            ios_backgroundColor="#ABC57E"
+                            //ios_backgroundColor="#ABC57E"
                             onValueChange={toggleRemoveTodo}
                             value={toKeep}
                         />
                         {toKeep ? <Text style={{ flex: 1, }}>Keep it, I'm still working on it!</Text> :
-                            <Text style={{ flex: 1, }}>Remove this from my task list.</Text>}
+                            <Text style={{ flex: 1, }}>I'm done, remove this from my task list.</Text>}
                     </View>
                 </View>) :
                 (<View style={styles.toggleContainer}>
@@ -138,7 +165,7 @@ const SessionRewardScreen = ({ navigation: { navigate }, route: { params } }) =>
                             style={{ flex: 0.3, marginRight: 20, }}
                             trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
                             thumbColor={toAdd ? "#67806D" : "#67806D"}
-                            ios_backgroundColor="#ABC57E"
+                            //ios_backgroundColor="#ABC57E"
                             onValueChange={toggleAddTodo}
                             value={toAdd}
                         />

@@ -20,12 +20,16 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import timeoutApi from '../api/timeout';
 import AvatarComponent from '../components/AvatarComponent';
 
+const REFRESH_THRESHOLD_POSITION = -50;
+const SCROLL_THROTTLE_RATE = 200;
+
 const FriendFeedScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window');
     const { state: sessionState, fetchUserReactions,
         reactToActivity, fetchAvatars } = useContext(SessionContext)
     const { state: userState, setIdToView } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
+    const [refreshToken, setRefreshToken] = useState(0)
     const [offset, setOffset] = useState(0)
     const [atEnd, setAtEnd] = useState(false)
     const [friendsPfpMap, setFriendsPfpMap] = useState({})
@@ -34,23 +38,25 @@ const FriendFeedScreen = ({ navigation }) => {
 
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingRefresh, setIsLoadingRefresh] = useState(false)
 
 
     useFocusEffect(
         useCallback(() => {
+            setIsLoadingRefresh(true)
+            console.log("REFRESHING")
             //buildFriendsMap();
             getFeed();
 
             return () => {
-                console.log("cleaning up")
+                //console.log("cleaning up")
                 setIsLoading(false)
                 setOffset(0)
                 setDisableTouch(false)
                 setAtEnd(false)
             }
-        }, [])
+        }, [refreshToken])
     )
-    console.log("rendering friend feeed")
 
 
     const fetchSessions = async (friends) => {
@@ -116,10 +122,20 @@ const FriendFeedScreen = ({ navigation }) => {
 
                 //fetchAvatars(userState.friends[i].friend)
             }*/
+            setIsLoadingRefresh(false)
         } catch (err) {
             console.log("Problem retrieving feed", err)
         }
     }
+
+    const scrollEvent = (e) => {
+        var scrollPos = e.nativeEvent.contentOffset.y
+
+        if (scrollPos < REFRESH_THRESHOLD_POSITION) {
+            setRefreshToken(Math.random())
+        }
+    }
+
 
     /*const fetchSessionsNextBatch = async (startIndex = 0) => {
         const response = await timeoutApi.get('/session', { params: { startIndex } })
@@ -207,7 +223,7 @@ const FriendFeedScreen = ({ navigation }) => {
 
         (
             <View style={styles.container}>
-                {console.log("item rendering..", item.activity_id)}
+                {/*{console.log("item rendering..", item.activity_id)}*/}
                 <View style={styles.pfpcontainer}>
                     <View style={styles.pfp}>
                         {/* friend thumbnails */}
@@ -268,15 +284,13 @@ const FriendFeedScreen = ({ navigation }) => {
         return (
             <View style={styles.outerContainer}>
 
-                {!isOnline || 1 ?
+                {!isOnline ?
                     <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', }}>
                         <Text style={{ textAlign: 'center', color: 'gray', fontSize: 18, }}>Friend feed is currently unavailable. Please check your internet connection</Text>
                     </View>
 
                     :
                     <>
-                        <Text>{String(isOnline)}</Text>
-
                         <View style={styles.makeshiftTabBarContainer}>
                             <View style={styles.makeshiftTabBar}>
                                 <TouchableOpacity style={styles.tabBarButton}>
@@ -290,11 +304,17 @@ const FriendFeedScreen = ({ navigation }) => {
                             </View>
                         </View>
                         {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
+                        {isLoadingRefresh ? <ActivityIndicator
+                            style={{ marginTop: 15 }}
+                            size="large"
+                            color='black' /> : null}
                         <View style={styles.flatListContainer}>
                             <FlatList
                                 ref={flatListRef}
                                 style={styles.flatlistStyle}
                                 horizontal={false}
+                                onScroll={scrollEvent}
+                                scrollEventThrottle={SCROLL_THROTTLE_RATE}
                                 //data={sessionState.userSessions}
                                 data={feed}
                                 showsHorizontalScrollIndicator={false}

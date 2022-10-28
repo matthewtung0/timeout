@@ -1,7 +1,7 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions, Image, TextInput,
-    Keyboard, TouchableWithoutFeedback
+    Keyboard, TouchableWithoutFeedback, ActivityIndicator
 } from 'react-native';
 import { Text, Input } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
@@ -11,6 +11,10 @@ import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 import DropDownComponent from '../components/DropDownComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import timeoutApi from '../api/timeout';
+
 const constants = require('../components/constants.json')
 
 const table_bg = require('../../assets/sessionselect_tablebg.png');
@@ -35,8 +39,10 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const [catId, setCatId] = useState(3)
     const [catName, setCatName] = useState('unsorted')
     const [colorId, setColorId] = useState('c6')
+    const [isLoading, setIsLoading] = useState(false)
 
-    const [open, setOpen] = useState(false);
+    const [introPosition, setIntroPosition] = useState(1)
+    const [pageOpacity, setPageOpacity] = useState(0.3)
     const [categoryId, setCategoryId] = useState("3");
 
     const [newCatName, setNewCatName] = useState('unsorted')
@@ -47,6 +53,52 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     const updateTime = (a) => {
         setTime(a);
     }
+
+    const checkStoredSessions = async () => {
+        var storedSessions = await AsyncStorage.getItem('storedSessions')
+        var num_stored = 0
+        if (storedSessions) {
+            setIsLoading(true)
+
+            storedSessions = JSON.parse(storedSessions)
+
+            // attempt to submit these sessions now
+            try {
+                const response = await timeoutApi.post('/save_session', storedSessions)
+                console.log("Session save successful!")
+
+                await AsyncStorage.removeItem('storedSessions');
+                // after save session, fetch self to update stats, and then update the points
+                await fetchSelf()
+
+
+
+                // add points
+                await addPoints(state.user_id, 100000)
+
+                alert(String(storedSessions.length) + " stored sessions now updated!")
+                setIsLoading(false)
+            } catch (err) {
+                console.log("Can't upload stored sessions", err)
+            }
+
+
+            num_stored = storedSessions.length
+        }
+        console.log("nUMBER STORED SESSIONS ", String(num_stored))
+        console.log(JSON.stringify(storedSessions))
+        return num_stored
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("FOCUS EFFECT SESSION SELECT")
+
+            checkStoredSessions()
+
+
+        }, [])
+    )
 
     const clearInputs = () => {
         setSelectedButton({ buttonName: 'unsorted', buttonId: 3 })
@@ -105,10 +157,24 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
         return true
     }
 
+    const goToSecondIntroGraphic = () => {
+        setIntroPosition(2)
+    }
+    const goToThirdIntroGraphic = () => {
+        setIntroPosition(3)
+    }
+    const goToFourthIntroGraphic = () => {
+        setIntroPosition(4)
+    }
+    const finishIntroGraphic = () => {
+        setIntroPosition(-1)
+        setPageOpacity(1)
+    }
+
     return (
         <HideKeyboard>
             <>
-                <View style={styles.viewContainer}>
+                <View style={[styles.viewContainer, { opacity: pageOpacity }]}>
 
                     <View style={{ flex: 6 }}>
                         <View>
@@ -186,7 +252,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                         <TouchableOpacity
                             style={[styles.start, { width: width / 2.2, height: height / 12 }]}
                             onPress={() => {
-                                if (!validateInputs()) {
+                                if (!validateInputs() || isLoading) {
                                     return;
                                 }
                                 let cat_Name = newCatName
@@ -208,7 +274,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
 
                         </TouchableOpacity>
 
-                        {state.errorMessage || 1 ?
+                        {state.errorMessage ?
                             <View style={{ height: 100, backgroundColor: '#F5BBAE', width: '100%', }}>
                                 <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>
                                     No internet connection! Any sessions will not be saved.
@@ -216,6 +282,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                             </View>
 
                             : null}
+                        {isLoading ?
+                            <ActivityIndicator size="large" color="black" /> : null}
                     </View>
 
                     <View style={styles.modalContainer}>
@@ -228,8 +296,76 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
                 {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
+
+
+                {/* INTRO GRAPHIC 1 */}
+                {introPosition == 1 ?
+                    <View
+                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
+                        <TouchableOpacity
+                            style={{ flex: 1, }}
+                            onPress={goToSecondIntroGraphic}>
+                            <><View style={{ flex: 1 }}></View>
+                                <View style={{ flex: 1 }}></View>
+                                <View style={{ flex: 1 }}>
+
+                                    <Text style={{ fontSize: 20, }}>Welcome to TimeOut! We hope this app will help you be productive!</Text>
+                                </View>
+                            </>
+
+                        </TouchableOpacity>
+                    </View> : null}
+
+                {introPosition == 2 ?
+                    <View
+                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
+                        <TouchableOpacity
+                            style={{ flex: 1, }}
+                            onPress={goToThirdIntroGraphic}>
+                            <><View style={{ flex: 1 }}></View>
+
+                                <View style={{ flex: 1 }}>
+
+                                    <Text style={{ fontSize: 20, }}>SECOND BLURB</Text>
+                                </View><View style={{ flex: 1 }}></View>
+                            </>
+
+                        </TouchableOpacity>
+                    </View> : null}
+                {introPosition == 3 ?
+                    <View
+                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
+                        <TouchableOpacity
+                            style={{ flex: 1, }}
+                            onPress={goToFourthIntroGraphic}>
+                            <><View style={{ flex: 1 }}></View>
+
+                                <View style={{ flex: 1 }}>
+
+                                    <Text style={{ fontSize: 20, }}>THIRD BLURB</Text>
+                                </View><View style={{ flex: 1 }}></View>
+                            </>
+
+                        </TouchableOpacity>
+                    </View> : null}
+                {introPosition == 4 ?
+                    <View
+                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
+                        <TouchableOpacity
+                            style={{ flex: 1, }}
+                            onPress={finishIntroGraphic}>
+                            <><View style={{ flex: 1 }}></View>
+
+                                <View style={{ flex: 1 }}>
+
+                                    <Text style={{ fontSize: 20, }}>FOURTH BLURB</Text>
+                                </View><View style={{ flex: 1 }}></View>
+                            </>
+
+                        </TouchableOpacity>
+                    </View> : null}
+
             </>
 
         </HideKeyboard>
