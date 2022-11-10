@@ -45,7 +45,8 @@ const eyeColors = ['brown', 'black', 'blue', 'green', 'gold', 'red', 'light-grey
 const glasses1 = require('../../assets/avatar/1_glasses/1_round_1_black-01.png')
 const glasses2 = require('../../assets/avatar/1_glasses/2_rectangle-clear_1_black-01.png')
 const glasses3 = require('../../assets/avatar/1_glasses/2_rectangle-shade-1_black.png')
-const glassesTypes = [[unknown], [glasses1], [glasses2], [glasses3]]
+//const glassesTypes = [[unknown], [glasses1], [glasses2], [glasses3]]
+const glassesTypes = [[glasses1], [glasses2], [glasses3]]
 
 // ---------------------------------------- PIERCINGS ----------------------------------------------
 const piercingsHoop1 = require('../../assets/avatar/2_piercings/1_brow-hoop_1_black.png')

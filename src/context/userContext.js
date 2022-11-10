@@ -60,6 +60,11 @@ const userReducer = (state, action) => {
                 hasItems: action.payload.hasItems,
                 base64pfp: action.payload.avatarBase64Data
             }
+        case 'save_avatar2':
+            return {
+                ...state, avatarJSON: action.payload.avatarJSON,
+                base64pfp: action.payload.avatarBase64Data
+            }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
         case 'clear_context':
@@ -224,6 +229,24 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
+const saveAvatar2 = dispatch => async (avatarJSON, callback = null) => {
+    try {
+        const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON })
+        var avatarBase64Data = `data:image/png;base64,${response.data}`
+        dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data } })
+        console.log("saving done")
+
+        // save to cache as well
+        await AsyncStorage.setItem('user_avatar', avatarBase64Data);
+        await AsyncStorage.setItem('user_avatar_date', String(new Date()));
+
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem saving avatar:", err)
+        dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
+    }
+}
+
 const saveAvatar = dispatch => async (items, colors, hasItems, callback = null) => {
     try {
         const response = await timeoutApi.post('/self_user/avatar', { items, colors, hasItems })
@@ -329,7 +352,7 @@ export const { Provider, Context } = createDataContext(
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
-        saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems
+        saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2
     },
     {
         outgoingFriendReqs: [],
@@ -373,6 +396,7 @@ export const { Provider, Context } = createDataContext(
             hair: { front: [], back: [], side: [], general: [], },
             background: [], overlay: [],
         },
+        avatarJSON: {},
 
 
         idToView: '', usernameToView: '',

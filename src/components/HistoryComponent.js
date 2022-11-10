@@ -19,6 +19,11 @@ const timeDifference = (timeStart, timeEnd) => {
     }
 }
 
+const timeFormat = (dt) => {
+    var date = new Date(dt).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
+    return date;
+}
+
 // round rating to nearest 25
 const roundRating = (rating) => {
     var numToRoundTo = 1 / 25;
@@ -34,10 +39,11 @@ const HistoryComponent = ({ session_obj }) => {
                 <View style={{ flex: 3, }}>
                     <Text>{session_obj.activity_name}</Text>
                 </View>
-                <View style={{ flex: 3, }}></View>
+                <View style={{ flex: 1, }}></View>
 
-                <View style={{ flex: 1, alignItems: 'flex-end', }}>
-                    <Text>{timeDifference(session_obj.time_start, session_obj.time_end)}</Text>
+                <View style={{ flex: 2, alignItems: 'flex-end', }}>
+                    <Text>{timeDifference(session_obj.time_start, session_obj.time_end)} @</Text>
+                    <Text>{timeFormat(session_obj.time_start)}</Text>
                 </View>
             </View>
 

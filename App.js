@@ -39,6 +39,8 @@ import FriendProfileScreen from './src/screens/FriendProfileScreen';
 import AddCategoryScreen from './src/screens/AddCategoryScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 
+import TestSvgScreen from './src/screens/SvgTestScreen';
+
 import EditAvatarScreen from './src/screens/EditAvatarScreen';
 import ShopScreen from './src/screens/ShopScreen';
 
@@ -125,6 +127,34 @@ function CreateCategoryStack() {
       <Stack.Screen
         name="AddCategory"
         component={AddCategoryScreen}
+      />
+
+
+    </Stack.Navigator>
+  )
+}
+
+function CreateTestSvgStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerShown: false,
+        /*headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('mainFlow')}>
+            <Ionicons
+              name='arrow-back-outline'
+              size={24}
+              color='black' />
+
+          </TouchableOpacity>
+        ),
+        headerTransparent: false,
+        headerTitle: 'My Categories',*/
+      })}>
+      <Stack.Screen
+        name="TestSvg"
+        component={TestSvgScreen}
       />
 
 
@@ -295,11 +325,11 @@ function CreateDrawer() {
           headerShown: false,
         }} />
 
-      <Drawer.Screen name="exportFlow"
-        component={CreateCategoryStack}
+      <Drawer.Screen name="testFlow"
+        component={CreateTestSvgStack}
         options={{
-          drawerLabel: 'Export Statistics',
-          title: 'Export Statistics',
+          drawerLabel: 'Test SVG',
+          title: 'Test SVG',
           headerShown: false,
         }} />
 

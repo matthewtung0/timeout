@@ -101,7 +101,6 @@ const HistoryDailyScreen = ({ navigation }) => {
         var day = actual_parts[2]
 
         return (month + "/" + day + "/" + yr)
-
     }
 
     const toggleSummaryDisplay = () => {
