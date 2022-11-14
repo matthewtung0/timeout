@@ -1,5 +1,6 @@
 
 import Logo from '../../assets/image2vector.svg';
+import { StyleSheet } from 'react-native';
 
 /* 2_piercings */
 import Piercing1 from '../../assets/avatar_svg/2_piercings/piercing_1.svg'
@@ -70,6 +71,14 @@ import Hairback2 from '../../assets/avatar_svg/18_hair_back/3_down-fluffy_1.svg'
 
 /* 20 background */
 import Bg1 from '../../assets/avatar_svg/20_background/bg_1.svg'
+
+import Bg1_1 from '../../assets/avatar_svg/20_background/bg_1_1.svg'
+import Bg1_2 from '../../assets/avatar_svg/20_background/bg_1_2.svg'
+import Bg1_3 from '../../assets/avatar_svg/20_background/bg_1_3.svg'
+import Bg1_4 from '../../assets/avatar_svg/20_background/bg_1_4.svg'
+import Bg1_5 from '../../assets/avatar_svg/20_background/bg_1_5.svg'
+
+import Bg2_1 from '../../assets/avatar_svg/20_background/bg_2_1.svg'
 import Bg2 from '../../assets/avatar_svg/20_background/bg_2.svg'
 import Bg3 from '../../assets/avatar_svg/20_background/bg_3.svg'
 import Bg4 from '../../assets/avatar_svg/20_background/bg_4.svg'
@@ -84,197 +93,226 @@ import NoItem_svg from '../../assets/avatar_svg/no_item.svg'
 
 const SvgTestScreen2 = () => {
 
-    return (<Logo style={{ borderWidth: 1 }} fill={"#000000"} fillSecondary="#000000" />)
+    return (<Logo style={styles.svgDefault} fill={"#000000"} fillSecondary="#000000" />)
 }
 
 /* =========================== 2_piercings ============================= */
 const Piercing1_svg = ({ colorFill, len }) => {
-    return (<Piercing1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing2_svg = ({ colorFill, len }) => {
-    return (<Piercing2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing3_svg = ({ colorFill, len }) => {
-    return (<Piercing3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing4_svg = ({ colorFill, len }) => {
-    return (<Piercing4 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing5_svg = ({ colorFill, len }) => {
-    return (<Piercing5 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing6_svg = ({ colorFill, len }) => {
-    return (<Piercing6 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing6 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Piercing7_svg = ({ colorFill, len }) => {
-    return (<Piercing7 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Piercing7 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 
 /* =========================== 4_hair_front ============================= */
 const Hairfront1_svg = ({ colorFill, len }) => {
-    return (<Hairfront1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairfront1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Hairfront2_svg = ({ colorFill, len }) => {
-    return (<Hairfront2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairfront2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Hairfront3_svg = ({ colorFill, len }) => {
-    return (<Hairfront3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairfront3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 5_hair_side ============================= */
 
 const Hairside1_svg = ({ colorFill, len }) => {
-    return (<Hairside1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairside1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Hairside2_svg = ({ colorFill, len }) => {
-    return (<Hairside2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairside2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 7_outerwear ============================= */
 const Outerwear1_svg = ({ colorFill, len }) => {
-    return (<Outerwear1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Outerwear1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 8_accessories ============================= */
 const Accessories1_svg = ({ colorFill, len }) => {
-    return (<Accessories1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Accessories1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Accessories2_svg = ({ colorFill, len }) => {
-    return (<Accessories2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Accessories2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Accessories3_svg = ({ colorFill, len }) => {
-    return (<Accessories3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Accessories3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 
 
 /* =========================== 9_top ============================= */
 const Top1_svg = ({ colorFill, len }) => {
-    return (<Top1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Top1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Top3_svg = ({ colorFill, len }) => {
-    return (<Top3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Top3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 10_underlayer ============================= */
 const Underlayer1_svg = ({ colorFill, len }) => {
-    return (<Underlayer1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer2_svg = ({ colorFill, len }) => {
-    return (<Underlayer2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer3_svg = ({ colorFill, len }) => {
-    return (<Underlayer3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer4_svg = ({ colorFill, len }) => {
-    return (<Underlayer4 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer5_svg = ({ colorFill, len }) => {
-    return (<Underlayer5 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer6_svg = ({ colorFill, len }) => {
-    return (<Underlayer6 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer6 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer7_svg = ({ colorFill, len }) => {
-    return (<Underlayer7 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer7 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Underlayer9_svg = ({ colorFill, len }) => {
-    return (<Underlayer9 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Underlayer9 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 11_mouth ============================= */
 const Mouth1_svg = ({ colorFill, len }) => {
-    return (<Mouth1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Mouth1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Mouth2_svg = ({ colorFill, len }) => {
-    return (<Mouth2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Mouth2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Mouth3_svg = ({ colorFill, len }) => {
-    return (<Mouth3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Mouth3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 13_eye_makeup ============================= */
 const EyeMakeup1_svg = ({ colorFill, len }) => {
-    return (<EyeMakeup1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<EyeMakeup1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 15_eyebrows ============================= */
 const Eyebrows1_svg = ({ colorFill, len }) => {
-    return (<Eyebrows1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Eyebrows1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Eyebrows2_svg = ({ colorFill, len }) => {
-    return (<Eyebrows2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Eyebrows2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 16_base ============================= */
 const Base1_svg = ({ colorFill, len }) => {
-    return (<Base1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Base1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Base2_svg = ({ colorFill, len }) => {
-    return (<Base2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Base2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Base3_svg = ({ colorFill, len }) => {
-    return (<Base3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Base3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Base4_svg = ({ colorFill, len }) => {
-    return (<Base4 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Base4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Base5_svg = ({ colorFill, len }) => {
-    return (<Base5 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Base5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 
 /* =========================== 17_hair_accessories ============================= */
 const HairAccessories1_svg = ({ colorFill, len }) => {
-    return (<HairAccessories1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<HairAccessories1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 18_hair_back ============================= */
 const Hairback1_svg = ({ colorFill, len }) => {
-    return (<Hairback1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairback1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Hairback2_svg = ({ colorFill, len }) => {
-    return (<Hairback2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Hairback2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 
 /* =========================== 20_background ============================= */
 
+/* 6 solid color ones, 10 striped ones */
+
 const Bg1_svg = ({ colorFill, len }) => {
-    return (<Bg1 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
+const Bg1_1_svg = ({ colorFill, len }) => {
+    return (<Bg1_1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Bg1_2_svg = ({ colorFill, len }) => {
+    return (<Bg1_2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Bg1_3_svg = ({ colorFill, len }) => {
+    return (<Bg1_3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Bg1_4_svg = ({ colorFill, len }) => {
+    return (<Bg1_4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Bg1_5_svg = ({ colorFill, len }) => {
+    return (<Bg1_5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+
+/* ========================================== */
+
 const Bg2_svg = ({ colorFill, len }) => {
-    return (<Bg2 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Bg2_1_svg = ({ colorFill, len }) => {
+    return (<Bg2_1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg3_svg = ({ colorFill, len }) => {
-    return (<Bg3 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg4_svg = ({ colorFill, len }) => {
-    return (<Bg4 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg5_svg = ({ colorFill, len }) => {
-    return (<Bg5 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg6_svg = ({ colorFill, len }) => {
-    return (<Bg6 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg6 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg7_svg = ({ colorFill, len }) => {
-    return (<Bg7 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg7 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg8_svg = ({ colorFill, len }) => {
-    return (<Bg8 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg8 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg9_svg = ({ colorFill, len }) => {
-    return (<Bg9 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg9 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 const Bg10_svg = ({ colorFill, len }) => {
-    return (<Bg10 style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<Bg10 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 const NoItem1_svg = ({ colorFill, len }) => {
-    return (<NoItem_svg style={{ borderWidth: 1 }} fill={colorFill} width={len} height={len} />)
+    return (<NoItem_svg style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
+
+
+const styles = StyleSheet.create({
+    svgDefault: {
+    },
+})
 
 module.exports = {
     SvgTestScreen2,
@@ -291,7 +329,8 @@ module.exports = {
     Eyebrows1_svg, Eyebrows2_svg,
     HairAccessories1_svg,
     Hairback1_svg, Hairback2_svg,
-    Bg1_svg, Bg2_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
+    Bg1_svg, Bg1_1_svg, Bg1_2_svg, Bg1_3_svg, Bg1_4_svg, Bg1_5_svg,
+    Bg2_svg, Bg2_1_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
     NoItem1_svg
 }
 //export default SvgTestScreen2;

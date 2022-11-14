@@ -14,11 +14,12 @@ const userReducer = (state, action) => {
                 points: action.payload.user_info.points,
                 totalTime: action.payload.user_stats.total_time,
                 totalTasks: action.payload.user_stats.num_tasks,
-                avatarItems: action.payload.user_avatar.avatarItems,
-                avatarColors: action.payload.user_avatar.avatarColors,
-                hasItems: action.payload.user_avatar.hasItems,
+                //avatarItems: action.payload.user_avatar.avatarItems,
+                //avatarColors: action.payload.user_avatar.avatarColors,
+                //hasItems: action.payload.user_avatar.hasItems,
                 user_id: action.payload.user_info.user_id,
                 bio: action.payload.user_info.bio,
+                avatarJSON: action.payload.user_avatar.avatarJSON,
             }
         case 'add_error':
             console.log("ERROR: ", action.payload)
@@ -229,7 +230,7 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
-const saveAvatar2 = dispatch => async (avatarJSON, callback = null) => {
+const saveAvatar2 = dispatch => async (avatarJSON, callback = null, callback_fail = null) => {
     try {
         const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON })
         var avatarBase64Data = `data:image/png;base64,${response.data}`
@@ -244,6 +245,7 @@ const saveAvatar2 = dispatch => async (avatarJSON, callback = null) => {
     } catch (err) {
         console.log("Problem saving avatar:", err)
         dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
+        if (callback_fail) { callback_fail() }
     }
 }
 
@@ -370,7 +372,7 @@ export const { Provider, Context } = createDataContext(
         totalTime: 0,
         base64pfp: '',
         bio: '',
-        avatarItems: {
+        /*avatarItems: {
             face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
             accessories: { glasses: 1, piercings: 1, accessories: 0, hairAccessories: 0, },
             clothing: { outerwear: 1, top: 1, under: 0, },
@@ -388,15 +390,110 @@ export const { Provider, Context } = createDataContext(
             hasOuterwear: false, hasTop: false, hasGlasses: false, hasPiercings: false,
             hasMakeup: false, hasHairFront: false, hasHairBack: false, hasHairSide: false,
             hasHairAccessories: false, hasAccessories: false,
-        },
-        avatarItemsOwned: {
+        },*/
+        /*avatarItemsOwned: {
             face: { mouth: [], eyes: [], makeup: [], eyebrows: [], base: [], },
             accessories: { glasses: [], piercings: [], accessories: [], hairAccessories: [], },
             clothing: { outerwear: [], top: [], under: [], },
             hair: { front: [], back: [], side: [], general: [], },
             background: [], overlay: [],
+        },*/
+        avatarItemsOwned: [],
+        avatarJSON: {
+            face: {
+                mouth: {
+                    item: 0,
+                    color: 0,
+                    active: true,
+                },
+                eyes: {
+                    item: 0,
+                    color: 0,
+                    active: true,
+                },
+                makeup: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                eyebrows: {
+                    item: 0,
+                    color: 0,
+                    active: true,
+                },
+                base: {
+                    item: 0,
+                    color: -1,
+                    active: true,
+                },
+            },
+            accessories: {
+                hair: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                general: {
+                    item: 0,
+                    color: -1,
+                    active: false,
+                },
+                piercings: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                glasses: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                background: {
+                    item: 0,
+                    color: -1,
+                    active: true,
+                },
+            },
+            clothing: {
+                under: {
+                    item: 0,
+                    color: 0,
+                    active: true,
+                },
+                top: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                outer: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+            },
+            hair: {
+                base: {
+                    item: 0,
+                    color: 0,
+                    active: true,
+                },
+                front: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                back: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+                side: {
+                    item: 0,
+                    color: 0,
+                    active: false,
+                },
+            },
         },
-        avatarJSON: {},
 
 
         idToView: '', usernameToView: '',

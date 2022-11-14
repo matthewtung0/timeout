@@ -59,14 +59,14 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 const styles = StyleSheet.create({
     text: {
         color: '#67806D',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 17,
+        fontWeight: '400',
     },
     categoryText: {
         color: 'white',
         fontSize: 14,
         textAlign: 'center',
-        fontWeight: '800',
+        fontWeight: '400',
     },
     container: {
         flex: 1,

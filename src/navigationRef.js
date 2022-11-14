@@ -1,5 +1,5 @@
-import { NavigationActions } from 'react-navigation';
-
+/*import { NavigationActions } from 'react-navigation';*/
+import { CommonActions } from '@react-navigation/native'
 let navigator;
 
 export const setNavigator = (nav) => {
@@ -9,8 +9,8 @@ export const setNavigator = (nav) => {
 export const navigate = (routeName, params) => {
     console.log("Navigating to " + routeName);
     navigator.dispatch(
-        NavigationActions.navigate({
-            routeName,
+        CommonActions.navigate({
+            name,
             params
         })
     )

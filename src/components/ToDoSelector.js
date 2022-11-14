@@ -3,6 +3,7 @@ import {
     View, StyleSheet, Text, Button, TouchableOpacity, FlatList, Dimensions, Image,
     Keyboard, TouchableWithoutFeedback
 } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker'
 import { Icon } from 'react-native-elements'
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
@@ -16,7 +17,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
     const [childTitle, setChildTitle] = useState('Add Task')
     const [buttonText, setButtonText] = useState('Submit')
     const [editItem, setEditItem] = useState(null)
-    const [sortBy, setSortBy] = useState(0); // 0 -> time created, 1-> alphabetical 2-> category
+    const [sortBy, setSortBy] = useState(0); // 0 -> old to new; 1-> new to old; 2-> alphabetical; 3-> category; 
 
     const editTask = (item) => {
         setEditItem(item)
@@ -24,16 +25,26 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
         setButtonText('Save Changes')
         setShowChild(true)
     }
-    //
+    const sortOptions = [
+        { label: 'Old to new', id: 0 },
+        { label: 'New to old', id: 1 },
+        { label: 'A-Z', id: 2 },
+        { label: 'Category', id: 3 },
+
+    ]
 
     const sorted_todoItems = todoItems.sort(function (a, b) {
         if (sortBy == 0) {
             return String(a.time_created).localeCompare(String(b.time_created))
-        } else if (sortBy == 1) {
+        }
+        else if (sortBy == 1) {
+            return String(b.time_created).localeCompare(String(a.time_created))
+        }
+        else if (sortBy == 2) {
             var comp_a = String(a.item_desc) + String(a.category_name)
             var comp_b = String(b.item_desc) + String(b.category_name)
             return comp_a.localeCompare(comp_b)
-        } else if (sortBy == 2) {
+        } else if (sortBy == 3) {
             var comp_a = String(a.category_name) + String(a.item_desc)
             var comp_b = String(b.category_name) + String(b.item_desc)
             return comp_a.localeCompare(comp_b)
@@ -48,19 +59,29 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
             <View style={styles.parentContainer}>
                 <Text style={styles.title}></Text>
 
-                <View style={{ marginVertical: 5, flexDirection: 'row', justifyContent: 'space-around' }}>
-                    <Text>Sort by:</Text>
-                    <View style={{ borderWidth: 1 }}>
-                        <Text> time created</Text>
-                    </View>
+                <View style={{ marginVertical: 5, flexDirection: 'row', marginHorizontal: 15, }}>
 
-                    <View style={{ borderWidth: 1 }}>
-                        <Text>A-Z</Text>
-                    </View>
-
-                    <View style={{ borderWidth: 1 }}>
-                        <Text>Category</Text>
-                    </View>
+                    <FlatList
+                        style={{ paddingBottom: 10, }}
+                        ListHeaderComponent={<View><Text style={{ paddingVertical: 5, color: '#67806D' }}>Sort by:</Text>
+                        </View>}
+                        horizontal={true}
+                        data={sortOptions}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ index, item }) => {
+                            return (
+                                <View style={{ marginHorizontal: 5, }}>
+                                    <TouchableOpacity
+                                        style={[styles.sortButton, sortBy == index ? { backgroundColor: '#ABC57E' } :
+                                            { backgroundColor: '#F6F2DF' }]}
+                                        onPress={() => { setSortBy(index) }}>
+                                        <Text style={{ color: '#67806D' }}>{item.label}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }}
+                    >
+                    </FlatList>
 
                 </View>
 
@@ -303,6 +324,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingVertical: 10,
     },
+    sortButton: {
+        borderWidth: 1, borderRadius: 5, padding: 5, borderColor: 'grey'
+    }
 })
 
 export default ToDoSelector;

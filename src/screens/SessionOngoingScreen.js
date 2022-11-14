@@ -125,7 +125,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             [
                 {
                     text: "Never mind, keep the same time",
-                    onPress: {},
+                    onPress: () => { },
                     style: "cancel"
                 },
                 {

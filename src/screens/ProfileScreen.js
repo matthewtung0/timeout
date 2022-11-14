@@ -250,14 +250,6 @@ const ProfileScreen = ({ navigation }) => {
 
                     })}
                 </View>
-                {isMe ?
-                    <Button title="Test avatar" onPress={() => { navigation.navigate('EditAvatar') }} /> : null}
-                <Button title="Fetch avatar.." onPress={() => { fetchAvatar() }} />
-
-                {/*<Button title="Test fetch avatar" onPress={() => {
-                    fetchAvatar();
-                }} />*/}
-
 
                 {/*{state.base64pfp ?
                     <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />

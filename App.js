@@ -328,8 +328,8 @@ function CreateDrawer() {
       <Drawer.Screen name="testFlow"
         component={CreateTestSvgStack}
         options={{
-          drawerLabel: 'Test SVG',
-          title: 'Test SVG',
+          drawerLabel: 'Customize Avatar',
+          title: 'Customize Avatar',
           headerShown: false,
         }} />
 

@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, ScrollView, Button } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View, StyleSheet, Text, FlatList, ScrollView, Button, TouchableOpacity } from 'react-native';
 const constants = require('../components/constants.json')
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal'
