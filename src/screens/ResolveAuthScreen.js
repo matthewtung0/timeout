@@ -1,15 +1,16 @@
-import { useContext, useCallback } from 'react';
-import { View, StyleSheet, Text, ImageBackground } from 'react-native';
-import { Context as AuthContext } from '../context/AuthContext';
-import { NavigationEvents } from 'react-navigation';
-import { Context as CategoryContext } from '../context/CategoryContext';
-import { useFocusEffect } from '@react-navigation/native';
-
+import { useContext, useCallback } from 'react'
+import { View, StyleSheet, Text, ImageBackground } from 'react-native'
+import { Context as AuthContext } from '../context/AuthContext'
+import { NavigationEvents } from 'react-navigation'
+import { Context as CategoryContext } from '../context/CategoryContext'
+import { useFocusEffect } from '@react-navigation/native'
 
 // doubles as the splash screen
 const ResolveAuthScreen = ({ navigation }) => {
     const { state, tryLocalSignin } = useContext(AuthContext);
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+    const splash_screen_image = require('../../assets/splash_screen.png')
+    const splash_screen_video = require('../../assets/splash_screen_video.mp4');
     //const [loginResult, setLoginResult] = useState(0)
 
     /*useEffect(() => {
@@ -52,9 +53,10 @@ const ResolveAuthScreen = ({ navigation }) => {
 
 
             <ImageBackground
-                source={require('../../assets/splash_screen.png')}
+                source={require('../../assets/splash_screen.gif')}
                 style={styles.image}>
             </ImageBackground>
+
         </View>
     )
 }

@@ -64,7 +64,8 @@ const userReducer = (state, action) => {
         case 'save_avatar2':
             return {
                 ...state, avatarJSON: action.payload.avatarJSON,
-                base64pfp: action.payload.avatarBase64Data
+                base64pfp: action.payload.avatarBase64Data,
+                points: state.points - action.payload.items_cost,
             }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
@@ -153,6 +154,7 @@ const fetchAvatarItemsOwned = dispatch => async () => {
         console.log("Fetching avatar items owned")
         const response = await timeoutApi.get('/user/owned')
         //console.log(base64Icon)
+        console.log("Items owned: ", response.data)
         dispatch({ type: 'fetch_items_owned', payload: response.data })
     } catch (err) {
         console.log(err)
@@ -230,11 +232,12 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
-const saveAvatar2 = dispatch => async (avatarJSON, callback = null, callback_fail = null) => {
+const saveAvatar2 = dispatch => async (avatarJSON, items_to_redeem, items_cost, callback = null, callback_fail = null) => {
     try {
-        const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON })
+        console.log("Items to redeem", items_to_redeem)
+        const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON, items_to_redeem, items_cost })
         var avatarBase64Data = `data:image/png;base64,${response.data}`
-        dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data } })
+        dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, items_cost } })
         console.log("saving done")
 
         // save to cache as well

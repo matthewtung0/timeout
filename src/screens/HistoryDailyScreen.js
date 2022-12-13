@@ -371,13 +371,17 @@ const HistoryDailyScreen = ({ navigation }) => {
                                 <View>
                                     {monthlyTasksGrouped.map((item) => {
                                         return (
+
                                             <View
                                                 key={item[0]}>
+                                                {/* date */}
                                                 <Text style={[styles.overviewTitle, {
                                                     fontSize: 16, alignSelf: 'auto',
                                                     marginHorizontal: MARGIN_HORIZONTAL,
                                                     marginTop: 4, marginBottom: 2,
                                                 }]}>{item[0]}</Text>
+
+                                                {/* separator */}
                                                 <View
                                                     style={{
                                                         borderBottomColor: 'grey',
@@ -385,7 +389,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                         marginHorizontal: MARGIN_HORIZONTAL
                                                     }}
                                                 />
-
+                                                {/* detail items */}
                                                 <View>
                                                     {item[1].map((j) => {
                                                         return (
@@ -394,24 +398,16 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                                 style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
                                                                 <HistoryComponent
                                                                     session_obj={j}>
-
                                                                 </HistoryComponent>
-
                                                             </View>
-
-
                                                         )
                                                     })
-
                                                     }
-
                                                 </View>
                                             </View>
                                         )
-
                                     })}
                                 </View>
-
                                 : null}
                         </View>
                     </>

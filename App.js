@@ -37,12 +37,13 @@ import TodoListScreen from './src/screens/TodoListScreen';
 import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
 import FriendProfileScreen from './src/screens/FriendProfileScreen';
 import AddCategoryScreen from './src/screens/AddCategoryScreen';
+import AddInviteScreen from './src/screens/InviteScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 
 import TestSvgScreen from './src/screens/SvgTestScreen';
 
 import EditAvatarScreen from './src/screens/EditAvatarScreen';
-import ShopScreen from './src/screens/ShopScreen';
+import ShopScreen from './src/screens/InviteScreen';
 
 import DrawerProfileView from './src/components/DrawerProfileView';
 
@@ -127,6 +128,34 @@ function CreateCategoryStack() {
       <Stack.Screen
         name="AddCategory"
         component={AddCategoryScreen}
+      />
+
+
+    </Stack.Navigator>
+  )
+}
+
+function CreateInvitationStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerShown: false,
+        /*headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('mainFlow')}>
+            <Ionicons
+              name='arrow-back-outline'
+              size={24}
+              color='black' />
+
+          </TouchableOpacity>
+        ),
+        headerTransparent: false,
+        headerTitle: 'My Categories',*/
+      })}>
+      <Stack.Screen
+        name="InviteFriend"
+        component={AddInviteScreen}
       />
 
 
@@ -334,7 +363,7 @@ function CreateDrawer() {
         }} />
 
       <Drawer.Screen name="inviteFlow"
-        component={CreateCategoryStack}
+        component={CreateInvitationStack}
         options={{
           drawerLabel: 'Invite a Friend',
           title: 'Invite a Friend',

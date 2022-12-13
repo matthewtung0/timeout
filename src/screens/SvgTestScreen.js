@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView, FlatList, Image, ActivityIndicator, Alert } from 'react-native';
 import * as DIR from '../components/AvatarSelection';
 import { Icon } from 'react-native-elements'
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
 import Header from '../components/Header';
 
@@ -115,36 +116,38 @@ const SvgTestScreen = ({ navigation }) => {
     const underlayer_types = (size, c) => {
         return [{
             svg: <Underlayer1_svg
-                colorFill={c} len={size} />, id: 1,
+                colorFill={c} len={size} />, id: 'Underlayer1',
             owned: true
         }, {
             svg: <Underlayer2_svg
-                colorFill={c} len={size} />, id: 2,
+                colorFill={c} len={size} />, id: 'Underlayer2',
             owned: true
         }, {
             svg: <Underlayer3_svg
-                colorFill={c} len={size} />, id: 3,
+                colorFill={c} len={size} />, id: 'Underlayer3',
             owned: true
         }, {
             svg: <Underlayer4_svg
-                colorFill={c} len={size} />, id: 4,
+                colorFill={c} len={size} />, id: 'Underlayer4',
             owned: true
         }, {
             svg: <Underlayer5_svg
-                colorFill={c} len={size} />, id: 5,
+                colorFill={c} len={size} />, id: 'Underlayer5',
             owned: true
         }, {
             svg: <Underlayer6_svg
-                colorFill={c} len={size} />, id: 6,
+                colorFill={c} len={size} />, id: 'Underlayer6',
             owned: true
         }, {
             svg: <Underlayer7_svg
-                colorFill={c} len={size} />, id: 7,
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer8').length > 0
+                colorFill={c} len={size} />, id: 'Underlayer7',
+            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer7').length > 0,
+            cost: 100,
         }, {
             svg: <Underlayer9_svg
-                colorFill={c} len={size} />, id: 9,
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer9').length > 0
+                colorFill={c} len={size} />, id: 'Underlayer9',
+            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer9').length > 0,
+            cost: 100,
         },
         ]
     }
@@ -264,68 +267,71 @@ const SvgTestScreen = ({ navigation }) => {
     const bg_types = (size, c) => {
         return [{
             svg: <Bg1_svg
-                colorFill={c} len={size} />, id: 1,
+                colorFill={c} len={size} />, id: 'Bg1',
             owned: true
         }, {
             svg: <Bg1_1_svg
-                colorFill={c} len={size} />, id: 1.1,
+                colorFill={c} len={size} />, id: 'Bg1.1',
             owned: true
         }, {
             svg: <Bg1_2_svg
-                colorFill={c} len={size} />, id: 1.2,
+                colorFill={c} len={size} />, id: 'Bg1.2',
             owned: true
         }, {
             svg: <Bg1_3_svg
-                colorFill={c} len={size} />, id: 1.3,
+                colorFill={c} len={size} />, id: 'Bg1.3',
             owned: true
         }, {
             svg: <Bg1_4_svg
-                colorFill={c} len={size} />, id: 1.4,
+                colorFill={c} len={size} />, id: 'Bg1.4',
             owned: true
         }, {
             svg: <Bg1_5_svg
-                colorFill={c} len={size} />, id: 1.5,
+                colorFill={c} len={size} />, id: 'Bg1.5',
             owned: true
         }, {
             svg: <Bg2_svg
-                colorFill={c} len={size} />, id: 2,
+                colorFill={c} len={size} />, id: 'Bg2',
             owned: true
         }, {
             svg: <Bg2_1_svg
-                colorFill={c} len={size} />, id: 2.1,
+                colorFill={c} len={size} />, id: 'Bg2.1',
             owned: true
         }, {
             svg: <Bg3_svg
-                colorFill={c} len={size} />, id: 3,
+                colorFill={c} len={size} />, id: 'Bg3',
             owned: true
         }, {
             svg: <Bg4_svg
-                colorFill={c} len={size} />, id: 4,
+                colorFill={c} len={size} />, id: 'Bg4',
             owned: true
         }, {
             svg: <Bg5_svg
-                colorFill={c} len={size} />, id: 5,
+                colorFill={c} len={size} />, id: 'Bg5',
             owned: true
         }, {
             svg: <Bg6_svg
-                colorFill={c} len={size} />, id: 6,
+                colorFill={c} len={size} />, id: 'Bg6',
             owned: true
         }, {
             svg: <Bg7_svg
-                colorFill={c} len={size} />, id: 7,
+                colorFill={c} len={size} />, id: 'Bg7',
             owned: true
         }, {
             svg: <Bg8_svg
-                colorFill={c} len={size} />, id: 8,
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg8').length > 0
+                colorFill={c} len={size} />, id: 'Bg8',
+            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg8').length > 0,
+            cost: 100,
         }, {
             svg: <Bg9_svg
-                colorFill={c} len={size} />, id: 9,
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg9').length > 0
+                colorFill={c} len={size} />, id: 'Bg9',
+            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg9').length > 0,
+            cost: 100,
         }, {
             svg: <Bg10_svg
-                colorFill={c} len={size} />, id: 10,
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg10').length > 0
+                colorFill={c} len={size} />, id: 'Bg10',
+            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg10').length > 0,
+            cost: 100,
         },]
     }
 
@@ -505,10 +511,62 @@ const SvgTestScreen = ({ navigation }) => {
         unownedBackground, unownedUnder, unownedTop, unownedOuter, unownedHairBase, unownedHairFront,
         unownedHairSide, unownedHairBack])
 
-    const updateUnowned = (item_state_setter, item_state, item_id, item_owned) => {
+    /* Reset avatar menu selections when user exits the screen */
+    useFocusEffect(
+        useCallback(() => {
+
+            setBaseIndex(state.avatarJSON.face.base.item)
+            setUnderlayerIndex(state.avatarJSON.clothing.under.item)
+            setOuterwearIndex(state.avatarJSON.clothing.outer.item)
+            setTopIndex(state.avatarJSON.clothing.top.item)
+            setUnderlayerColorIndex(state.avatarJSON.clothing.under.color)
+            setOuterwearColorIndex(state.avatarJSON.clothing.outer.color)
+            setTopColorIndex(state.avatarJSON.clothing.top.color)
+            setPiercingIndex(state.avatarJSON.accessories.piercings.item)
+            setPiercingColorIndex(state.avatarJSON.accessories.piercings.color)
+            setGlassesIndex(state.avatarJSON.accessories.glasses.item)
+            setGlassesColorIndex(state.avatarJSON.accessories.glasses.color)
+            setHairSideIndex(state.avatarJSON.hair.side.item)
+            setHairBackIndex(state.avatarJSON.hair.back.item)
+            setHairFrontIndex(state.avatarJSON.hair.front.item)
+            setHairColorIndex(state.avatarJSON.hair.base.color)
+            setAccessoriesIndex(state.avatarJSON.accessories.general.item)
+            setHairAccessoriesIndex(state.avatarJSON.accessories.hair.item)
+            setHairAccessoriesColorIndex(state.avatarJSON.accessories.hair.color)
+            setMouthIndex(state.avatarJSON.face.mouth.item)
+            setMouthColorIndex(state.avatarJSON.face.mouth.color)
+            setEyeMakeupIndex(state.avatarJSON.face.makeup.item)
+
+            setEyeMakeupColorIndex(state.avatarJSON.face.makeup.color)
+            setEyebrowIndex(state.avatarJSON.face.eyebrows.item)
+            setEyebrowColorIndex(state.avatarJSON.face.eyebrows.color)
+            setEyeIndex(state.avatarJSON.face.eyes.item)
+            setEyeColorIndex(state.avatarJSON.face.eyes.color)
+            setHairIndex(state.avatarJSON.hair.base.item)
+            setBackgroundIndex(state.avatarJSON.accessories.background.item)
+
+            setHasOuterwear(state.avatarJSON.clothing.outer.active)
+            setHasTop(state.avatarJSON.clothing.top.active)
+            setHasHairAccessories(state.avatarJSON.accessories.hair.active)
+            setHasHairBack(state.avatarJSON.hair.back.active)
+            setHasHairSide(state.avatarJSON.hair.side.active)
+            setHasHairFront(state.avatarJSON.hair.front.active)
+            setHasAccessories(state.avatarJSON.accessories.general.active)
+            setHasEyeMakeup(state.avatarJSON.face.makeup.active)
+            setHasPiercings(state.avatarJSON.accessories.piercings.active)
+            setHasGlasses(state.avatarJSON.accessories.glasses.active)
+
+
+
+
+            console.log("test focus effect")
+        }, [state.avatarJSON, state.avatarItemsOwned])
+    )
+
+    const updateUnowned = (item_state_setter, item_state, item_id, item_owned, item_cost) => {
         var cur_item_state = item_state
         if (!item_owned) {
-            var cost = 100
+            var cost = item_cost
             item_state_setter(cost)
         } else {
             item_state_setter(0)
@@ -520,7 +578,11 @@ const SvgTestScreen = ({ navigation }) => {
     }
 
 
-    const saveAvatarCallback = () => {
+    const saveAvatarCallback = async () => {
+        if (totalUnowned > 0) {
+            await fetchAvatarItemsOwned();
+        }
+        setTotalUnowned(0);
         console.log("AVATAR SUCCESSFULLY SAVED")
         alert("Avatar successfully saved!")
         setIsLoading(false)
@@ -689,7 +751,7 @@ const SvgTestScreen = ({ navigation }) => {
                 },
             },
         }
-        await saveAvatar2(avatarJSON_to_send, saveAvatarCallback, saveAvatarCallbackFail)
+        await saveAvatar2(avatarJSON_to_send, items_to_redeem, totalUnowned, saveAvatarCallback, saveAvatarCallbackFail)
     }
     const createAvatarJSON = () => {
         setAvatarJSON({
@@ -1043,33 +1105,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Eye Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={DIR.eyeColors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setEyeColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(DIR.eyeColors.length / 2)}
+                                                data={DIR.eyeColors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setEyeColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${eyeColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </>
                                     : null}
 
@@ -1104,34 +1173,41 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}
                                     />
                                     <Text>Mouth Colors</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={mouth_colors}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        console.log("Mouth color index ", index)
-                                                        setMouthColorIndex(index)
-                                                    }}>
-                                                    <View style={{
-                                                        width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                        borderWidth: 2,
-                                                        borderColor: `rgba(
+                                    <ScrollView
+                                        horizontal
+                                        showsVerticalScrollIndicator={false}
+                                        showsHorizontalScrollIndicator={true}
+                                        style={{}}>
+                                        <FlatList
+                                            style={{}}
+                                            //horizontal={true}
+                                            scrollEnabled={false}
+                                            numColumns={Math.ceil(mouth_colors.length / 2)}
+                                            data={mouth_colors}
+                                            showsHorizontalScrollIndicator={false}
+                                            keyExtractor={(item) => item.id}
+                                            renderItem={({ item, index }) => {
+                                                return (<View>
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            console.log("Mouth color index ", index)
+                                                            setMouthColorIndex(index)
+                                                        }}>
+                                                        <View style={{
+                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                            borderWidth: 2,
+                                                            borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${mouthColorIndex == index ? 1.00 : 0.00})`
-                                                    }} />
+                                                        }} />
 
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                )
+                                            }}
+                                        /></ScrollView>
                                 </>
                                     : null}
 
@@ -1376,33 +1452,41 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}
                                     />
                                     <Text>Hair Accessory Colors</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={underlayer_colors}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        setHairAccessoriesColorIndex(index)
-                                                    }}>
-                                                    <View style={{
-                                                        width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                        borderWidth: 2,
-                                                        borderColor: `rgba(
+                                    <ScrollView
+                                        horizontal
+                                        showsVerticalScrollIndicator={false}
+                                        showsHorizontalScrollIndicator={true}
+                                        style={{}}>
+                                        <FlatList
+                                            style={{}}
+                                            //horizontal={true}
+                                            scrollEnabled={false}
+                                            numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                            data={underlayer_colors}
+                                            showsHorizontalScrollIndicator={false}
+                                            keyExtractor={(item) => item.id}
+                                            renderItem={({ item, index }) => {
+                                                return (<View>
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            setHairAccessoriesColorIndex(index)
+                                                        }}>
+                                                        <View style={{
+                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                            borderWidth: 2,
+                                                            borderColor: `rgba(
                                                     ${ITEM_R},
                                                     ${ITEM_G},
                                                     ${ITEM_B},
                                                     ${hairAccessoriesColorIndex == index ? 1.00 : 0.00})`
-                                                    }} />
+                                                        }} />
 
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                )
+                                            }}
+                                        />
+                                    </ScrollView>
                                 </> : null}
 
                                 {/* accessories */}
@@ -1446,44 +1530,52 @@ const SvgTestScreen = ({ navigation }) => {
                                 {backgroundPickerVisible ?
                                     <>
                                         <Text>Background Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR).length / 3)}
+                                                data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            style={[styles.menuItemDefault,
+                                                            {
+                                                                borderColor: `rgba(
                                                             ${ITEM_R},
                                                             ${ITEM_G},
                                                             ${ITEM_B},
                                                             ${backgroundIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setBackgroundIndex(index)
-                                                            updateUnowned(setUnownedBackground, unownedBackground,
-                                                                item.id, item.owned)
-                                                        }}>
-                                                        <View>
+                                                            }]}
+                                                            onPress={() => {
+                                                                setBackgroundIndex(index)
+                                                                updateUnowned(setUnownedBackground, unownedBackground,
+                                                                    item.id, item.owned, item.cost)
+                                                            }}>
+                                                            <View>
 
-                                                            {item.svg}
-                                                            {!item.owned ?
-                                                                <Text style={{ position: 'absolute' }}>Locked</Text>
-                                                                : null}
-
-
-                                                        </View>
+                                                                {item.svg}
+                                                                {!item.owned ?
+                                                                    <Text style={{ position: 'absolute' }}>Locked</Text>
+                                                                    : null}
 
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                            </View>
+
+
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            />
+                                        </ScrollView>
                                     </>
                                     : null}
 
@@ -1691,7 +1783,7 @@ const SvgTestScreen = ({ navigation }) => {
                                                             onPress={() => {
                                                                 setUnderlayerIndex(index)
                                                                 updateUnowned(setUnownedUnder, unownedUnder,
-                                                                    item.id, item.owned)
+                                                                    item.id, item.owned, item.cost)
                                                             }}>
                                                             {item.svg}
                                                             {!item.owned ?
@@ -1705,33 +1797,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             />
                                         </ScrollView>
                                         <Text>Underlayer Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={underlayer_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setUnderlayerColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                                data={underlayer_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setUnderlayerColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${underlayerColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
 
                                 {/* top layer */}
@@ -1772,33 +1871,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Top Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={underlayer_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setTopColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                                data={underlayer_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setTopColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${topColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
 
                                 {/* outerwear */}
@@ -1838,33 +1944,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Outerwear Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={underlayer_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setOuterwearColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                                data={underlayer_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setOuterwearColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${outerwearColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
                             </View>
                         </View>
@@ -1959,33 +2072,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Hair Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={hair_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setHairColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                                data={hair_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setHairColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
                                 {/* hair front */}
                                 {hairFrontPickerVisible ?
@@ -2024,33 +2144,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Hair Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={hair_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setHairColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                                data={hair_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setHairColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
                                 {/* hair back */}
                                 {hairBackPickerVisible ?
@@ -2089,33 +2216,40 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Hair Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={hair_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setHairColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                                data={hair_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setHairColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
                                 {/* hair side */}
                                 {hairSidePickerVisible ?
@@ -2154,36 +2288,41 @@ const SvgTestScreen = ({ navigation }) => {
                                             }}
                                         />
                                         <Text>Hair Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={hair_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setHairColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
+                                        <ScrollView
+                                            horizontal
+                                            showsVerticalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={true}
+                                            style={{}}>
+                                            <FlatList
+                                                style={{}}
+                                                //horizontal={true}
+                                                scrollEnabled={false}
+                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                                data={hair_colors}
+                                                showsHorizontalScrollIndicator={false}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={({ item, index }) => {
+                                                    return (<View>
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                setHairColorIndex(index)
+                                                            }}>
+                                                            <View style={{
+                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
+                                                                borderWidth: 2,
+                                                                borderColor: `rgba(
                                                         ${ITEM_R},
                                                         ${ITEM_G},
                                                         ${ITEM_B},
                                                         ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
+                                                            }} />
 
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    )
+                                                }}
+                                            /></ScrollView>
                                     </> : null}
-
-
 
                             </View>
 
