@@ -1,11 +1,10 @@
 import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
-    View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions, Image, TextInput,
+    View, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
     Keyboard, TouchableWithoutFeedback, ActivityIndicator
 } from 'react-native';
-import { Text, Input } from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
-import CategoryButton from '../components/CategoryButton';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
@@ -99,6 +98,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
 
         }, [])
     )
+    console.log("Error message: ", state.errorMessage);
 
     const clearInputs = () => {
         setSelectedButton({ buttonName: 'unsorted', buttonId: 3 })
@@ -186,10 +186,11 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                 <View style={{
                                     flex: 1,
                                     flexDirection: 'column',
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
                                 }}>
                                     <View style={{
-                                        height: 500
+                                        height: height * 0.7,
+                                        borderRadius: 20,
                                     }}>
 
                                         <ToDoSelector
@@ -270,7 +271,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                     colorId: newColorId,
                                 })
                             }}>
-                            <Text style={styles.startText}>Start</Text>
+                            <Text style={[styles.startText, styles.textDefault]}>Start</Text>
 
                         </TouchableOpacity>
 
@@ -292,7 +293,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                         <TouchableOpacity
                             style={styles.modalButton}
                             onPress={toggleModal}>
-                            <Text style={styles.modalButtonText}>+</Text>
+                            <Text style={[styles.modalButtonText, styles.textDefaultBold]}>+</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -379,6 +380,12 @@ SessionSelectScreen.navigationOptions = () => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         margin: 20,
         fontSize: 25,
@@ -463,6 +470,7 @@ const styles = StyleSheet.create({
     },
     startText: {
         color: 'white',
+        fontFamily: 'Inter-Regular',
         fontSize: 25,
         fontWeight: 'bold'
     }

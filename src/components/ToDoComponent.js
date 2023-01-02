@@ -24,10 +24,10 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex }]}>
-                        <Text style={[styles.categoryText]}>{item.category_name}</Text>
+                        <Text style={[styles.categoryText, styles.textDefaultBold]}>{item.category_name}</Text>
                     </View>
-                    <View style={{ flex: 2, justifyContent: 'center' }}>
-                        <Text style={styles.text}>{item.item_desc}</Text>
+                    <View style={{ flex: 2.5, justifyContent: 'center' }}>
+                        <Text style={[styles.text, styles.textDefaultBold,]}>{item.item_desc}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -43,9 +43,9 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 
                     }}>
                     <Icon
-                        name="create-outline"
+                        name="ellipsis-horizontal"
                         type='ionicon'
-                        color='gray' />
+                        color='#A7BEAD' />
                 </TouchableOpacity>
 
             </View>
@@ -57,16 +57,20 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     text: {
         color: '#67806D',
-        fontSize: 17,
-        fontWeight: '400',
+        fontSize: 15,
     },
     categoryText: {
         color: 'white',
-        fontSize: 14,
+        fontSize: 11,
         textAlign: 'center',
-        fontWeight: '400',
     },
     container: {
         flex: 1,
@@ -87,8 +91,8 @@ const styles = StyleSheet.create({
         flex: 1,
         alignSelf: 'flex-end',
         borderRadius: 10,
-        padding: 7,
-        marginRight: 12,
+        padding: 5,
+        marginRight: 10,
     },
     touchStyle: {
         backgroundColor: 'yellow',

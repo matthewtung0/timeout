@@ -21,6 +21,8 @@ const sessionReducer = (state, action) => {
             return { ...state, calendarDate: action.payload }
         case 'fetch_reaction':
             return { ...state, userReaction: action.payload }
+        case 'fetch_notification':
+            return { ...state, userNotifications: action.payload }
         case 'preemptive_like':
             return {
                 ...state, userReaction: [...state.userReaction, { activity_id: action.payload.activity_id }],
@@ -42,7 +44,12 @@ const sessionReducer = (state, action) => {
                     return item;
                 })
             }
-
+        case 'delete_session':
+            return {
+                ...state,
+                userSessions: state.userSessions.filter((req) => req.activity_id != action.payload.sessionId),
+                monthSessions: state.monthSessions.filter((req) => req.activity_id != action.payload.sessionId),
+            }
         case 'react_to_activity':
             console.log("This was an unlike:", action.payload.wasUnliked);
             if (!action.payload.wasUnliked) { //is a like
@@ -69,10 +76,22 @@ const sessionReducer = (state, action) => {
                     })
                 }
             }
+        case 'clear_context':
+            return {
+                userSessions: [],
+                userReaction: [],
+                userNotifications: [],
+                daySessions: [],
+                monthSessions: [],
+                calendarDate: new Date(),
+                selfOnlySessions: [],
+            }
         default:
             return state;
     }
 }
+
+
 
 const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
     var friendsArr = []
@@ -133,7 +152,6 @@ const fetchAvatars = dispatch => async (friendId) => {
 }
 
 
-
 // fetch all tasks in the given day
 const fetchMonthly = dispatch => async (date, callback = null) => {
     //let date = parseISO(dayObject.dateString)
@@ -169,7 +187,18 @@ const fetchFriendSession = dispatch => async () => {
 
 const fetchOwnSession = dispatch => async () => { };
 
-const DeleteSession = dispatch => async () => { };
+const deleteSession = dispatch => async (sessionId, callback = null, errorCallback = null) => {
+    try {
+        const response = await timeoutApi.delete(`/session/${sessionId}`, { params: { sessionId } })
+        dispatch({ type: 'delete_session', payload: { sessionId } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error deleting session:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem deleting the session.' })
+        alert("There was a problem deleting session. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
+    }
+}
 
 const fetchAllSession = dispatch => async () => { };
 
@@ -180,6 +209,16 @@ const fetchUserReactions = dispatch => async () => {
         dispatch({ type: 'fetch_reaction', payload: response.data })
     } catch (err) {
         console.log("problem fetching user reactions", err);
+    }
+}
+
+const fetchNotifications = dispatch => async () => {
+    try {
+        const response = await timeoutApi.get('/notifications')
+        console.log("Notifications: ", response.data)
+        dispatch({ type: 'fetch_notification', payload: response.data })
+    } catch (err) {
+        console.log("problem fetching user notifications", err);
     }
 }
 
@@ -204,16 +243,26 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
     }
 }
 
+const clearSessionContext = dispatch => async () => {
+    try {
+        dispatch({ type: 'clear_context' })
+    } catch (err) {
+
+    }
+}
+
+
 export const { Provider, Context } = createDataContext(
     sessionReducer,
     {
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
-        resetCalendarDate
+        resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext,
     },
     {
         userSessions: [],
         userReaction: [],
+        userNotifications: [],
         daySessions: [],
         monthSessions: [],
         calendarDate: new Date(),

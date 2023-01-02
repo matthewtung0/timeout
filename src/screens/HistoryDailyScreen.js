@@ -1,27 +1,37 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, Dimensions, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import {
-    startOfMonth, endOfMonth, addMonths, subMonths,
+    View, StyleSheet, Text, Dimensions, ActivityIndicator, ScrollView, TouchableOpacity, FlatList,
+    ImageBackground
+} from 'react-native';
+import {
+    startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format, min
 } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
-const MARGIN_HORIZONTAL = 20
+const MARGIN_HORIZONTAL = 0
 import HistoryComponent from '../components/HistoryComponent';
+import Modal from 'react-native-modal'
+import HistoryDailyModal from '../components/HistoryDetailModal'
+
+//const background_desk = require('../../assets/background_desk.png');
 
 const HistoryDailyScreen = ({ navigation }) => {
     var options = { month: 'long' };
     const { height, width } = Dimensions.get('window');
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const [viewableArray, setViewableArray] = useState([0]);
     const [displayedMonth, setDisplayedMonth] = useState(new Intl.DateTimeFormat('en-US', options).format(new Date()))
     const [displayedYear, setDisplayedYear] = useState(new Date().getFullYear())
 
     const [useMonthly, setUseMonthly] = useState(true);
 
     const { state, fetchMonthly, resetCalendarDate } = useContext(SessionContext)
-
     const [isLoading, setIsLoading] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false)
+    const [selectedObject, setSelectedObject] = useState({})
 
     const longMonth = (date) => {
         return new Intl.DateTimeFormat('en-US', options).format(date)
@@ -31,10 +41,7 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [monthlyCountersGrouped, setMonthlyCountersGrouped] = useState([])
 
     const [monthlyTasksGrouped, setMonthlyTasksGrouped] = useState([])
-    const [monthlySummaryVisible, setMonthlySummaryVisible] = useState(true)
-    const [dailySummaryVisible, setDailySummaryVisible] = useState(true)
 
-    console.log("Calendar Date", state.calendarDate)
 
     const fetchMonthlyCounters = async (date) => {
         //let date = parseISO(dayObject.dateString)
@@ -67,6 +74,9 @@ const HistoryDailyScreen = ({ navigation }) => {
     const goToNextMonth = async () => {
         if (isLoading) { return }
         var dt = addMonths(startOfMonth(state.calendarDate), 1)
+        if (compareAsc(new Date(), dt) < 0) {
+            return
+        }
         setIsLoading(true)
         setUseMonthly(true)
         resetCalendarDate(dt)
@@ -100,14 +110,23 @@ const HistoryDailyScreen = ({ navigation }) => {
         var month = actual_parts[1]
         var day = actual_parts[2]
 
-        return (month + "/" + day + "/" + yr)
+        return { formatted: month + "/" + day + "/" + yr }
     }
 
-    const toggleSummaryDisplay = () => {
-        setMonthlySummaryVisible(!monthlySummaryVisible)
+    const getDayFromFormatted = (dt) => {
+        var actual_parts = dt.split('/')
+        var month = actual_parts[0]
+        var day = actual_parts[1]
+        var yr = actual_parts[2]
+        return day
     }
-    const toggleDailyDisplay = () => {
-        setDailySummaryVisible(!dailySummaryVisible)
+    const getMonthFromFormatted = (dt) => {
+        var actual_dt = new Date(dt)
+        return format(actual_dt, 'LLL')
+        var actual_parts = dt.split('/')
+        var month = actual_parts[0]
+        var day = actual_parts[1]
+        var yr = actual_parts[2]
     }
 
     const groupMonthlyTasks = (monthSessions) => {
@@ -116,10 +135,10 @@ const HistoryDailyScreen = ({ navigation }) => {
             var session = monthSessions[i]
             var formattedTime = date_Subtitle(session.time_start)
             //timeDiffSec = differenceInSeconds(parseISO(act.time_end), parseISO(act.time_start))
-            if (formattedTime in taskMap) {
-                taskMap[formattedTime].push(session)
+            if (formattedTime.formatted in taskMap) {
+                taskMap[formattedTime.formatted].push(session)
             } else {
-                taskMap[formattedTime] = [session]
+                taskMap[formattedTime.formatted] = [session]
             }
         }
 
@@ -148,275 +167,323 @@ const HistoryDailyScreen = ({ navigation }) => {
             }
         }, [state.calendarDate])
     )
-    console.log(state.monthSessions)
+    //console.log(state.monthSessions)
+
+    const scrollEvent = (e) => {
+        var scrollPos = e.nativeEvent.contentOffset.y
+        setScrollPosition(scrollPos)
+
+        /*if (scrollPos < REFRESH_THRESHOLD_POSITION) {
+            setRefreshToken(Math.random())
+        }*/
+    }
+
+    const _onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
+        console.log("Visible items are", viewableItems);
+        var viewableArray_ = viewableItems.map((i) => { return i.index })
+        console.log("Viewable array: ", viewableArray_)
+        setViewableArray(viewableArray_)
+        console.log("Changed in this iteration, ", changed);
+    }, []);
+
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
+
+    const modalCallback = async (item_deleted = false) => {
+        if (item_deleted) {
+            console.log("CALLING MODAL CALLBACK")
+            fetchMonthly(state.calendarDate, groupMonthlyTasks)
+        }
+
+    }
+
+    const _viewabilityConfig = {
+        itemVisiblePercentThreshold: 90
+    }
+
+    const renderHeader = () => {
+        return (
+            <>
+                {/* ======= SUMMARY CONTAINER ======== */}
+                <View style={{
+                    backgroundColor: 'white', borderRadius: 10, shadowOffset: {
+                        width: 0.05,
+                        height: 0.05,
+                    },
+                    shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
+                    marginTop: 15,
+                }}>
+                    <View style={{ flex: 1, flexDirection: 'row', }}>
+                        <View>
+                            <Text style={[styles.overviewTitle, styles.textDefaultBold,
+                            {
+                                fontSize: 22, alignSelf: 'auto',
+                                marginBottom: 0, color: '#67806D', marginHorizontal: 10,
+                            }]}>{displayedMonth} Overview</Text>
+
+                        </View>
+
+                    </View>
+
+                    <>
+
+                        <Text style={[styles.overviewTitle, styles.textDefault,
+                        {
+                            fontSize: 17, alignSelf: 'auto', marginHorizontal: 10,
+                            marginTop: 2, marginBottom: 3, color: '#67806D'
+                        }]}>
+                            {state.monthSessions.length} Tasks</Text>
+                        <View
+                            style={{
+                                borderBottomColor: 'grey',
+                                borderBottomWidth: 1,
+                                marginHorizontal: MARGIN_HORIZONTAL,
+                                marginBottom: 5,
+                            }}
+                        />
+
+                        {state.monthSessions.length > 0 ?
+                            <MonthlySumComponent monthBatch={state.monthSessions} />
+                            :
+                            <View style={{ marginHorizontal: 10, marginTop: 5, }}>
+                                <Text style={{ color: '#67806D' }}>No tasks for this month</Text>
+                            </View>
+                        }
+
+                        <Text style={[styles.overviewTitle, styles.textDefault, {
+                            fontSize: 17, alignSelf: 'auto',
+                            marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D'
+                        }]}>Counters ({monthlyCountersGrouped.length}) </Text>
+                        <View
+                            style={{
+                                borderBottomColor: 'grey',
+                                borderBottomWidth: 1,
+                                marginHorizontal: MARGIN_HORIZONTAL
+                            }}
+                        />
+
+                        {monthlyCountersGrouped.length > 0 ?
+
+                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                {monthlyCountersGrouped
+                                    .map((item) => {
+                                        return (
+                                            <View
+                                                key={item.counter_name}
+                                                style={{ flex: 1, flexDirection: 'row', }}>
+                                                <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
+                                                <Text style={{ flex: 1, }}>{item.daily_count}</Text>
+                                            </View>
+                                        )
+                                    })}
+                            </View>
+                            :
+                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                <Text>No counters for this month</Text>
+                            </View>}
+
+                    </>
+
+                </View>
+            </>
+        )
+    }
 
     return (
-        <ScrollView style={styles.viewContainer}>
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.viewContainer}>
+            <Modal isVisible={modalVisible}
+                animationIn='slideInLeft'
+                animationOut='slideOutLeft'
+            >
+
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <View style={{
+                        height: 500
+                    }}>
+
+                        <HistoryDailyModal toggleFunction={toggleModal}
+                            selectedObject={selectedObject}
+                            callback={modalCallback}>
+                        </HistoryDailyModal>
+
+                    </View>
+                </View>
+            </Modal>
+
+            <View style={{
+                flex: 1, flexDirection: 'row', alignItems: 'center', height: 30, borderRadius: 15,
+                backgroundColor: '#90AB72', marginHorizontal: 20,
+            }}>
                 <View style={{ flex: 1, }}>
                     <TouchableOpacity
-                        onPress={goToPrevMonth}>
+                        onPress={() => {
+                            if (!isLoading) {
+                                goToPrevMonth()
+                            }
+                        }
+                        }>
                         <Icon
                             name="chevron-back-outline"
                             type='ionicon'
-                            size={35}
-                            color='black' />
+                            size={25}
+                            color='white' />
                     </TouchableOpacity>
                 </View>
                 <View style={{
                     flex: 3,
-                    alignItems: 'center'
+                    alignItems: 'center', justifyContent: 'center', alignContent: 'center',
                 }}>
-                    <Text style={[styles.overviewTitle, { fontSize: 26, }]}>{displayedMonth} {displayedYear}</Text>
+                    <Text style={[styles.overviewTitle, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
                 </View>
 
                 <View style={{ flex: 1, }}>
                     <TouchableOpacity
-                        onPress={goToNextMonth}>
-                        <Icon
-                            name="chevron-forward-outline"
-                            type='ionicon'
-                            size={35}
-                            color='black' />
+                        onPress={() => {
+                            if (!isLoading) {
+                                goToNextMonth()
+                            }
+                        }
+                        }>
+                        {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) < 0 ?
+                            <Icon
+                                name="chevron-forward-outline"
+                                type='ionicon'
+                                size={25}
+                                color='#E8D39E' />
+                            :
+                            <Icon
+                                name="chevron-forward-outline"
+                                type='ionicon'
+                                size={25}
+                                color='white' />}
                     </TouchableOpacity>
                 </View>
             </View>
             {isLoading ?
                 <ActivityIndicator size="large" color="gray" /> :
-                <View>
-                    <>
-                        {/* ======= SUMMARY CONTAINER ======== */}
-                        <View style={{
-                            backgroundColor: 'white', borderRadius: 10, shadowOffset: {
-                                width: 0.05,
-                                height: 0.05,
-                            },
-                            shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
-                            marginTop: 15,
-                        }}>
-                            <View style={{ flex: 1, flexDirection: 'row', }}>
-                                <View style={{ flex: 4 }}>
-                                    <Text style={[styles.overviewTitle,
-                                    {
-                                        fontSize: 22, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
-                                        marginBottom: 3,
-                                    }]}>Monthly Summary</Text>
+                <View style={{ flex: 12, }}>
 
-                                </View>
+                    {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
+                    <View style={{
+                        backgroundColor: 'white', borderRadius: 10, shadowOffset: {
+                            width: 0.05,
+                            height: 0.05,
+                        },
+                        shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
+                        marginTop: 15,
+                        flex: 1,
+                    }}>
 
-                                <View style={{ flex: 1 }}>
-                                    <TouchableOpacity
-                                        onPress={toggleSummaryDisplay}>
-                                        {monthlySummaryVisible ?
-                                            <Icon
-                                                name="remove-outline"
-                                                type='ionicon'
-                                                size={23}
-                                                color='grey'
-                                                style={{
-                                                    justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
-                                                    marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
-                                                }} />
-                                            :
-                                            <Icon
-                                                name="add-outline"
-                                                type='ionicon'
-                                                size={23}
-                                                color='grey'
-                                                style={{
-                                                    justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
-                                                    marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
-                                                }} />
-                                        }
-                                    </TouchableOpacity>
+                        <View style={{ flex: 1, }}>
 
-                                </View>
-
-                            </View>
-
-
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 2,
-                                    marginHorizontal: MARGIN_HORIZONTAL,
-                                    marginBottom: 7,
-                                }}
-                            />
-
-                            {monthlySummaryVisible ?
-                                <>
-
-                                    <Text style={[styles.overviewTitle,
-                                    {
-                                        fontSize: 17, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
-                                        marginTop: 2, marginBottom: 3,
-                                    }]}>
-                                        Tasks ({state.monthSessions.length})</Text>
+                            <FlatList
+                                ListHeaderComponent={renderHeader}
+                                style={{ marginHorizontal: 10, }}
+                                horizontal={false}
+                                data={monthlyTasksGrouped}
+                                //onScroll={scrollEvent}
+                                onViewableItemsChanged={_onViewableItemsChanged}
+                                viewabilityConfig={_viewabilityConfig}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item) => item[0]}
+                                renderItem={({ item, index }) =>
                                     <View
-                                        style={{
-                                            borderBottomColor: 'grey',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: MARGIN_HORIZONTAL,
-                                            marginBottom: 5,
-                                        }}
-                                    />
-
-                                    {state.monthSessions.length > 0 ?
-                                        <MonthlySumComponent monthBatch={state.monthSessions} />
-                                        :
-                                        <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                            <Text>No tasks for this month</Text>
+                                        style={{ flex: 1, flexDirection: 'row', }}>
+                                        <View opacity={Math.min(...viewableArray) == index ? 1 : 0.7}>
+                                            <Text style={[styles.overviewTitle, {
+                                                fontSize: 20, color: '#013220', fontWeight: '700',
+                                                alignSelf: 'auto',
+                                                marginTop: 4, marginBottom: 2,
+                                            }]}>{getDayFromFormatted(item[0])}</Text>
+                                            <Text style={{ color: '#013220', fontWeight: '550', fontSize: 13, }}
+                                            >{getMonthFromFormatted(item[0])}</Text>
                                         </View>
-                                    }
+                                        <View style={{ flex: 0.7, borderWidth: 0, alignItems: 'center', }}>
+                                            {Math.min(...viewableArray) == index ?
+                                                <View style={{
+                                                    width: 15, height: 15, borderRadius: 7.5,
+                                                    borderWidth: 2, borderColor: '#67806D',
+                                                    backgroundColor: '#67806D'
+                                                }} />
+                                                :
+                                                <View style={{
+                                                    width: 15, height: 15, borderRadius: 7.5,
+                                                    borderWidth: 2, borderColor: '#C0C0C0', backgroundColor: 'white'
+                                                }} />
+                                            }
+                                            {Math.min(...viewableArray) == index ?
+                                                <View style={{
+                                                    height: '100%', width: 4, backgroundColor: '#67806D',
+                                                    borderWidth: 2, borderColor: '#67806D',
+                                                }}></View>
+                                                :
+                                                <View style={{
+                                                    height: '100%', width: 4,
+                                                    borderWidth: 2, borderColor: '#C0C0C0', backgroundColor: '#C0C0C0'
+                                                }}></View>
+                                            }
 
-                                    <Text style={[styles.overviewTitle, {
-                                        fontSize: 17, alignSelf: 'auto',
-                                        marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
-                                    }]}>Counters ({monthlyCountersGrouped.length}) </Text>
-                                    <View
-                                        style={{
-                                            borderBottomColor: 'grey',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: MARGIN_HORIZONTAL
-                                        }}
-                                    />
 
-                                    {monthlyCountersGrouped.length > 0 ?
-
-                                        <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                            {monthlyCountersGrouped
-                                                .map((item) => {
+                                        </View>
+                                        <View style={{ flex: 5, }}>
+                                            {/* separator */}
+                                            <View
+                                                style={{
+                                                    borderBottomColor: 'grey',
+                                                    borderBottomWidth: 1.5,
+                                                    marginHorizontal: MARGIN_HORIZONTAL
+                                                }}
+                                            />
+                                            {/* detail items */}
+                                            <View>
+                                                {item[1].map((j) => {
                                                     return (
                                                         <View
-                                                            key={item.counter_name}
-                                                            style={{ flex: 1, flexDirection: 'row', }}>
-                                                            <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
-                                                            <Text style={{ flex: 1, }}>{item.daily_count}</Text>
+                                                            key={j.activity_id}
+                                                            style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+                                                            <TouchableOpacity
+                                                                onPress={() => {
+                                                                    setSelectedObject(j)
+                                                                    toggleModal()
+                                                                }}
+                                                                style={{}}
+                                                            >
+                                                                <HistoryComponent
+                                                                    session_obj={j}
+                                                                    is_active={Math.min(...viewableArray) == index}>
+                                                                </HistoryComponent>
+                                                            </TouchableOpacity>
+
                                                         </View>
                                                     )
-                                                })}
-                                        </View>
-                                        :
-                                        <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                            <Text>No counters for this month</Text>
-                                        </View>}
-
-                                </>
-                                : null}
-
-                        </View>
-
-
-
-                        {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
-                        <View style={{
-                            backgroundColor: 'white', borderRadius: 10, shadowOffset: {
-                                width: 0.05,
-                                height: 0.05,
-                            },
-                            shadowOpacity: 0.1, paddingVertical: 10, marginHorizontal: MARGIN_HORIZONTAL / 2,
-                            marginTop: 15,
-                        }}>
-
-                            <View style={{ flex: 1, flexDirection: 'row', }}>
-                                <View style={{ flex: 4 }}>
-                                    <Text style={[styles.overviewTitle,
-                                    {
-                                        fontSize: 24, alignSelf: 'auto', marginHorizontal: MARGIN_HORIZONTAL,
-                                        marginBottom: 3,
-                                    }]}>Daily Detail</Text>
-
-                                </View>
-
-                                <View style={{ flex: 1 }}>
-
-                                    <TouchableOpacity
-                                        onPress={toggleDailyDisplay}>
-                                        {dailySummaryVisible ?
-                                            <Icon
-                                                name="remove-outline"
-                                                type='ionicon'
-                                                size={23}
-                                                color='grey'
-                                                style={{
-                                                    justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
-                                                    marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
-                                                }} />
-                                            :
-                                            <Icon
-                                                name="add-outline"
-                                                type='ionicon'
-                                                size={23}
-                                                color='grey'
-                                                style={{
-                                                    justifyContent: 'center', borderWidth: 0.3, borderRadius: 7,
-                                                    marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3,
-                                                }} />
-                                        }
-                                    </TouchableOpacity>
-
-                                </View>
-
-                            </View>
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 2,
-                                    marginHorizontal: MARGIN_HORIZONTAL
-                                }}
-                            />
-
-                            {dailySummaryVisible ?
-                                <View>
-                                    {monthlyTasksGrouped.map((item) => {
-                                        return (
-
-                                            <View
-                                                key={item[0]}>
-                                                {/* date */}
-                                                <Text style={[styles.overviewTitle, {
-                                                    fontSize: 16, alignSelf: 'auto',
-                                                    marginHorizontal: MARGIN_HORIZONTAL,
-                                                    marginTop: 4, marginBottom: 2,
-                                                }]}>{item[0]}</Text>
-
-                                                {/* separator */}
-                                                <View
-                                                    style={{
-                                                        borderBottomColor: 'grey',
-                                                        borderBottomWidth: 1.5,
-                                                        marginHorizontal: MARGIN_HORIZONTAL
-                                                    }}
-                                                />
-                                                {/* detail items */}
-                                                <View>
-                                                    {item[1].map((j) => {
-                                                        return (
-                                                            <View
-                                                                key={j.activity_id}
-                                                                style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
-                                                                <HistoryComponent
-                                                                    session_obj={j}>
-                                                                </HistoryComponent>
-                                                            </View>
-                                                        )
-                                                    })
-                                                    }
-                                                </View>
+                                                })
+                                                }
                                             </View>
-                                        )
-                                    })}
-                                </View>
-                                : null}
+                                        </View>
+                                    </View>
+                                }
+                            >
+                            </FlatList>
+
                         </View>
-                    </>
+                    </View>
                 </View>}
-        </ScrollView>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         margin: 20,
         fontSize: 30,
@@ -441,8 +508,7 @@ const styles = StyleSheet.create({
     overviewTitle: {
         fontWeight: 'bold',
         fontSize: 22,
-        color: '#67806D',
-        marginBottom: 8,
+        color: 'white',
     },
 })
 

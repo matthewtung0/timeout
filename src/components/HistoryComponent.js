@@ -4,7 +4,7 @@ import { parseISO, differenceInSeconds } from 'date-fns';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 const PRODUCTIVITY_WIDTH = 100
-const STAR_SIZE = 20;
+const STAR_SIZE = 16;
 
 const timeDifference = (timeStart, timeEnd) => {
     var timeDiff = differenceInSeconds(parseISO(timeEnd), parseISO(timeStart))
@@ -31,72 +31,91 @@ const roundRating = (rating) => {
     return Math.round(rating * numToRoundTo) / numToRoundTo;
 }
 
-const HistoryComponent = ({ session_obj }) => {
+const HistoryComponent = ({ session_obj, is_active }) => {
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>
-            <View style={{ flex: 1, flexDirection: 'row', marginVertical: 5 }}>
-                <View style={{ flex: 3, }}>
-                    <Text>{session_obj.activity_name}</Text>
-                </View>
-                <View style={{ flex: 1, }}></View>
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, }}>
 
-                <View style={{ flex: 2, alignItems: 'flex-end', }}>
-                    <Text>{timeDifference(session_obj.time_start, session_obj.time_end)} @</Text>
-                    <Text>{timeFormat(session_obj.time_start)}</Text>
+                <View opacity={is_active ? 1 : 0.3} style={{ flex: 4, }}>
+                    <Text numberOfLines={1}
+                        style={[styles.textDefaultBold, { fontWeight: '700', color: '#013220', fontSize: 16, }]}>{session_obj.activity_name}</Text>
                 </View>
+                <View style={{ flex: 2, }}>
+                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
+                        <Text numberOfLines={1}
+                            style={[styles.textDefault, { alignSelf: 'center', color: 'white', fontWeight: '700', fontSize: 11, }]}>{session_obj.category_name}</Text>
+                    </View>
+                </View>
+
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', marginVertical: 5 }}>
-                <View style={{ flex: 3, }}>
-                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, }]}>
-                        <Text style={{ alignSelf: 'center', }}>{session_obj.category_name}</Text>
-                    </View>
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 5, marginBottom: 10, }}>
+                <View opacity={is_active ? 1 : 0.3} style={{ flex: 5, alignItems: 'flex-start' }}>
+                    <Text numberOfLines={1} style={[styles.textDefault,
+                    { fontWeight: '300', color: '#013220', fontSize: 13, }]}>
+                        {timeDifference(session_obj.time_start, session_obj.time_end)} @ {timeFormat(session_obj.time_start)}</Text>
                 </View>
                 <View style={{ flex: 3, }}></View>
 
                 <View style={{ flex: 1, alignItems: 'flex-end', }}>
+                    {/* 5 STARS */}
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                        {roundRating(session_obj.prod_rating) >= 25 ?
+                        {roundRating(session_obj.prod_rating) >= 20 ?
                             <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star"
                                 type='ionicon'
                                 color={bgColorHex} />
                             : <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star-outline"
                                 type='ionicon'
                                 color={bgColorHex} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 50 ?
+                        {roundRating(session_obj.prod_rating) >= 40 ?
                             <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star"
                                 type='ionicon'
                                 color={bgColorHex} />
                             : <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star-outline"
                                 type='ionicon'
                                 color={bgColorHex} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 75 ?
+                        {roundRating(session_obj.prod_rating) >= 60 ?
                             <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star"
                                 type='ionicon'
                                 color={bgColorHex} />
                             : <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
+                                size={STAR_SIZE}
+                                name="star-outline"
+                                type='ionicon'
+                                color={bgColorHex} />
+                        }
+
+                        {roundRating(session_obj.prod_rating) >= 80 ?
+                            <Icon
+                                style={{ marginHorizontal: 0.2, }}
+                                size={STAR_SIZE}
+                                name="star"
+                                type='ionicon'
+                                color={bgColorHex} />
+                            : <Icon
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star-outline"
                                 type='ionicon'
@@ -105,13 +124,13 @@ const HistoryComponent = ({ session_obj }) => {
 
                         {roundRating(session_obj.prod_rating) >= 100 ?
                             <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star"
                                 type='ionicon'
                                 color={bgColorHex} />
                             : <Icon
-                                style={{ marginHorizontal: 2, }}
+                                style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
                                 name="star-outline"
                                 type='ionicon'
@@ -152,6 +171,12 @@ const HistoryComponent = ({ session_obj }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     text: {
         color: '#67806D',
         fontSize: 18,
@@ -174,7 +199,7 @@ const styles = StyleSheet.create({
 
         flex: 1,
         borderRadius: 10,
-        padding: 4,
+        paddingHorizontal: 4,
     },
 
 })

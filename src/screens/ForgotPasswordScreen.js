@@ -13,6 +13,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
     const { state, forgot_password, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
 
+    const forgotPasswordCallback = () => {
+        alert("An email has been sent to the address with a link to reset your password. If you have not received the link in 5 minutes please submit another request.")
+        navigation.navigate('SignIn')
+    }
+
     return (
         <View style={styles.container}>
             {/*<NavigationEvents
@@ -34,7 +39,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
                 <TouchableOpacity
                     style={styles.signUpBoxStyle}
-                    onPress={() => forgot_password(email)}>
+                    onPress={() => forgot_password(email, forgotPasswordCallback)}>
                     <Text style={styles.signUpTextStyle}>Send Reset Link</Text>
                 </TouchableOpacity>
 

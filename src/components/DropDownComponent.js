@@ -44,7 +44,7 @@ const DropDownComponent = ({ catName, colorId, categoryId,
             value={categoryId}
             setValue={setCategoryIdCallback}
             labelStyle={{ color: 'white' }}
-            textStyle={{ fontSize: 18, color: 'white', fontWeight: '600', }}
+            textStyle={[styles.textDefault, { fontSize: 18, color: 'white', fontWeight: '600', }]}
             containerStyle={{
                 borderWidth: 0,
                 width: selectedWidth,
@@ -64,6 +64,12 @@ const DropDownComponent = ({ catName, colorId, categoryId,
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     dropdown: {
         alignSelf: 'center',
         borderWidth: 0,

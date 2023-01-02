@@ -272,10 +272,14 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                         {/* circular knob */}
                         <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
 
-                        <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">{formattedTens}</Text>
-                        <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">{formattedOnes}</Text>
-                        <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">:</Text>
-                        <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72">00</Text>
+                        <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                        >{formattedTens}</Text>
+                        <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                        >{formattedOnes}</Text>
+                        <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                        >:</Text>
+                        <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                        >00</Text>
 
                         {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>
                         <Text x={50} y={65} fontSize={5} textAnchor="middle" fill="black">{"x position is " + st.cx}</Text>
@@ -296,6 +300,12 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
 })
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         alignSelf: 'stretch',
         alignItems: 'center',

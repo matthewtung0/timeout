@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
 
@@ -32,6 +32,7 @@ import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
 import OnboardCategoryScreen from './src/screens/OnboardCategoryScreen'
 
 import FriendListScreen from './src/screens/FriendListScreen';
+import FriendNotificationScreen from './src/screens/FriendNotificationScreen';
 import AddFriendScreen from './src/screens/AddFriendScreen';
 import TodoListScreen from './src/screens/TodoListScreen';
 import AddTodoItemScreen from './src/screens/AddTodoItemScreen';
@@ -60,6 +61,23 @@ import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
 import { Context as CounterContext } from './src/context/CounterContext'
 import { Context as UserContext } from './src/context/userContext';
+import { Context as SessionContext } from './src/context/SessionContext'
+
+import { useFonts } from 'expo-font';
+
+const drawer_bg = require('./assets/background_sidebar.png');
+
+const config = {
+  animation: 'spring',
+  config: {
+    stiffness: 1000,
+    damping: 500,
+    mass: 3,
+    overshootClamping: true,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+  },
+};
 
 const defaultOptions = {
   headerLeft: () => (
@@ -81,6 +99,7 @@ function mainOptions(points) {
     //drawerStyle: { backgroundColor: '#c6cbef' },
     drawerLabelStyle: { color: '#67806D', fontSize: 18, fontWeight: 'bold', },
     drawerActiveTintColor: '#E8D39E',
+    drawerItemStyle: { display: 'none', },
     headerTitle: () => {
       return (
         <View style={{
@@ -252,32 +271,43 @@ function CustomDrawerContent(props) {
 
   const { clearCategoryContext } = useContext(CategoryContext)
   const { clearUserContext, setIdToView } = useContext(UserContext)
+  const { clearSessionContext } = useContext(SessionContext)
 
   const signoutCallback = async () => {
     await clearCategoryContext
     await clearUserContext
+    await clearSessionContext
     console.log("all context cleared!")
   }
   return (
-    <DrawerContentScrollView {...props}>
-      <Modal
-        style={{ flex: 1, backgroundColor: 'red' }}
-        isVisible={modalVis}>
-        <Text>modal text</Text>
-        <Button title="Close" onPress={() => setModalVis(false)} />
-      </Modal>
-      <TouchableOpacity
-        onPress={() => {
-          setIdToView({ username: props.username, user_id: props.userId })
-          props.navigation.navigate('Profile temp')
-        }}>
-        <DrawerProfileView friends={props.friends} username={props.username}
-          totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} />
-      </TouchableOpacity>
+    <><DrawerContentScrollView
+      style={{}}
+      contentContainerStyle={{ flex: 1, }}
+      {...props}
+    >
+      <View style={{ flex: 5, }}>
+        <View style={{}}>
+          <TouchableOpacity
+            onPress={() => {
+              setIdToView({ username: props.username, user_id: props.userId })
+              props.navigation.navigate('Profile temp')
+            }}>
+            <DrawerProfileView friends={props.friends} username={props.username}
+              totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} />
+          </TouchableOpacity>
 
 
-      <DrawerItemList {...props} />
-      {/*<DrawerItem
+          <DrawerItemList {...props} />
+          <Modal
+            style={{ flex: 1, backgroundColor: 'red' }}
+            isVisible={modalVis}>
+            <Text>modal text</Text>
+            <Button title="Close" onPress={() => setModalVis(false)} />
+          </Modal>
+        </View>
+
+
+        {/*<DrawerItem
         label="Open modal"
         onPress={() => setModalVis(true)}
       />
@@ -286,29 +316,49 @@ function CustomDrawerContent(props) {
         label="Toggle drawer"
         onPress={() => props.navigation.toggleDrawer()}
   />*/}
+        <View
+          style={{
+            borderBottomColor: 'grey',
+            borderBottomWidth: StyleSheet.hairlineWidth,
+          }}
+        />
+        <DrawerItem
+          label="Help and Support"
+          onPress={() => { }} />
+        <DrawerItem
+          label="Privacy Policy"
+          onPress={() => { }} />
+        <DrawerItem
+          label="Terms of Use"
+          onPress={() => { }} />
 
-      <View
-        style={{
-          borderBottomColor: 'grey',
-          borderBottomWidth: StyleSheet.hairlineWidth,
-        }}
-      />
-      <DrawerItem
-        label="Help and Support"
-        onPress={() => { }} />
-      <DrawerItem
-        label="Privacy Policy"
-        onPress={() => { }} />
-      <DrawerItem
-        label="Terms of Use"
-        onPress={() => { }} />
-      <DrawerItem
-        label="Sign out"
-        onPress={() => {
-          signout(signoutCallback)
-        }} />
+      </View>
+      <View style={{ flex: 1, }} />
+      <View style={{ flex: 1, }}>
+        <DrawerItem
+          labelStyle={{ color: 'pink', }}
+          style={{}}
+          label="Sign out"
+          onPress={() => {
+            signout(signoutCallback)
+          }} />
+      </View>
+
+      <View style={{ flex: 1, justifyContent: 'flex-end', }}>
+        <Image
+          style={{ position: 'absolute', }}
+          source={drawer_bg}
+          resizeMode="contain"></Image>
+        <View style={{ alignContent: 'center', justifyContent: 'center', marginBottom: 10, }}>
+          <Text style={{ textAlign: 'center', alignSelf: 'center', }}>Time Out ver. 0.01</Text>
+        </View>
+      </View>
 
     </DrawerContentScrollView>
+
+
+    </>
+
   );
 }
 
@@ -346,13 +396,13 @@ function CreateDrawer() {
         component={CreateProfileStack}
         options={{ drawerLabel: 'Profile temp', title: '', drawerItemStyle: { display: "none" }, headerShown: false }} />
 
-      <Drawer.Screen name="notificationFlow"
+      {/*<Drawer.Screen name="notificationFlow"
         component={CreateCategoryStack}
         options={{
           drawerLabel: 'Notifications',
           title: 'Notifications',
           headerShown: false,
-        }} />
+        }} />*/}
 
       <Drawer.Screen name="testFlow"
         component={CreateTestSvgStack}
@@ -448,24 +498,97 @@ options={pageOptions} />*/}
     </Stack.Navigator>
   )
 }
+const horizontalAnimation = {
+  gestureDirection: 'horizontal',
+  cardStyleInterpolator: ({ current, layouts }) => {
+    return {
+      cardStyle: {
+        transform: [
+          {
+            translateX: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [layouts.screen.width, 0],
+            }),
+          },
+        ],
+      },
+    };
+  },
+};
+const horizontalInvertedAnimation = {
+  gestureDirection: 'horizontal-inverted',
+  cardStyleInterpolator: ({ current, layouts }) => {
+    return {
+      cardStyle: {
+        transform: [
+          {
+            translateX: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [layouts.screen.width, 0],
+            }),
+          },
+        ],
+      },
+    };
+  },
+};
+const verticalAnimation = {
+  gestureDirection: 'vertical',
+  cardStyleInterpolator: ({ current, layouts }) => {
+    return {
+      cardStyle: {
+        transform: [
+          {
+            translateY: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [layouts.screen.height, 0],
+            }),
+          },
+        ],
+      },
+    };
+  },
+};
+
 function CreateFriendFeedStack() {
   return (
     <Stack.Navigator
-      screenOptions={pageOptions}>
-      <Stack.Screen
-        name="FriendFeed"
-        component={FriendFeedScreen}
-        options={pageOptions}
-      />
-      <Stack.Screen
-        name="FriendProfile"
-        component={FriendProfileScreen}
-        options={pageOptions}
-      />
-      <Stack.Screen
-        name="Friend"
-        component={FriendScreen}
-      />
+    //screenOptions={pageOptions}>
+    >
+      <Stack.Group
+      >
+        <Stack.Screen
+          name="FriendFeed"
+          component={FriendFeedScreen}
+          options={pageOptions}
+        />
+
+      </Stack.Group>
+      <Stack.Group
+      >
+        <Stack.Screen
+          name="Notifications"
+          component={FriendNotificationScreen}
+          options={pageOptions}
+        />
+      </Stack.Group>
+      <Stack.Group
+        screenOptions={horizontalAnimation}
+      >
+        <Stack.Screen
+          name="FriendProfile"
+          component={FriendProfileScreen}
+          options={pageOptions}
+        />
+        <Stack.Screen
+          name="Friend"
+          component={FriendScreen}
+          options={pageOptions}
+        />
+      </Stack.Group>
+
+
+
 
     </Stack.Navigator>
   )
@@ -605,47 +728,56 @@ function CreateMainNavigator() {
   const { fetchUserCounters } = useContext(CounterContext)
   const { state: userState, fetchAvatar, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
+  const [fontsLoaded] = useFonts({
+    'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+    'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
+  });
+  useEffect(() => {
+    async function startup() {
+      console.log("trying local sign in ")
 
-  useEffect(async () => {
-    console.log("trying local sign in ")
-    let res = await tryLocalSignin();
-    let firstTime = new Date()
-    let splashDisplayTime = 2000;
-    if (res) {
-      await updateLastSignin()
-      await fetchSelf()
-      console.log('fetched self');
-      await fetchAvatar(forceRetrieve = false)
-      await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
-      console.log('fetched categories');
-      await fetchUserCounters();
-      console.log('fetched counters')
-      await fetchAvatarItemsOwned();
-      console.log('fetched avatar items owned')
-      await fetchUserTodoItems(isSelf = true);
-      console.log('fetched todo items');
-      await fetchFriends();
-      console.log('fetched friends');
-      await fetchOutgoingRequests();
-      console.log('fetched outgoing friend requests');
-      await fetchIncomingRequests();
-      console.log('fetched incoming friend requests');
 
-      let secondTime = new Date();
-      let timeDiff = (secondTime.getTime() - firstTime.getTime());
-      console.log("millisec that api calls took up: ", timeDiff);
-      splashDisplayTime = splashDisplayTime - timeDiff;
+      let res = await tryLocalSignin();
+      let firstTime = new Date()
+      let splashDisplayTime = 5000;
+      if (res) {
+        await updateLastSignin()
+        await fetchSelf()
+        console.log('fetched self');
+        await fetchAvatar(forceRetrieve = false)
+        await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
+        console.log('fetched categories');
+        await fetchUserCounters();
+        console.log('fetched counters')
+        await fetchAvatarItemsOwned();
+        console.log('fetched avatar items owned')
+        await fetchUserTodoItems(isSelf = true);
+        console.log('fetched todo items');
+        await fetchFriends();
+        console.log('fetched friends');
+        await fetchOutgoingRequests();
+        console.log('fetched outgoing friend requests');
+        await fetchIncomingRequests();
+        console.log('fetched incoming friend requests');
 
-      // adjust splash display time
+        let secondTime = new Date();
+        let timeDiff = (secondTime.getTime() - firstTime.getTime());
+        console.log("millisec that api calls took up: ", timeDiff);
+        splashDisplayTime = splashDisplayTime - timeDiff;
+
+        // adjust splash display time
+      }
+      if (splashDisplayTime > 0) {
+        setTimeout(
+          () => {
+            tempVarSet()
+          }, splashDisplayTime);
+      } else {
+        tempVarSet()
+      }
     }
-    if (splashDisplayTime > 0) {
-      setTimeout(
-        () => {
-          tempVarSet()
-        }, splashDisplayTime);
-    } else {
-      tempVarSet()
-    }
+    startup();
+
   }, [])
 
   return (

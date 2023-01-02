@@ -119,10 +119,10 @@ const signout = dispatch => async (callback = null) => {
     //navigate('SignIn');
 };
 
-const forgot_password = (dispatch) => async ({ email }) => {
+const forgot_password = (dispatch) => async (email, callback = null) => {
     try {
         const response = await timeoutApi.post('/forgot_password', { email });
-        navigate('SignIn')
+        if (callback) { callback() }
     } catch (err) {
         console.log("FORGOT PASSWORD ERROR");
         console.log(err)

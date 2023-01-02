@@ -19,6 +19,8 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import timeoutApi from '../api/timeout';
 import AvatarComponent from '../components/AvatarComponent';
+import FriendNotificationScreen from './FriendNotificationScreen';
+import { FriendFeedComponent, MemoizedComponent } from '../components/FriendFeedComponent';
 
 const REFRESH_THRESHOLD_POSITION = -50;
 const SCROLL_THROTTLE_RATE = 200;
@@ -84,7 +86,6 @@ const FriendFeedScreen = ({ navigation }) => {
         setFeed(prevState => [...prevState, ...response.data])
 
         //setFeed([...feed, ...response.data])
-        console.log("Feed is now ", feed)
         return response.data
     }
 
@@ -102,7 +103,7 @@ const FriendFeedScreen = ({ navigation }) => {
             let temp = await fetchSessions(userState.friends)
             setOffset(offset + 10)
 
-            //await fetchUserReactions()
+            await fetchUserReactions()
 
             /*for (let i = 0; i < userState.friends.length; i++) {
                 var friend_id = userState.friends[i].friend
@@ -153,33 +154,6 @@ const FriendFeedScreen = ({ navigation }) => {
         setDisableTouch(false)
     }
 
-    const duration = (startTime, endTime) => {
-        return differenceInSeconds(parseISO(endTime), parseISO(startTime))
-    }
-
-    const timeAgo = (endTime) => {
-        var parsedTime = parseISO(endTime)
-        var diffInYears = differenceInYears(new Date(), parsedTime)
-        var diffInMonths = differenceInMonths(new Date(), parsedTime)
-        var diffInDays = differenceInDays(new Date(), parsedTime)
-        var diffInHours = differenceInHours(new Date(), parsedTime)
-        var diffInMinutes = differenceInMinutes(new Date(), parsedTime)
-
-        if (diffInYears >= 1) {
-            return `${diffInYears} years ago`
-        } else if (diffInMonths >= 1) {
-            return `${diffInMonths} months ago`
-        } else if (diffInDays >= 1) {
-            return `${diffInDays} days ago`
-        } else if (diffInHours >= 1) {
-            return `${diffInHours} hours ago`
-        } else if (diffInMinutes >= 1) {
-            return `${diffInMinutes} hours ago`
-        } else {
-            return `Just now`
-        }
-    }
-
     const getData = async () => {
         console.log("Loading 10 more..");
         setIsLoading(true)
@@ -201,14 +175,14 @@ const FriendFeedScreen = ({ navigation }) => {
         return (
             <View>
                 {atEnd ?
-                    <Text>All caught up!</Text> :
+                    <Text style={styles.textDefault}>All caught up!</Text> :
                     <>{isLoading ? <ActivityIndicator
                         style={{ marginTop: 15 }}
                         size="large" /> :
 
                         <TouchableOpacity style={styles.loadMore}
                             onPress={getData}>
-                            <Text style={styles.loadMoreText}>Load More</Text>
+                            <Text style={[styles.loadMoreText, styles.textDefault]}>Load More</Text>
                         </TouchableOpacity>
                     }
                     </>
@@ -219,66 +193,14 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const flatListRef = useRef();
 
-    const Asdf = React.memo(({ item }) => (
-
-        (
-            <View style={styles.container}>
-                {/*{console.log("item rendering..", item.activity_id)}*/}
-                <View style={styles.pfpcontainer}>
-                    <View style={styles.pfp}>
-                        {/* friend thumbnails */}
-                        <TouchableOpacity
-                            onPress={() => {
-
-                                setIdToView({ username: item.username, user_id: item.user_id })
-                                navigation.navigate('Profile temp')
-                            }}>
-                            <AvatarComponent w={50}
-                                isSelf={item.username == userState.username}
-                                id={item.user_id}
-                                pfpSrc={userState.base64pfp} />
-                        </TouchableOpacity>
-
-                    </View>
-                </View>
-                <View style={styles.listItem}>
-                    <Text>
-                        <Text style={styles.bolded}>{item.username}</Text>
-                        <Text> finished </Text>
-                        <Text style={styles.bolded}>{duration(item.time_start, item.time_end)}</Text>
-                        <Text> seconds</Text>
-                    </Text>
-                    <Text>
-                        <Text>of </Text>
-                        {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
-                        <Text style={[styles.bolded]}>{item.category_name}</Text>
-
-                    </Text>
-                    <Text> {timeAgo(item.time_end)}</Text>
-                    {/*<View style={styles.likeContainer}>
-                        <Text style={styles.likeCount}>{item.reaction_count}</Text>
-                        <Pressable
-                            onPress={() => {
-                                let is_like = true
-                                if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
-                                    is_like = false
-                                }
-                                reactToActivity(item.activity_id, is_like, reactCallback)
-                            }}>
-                            {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
-                                <Icon
-                                    name="heart"
-                                    type='font-awesome'
-                                    color='#F5BBAE' /> :
-                                <Icon
-                                    name="heart-o"
-                                    type='font-awesome' />}
-                        </Pressable>
-                            </View> */}
-                </View>
-            </View>
-        )
-    ), (() => { return true }))
+    const renderSeparator = () => (
+        <View
+            style={{
+                backgroundColor: '#C0C0C0',
+                height: 0.1, marginHorizontal: 50,
+            }}
+        />
+    );
 
     const secondRoute = () => {
         return (
@@ -286,20 +208,28 @@ const FriendFeedScreen = ({ navigation }) => {
 
                 {!isOnline ?
                     <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', }}>
-                        <Text style={{ textAlign: 'center', color: 'gray', fontSize: 18, }}>Friend feed is currently unavailable. Please check your internet connection</Text>
+                        <Text style={[styles.textDefault, { textAlign: 'center', color: 'gray', fontSize: 18, }]}>Friend feed is currently unavailable. Please check your internet connection</Text>
                     </View>
 
                     :
                     <>
                         <View style={styles.makeshiftTabBarContainer}>
                             <View style={styles.makeshiftTabBar}>
-                                <TouchableOpacity style={styles.tabBarButton}>
-                                    <Text style={styles.tabBarText}>Go to Me</Text>
+                                <TouchableOpacity style={[styles.tabBarButton, { backgroundColor: '#C0C0C0', }]}
+                                    onPress={() => {
+                                        navigation.navigate('Notifications')
+                                    }}>
+                                    <Text style={[styles.tabBarText, styles.textDefaultBold,
+                                    { color: 'grey' }]}>Me</Text>
                                 </TouchableOpacity>
+                                <View style={styles.tabBarButton}>
+                                    <Text style={[styles.tabBarText, styles.textDefaultBold,]}>Feed</Text>
+                                </View>
 
-                                <TouchableOpacity style={styles.tabBarButton}
+                                <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
                                     onPress={() => { navigation.navigate('Friend') }}>
-                                    <Text style={styles.tabBarText}>Go to Friends</Text>
+                                    <Text style={[styles.tabBarText, styles.textDefaultBold,
+                                    { color: 'grey' }]}>Friends</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -315,12 +245,14 @@ const FriendFeedScreen = ({ navigation }) => {
                                 horizontal={false}
                                 onScroll={scrollEvent}
                                 scrollEventThrottle={SCROLL_THROTTLE_RATE}
-                                //data={sessionState.userSessions}
                                 data={feed}
+                                ItemSeparatorComponent={renderSeparator}
                                 showsHorizontalScrollIndicator={false}
                                 keyExtractor={(item) => item.activity_id}
                                 ListFooterComponent={renderFooter}
-                                renderItem={({ item }) => <Asdf item={item} />}
+                                renderItem={({ item }) =>
+                                    <MemoizedComponent item={item} navigation={navigation} />
+                                }
                             >
                             </FlatList>
                         </View>
@@ -331,9 +263,7 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const firstRoute = () => {
         return (
-            <View>
-                <Text>ME</Text>
-            </View>
+            <FriendNotificationScreen />
         )
     }
     const thirdRoute = () => {
@@ -377,6 +307,12 @@ const FriendFeedScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     outerContainer: {
         marginTop: 110, //here because header is transparent
         flex: 1,
@@ -401,9 +337,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.2,
         borderBottomColor: 'gray',
-        height: 80,
+        height: 75,
     },
     pfpcontainer: {
         flex: 0.25,
@@ -434,9 +370,6 @@ const styles = StyleSheet.create({
     likeCount: {
         marginHorizontal: 5,
     },
-    bolded: {
-        fontWeight: 'bold',
-    },
     loadMore: {
         marginVertical: 20,
         padding: 10,
@@ -451,16 +384,14 @@ const styles = StyleSheet.create({
     tabBarButton: {
         flex: 1,
         padding: 10,
-        margin: 10,
-        height: 40,
+        height: 50,
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center'
     },
     tabBarText: {
-        fontWeight: 'bold',
         color: 'white',
-        fontSize: 13,
+        fontSize: 17,
     }
 
 })

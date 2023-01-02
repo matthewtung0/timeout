@@ -10,7 +10,6 @@ const ResolveAuthScreen = ({ navigation }) => {
     const { state, tryLocalSignin } = useContext(AuthContext);
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
     const splash_screen_image = require('../../assets/splash_screen.png')
-    const splash_screen_video = require('../../assets/splash_screen_video.mp4');
     //const [loginResult, setLoginResult] = useState(0)
 
     /*useEffect(() => {
@@ -53,7 +52,7 @@ const ResolveAuthScreen = ({ navigation }) => {
 
 
             <ImageBackground
-                source={require('../../assets/splash_screen.gif')}
+                source={require('../../assets/animation_00_splash-to-main.gif')}
                 style={styles.image}>
             </ImageBackground>
 

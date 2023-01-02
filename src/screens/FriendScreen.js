@@ -56,28 +56,31 @@ const FriendScreen = ({ navigation }) => {
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
                 animationOut='slideOutLeft'>
-                <View style={{ height: 200, }}>
+                <View style={{ height: height * 0.8, }}>
                     <AddFriendModal
                         toggleFunction={toggleModal}
                         //onShow={() => { firstRef.focus() }}
+                        myFriendCode={state.friendCode}
                         callback={modalCallback} />
                 </View>
 
             </Modal>
-
-
             <ScrollView>
 
                 <View style={styles.makeshiftTabBarContainer}>
                     <View style={styles.makeshiftTabBar}>
-                        <TouchableOpacity style={styles.tabBarButton}>
-                            <Text style={styles.tabBarText}>Go to Me</Text>
+                        <TouchableOpacity style={[styles.tabBarButton, { backgroundColor: '#C0C0C0', }]}
+                            onPress={() => { navigation.navigate('Notifications') }}>
+                            <Text style={[styles.tabBarText, styles.textDefaultBold,
+                            { color: 'grey' }]}>Me</Text>
                         </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.tabBarButton}
+                        <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
                             onPress={() => { navigation.navigate('FriendFeed') }}>
-                            <Text style={styles.tabBarText}>Back to Feed</Text>
+                            <Text style={[styles.tabBarText, styles.textDefaultBold, { color: 'grey' }]}>Feed</Text>
                         </TouchableOpacity>
+                        <View style={styles.tabBarButton}>
+                            <Text style={[styles.tabBarText, styles.textDefaultBold,]}>Friends</Text>
+                        </View>
                     </View>
                 </View>
 
@@ -121,7 +124,7 @@ const FriendScreen = ({ navigation }) => {
                                     <View style={{ flex: 2 }}>
                                         <AvatarComponent
                                             w={50}
-                                            isSelf={false}
+                                            //isSelf={false}
                                             id={item.friend}
                                             pfpSrc={state.base64pfp} />
                                     </View>
@@ -151,92 +154,21 @@ const FriendScreen = ({ navigation }) => {
                                 </View>
                                 {separator()}
                             </View>
-
-
-
                         })}
                 </View>
 
-
-                <Text>Outgoing friend requests, awaiting reply:</Text>
-
-                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
-                    {state.outgoingFriendReqs
-                        .map((item) => {
-                            return (
-                                <View
-                                    key={item.friend_b}
-                                    style={[styles.categoryStyle, { height: 30, }]}>
-                                    <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                        <View style={{ flex: 8, }}>
-                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
-                                        </View>
-
-                                        <View style={{ flex: 3, }}>
-                                            <TouchableOpacity
-                                                style={{ borderWidth: 1, }}
-                                                onPress={() => {
-                                                    rejectFriendRequest(item.friend_b, resetInputs)
-                                                }}>
-                                                <Text>Undo send</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
-                                    </View>
-                                </View>
-                            )
-                        })}
-                </View>
-
-                <Text>Incoming friend requests:</Text>
-
-                <View style={{ marginHorizontal: 20, marginVertical: 20, }}>
-                    {state.incomingFriendReqs
-                        .map((item) => {
-                            return (
-                                <View
-                                    key={item.friend_a}
-                                    style={[styles.categoryStyle, { height: 30, }]}>
-                                    <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                        <View style={{ flex: 8, }}>
-                                            <Text style={[styles.categoryText]}>{item['username']}</Text>
-                                        </View>
-
-                                        <View style={{ flex: 3, }}>
-                                            <TouchableOpacity
-                                                style={{ borderWidth: 1, }}
-                                                onPress={() => {
-                                                    acceptFriendRequest(item.friend_a, item.username, acceptFriendCallback)
-                                                }}>
-                                                <Text>Accept</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
-                                        <View style={{ flex: 3, }}>
-                                            <TouchableOpacity
-                                                style={{ borderWidth: 1, }}
-                                                onPress={() => {
-                                                    rejectFriendRequest(item.friend_a, resetInputs)
-                                                }}>
-                                                <Text>Reject</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
-
-
-                                    </View>
-                                </View>
-                            )
-                        })}
-                </View>
             </ScrollView>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         marginTop: 110,
         flex: 1,
@@ -295,16 +227,14 @@ const styles = StyleSheet.create({
     tabBarButton: {
         flex: 1,
         padding: 10,
-        margin: 10,
-        height: 40,
+        height: 50,
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center'
     },
     tabBarText: {
-        fontWeight: 'bold',
         color: 'white',
-        fontSize: 13,
+        fontSize: 17,
     },
     categoryContainer: {
         marginVertical: 20,

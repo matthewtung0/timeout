@@ -12,11 +12,15 @@ import {
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
 import Header from '../components/Header';
+import Modal from 'react-native-modal'
+import PFPModal from '../components/PFPModal';
 
 const constants = require('../components/constants.json')
+const BANNER_HEIGHT = 230;
 
 const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
+    const [pfpModalVisible, setPFPModalVisible] = useState(false)
     const { state, fetchSelf, fetchAvatar } = useContext(UserContext)
     const { state: catState, } = useContext(CategoryContext)
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
@@ -162,24 +166,33 @@ const ProfileScreen = ({ navigation }) => {
         )
     }
 
+    const togglePFPModal = () => {
+        setPFPModalVisible(!pfpModalVisible)
+    }
+
     const renderHeader = () => {
         return (
             <>
 
-                <View style={styles.banner} />
+                <View style={[styles.banner, { height: BANNER_HEIGHT }]} />
 
                 {/* MAIN PROFILE PICTURE HERE */}
-                <View style={[styles.pfp, { marginLeft: (width - 120) / 1.08 }]}>
-                    <AvatarComponent w={115} pfpSrc={state.base64pfp} isSelf={false}
-                        id={state.idToView} />
-                </View>
+                <TouchableOpacity
+                    style={[styles.pfp, { marginLeft: (width - 120) / 1.08, marginTop: BANNER_HEIGHT - 60, }]}
+                    onPress={togglePFPModal}>
+                    <View>
+                        <AvatarComponent w={115} pfpSrc={state.base64pfp} //isSelf={false}
+                            id={state.idToView} />
 
-                <Text style={styles.username}>{profileStats.username}</Text>
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>{profileStats.totalTasks} Tasks</Text>
-                    <Text style={styles.text}> - </Text>
+                    </View>
+                </TouchableOpacity>
+
+                <Text style={[styles.username, styles.textDefaultBold, { marginTop: BANNER_HEIGHT - 65, }]}>{profileStats.username}</Text>
+                <View style={[styles.textContainer, { marginTop: BANNER_HEIGHT - 30, }]}>
+                    <Text style={[styles.text, styles.textDefault]}>{profileStats.totalTasks} Tasks</Text>
+                    <Text style={[styles.text, styles.textDefaultBold]}> · </Text>
                     {profileStats.totalTime ?
-                        <Text style={styles.text}>
+                        <Text style={[styles.text, styles.textDefault]}>
                             {profileStats.totalTime.hours ? profileStats.totalTime.hours + 'h ' : '0h '}
                             {profileStats.totalTime.minutes ? profileStats.totalTime.minutes + 'm ' : '0m '}
                             {profileStats.totalTime.seconds ? profileStats.totalTime.seconds + 's ' : '0s '}</Text>
@@ -201,8 +214,8 @@ const ProfileScreen = ({ navigation }) => {
                         <TouchableOpacity
                             style={{ marginHorizontal: 15, }}
                             onPress={togglePrivateVisible}>
-                            {privateVisible ? <Icon name="eye-outline" type='ionicon' color='#67806D' /> :
-                                <Icon name="eye-off-outline" type='ionicon' color='#67806D' />}
+                            {privateVisible ? <Icon name="eye-outline" type='ionicon' color='white' /> :
+                                <Icon name="eye-off-outline" type='ionicon' color='white' />}
                         </TouchableOpacity> : null}
                     {isMe ?
                         <TouchableOpacity
@@ -211,17 +224,14 @@ const ProfileScreen = ({ navigation }) => {
                                 name='pencil-outline'
                                 type='ionicon'
                                 size={24}
-                                color='#67806D' />
+                                color='white' />
                         </TouchableOpacity> : null}
 
                 </View>
 
 
-
-
-
                 <View style={{ flexDirection: 'row', flex: 1, }}>
-                    <Text style={styles.bioText}>{profileStats.bio}</Text>
+                    <Text style={[styles.bioText, styles.textDefault]}>{profileStats.bio}</Text>
 
                     <View style={{
                         flex: 1,
@@ -241,9 +251,10 @@ const ProfileScreen = ({ navigation }) => {
                                 style={[styles.categoryStyle, { backgroundColor: constants.colors[item['color_id']] }]}>
 
                                 {(privateVisible || item['public']) ?
-                                    <Text style={[styles.categoryText]}>{item['category_name']}</Text>
+                                    <Text style={[styles.categoryText, styles.textDefaultBold]}>{item['category_name']}</Text>
                                     :
-                                    <Text style={[styles.categoryText, { color: constants.colors[item['color_id']] }]}>{item['category_name']}</Text>}
+                                    <Text style={[styles.categoryText, styles.textDefaultBold,
+                                    { color: constants.colors[item['color_id']] }]}>{item['category_name']}</Text>}
 
                             </View>
                         )
@@ -251,18 +262,46 @@ const ProfileScreen = ({ navigation }) => {
                     })}
                 </View>
 
+                <View
+                    style={{
+                        borderBottomColor: '#B3B2B3',
+                        //borderBottomWidth: StyleSheet.hairlineWidth,
+                        borderBottomWidth: 1,
+                        marginTop: 10,
+                        marginHorizontal: 30,
+                    }}
+                />
+
                 {/*{state.base64pfp ?
                     <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />
                     :
                     <Text>No image yet!</Text>
                 }*/}
-                <Text style={styles.recent}>Recent</Text>
+                <Text style={[styles.recent, styles.textDefaultBold]}>Recent</Text>
             </>
         )
     }
 
     return (
         <View style={styles.outerContainer}>
+
+            <Modal isVisible={pfpModalVisible}
+                animationIn='slideInUp'
+                animationOut='slideOutUp'>
+
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <View style={{
+                        height: 500
+                    }}>
+                        <PFPModal
+                            toggleFunction={togglePFPModal}
+                        />
+                    </View></View>
+            </Modal>
 
             {/*<DrawerProfileView
                 friends={state.friends}
@@ -286,27 +325,28 @@ const ProfileScreen = ({ navigation }) => {
                                 {/* SMALLER PROFILE PICS HERE */}
                                 <View style={styles.pfpTEMP}>
                                     {/*<AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={true} />*/}
-                                    <AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={false} id={state.idToView} />
+                                    <AvatarComponent w={48} pfpSrc={state.base64pfp} //isSelf={false} 
+                                        id={state.idToView} />
                                 </View>
                             </View>
                             <View style={styles.listItem}>
                                 <Text>
-                                    <Text style={styles.bolded}>{item.username}</Text>
-                                    <Text> worked on </Text>
-                                    <Text style={styles.bolded}>{duration_min(item.time_start, item.time_end)}</Text>
-                                    <Text> minutes</Text>
+                                    <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>{item.username}</Text>
+                                    <Text style={[styles.textDefault, { color: '#67806D' }]}> worked on </Text>
+                                    <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>{duration_min(item.time_start, item.time_end)}</Text>
+                                    <Text style={[styles.textDefault, { color: '#67806D' }]}> minutes</Text>
                                 </Text>
                                 <Text>
-                                    <Text>of </Text>
+                                    <Text style={[styles.textDefault, { color: '#67806D' }]}>of </Text>
                                     {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
                                     {privateVisible || item.public ?
-                                        <Text style={[styles.bolded]}>{item.category_name}</Text>
+                                        <Text style={[styles.bolded, styles.textDefaultBold, { color: constants.colors[item['color_id']] }]}>{item.category_name}</Text>
                                         :
-                                        <Text style={[styles.bolded]}>***REDACTED***</Text>
+                                        <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>[REDACTED]</Text>
                                     }
-
                                 </Text>
-                                <Text> {timeAgo(item.time_end)}</Text>
+                                <Text style={[styles.textDefault,
+                                { fontSize: 11, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
 
                                 {/*<View style={styles.likeContainer}>
                                     <Text style={styles.likeCount}>{item.reaction_count}</Text>
@@ -369,12 +409,17 @@ const ProfileScreen = ({ navigation }) => {
 }*/
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     outerContainer: {
     },
     banner: {
         width: '100%',
         backgroundColor: '#fdd696',
-        height: 150,
         marginBottom: 10,
     },
     backButton: {
@@ -405,12 +450,10 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         borderColor: 'white',
         borderWidth: 3,
-        marginTop: 90,
     },
     username: {
         position: 'absolute',
         marginLeft: 25,
-        marginTop: 85,
         fontWeight: 'bold',
         fontSize: 26,
         color: 'white',
@@ -420,7 +463,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         flexDirection: 'row',
         marginLeft: 25,
-        marginTop: 120,
     },
     text: {
         fontSize: 18,
@@ -429,8 +471,8 @@ const styles = StyleSheet.create({
     bioText: {
         flex: 1.1,
         fontSize: 14,
-        fontWeight: '200',
         marginLeft: 25,
+        color: '#67806C'
     },
     categoryContainer: {
         flexDirection: 'row',
@@ -447,16 +489,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     categoryText: {
-        color: '#67806D',
-        fontSize: 14,
-        paddingHorizontal: 3,
+        color: 'white',
+        fontSize: 12,
+        paddingHorizontal: 2,
     },
     recent: {
         marginLeft: 25,
         marginTop: 10,
         color: '#D0993D',
-        fontWeight: 'bold',
-        fontSize: 24,
+        fontSize: 21,
     },
     loadMore: {
         marginVertical: 20,
@@ -484,7 +525,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     bolded: {
-        fontWeight: 'bold',
+        fontSize: 15,
+        fontColor: '#67806D',
     },
     pfpcontainerTEMP: {
         flex: 0.25,

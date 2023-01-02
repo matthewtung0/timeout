@@ -1,13 +1,14 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Switch } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import * as SMS from 'expo-sms';
 import * as Contacts from 'expo-contacts';
+import Header from '../components/Header';
 
-const InviteScreen = ({ navigation: { navigate }, route: { params } }) => {
+const InviteScreen = ({ navigation, route: { params } }) => {
     //const { } = params;
     const [contactList, setContactList] = useState([])
 
@@ -28,12 +29,12 @@ const InviteScreen = ({ navigation: { navigate }, route: { params } }) => {
         }
     }
 
-    const testSMS = async () => {
+    const testSMS = async (phoneNumber) => {
         const isAvailable = await SMS.isAvailableAsync();
         if (isAvailable) {
             console.log("IS AVAILABLE")
             const { result } = await SMS.sendSMSAsync(
-                ['5555555555',],
+                [phoneNumber],
                 'Come be productive with me on TimeOut!',
             );
             // do your SMS stuff here
@@ -48,23 +49,64 @@ const InviteScreen = ({ navigation: { navigate }, route: { params } }) => {
             testContacts()
         }, [])
     )
+
+    // phoneNumbers[0].countryCode
+    // phoneNumbers[0].digits
     return (
-        <View style={styles.container}>
+        <>
+            <View style={styles.container}>
 
-            <Text>Invite a friend</Text>
+                <Text style={{ fontSize: 27, marginBottom: 10, }}>Choose a friend to invite:</Text>
 
-            <Text>{JSON.stringify(contactList)}</Text>
-        </View>
+                {/*<Text>{JSON.stringify(contactList)}</Text>*/}
+
+                <FlatList
+                    style={{}}
+                    data={contactList}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item, index }) => {
+                        return (<View>
+                            <TouchableOpacity
+                                style={[styles.inviteItemDefault,]}
+                                onPress={() => {
+                                    if (item.phoneNumbers.length > 0) {
+                                        testSMS(item.phoneNumbers[0].digits)
+                                    }
+
+                                }}>
+                                <Text>{item.firstName} {item.lastName}</Text>
+                                {item.phoneNumbers.length > 0 ?
+                                    <Text>{item.phoneNumbers[0].digits}</Text>
+                                    :
+                                    <Text>No Number</Text>
+                                }
+
+
+                            </TouchableOpacity>
+                        </View>
+                        )
+                    }}
+                />
+
+            </View>
+
+            <Header
+                navigation={navigation} />
+        </>
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 70,
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
+        marginTop: 110,
     },
+    inviteItemDefault: {
+        borderWidth: 1,
+        marginBottom: 5,
+        marginHorizontal: 10,
+    }
 
 })
 

@@ -119,6 +119,39 @@ const fetchSelf = dispatch => async () => {
     }
 }
 
+const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false) => {
+    try {
+        var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id}`)
+        if (!avatar_dt) {
+            forceRetrieve = true
+        } else {
+            //forceRetrieve = true
+            avatar_dt = new Date(avatar_dt);
+        }
+        console.log("Force retrieve is ", forceRetrieve);
+
+        if (forceRetrieve) {
+            console.log("Getting avatar from server")
+            const response = await timeoutApi.get(`/avatar12345/${user_id}`)
+            console.log("Got avatar from server")
+            var base64Icon = `data:image/png;base64,${response.data}`
+
+            await AsyncStorage.setItem(`avatar_${user_id}`, base64Icon);
+            await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
+            return base64Icon;
+        } else {
+            console.log("Getting avatar from asyncstorage");
+
+            var base64Icon_cached = await AsyncStorage.getItem(`avatar_${user_id}`);
+            return base64Icon_cached;
+        }
+    } catch (err) {
+        console.log("ERROR", err)
+        dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+    }
+}
+
+
 const fetchAvatar = dispatch => async (forceRetrieve = false) => {
     console.log("fetching profile avatar")
     try {
@@ -357,7 +390,7 @@ export const { Provider, Context } = createDataContext(
         fetchSelf, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
-        saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2
+        saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2, fetchAvatarGeneral,
     },
     {
         outgoingFriendReqs: [],

@@ -85,6 +85,7 @@ import Bg4 from '../../assets/avatar_svg/20_background/bg_4.svg'
 import Bg5 from '../../assets/avatar_svg/20_background/bg_5.svg'
 import Bg6 from '../../assets/avatar_svg/20_background/bg_6.svg'
 import Bg7 from '../../assets/avatar_svg/20_background/bg_7.svg'
+/* have these be locked */
 import Bg8 from '../../assets/avatar_svg/20_background/bg_8.svg'
 import Bg9 from '../../assets/avatar_svg/20_background/bg_9.svg'
 import Bg10 from '../../assets/avatar_svg/20_background/bg_10.svg'

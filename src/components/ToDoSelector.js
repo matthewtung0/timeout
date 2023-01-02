@@ -10,6 +10,7 @@ import AddTodoComponent from './AddTodoComponent';
 
 const img = require('../../assets/tasks_topbar.png')
 const BANNER_IMG_HEIGHT = 75;
+const BORDER_RADIUS = 20;
 
 const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
     const [showChild, setShowChild] = useState(false)
@@ -35,10 +36,10 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
     const sorted_todoItems = todoItems.sort(function (a, b) {
         if (sortBy == 0) {
-            return String(a.time_created).localeCompare(String(b.time_created))
+            return String(b.time_created).localeCompare(String(a.time_created))
         }
         else if (sortBy == 1) {
-            return String(b.time_created).localeCompare(String(a.time_created))
+            return String(a.time_created).localeCompare(String(b.time_created))
         }
         else if (sortBy == 2) {
             var comp_a = String(a.item_desc) + String(a.category_name)
@@ -52,36 +53,68 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
         return a.time_created - b.time_created;
     })
-    console.log(sorted_todoItems)
     const parentView = () => {
         return (
+            <View style={[styles.parentContainer, { borderRadius: BORDER_RADIUS, }]}>
 
-            <View style={styles.parentContainer}>
-                <Text style={styles.title}></Text>
+                <View style={[styles.title, { height: BANNER_IMG_HEIGHT }]} />
 
-                <View style={{ marginVertical: 5, flexDirection: 'row', marginHorizontal: 15, }}>
-
-                    <FlatList
-                        style={{ paddingBottom: 10, }}
-                        ListHeaderComponent={<View><Text style={{ paddingVertical: 5, color: '#67806D' }}>Sort by:</Text>
-                        </View>}
-                        horizontal={true}
-                        data={sortOptions}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ index, item }) => {
-                            return (
-                                <View style={{ marginHorizontal: 5, }}>
-                                    <TouchableOpacity
-                                        style={[styles.sortButton, sortBy == index ? { backgroundColor: '#ABC57E' } :
-                                            { backgroundColor: '#F6F2DF' }]}
-                                        onPress={() => { setSortBy(index) }}>
-                                        <Text style={{ color: '#67806D' }}>{item.label}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }}
-                    >
-                    </FlatList>
+                <View style={{ paddingBottom: 10, flexDirection: 'row', paddingHorizontal: 12, backgroundColor: '#83B569' }}>
+                    {sortBy == 0 ?
+                        <TouchableOpacity
+                            style={[styles.sortContainer,
+                            { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, },
+                            styles.sortContainerSelected]}
+                            onPress={() => { setSortBy(0) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                            style={[styles.sortContainer,
+                            { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, }]}
+                            onPress={() => { setSortBy(0) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
+                        </TouchableOpacity>
+                    }
+                    {sortBy == 1 ?
+                        <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                        { borderRightWidth: 0, }]}
+                            onPress={() => { setSortBy(1) }}>
+                            <Text style={[styles.textDefault, styles.sortText,]}>Oldest</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={[styles.sortContainer,
+                        { borderRightWidth: 0, }]}
+                            onPress={() => { setSortBy(1) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>Oldest</Text>
+                        </TouchableOpacity>
+                    }
+                    {sortBy == 2 ?
+                        <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                        { borderRightWidth: 0, }]}
+                            onPress={() => { setSortBy(2) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={[styles.sortContainer,
+                        { borderRightWidth: 0, }]}
+                            onPress={() => { setSortBy(2) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
+                        </TouchableOpacity>
+                    }
+                    {sortBy == 3 ?
+                        <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                        { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                            onPress={() => { setSortBy(3) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>Category</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={[styles.sortContainer,
+                        { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                            onPress={() => { setSortBy(3) }}>
+                            <Text style={[styles.textDefault, styles.sortText]}>Category</Text>
+                        </TouchableOpacity>
+                    }
 
                 </View>
 
@@ -94,13 +127,12 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                     ItemSeparatorComponent={() => {
                         return (<View
                             style={{
-                                borderBottomColor: '#DCDBDB',
+                                borderBottomColor: '#A7BEAD',
                                 //borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderBottomWidth: 1.5,
-                                marginHorizontal: 15,
+                                borderBottomWidth: 0.8,
+                                marginHorizontal: 20,
                             }}
                         />)
-
                     }}
                     renderItem={({ item }) => {
                         return (
@@ -132,17 +164,13 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                                         setButtonText('Submit')
                                         setShowChild(true)
                                     }
-
-
-
-
                                 }}>
                                 <View style={{
                                     flex: 1,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}>
-                                    <Text style={styles.plusText}>Add New Task</Text>
+                                    <Text style={[styles.textDefaultBold, styles.plusText]}>Add New Task</Text>
                                 </View>
 
                             </TouchableOpacity>
@@ -150,7 +178,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                     }
                 />
 
-            </View>
+            </View >
         )
     }
 
@@ -178,14 +206,15 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
 
             {/*<View style={styles.dummy} />*/}
-            <View style={styles.modal}>
+            <View style={[styles.modal, { borderRadius: BORDER_RADIUS }]}>
 
                 {show_error && 0 ?
                     <View style={{
                         flex: 1, marginTop: BANNER_IMG_HEIGHT,
                         justifyContent: 'center',
                     }}>
-                        <Text style={{ textAlign: 'center', fontSize: 18, color: 'gray', }}>Cannot retrieve your tasks at this time. Please check your internet connection</Text>
+                        <Text style={[styles.textDefault,
+                        { textAlign: 'center', fontSize: 18, color: 'gray', }]}>Cannot retrieve your tasks at this time. Please check your internet connection</Text>
                     </View>
                     :
                     showChild ? childView() : parentView()
@@ -195,9 +224,14 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: BANNER_IMG_HEIGHT, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: BANNER_IMG_HEIGHT, position: 'absolute',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
-            <Text style={[styles.title, { position: 'absolute', }]}>{showChild ? childTitle : "Tasks"}</Text>
+            <Text style={[styles.title, styles.textDefaultBold,
+            { position: 'absolute', marginTop: BANNER_IMG_HEIGHT * 0.3, marginBottom: BANNER_IMG_HEIGHT * 0.7 }]}>
+                {showChild ? childTitle : "Tasks"}</Text>
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -238,23 +272,32 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
         </View>
     )
-
-
-    if (showChild) {
-        return childView()
-    } else {
-        return parentView()
-    }
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
+    sortText: {
+        textAlign: 'center', fontSize: 12, justifyContent: 'center', color: 'white',
+    },
+    sortContainer: {
+        borderWidth: 1, flex: 1,
+        paddingVertical: 7, borderColor: 'white',
+    },
+    sortContainerSelected: {
+        backgroundColor: '#8DC867',
+    },
     container: {
         flex: 1,
     },
     parentContainer: {
         flex: 1,
         justifyContent: 'space-around',
-        backgroundColor: '#F9EAD3'
+        backgroundColor: '#F9EAD3',
     },
     modal: {
         flex: 1,
@@ -262,10 +305,9 @@ const styles = StyleSheet.create({
     },
     title: {
         alignSelf: 'center',
-        margin: 20,
-        marginBottom: 50,
+        //marginTop: 20,
+        //marginBottom: 50,
         fontSize: 25,
-        fontWeight: 'bold',
         color: 'white',
     },
     toDoComponent: {

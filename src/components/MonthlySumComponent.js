@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ImageBackground } from 'react-native';
 import { parseISO, differenceInSeconds } from 'date-fns';
 const constants = require('../components/constants.json')
-
 
 
 const MonthlySumComponent = ({ monthBatch }) => {
@@ -52,29 +51,31 @@ const MonthlySumComponent = ({ monthBatch }) => {
     return (
 
         <View>
-            {sortedRes
-                .map((item) => {
-                    return (
-                        <View
-                            style={styles.container}
-                            key={item[0]}>
-                            <View style={styles.textContainer}>
-                                <Text style={styles.barLabel}>{item[0]}</Text>
+            <>
+                {sortedRes
+                    .map((item) => {
+                        return (
+                            <View
+                                style={styles.container}
+                                key={item[0]}>
+                                <View style={styles.textContainer}>
+                                    <Text style={[styles.barLabel, styles.textDefaultBold]}>{item[0]}</Text>
+                                </View>
+
+                                {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
+                                    <View style={styles.barContainer}>
+                                        <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
+                                        <Text style={[styles.timeLabel, styles.textDefault]}>{formatTime(item[1])}</Text>
+                                    </View> :
+                                    <View style={styles.barContainerRelative}>
+                                        <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
+                                        <Text style={[styles.timeLabelRelative, styles.textDefault]}>{formatTime(item[1])}</Text>
+                                    </View>}
                             </View>
 
-                            {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
-                                <View style={styles.barContainer}>
-                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabel}>{formatTime(item[1])}</Text>
-                                </View> :
-                                <View style={styles.barContainerRelative}>
-                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabelRelative}>{formatTime(item[1])}</Text>
-                                </View>}
-                        </View>
-
-                    )
-                })}
+                        )
+                    })}
+            </>
         </View>
 
         /*<View>
@@ -108,17 +109,23 @@ const MonthlySumComponent = ({ monthBatch }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         margin: 30,
         fontSize: 25,
     }, bar: {
-        height: 40,
-        borderTopRightRadius: 5,
-        borderBottomRightRadius: 5,
+        height: 23,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
     }, container: {
         flex: 1,
         flexDirection: 'row',
-        height: 50,
+        height: 28,
     }, textContainer: {
         width: 75,
         flexDirection: 'row',
@@ -129,11 +136,15 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         textAlign: 'right',
         color: '#67806D',
+        fontSize: 11,
+        fontWeight: '600',
     }, timeLabel: {
         position: 'absolute',
         alignSelf: 'flex-end',
         paddingRight: 5,
         color: '#67806D',
+        fontSize: 13,
+        fontWeight: '600',
     }, barContainer: {
         justifyContent: 'center',
     }, barContainerRelative: {
