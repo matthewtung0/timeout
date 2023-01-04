@@ -15,6 +15,7 @@ const MARGIN_HORIZONTAL = 0
 import HistoryComponent from '../components/HistoryComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
+import { ConsoleLogger } from '@aws-amplify/core';
 
 //const background_desk = require('../../assets/background_desk.png');
 
@@ -103,12 +104,16 @@ const HistoryDailyScreen = ({ navigation }) => {
     }
 
     const date_Subtitle = (dt) => {
-        var parts = dt.split('T')
-        var actual_date = parts[0]
-        var actual_parts = actual_date.split('-')
-        var yr = actual_parts[0]
-        var month = actual_parts[1]
-        var day = actual_parts[2]
+        var actual_date = new Date(dt).toLocaleDateString() // to compensate for being sent UTC times
+        console.log("DT is ", actual_date)
+        //var parts = dt.split('T')
+        //var actual_date = parts[0]
+        //var actual_parts = actual_date.split('-')
+        var actual_parts = actual_date.split('/')
+        var yr = actual_parts[2]
+        var month = actual_parts[0]
+        var day = actual_parts[1]
+        //console.log("Turned into", month + "/" + day + "/" + yr)
 
         return { formatted: month + "/" + day + "/" + yr }
     }
@@ -131,6 +136,7 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const groupMonthlyTasks = (monthSessions) => {
         var taskMap = {}
+        console.log(monthSessions)
         for (var i = 0; i < monthSessions.length; i++) {
             var session = monthSessions[i]
             var formattedTime = date_Subtitle(session.time_start)

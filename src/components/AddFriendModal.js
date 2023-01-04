@@ -182,7 +182,7 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
 
                     </View>
 
-                    <View style={{ flex: 1, marginVertical: 20, }}>
+                    <View style={{ marginVertical: 30, }}>
                         <TouchableOpacity
                             style={[styles.addFriend, { width: width / 2.5, height: height / 15 }]}
                             onPress={() => {
@@ -199,11 +199,6 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
                                     color='white' />
                                 <Text style={styles.addFriendText}>Add Friend</Text>
                             </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{ alignItems: 'center', }}
-                            onPress={toggleFunction}>
-                            <Text style={{ color: 'blue', }}>Go back</Text>
                         </TouchableOpacity>
 
                         {state.errorMessage ? <Text>Error message here:{state.errorMessage}</Text> : null}
@@ -270,7 +265,6 @@ const styles = StyleSheet.create({
     codeInput: { textAlign: 'center', color: '#67806D', textAlign: 'center', fontSize: 20, },
     backContainer: {
         width: '50%',
-        borderWidth: 0.5,
         position: 'absolute',
         alignSelf: 'flex-end',
         justifyContent: 'flex-end',
@@ -280,7 +274,6 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         justifyContent: 'center',
-        borderWidth: 0.5,
     },
 })
 

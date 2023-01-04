@@ -1,11 +1,28 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import { Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground } from 'react-native';
 import {
     fromUnixTime, getUnixTime, isThisSecond, format,
     differenceInMilliseconds, addSeconds
 } from 'date-fns';
+import Svg, {
+    Circle,
+    Path,
+} from 'react-native-svg';
+import Modal from 'react-native-modal'
+
+import { Text as TextSVG } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
+import SessionRatingModal from '../components/SessionRatingModal';
 const constants = require('../components/constants.json')
+const clock_middle = require('../../assets/clock_middle.png');
+const clock_bottom = require('../../assets/clock_bottom.png');
+const clock_top = require('../../assets/clock_top.png');
+const bg_desk = require('../../assets/background_desk.png');
+
+const { height, width } = Dimensions.get('window');
+const picked_width = width / 2 / 0.8
+
+
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
@@ -13,6 +30,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
     let bgColorHex = constants.colors[colorId]
 
     const [plannedMin, setPlannedMin] = useState(numMins)
+    const [rewardModalVisible, setRewardModalVisible] = useState(false)
 
     const [secLeft, setSecLeft] = useState(numMins * 60);
 
@@ -22,6 +40,23 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
     const [startTime, setStartTime] = useState(new Date())
 
     //let bgColorHex = constants.colors[bgColor]
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const fadeInAndOut = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 3000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(fadeAnim, {
+                    toValue: 0,
+                    duration: 3000,
+                    useNativeDriver: true,
+                })
+            ])).start();
+    }
 
     const [sessionObj, setSessionObj] = useState({
         chosenCategory: categoryName,
@@ -32,6 +67,9 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         //endEarlyFlag: '',
         prodRating: '',
     })
+    const toggleRewardModal = () => {
+        setRewardModalVisible(!rewardModalVisible)
+    }
 
     const handleStart = (_endTime, plannedNumMinutes) => {
         setPlannedMin(plannedNumMinutes)
@@ -46,25 +84,40 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             setSecLeft(Math.floor(diff / 1000));
         }, 100)
     }
+    const [sessionEndTime, setSessionEndTime] = useState('')
+    const [endEarlyFlag, setEndEarlyFlag] = useState(false)
+    const [sessionStartTime, setSessionStartTime] = useState('')
+
 
     const handleReset = (endEarly = false, plannedNumMinutes) => {
         clearInterval(increment.current)
 
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
-            navigate('SessionEval', {
+            /*navigate('SessionEval', {
                 sessionObj, sessionEndTime: getUnixTime(new Date()),
                 endEarlyFlag: true, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
-            })
-            //setEndTime(fromUnixTime(now_dt), true)
+            })*/
+            /*navigate('SessionSelect', {
+                sessionObj, sessionEndTime: getUnixTime(new Date()),
+                endEarlyFlag: true, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
+            })*/
+            setSessionEndTime(getUnixTime(new Date()))
+            setSessionStartTime(getUnixTime(startTime))
+            setEndEarlyFlag(true)
+            toggleRewardModal();
         } else {
             navigate('SessionEval', {
                 sessionObj, sessionEndTime: getUnixTime(new Date()),
                 endEarlyFlag: false, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
             })
-            //setEndTime(fromUnixTime(endTime), false)
+            toggleRewardModal();
         }
         //alert('Time end')
+    }
+
+    const offBoardCallback = () => {
+        navigate('SessionSelect')
     }
 
     useFocusEffect(
@@ -79,6 +132,8 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
             // temporary comment this out to work on it
             handleStart(endTime, numMins);
+
+            fadeInAndOut()
 
             return () => {
                 setEndTime(0)
@@ -135,50 +190,136 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             ]
         );
     }
+    const updateTime = (a) => {
+    }
 
     return (
         <View style={styles.container}>
+            <View style={{}}>
 
-            <Text style={styles.timeLeft}>Time Left</Text>
-            {/*<Text style={styles.time}>{twoDigits(Math.floor(secLeft / 60)) + ":" + twoDigits(secLeft % 60)}</Text>*/}
+                {/* SESSION REWARD MODAL */}
+                <View>
+                    <Modal isVisible={rewardModalVisible}
+                        animationIn='slideInLeft'
+                        animationOut='slideOutLeft'
+                    >
 
-            <View style={{
-                flex: 1, flexDirection: 'row', alignItems: 'center',
-                marginBottom: 50, marginTop: 50,
-            }}>
-                <View style={{ flex: 1.2 }} />
-                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
-                    {twoDigits(Math.floor(secLeft / 60))[0]}
-                </Text>
-                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
-                    {twoDigits(Math.floor(secLeft / 60))[1]}
-                </Text>
-                <Text style={{ flex: 0.5, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>:</Text>
-                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
-                    {twoDigits(secLeft % 60)[0]}
-                </Text>
-                <Text style={{ flex: 1, height: 100, textAlign: 'center', fontSize: 90, color: "#90AB72", fontWeight: '500', }}>
-                    {twoDigits(secLeft % 60)[1]}
-                </Text>
-                <View style={{ flex: 1.2 }} />
-            </View>
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                        }}>
+                            <View style={{
+                                height: height * 0.7,
+                                borderRadius: 20,
+                            }}>
+
+                                <SessionRatingModal
+                                    sessionObj={sessionObj}
+                                    sessionEndTime={sessionEndTime}
+                                    endEarlyFlag={endEarlyFlag}
+                                    plannedMin={plannedMin}
+                                    sessionStartTime={sessionStartTime}
+                                    toggleFunction={toggleRewardModal}
+                                    offBoardCallback={offBoardCallback} />
+
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
 
 
-            <View style={[styles.gotThisContainer, { width: width / 1.5, height: height / 10 }]}>
-                <Text style={styles.gotThis}>You got this!</Text>
-            </View>
 
-            <View style={{ height: 70 }}>
+                <View style={{
+                    position: 'absolute', height: '100%', width: '100%', borderWidth: 2, borderColor: 'brown',
+                }}>
+                    <Image
+                        source={bg_desk}
+                        style={{ width: width, height: '170%', borderWidth: 1, borderColor: 'green' }}
+                        resizeMode="contain" />
+                </View>
+                <Image
+                    source={clock_top}
+                    style={{
+                        width: 235, height: 52, alignSelf: "center",
+                        marginTop: 30,
+                    }}
+                    resizeMode="contain" />
 
-                <View style={styles.activityContainer}>
-                    <View style={{ flex: 3, alignContent: 'center' }}>
-                        <Text style={styles.activityName}>{activityName}</Text>
+                <View style={styles.clockContainer}>
+                    <ImageBackground
+                        source={clock_middle}
+                        style={[styles.image]}
+                        resizeMode='contain'>
+                        <View style={[styles.clockWrappedView]}
+                        >
+                            <Svg style={[styles.svgStyle, { borderWidth: 1, }]}
+                                height="100%" width="100%" viewBox={`0 0 100 100`}>
+                                <TextSVG x={50} y={35} fontSize={8} textAnchor="middle" fill="#90AB72">time left</TextSVG>
+                                <TextSVG x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                >{twoDigits(Math.floor(secLeft / 60))[0]}</TextSVG>
+                                <TextSVG x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                >{twoDigits(Math.floor(secLeft / 60))[1]}</TextSVG>
+                                <TextSVG x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                >:</TextSVG>
+                                <TextSVG x={62} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                >{twoDigits(secLeft % 60)[0]}</TextSVG>
+                                <TextSVG x={77} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                >{twoDigits(secLeft % 60)[1]}</TextSVG>
+                            </Svg>
+                        </View>
+                    </ImageBackground>
+                </View>
+
+                <Image
+                    source={clock_bottom}
+                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                    resizeMode="contain" />
+
+                <View style={[styles.gotThisContainer,
+                { position: 'absolute', height: '100%', width: '100%', flexDirection: 'row', borderWidth: 1, borderColor: 'green', }]}>
+                    <View style={{ flex: 1, borderWidth: 1, }}>
+
+                    </View>
+                    <View style={{ flex: 1, borderWidth: 1, }}>
+                        <Animated.View style={{ flex: 1, borderWidth: 1, opacity: fadeAnim }}>
+                            <View style={{ backgroundColor: 'white', height: '100%', width: '100%', }}>
+                                <Text style={[styles.textDefaultBold, styles.gotThis]}>You got this!</Text>
+                            </View>
+
+                        </Animated.View>
+                        <View style={{ flex: 1, borderWidth: 1, }} />
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+
+                        </View>
+
                     </View>
 
-                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, flex: 1 }]}>
-                        <Text style={[styles.categoryText]}>{categoryName}</Text>
+                </View>
+            </View>
+
+            <View style={{ padding: 30, paddingTop: 10, }}>
+                <View style={{
+                    height: 70, marginTop: 50, borderRadius: 20,
+                    backgroundColor: 'white', shadowOffset: {
+                        width: 0.2,
+                        height: 0.2,
+                    },
+                    shadowOpacity: 0.3,
+                }}>
+                    <View style={styles.activityContainer}>
+                        <View style={{ flex: 3, alignContent: 'center', marginHorizontal: 10, }}>
+                            <Text style={[styles.textDefaultBold, styles.activityName]}>{activityName}</Text>
+                        </View>
+
+                        <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, flex: 1 }]}>
+                            <Text style={[styles.textDefaultBold, styles.categoryText,
+                            { color: 'white', }]}>{categoryName}</Text>
+                        </View>
                     </View>
                 </View>
+
+
             </View>
 
             <View style={{ height: 70 }}>
@@ -187,12 +328,12 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#D7B4D5' }]}
                         onPress={areYouSureEndEarly}>
-                        <Text style={styles.buttonText}>End Early</Text>
+                        <Text style={[styles.textDefaultBold, styles.buttonText]}>End Early</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#ABC57E' }]}
                         onPress={areYouSureAddTime}>
-                        <Text style={styles.buttonText}>+5 Min</Text>
+                        <Text style={[styles.textDefaultBold, styles.buttonText]}>+5 Min</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -207,6 +348,12 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 SessionOngoingScreen.navigationOptions = () => { return { headerShown: false, }; }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         marginTop: 70,
     },
@@ -230,13 +377,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     gotThisContainer: {
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        margin: 20,
+        //backgroundColor: 'white',
+        //borderRadius: 20,
+        //padding: 5,
+        //alignItems: 'center',
+        //justifyContent: 'center',
+        //alignSelf: 'center',
+        //margin: 20,
     },
     activityName: {
         color: '#67806D',
@@ -254,7 +401,7 @@ const styles = StyleSheet.create({
     },
     categoryText: {
         color: '#67806D',
-        fontSize: 14,
+        fontSize: 12,
     },
     activityContainer: {
         flex: 1,
@@ -280,6 +427,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         fontSize: 13,
+    },
+    clockContainer: {
+        alignSelf: 'stretch',
+        alignItems: 'center',
+    },
+    clockWrappedView: {
+        aspectRatio: 1,
+        width: picked_width,
+    },
+    svgStyle: {
+        flex: 1,
     },
 })
 

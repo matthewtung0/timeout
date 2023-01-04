@@ -27,7 +27,7 @@ const HideKeyboard = ({ children }) => (
     </TouchableWithoutFeedback>
 );
 
-const SessionSelectScreen = ({ navigation: { navigate } }) => {
+const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
@@ -92,10 +92,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
     useFocusEffect(
         useCallback(() => {
             console.log("FOCUS EFFECT SESSION SELECT")
-
             checkStoredSessions()
-
-
         }, [])
     )
     console.log("Error message: ", state.errorMessage);
@@ -177,6 +174,7 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                 <View style={[styles.viewContainer, { opacity: pageOpacity }]}>
 
                     <View style={{ flex: 6 }}>
+                        {/* TO-DO SELECTOR MODAL */}
                         <View>
                             <Modal isVisible={modalVisible}
                                 animationIn='slideInLeft'
@@ -203,6 +201,8 @@ const SessionSelectScreen = ({ navigation: { navigate } }) => {
                                 </View>
                             </Modal>
                         </View>
+
+
                         <Image
                             source={clock_top}
                             style={{
