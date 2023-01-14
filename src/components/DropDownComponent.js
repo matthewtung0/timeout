@@ -16,18 +16,21 @@ const DropDownComponent = ({ catName, colorId, categoryId,
     let selectedWidth = width * 0.9
     if (isInModal) selectedWidth = width * 0.8
 
+
     // refresh the data
     useFocusEffect(
         useCallback(() => {
-            let category_array = categoryState.userCategories.filter(item => item.archived !== true).map(item => {
-                return {
-                    label: item.category_name,
-                    value: item.category_id,
-                    color: item.color_id,
-                    containerStyle: { backgroundColor: constants.colors[item.color_id] }
-                }
-            })
-
+            var category_array = []
+            if (categoryState.userCategories) {
+                category_array = categoryState.userCategories.filter(item => item.archived !== true).map(item => {
+                    return {
+                        label: item.category_name,
+                        value: item.category_id,
+                        color: item.color_id,
+                        containerStyle: { backgroundColor: constants.colors[item.color_id] }
+                    }
+                })
+            }
             category_array = category_array.sort(function (a, b) {
                 return String(a.label).localeCompare(String(b.label))
             })

@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 
 // simple header component containing back button to the mainflow
-const Header = ({ navigation }) => {
+const Header = ({ navigation, color }) => {
     return (
         <TouchableOpacity
             style={styles.backButton}
@@ -13,7 +13,7 @@ const Header = ({ navigation }) => {
                 name='arrow-back-outline'
                 type='ionicon'
                 size={35}
-                color='white' />
+                color={color} />
         </TouchableOpacity>
 
     )

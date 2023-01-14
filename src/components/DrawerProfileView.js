@@ -1,16 +1,21 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useContext } from 'react';
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
+import { Context as UserContext } from '../context/userContext';
 
-const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc }) => {
+const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc, userId }) => {
     const [h, setH] = useState(0)
     const [m, setM] = useState(0)
     const [s, setS] = useState(0)
     var { hours, minutes, seconds } = totalTime
+    const { state: userState, fetchAvatarGeneral } = useContext(UserContext)
 
     useFocusEffect(
         useCallback(() => {
+            fetchAvatarGeneral(userId, forceRetrieve = true, isSelf = true)
+            console.log("Drawer updating:")
+            console.log(userState)
             if (hours) { setH(hours) }
             if (minutes) { setM(minutes) }
             if (seconds) { setS(seconds) }
@@ -19,9 +24,13 @@ const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc })
     return (
         <View style={styles.outerContainer}>
             <View>
-                <Image
-                    style={[styles.default]}
-                    source={{ uri: pfpSrc }} />
+                {userState.base64pfp == '' ?
+                    null :
+                    <Image
+                        style={[styles.default]}
+                        source={{ uri: userState.base64pfp }} />
+                }
+
             </View>
             <Text style={styles.username}>{username}</Text>
             <Text style={styles.text}>{h}h {m}m {s}s</Text>

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, FlatList, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, FlatList, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import * as DIR from '../components/AvatarSelection';
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
@@ -34,6 +34,7 @@ const ITEM_G = 52;
 const ITEM_B = 52;
 
 const SvgTestScreen = ({ navigation }) => {
+    const { height, width } = Dimensions.get('window');
     const [isLoading, setIsLoading] = useState(false)
     const [activeMenu, setActiveMenu] = useState(0)
     const { state, saveAvatar2, fetchAvatarItemsOwned } = useContext(UserContext)
@@ -751,7 +752,7 @@ const SvgTestScreen = ({ navigation }) => {
                 },
             },
         }
-        await saveAvatar2(avatarJSON_to_send, items_to_redeem, totalUnowned, saveAvatarCallback, saveAvatarCallbackFail)
+        await saveAvatar2(state.user_id, avatarJSON_to_send, items_to_redeem, totalUnowned, saveAvatarCallback, saveAvatarCallbackFail)
     }
     const createAvatarJSON = () => {
         setAvatarJSON({
@@ -943,23 +944,31 @@ const SvgTestScreen = ({ navigation }) => {
                     :
                     <View opacity='0'><Text>This outfit will cost {totalUnowned} points</Text></View>}
             </View>
-            <View style={{ flexDirection: 'row', borderWidth: 1, justifyContent: 'space-around' }}>
-                <TouchableOpacity style={activeMenu == 0 ? [styles.itemSelectorActive] :
-                    styles.itemSelector}
-                    onPress={() => { setActiveMenu(0) }}
-                ><Text >Face</Text></TouchableOpacity>
-                <TouchableOpacity style={activeMenu == 1 ? [styles.itemSelectorActive] :
-                    styles.itemSelector}
-                    onPress={() => { setActiveMenu(1) }}
-                ><Text >Accessories</Text></TouchableOpacity>
-                <TouchableOpacity style={activeMenu == 2 ? [styles.itemSelectorActive] :
-                    styles.itemSelector}
-                    onPress={() => { setActiveMenu(2) }}
-                ><Text >Clothes</Text></TouchableOpacity>
-                <TouchableOpacity style={activeMenu == 3 ? [styles.itemSelectorActive] :
-                    styles.itemSelector}
-                    onPress={() => { setActiveMenu(3) }}
-                ><Text >Hair</Text></TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                <TouchableOpacity style={[activeMenu == 0 ? styles.itemSelectorNewActive :
+                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(0) }}>
+                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
+                        <Text>Face</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={[activeMenu == 1 ? styles.itemSelectorNewActive :
+                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(1) }}>
+                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
+                        <Text>Accessories</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={[activeMenu == 2 ? styles.itemSelectorNewActive :
+                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(2) }}>
+                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
+                        <Text>Clothes</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={[activeMenu == 3 ? styles.itemSelectorNewActive :
+                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(3) }}>
+                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
+                        <Text>Hair</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
 
             <View>
@@ -2359,7 +2368,8 @@ const SvgTestScreen = ({ navigation }) => {
                 <ActivityIndicator size="large" color="gray" /> : null}
 
             <Header
-                navigation={navigation} />
+                navigation={navigation}
+                header={'#67806D'} />
         </>
 
     )
@@ -2385,6 +2395,13 @@ const styles = StyleSheet.create({
     },
     menuItemDefault: {
         margin: 2, borderWidth: 2,
+    },
+    itemSelectorNew: {
+        backgroundColor: '#E6F4DB', alignItems: 'center',
+    },
+    itemSelectorNewActive: {
+        alignItems: 'center',
+        backgroundColor: '#CAE3B7',
     }
 })
 

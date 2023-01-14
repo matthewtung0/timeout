@@ -20,6 +20,7 @@ import { ConsoleLogger } from '@aws-amplify/core';
 //const background_desk = require('../../assets/background_desk.png');
 
 const HistoryDailyScreen = ({ navigation }) => {
+    console.log("History daily screen rerender")
     var options = { month: 'long' };
     const { height, width } = Dimensions.get('window');
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -105,7 +106,6 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const date_Subtitle = (dt) => {
         var actual_date = new Date(dt).toLocaleDateString() // to compensate for being sent UTC times
-        console.log("DT is ", actual_date)
         //var parts = dt.split('T')
         //var actual_date = parts[0]
         //var actual_parts = actual_date.split('-')
@@ -113,7 +113,6 @@ const HistoryDailyScreen = ({ navigation }) => {
         var yr = actual_parts[2]
         var month = actual_parts[0]
         var day = actual_parts[1]
-        //console.log("Turned into", month + "/" + day + "/" + yr)
 
         return { formatted: month + "/" + day + "/" + yr }
     }
@@ -136,7 +135,6 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const groupMonthlyTasks = (monthSessions) => {
         var taskMap = {}
-        console.log(monthSessions)
         for (var i = 0; i < monthSessions.length; i++) {
             var session = monthSessions[i]
             var formattedTime = date_Subtitle(session.time_start)
@@ -150,14 +148,12 @@ const HistoryDailyScreen = ({ navigation }) => {
 
         let sortedTaskMap = Object.entries(taskMap).sort((a, b) => { return a })
         setMonthlyTasksGrouped(sortedTaskMap)
-        console.log("GROUPED TASKS", sortedTaskMap)
     }
 
 
     useFocusEffect(
 
         useCallback(() => {
-            console.log("date is", state.calendarDate)
             //setUseMonthly(true)
             setIsLoading(true)
 
@@ -173,7 +169,6 @@ const HistoryDailyScreen = ({ navigation }) => {
             }
         }, [state.calendarDate])
     )
-    //console.log(state.monthSessions)
 
     const scrollEvent = (e) => {
         var scrollPos = e.nativeEvent.contentOffset.y
@@ -185,11 +180,11 @@ const HistoryDailyScreen = ({ navigation }) => {
     }
 
     const _onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
-        console.log("Visible items are", viewableItems);
+        //console.log("Visible items are", viewableItems);
         var viewableArray_ = viewableItems.map((i) => { return i.index })
-        console.log("Viewable array: ", viewableArray_)
+        //console.log("Viewable array: ", viewableArray_)
         setViewableArray(viewableArray_)
-        console.log("Changed in this iteration, ", changed);
+        //console.log("Changed in this iteration, ", changed);
     }, []);
 
     const toggleModal = () => {
@@ -198,7 +193,7 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const modalCallback = async (item_deleted = false) => {
         if (item_deleted) {
-            console.log("CALLING MODAL CALLBACK")
+            //console.log("CALLING MODAL CALLBACK")
             fetchMonthly(state.calendarDate, groupMonthlyTasks)
         }
 
@@ -309,7 +304,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                     justifyContent: 'center'
                 }}>
                     <View style={{
-                        height: 500
+                        height: height * 0.6
                     }}>
 
                         <HistoryDailyModal toggleFunction={toggleModal}
@@ -410,7 +405,8 @@ const HistoryDailyScreen = ({ navigation }) => {
                                             >{getMonthFromFormatted(item[0])}</Text>
                                         </View>
                                         <View style={{ flex: 0.7, borderWidth: 0, alignItems: 'center', }}>
-                                            {Math.min(...viewableArray) == index ?
+                                            {(Math.min(...viewableArray) == index ||
+                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) ?
                                                 <View style={{
                                                     width: 15, height: 15, borderRadius: 7.5,
                                                     borderWidth: 2, borderColor: '#67806D',
@@ -422,7 +418,8 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                     borderWidth: 2, borderColor: '#C0C0C0', backgroundColor: 'white'
                                                 }} />
                                             }
-                                            {Math.min(...viewableArray) == index ?
+                                            {(Math.min(...viewableArray) == index ||
+                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) ?
                                                 <View style={{
                                                     height: '100%', width: 4, backgroundColor: '#67806D',
                                                     borderWidth: 2, borderColor: '#67806D',
@@ -461,7 +458,8 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                             >
                                                                 <HistoryComponent
                                                                     session_obj={j}
-                                                                    is_active={Math.min(...viewableArray) == index}>
+                                                                    is_active={Math.min(...viewableArray) == index ||
+                                                                        (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))}>
                                                                 </HistoryComponent>
                                                             </TouchableOpacity>
 

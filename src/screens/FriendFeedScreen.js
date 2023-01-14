@@ -59,6 +59,7 @@ const FriendFeedScreen = ({ navigation }) => {
             }
         }, [refreshToken])
     )
+    console.log(sessionState.userReaction)
 
 
     const fetchSessions = async (friends) => {

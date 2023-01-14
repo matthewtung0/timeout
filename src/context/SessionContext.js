@@ -4,6 +4,7 @@ import {
     compareAsc, eachDayOfInterval, format, subDays, addDays,
     endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
 } from 'date-fns';
+import { call } from 'react-native-reanimated';
 
 const sessionReducer = (state, action) => {
     switch (action.type) {
@@ -23,6 +24,8 @@ const sessionReducer = (state, action) => {
             return { ...state, userReaction: action.payload }
         case 'fetch_notification':
             return { ...state, userNotifications: action.payload }
+        case 'fetch_likers':
+            return { ...state }
         case 'preemptive_like':
             return {
                 ...state, userReaction: [...state.userReaction, { activity_id: action.payload.activity_id }],
@@ -49,6 +52,21 @@ const sessionReducer = (state, action) => {
                 ...state,
                 userSessions: state.userSessions.filter((req) => req.activity_id != action.payload.sessionId),
                 monthSessions: state.monthSessions.filter((req) => req.activity_id != action.payload.sessionId),
+            }
+        case 'patch_session':
+            return {
+                ...state, userSessions: state.userSessions.map(item => {
+                    if (item.activity_id == action.payload.sessionId) {
+                        return { ...item, notes: action.payload.notes }
+                    }
+                    return item;
+                }),
+                monthSessions: state.monthSessions.map(item => {
+                    if (item.activity_id == action.payload.sessionId) {
+                        return { ...item, notes: action.payload.notes }
+                    }
+                    return item;
+                }),
             }
         case 'react_to_activity':
             console.log("This was an unlike:", action.payload.wasUnliked);
@@ -187,6 +205,20 @@ const fetchFriendSession = dispatch => async () => {
 
 const fetchOwnSession = dispatch => async () => { };
 
+const patchSession = dispatch => async (sessionId, notes, callback = null, errorCallback = null) => {
+    try {
+        console.log("Sending over notes:", notes)
+        const response = await timeoutApi.patch(`/session/${sessionId}`, { sessionId, notes })
+        dispatch({ type: 'patch_session', payload: { sessionId, notes } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error patching session:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem patching the session.' })
+        alert("There was a problem updating the task. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
+    }
+}
+
 const deleteSession = dispatch => async (sessionId, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.delete(`/session/${sessionId}`, { params: { sessionId } })
@@ -205,6 +237,7 @@ const fetchAllSession = dispatch => async () => { };
 // get activities that user has reacted on
 const fetchUserReactions = dispatch => async () => {
     try {
+        console.log("Fetching user reactions!")
         const response = await timeoutApi.get('/interaction')
         dispatch({ type: 'fetch_reaction', payload: response.data })
     } catch (err) {
@@ -219,6 +252,19 @@ const fetchNotifications = dispatch => async () => {
         dispatch({ type: 'fetch_notification', payload: response.data })
     } catch (err) {
         console.log("problem fetching user notifications", err);
+    }
+}
+
+const fetchLikersOfActivity = dispatch => async (activity_id, callback = null, errorCallback = null) => {
+    try {
+        const response = await timeoutApi.get(`/interaction/reaction/${activity_id}`)
+        console.log("Notifications: ", response.data)
+        dispatch({ type: 'fetch_likers', payload: response.data })
+        if (callback) { callback }
+        return response.data;
+    } catch (err) {
+        console.log("problem fetching likes", err);
+        if (errorCallback) { errorCallback }
     }
 }
 
@@ -257,7 +303,8 @@ export const { Provider, Context } = createDataContext(
     {
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
-        resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext,
+        resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
+        fetchLikersOfActivity
     },
     {
         userSessions: [],

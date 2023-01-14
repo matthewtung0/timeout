@@ -45,7 +45,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [categoryId, setCategoryId] = useState("3");
 
     const [newCatName, setNewCatName] = useState('unsorted')
-    const [newColorId, setNewColorId] = useState('c6')
+    const [newColorId, setNewColorId] = useState('c9')
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -106,7 +106,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
         setTime(0)
         updateTime(0)
-        setNewCatName('c6')
+        setNewColorId('c9')
         setCustomActivity('')
     }
 
@@ -223,7 +223,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     <View style={{ flex: 1.2 }}>
                         <TextInput
                             style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
-                            placeholder="Activity"
+                            placeholder="Task"
+                            placeholderTextColor={'#DCDBDB'}
                             rightIconContainerStyle={styles.rightIconInput}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCorrect={true}

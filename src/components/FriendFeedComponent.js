@@ -9,17 +9,21 @@ import {
   differenceInMinutes,
   parseISO, differenceInSeconds, isThisMinute
 } from 'date-fns';
+import Modal from 'react-native-modal'
 import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
 import { Context as SessionContext } from '../context/SessionContext';
+import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
 export function FriendFeedComponent({ item, navigation }) {
+  const { height, width } = Dimensions.get('window');
   const { state: userState, setIdToView } = useContext(UserContext)
 
   const [disableTouch, setDisableTouch] = useState(false)
   const { state: sessionState, fetchUserReactions,
     reactToActivity, fetchAvatars } = useContext(SessionContext)
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
+  const [modalVisible, setModalVisible] = useState(false)
 
   const styles = StyleSheet.create({
     textDefaultBold: {
@@ -140,13 +144,39 @@ export function FriendFeedComponent({ item, navigation }) {
   const reactCallback = () => {
     setDisableTouch(false)
   }
+  const toggleModal = () => {
+    setModalVisible(!modalVisible)
+  }
 
-  console.log("Rendered ", item.activity_id)
+  console.log("Rendered " + item.activity_id + " which is " + item.activity_name)
+  console.log(item.reaction_count);
 
   return (
-
     <View style={styles.container}>
       {/*{console.log("item rendering..", item.activity_id)}*/}
+
+
+      <Modal isVisible={modalVisible}
+        animationIn='slideInUp'
+        animationOut='slideOutUp'>
+
+        <View style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <View style={{
+            height: height * 0.7
+          }}>
+            <FriendFeedReactorsModal
+              toggleFunction={toggleModal}
+              activityId={item.activity_id}
+            />
+          </View>
+        </View>
+      </Modal>
+
+
       <View style={styles.pfpcontainer}>
         <View style={styles.pfp}>
           {/* friend thumbnails */}
@@ -181,7 +211,12 @@ export function FriendFeedComponent({ item, navigation }) {
         </View>
         <View style={{ flex: 1 }}>
           <View style={[styles.likeContainer, { borderWidth: 1, }]}>
-            <Text style={styles.likeCount}>{reactionCount}</Text>
+            <TouchableOpacity
+              onPress={toggleModal}>
+              <Text style={[styles.likeCount, { borderWidth: 1, paddingHorizontal: 5, }]}>
+                {item.reaction_count == null ? 0 : reactionCount}</Text>
+            </TouchableOpacity>
+
             <Pressable
               onPress={() => {
                 let is_like = true
@@ -206,7 +241,7 @@ export function FriendFeedComponent({ item, navigation }) {
         </View>
 
       </View>
-    </View>
+    </View >
   );
 }
 export const MemoizedComponent = React.memo(FriendFeedComponent);

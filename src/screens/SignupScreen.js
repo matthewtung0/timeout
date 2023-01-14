@@ -1,164 +1,382 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, ImageBackground,
-    KeyboardAvoidingView, Image, ScrollView, Keyboard, TouchableWithoutFeedback
+    KeyboardAvoidingView, Image, ScrollView, Keyboard, TouchableWithoutFeedback, Animated
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import { useFocusEffect } from '@react-navigation/native';
 import { Input, Button, Text } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import timeoutApi from '../api/timeout';
+import { Easing } from 'react-native-reanimated';
 
 const img_src = require('../../assets/signin_background.png');
 const img = require('../../assets/signup_plant.png')
+const cloud = require('../../assets/cloud.png');
+const character = require('../../assets/character.png');
+const speechBubbleMore = require('../../assets/speech_bubble_more.png');
+const speechBubbleThin = require('../../assets/speech_bubble_thin.png');
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         {children}
     </TouchableWithoutFeedback>
 );
-const SignupScreen = ({ navigation }) => {
+const SignupScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
     const { state, signup, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [isEmailTaken, setIsEmailTaken] = useState(0)
+    var message0 = "Nice to meet you!\nI'm Poot!";
+    var message1 = "I can't wait to get productive!\nI hope this app will help.";
+    var message2 = "Just a few more steps!\nYou're almost there, I promise.";
+    const [activeMenu, setActiveMenu] = useState(params.defaultMenuNum)
+    const [activeDialogue, setActiveDialogue] = useState(params.defaultMenuNum == 2 ? message2 : message0)
+
+    const [bio, setBio] = useState('')
+    const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('')
+    const [username, setUsername] = useState('');
+    const [passwordMismatch, setPasswordMismatch] = useState(false)
 
     const checkEmailAndNext = async () => {
         try {
             const emailTaken = await timeoutApi.get('/email_exists', { params: { email } })
             setIsEmailTaken(emailTaken.data)
             if (emailTaken.data == 0) {
-                navigation.navigate('SignUp2', { email, firstName, lastName })
+                //navigation.navigate('SignUp2', { email, firstName, lastName })
+                setActiveDialogue(message1)
+                setActiveMenu(1);
+            } else {
+                alert("Email is aleady taken. Please use another")
             }
         } catch (err) {
             console.log(err)
         }
     }
 
+    const validateInputs = () => {
+        if ((firstName == '') || (lastName == '') || (email == '')) {
+            alert("Please fill in all fields")
+            return false
+        }
+        return true
+    }
+    const checkValidations = async () => {
+        if (password != passwordConfirm) {
+            setPasswordMismatch(true)
+            return;
+        }
+        navigation.navigate('OnboardCategory', { email, firstName, lastName, bio, password, username })
+    }
+
+    const anim = useRef(new Animated.Value(0)).current;
+    const textBoxFactor = useRef(new Animated.Value(1)).current;
+
+    const cloudAnim = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(anim, {
+                    toValue: -width * 1,
+                    duration: 8000,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+            ])).start();
+    }
+
+    const textBoxAnim = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(textBoxFactor, {
+                    toValue: 1.05,
+                    duration: 2000,
+                    //easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(textBoxFactor, {
+                    toValue: 1,
+                    duration: 2000,
+                    //easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+            ])).start();
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            cloudAnim()
+            textBoxAnim()
+            return () => {
+            }
+        }, [])
+    )
+
     return (
         <HideKeyboard>
+
+
             <View style={{
                 flex: 1,
             }}>
-                {/*<NavigationEvents
-                onWillFocus={clearErrorMessage}
-    />*/}
+                <View style={{ flex: 0.8, backgroundColor: '#FCC759' }}>
 
-                {/*<ImageBackground
-                source={img_src}
-                style={[styles.image,
-                { width: width, height: height }]}
-                resizeMode='stretch'>*/}
-
-
-                <Image
-                    source={img}
-                    resizeMode='stretch'
-                    style={[styles.img, { maxWidth: width, maxHeight: height / 4 }]} />
-
-                {/*<View style={styles.inputContainer}>
-                <View style={{ flex: 15, }} />
-                <View style={{ flex: 11 }}>*/}
-
-                {/*<View style={styles.nameContainer}>*/}
-
-                <View style={styles.inner}>
-                    <Input
-                        style={styles.inputStyle}
-                        //containerStyle={styles.nameInputStyleContainer}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='First Name'
-                        autoCorrect={false}
-                        value={firstName}
-                        onChangeText={setFirstName}
-                    />
-                    <Input
-                        style={styles.inputStyle}
-                        //containerStyle={styles.nameInputStyleContainer}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Last Name'
-                        autoCorrect={false}
-                        value={lastName}
-                        onChangeText={setLastName}
-                    />
-
-                    <Input
-                        style={styles.inputStyle}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Email'
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={email}
-                        onChangeText={(value) => {
-                            setEmail(value)
-                            setIsEmailTaken(0)
-                        }}
-                        errorStyle={{ marginHorizontal: 30, fontSize: 17 }}
-                        errorMessage={isEmailTaken == 0 ?
-                            null :
-                            'Email taken! Please choose another.'}
-                    />
-                    {/*
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    secureTextEntry={false}
-                    placeholder="Username"
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={username}
-                    onChangeText={setUsername}
-                />
-                
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    secureTextEntry={true}
-                    placeholder="Password"
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={password}
-                    onChangeText={setPassword}
-                />
-
-                <Input
-                    style={styles.inputStyle}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    secureTextEntry={true}
-                    placeholder="Confirm Password"
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                />
-
-                {/*<View style={{ flex: 4 }}>*/}
-
-                    <TouchableOpacity
-                        style={styles.signUpBoxStyle}
-                        onPress={() => {
-                            //navigation.navigate('OnboardCategory', { email, password, username, firstName, lastName })
-                            checkEmailAndNext()
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'flex-end',
+                        //transform: [{ translateX: anim, }]
+                    }}>
+                        <Animated.View style={{
+                            flexDirection: 'row', height: '40%',
+                            transform: [{ translateX: anim, }]
                         }}>
-                        <Text style={styles.signUpTextStyle}>Next</Text>
-                    </TouchableOpacity>
-                    {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                        </Animated.View>
+                    </View>
 
-                    <TouchableOpacity onPress={() =>
-                        navigation.navigate('SignIn')
-                    }
-                    >
-                        <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
-                            <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
-                        </Text>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'flex-end', alignItems: 'flex-end', marginTop: 15, paddingRight: 20,
+                    }}>
+                        <Animated.Image
+                            style={{
+                                width: width / 4, height: height / 6,
+                                transform: [
+                                    {
+                                        scale: textBoxFactor
+                                    }
+                                ]
+                            }}
+                            source={character}
+                            resizeMode="contain"
+                        />
+                    </View>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'center', alignItems: 'center',
+                    }}>
+                        <Animated.Image
+                            style={{
+                                width: '60%', height: '45%',
+                                transform: [
+                                    {
+                                        scale: textBoxFactor
+                                    }
+                                ]
+                            }}
+                            source={speechBubbleThin}
+                            resizeMode="stretch"
 
-                    </TouchableOpacity>
+                        />
+                    </View>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'center', alignItems: 'center',
+                    }}>
+                        <View style={{ width: '60%', height: '45%', padding: 10, }}>
+                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>{activeDialogue}</Text>
+                        </View>
 
-                    {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}*/}
-                    {/*</ImageBackground>*/}
+                    </View>
+                </View>
+                <View style={{ flex: 1.5 }}>
+                    {activeMenu == 0 ?
+                        <View style={styles.inner}>
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='First Name'
+                                autoCorrect={false}
+                                value={firstName}
+                                onChangeText={setFirstName}
+                            />
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Last Name'
+                                autoCorrect={false}
+                                value={lastName}
+                                onChangeText={setLastName}
+                            />
+
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Email'
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={email}
+                                onChangeText={(value) => {
+                                    setEmail(value)
+                                    setIsEmailTaken(0)
+                                }}
+                                errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 14, color: '#F5BBAE' }]}
+                                errorMessage={isEmailTaken == 0 ?
+                                    null :
+                                    'Email taken! Please choose another.'}
+                            />
+
+                            <TouchableOpacity
+                                style={styles.signUpBoxStyle}
+                                onPress={() => {
+                                    if (validateInputs()) {
+                                        checkEmailAndNext()
+                                    }
+                                }}>
+                                <Text style={styles.signUpTextStyle}>Next</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() =>
+                                navigation.navigate('SignIn')
+                            }
+                            >
+                                <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
+                                    <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
+                                </Text>
+
+                            </TouchableOpacity>
+
+                            {/*{state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}*/}
+                            {/*</ImageBackground>*/}
+
+                        </View>
+                        : null}
+                    {activeMenu == 1 ?
+                        <View style={styles.inner}>
+
+
+                            <Input
+                                style={[styles.inputStyleBio, styles.textDefault, { fontSize: 16, }]}
+                                multiline={true}
+                                numberOfLines={4}
+                                maxHeight={120}
+                                editable
+                                maxLength={150}
+                                //containerStyle={styles.nameInputStyleContainer}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Write a quick bio (visible to everyone). This part is optional.'
+                                autoCorrect={false}
+                                value={bio}
+                                onChangeText={setBio}
+                            />
+
+                            <TouchableOpacity
+                                style={styles.signUpBoxStyle}
+                                onPress={() => {
+                                    setActiveDialogue(message2)
+                                    setActiveMenu(2)
+                                }}>
+                                <Text style={[styles.signUpTextStyle, styles.textDefaultBold,]}>Next</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    alignSelf: 'center',
+                                }}
+                                onPress={() => {
+                                    setActiveDialogue(message0)
+                                    setActiveMenu(0)
+                                }}>
+                                <Text style={[styles.textDefault, {
+                                    color: '#F6F2DF',
+                                    alignSelf: 'center',
+                                    marginTop: 10,
+                                    fontSize: 16,
+                                }]}>Go Back</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                        : null}
+                    {activeMenu == 2 ?
+                        <View style={styles.inner}>
+
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                secureTextEntry={false}
+                                placeholder="Username"
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={username}
+                                onChangeText={setUsername}
+                            />
+
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                secureTextEntry={true}
+                                placeholder="Password"
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+
+                            <Input
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                secureTextEntry={true}
+                                placeholder="Confirm Password"
+                                autoCapitalize='none'
+                                autoCorrect={false}
+                                value={passwordConfirm}
+                                onChangeText={(value) => {
+                                    setPasswordConfirm(value)
+                                    setPasswordMismatch(false)
+                                }}
+                                errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 16, color: '#F5BBAE' }]}
+                                errorMessage={passwordMismatch ? "Passwords don't match!" : null}
+                            />
+
+                            <TouchableOpacity
+                                style={[styles.textDefaultBold, styles.signUpBoxStyle]}
+                                onPress={() => {
+                                    checkValidations()
+                                }}>
+                                <Text style={styles.signUpTextStyle}>Next</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    alignSelf: 'center',
+                                }}
+                                onPress={() => {
+                                    setActiveDialogue(1)
+                                    setActiveMenu(1)
+                                }}>
+                                <Text style={[styles.textDefault, {
+                                    color: '#F6F2DF',
+                                    alignSelf: 'center',
+                                    marginTop: 10,
+                                    fontSize: 16,
+                                }]}>Go Back</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                        : null}
+
+
 
                 </View>
+
+
             </View>
         </HideKeyboard>
     )
@@ -172,6 +390,12 @@ SignupScreen.navigationOptions = () => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         flex: 1,
         backgroundColor: '#FCC859'
@@ -201,6 +425,14 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginHorizontal: 25,
         paddingHorizontal: 17,
+    },
+    inputStyleBio: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginHorizontal: 25,
+        paddingHorizontal: 17,
+        marginBottom: 20,
+        height: 110,
     },
     inputContainer: {
         flex: 1,

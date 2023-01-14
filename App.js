@@ -23,8 +23,8 @@ import SessionEvalScreen from './src/screens/SessionEvalScreen';
 import HistoryDailyScreen from './src/screens/HistoryDailyScreen';
 
 import SignupScreen from './src/screens/SignupScreen';
-import SignupScreen2 from './src/screens/SignupScreen2';
-import SignupScreen3 from './src/screens/SignupScreen3';
+//import SignupScreen2 from './src/screens/SignupScreen2';
+//import SignupScreen3 from './src/screens/SignupScreen3';
 
 import SigninScreen from './src/screens/SigninScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
@@ -293,7 +293,7 @@ function CustomDrawerContent(props) {
               props.navigation.navigate('Profile temp')
             }}>
             <DrawerProfileView friends={props.friends} username={props.username}
-              totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} />
+              totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} userId={props.userId} />
           </TouchableOpacity>
 
 
@@ -438,7 +438,7 @@ function CreateLoginStack() {
         component={SignupScreen}
         options={pageOptions}
       />
-      <Stack.Screen
+      {/*<Stack.Screen
         name="SignUp2"
         component={SignupScreen2}
         options={pageOptions}
@@ -447,7 +447,7 @@ function CreateLoginStack() {
         name="SignUp3"
         component={SignupScreen3}
         options={pageOptions}
-      />
+  />*/}
       <Stack.Screen
         name="OnboardCategory"
         component={OnboardCategoryScreen}
@@ -726,7 +726,7 @@ function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
   const { fetchUserCounters } = useContext(CounterContext)
-  const { state: userState, fetchAvatar, updateLastSignin, fetchOutgoingRequests,
+  const { state: userState, fetchAvatar, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
@@ -742,10 +742,10 @@ function CreateMainNavigator() {
       let splashDisplayTime = 5000;
       if (res) {
         await updateLastSignin()
-        await fetchSelf()
+        var user_id_temp = await fetchSelf()
         console.log('fetched self');
-        await fetchAvatar(forceRetrieve = false)
-        await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
+        await fetchAvatarGeneral(user_id_temp, forceRetrieve = true, isSelf = true)
+        await fetchUserCategories(user_id_temp, getPrivate = true, isSelf = true);
         console.log('fetched categories');
         await fetchUserCounters();
         console.log('fetched counters')

@@ -1,11 +1,12 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
     View, StyleSheet, Alert, Text, TextInput, TouchableOpacity, Dimensions, Keyboard, TouchableWithoutFeedback,
-    ActivityIndicator
+    ActivityIndicator, Image
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import DropDownComponent from '../components/DropDownComponent';
+const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -27,6 +28,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
     const { state, addTodoItem, editTodoItem, fetchUserTodoItems, deleteTodoItem } = useContext(CategoryContext)
 
     const [notes, setNotes] = useState('')
+    const [toggleDelete, setToggleDelete] = useState(false)
 
     const INPUT_WIDTH = width * 0.8
 
@@ -46,6 +48,10 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
 
     }
 
+    const toggleDeleteFunction = () => {
+        setToggleDelete(!toggleDelete);
+    }
+
     const validateInputs = () => {
         if (toDoItemName == '') {
             alert("Please enter a task name")
@@ -62,7 +68,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
             [
                 {
                     text: "Go back",
-                    onPress: () => { },
+                    onPress: () => { setIsLoading(false) },
                     style: "cancel"
                 },
                 {
@@ -126,6 +132,35 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                     setColorIdCallback={setColorId}
                     setCategoryIdCallback={setCategoryId}
                 />
+                {/* toggle delete the item */}
+
+                {item ?
+                    <View style={{
+                        flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
+                    }}>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleDeleteFunction();
+                                //areYouSureDelete(item.item_id, "Task deleted successfully")
+                            }}>
+                            {toggleDelete ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                            Delete task from your history. This action will be permanent.</Text>
+                    </View>
+                    : null}
 
                 {/* add or edit the item */}
                 <View opacity={isLoading ? 0.3 : 1}>
@@ -136,8 +171,13 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                             setIsLoading(true)
 
                             if (item) {
-                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
-                                    resetInputs, errorReset)
+                                if (toggleDelete) {
+                                    areYouSureDelete(item.item_id, "Task deleted successfully")
+                                } else {
+                                    editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                        resetInputs, errorReset)
+                                }
+
                             } else {
                                 addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
                             }
@@ -146,17 +186,6 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* delete the item */}
-
-                {item ?
-                    <TouchableOpacity
-                        style={[styles.delete, { width: width / 3.5, }]}
-                        onPress={() => {
-                            areYouSureDelete(item.item_id, "Task deleted successfully")
-                        }}>
-                        <Text style={styles.deleteText}>Delete task</Text>
-                    </TouchableOpacity>
-                    : null}
 
 
                 {isLoading ?

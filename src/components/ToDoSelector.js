@@ -34,7 +34,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
     ]
 
-    const sorted_todoItems = todoItems.sort(function (a, b) {
+    const sorted_todoItems = todoItems ? todoItems.sort(function (a, b) {
         if (sortBy == 0) {
             return String(b.time_created).localeCompare(String(a.time_created))
         }
@@ -52,7 +52,8 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
         }
 
         return a.time_created - b.time_created;
-    })
+    }) : []
+
     const parentView = () => {
         return (
             <View style={[styles.parentContainer, { borderRadius: BORDER_RADIUS, }]}>

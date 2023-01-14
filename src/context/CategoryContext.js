@@ -85,6 +85,19 @@ const categoryReducer = (state, action) => {
                     return item
                 })
             }
+        case 'edit_category':
+            return {
+                ...state, userCategories: state.userCategories.map(item => {
+                    if (item.category_id == action.payload.categoryId) {
+                        return {
+                            ...item, color_id: action.payload.colorId,
+                            archived: action.payload.toArchive,
+                            isPublic: action.payload.toPublic,
+                        }
+                    }
+                    return item
+                })
+            }
         case 'clear_context':
             return {
                 userCategories: [],
@@ -149,14 +162,15 @@ const setChosen = dispatch => (button) => {
 }
 
 const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = true) => {
-    console.log("trying to fetch user categories");
+    console.log("trying to fetch user categories with id ", id);
     try {
-        const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate } })
+        const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate, isSelf } })
+        console.log("CATEGORIES FETCHED", response.data)
         dispatch({ type: 'fetch_categories', payload: response.data })
 
         // cache user's categories
         if (isSelf) {
-            console.log("Tryign to cache categories")
+            console.log("Trying to cache categories")
             const a = await AsyncStorage.setItem('categories', JSON.stringify(response.data));
         }
 
@@ -304,6 +318,24 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
     }
 }
 
+const editCategory = dispatch => async ({ categoryId, newColorId, toPublic, toArchive, callback = null, errorCallback = null }) => {
+    console.log("Category id ", categoryId)
+    console.log("newColorId ", newColorId)
+    console.log("toPublic ", toPublic)
+    console.log("toArchive ", toArchive)
+    try {
+        const response = await timeoutApi.patch(`/category/${categoryId}`,
+            { colorId: newColorId, archived: toArchive, isPublic: toPublic })
+        dispatch({ type: 'edit_category', payload: { categoryId, colorId: newColorId, archived: toArchive, isPublic: toPublic } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error changing color id:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
+        alert("There was a problem updating category. Please check your internet connection")
+        if (errorCallback) { errorCallback() }
+    }
+}
+
 const clearCategoryContext = dispatch => async () => {
     try {
         dispatch({ type: 'clear_context' })
@@ -318,7 +350,8 @@ export const { Provider, Context } = createDataContext(
     {
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
         fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem,
-        changeArchiveCategory, changeColorCategory, clearCategoryContext, changePublicCategory
+        changeArchiveCategory, changeColorCategory, clearCategoryContext, changePublicCategory,
+        editCategory,
     },
     {
         userCategories: [],

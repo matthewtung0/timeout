@@ -69,7 +69,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
 
             <Text style={styles.title}>Onboard Category Screen</Text>
             <Button title="Go back"
-                onPress={() => { navigation.navigate('SignUp3', { email, firstName, lastName, bio, password, username }) }} />
+                onPress={() => { navigation.navigate('SignUp', { email, firstName, lastName, bio, password, username }) }} />
             <Text>Select some categories to track. You can always add more later.</Text>
 
             <View style={styles.categoryContainer}>

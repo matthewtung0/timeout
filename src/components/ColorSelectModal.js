@@ -1,45 +1,49 @@
 import React, { useContext, useState } from 'react';
 import {
     View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
-    TouchableOpacity, Alert, Switch
+    TouchableOpacity, Alert, Switch, Image
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
+const img = require('../../assets/tasks_topbar.png')
+const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedCategoryName, selectedCategoryPublic, selectedCatId }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.65
+    const COLOR_WIDTH = 40;
     const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
     const [publicToggle, setPublicToggle] = useState(selectedCategoryPublic)
+    const [archiveToggle, setArchiveToggle] = useState(false)
+    const [deleteToggle, setDeleteToggle] = useState(false)
 
     const { state: catState, changeArchiveCategory,
-        changeColorCategory, deleteCategory, changePublicCategory } = useContext(CategoryContext)
+        changeColorCategory, deleteCategory, changePublicCategory, editCategory } = useContext(CategoryContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
 
-
-    let colorSquare = (item) => {
-        return (
-            <TouchableOpacity
-                style={[styles.colorSquare, { backgroundColor: item[1] }]}
-                onPress={() => {
-                    setChosenColorId(item[0])
-                    /*var chosenColorId = item[0]
-                    callback(chosenColorId)
-                    toggleFunction();*/
-                }}
-            />
-        )
+    const submitEdit = async () => {
+        await editCategory({
+            categoryId: selectedCatId,
+            newColorId: chosenColorId, toPublic: publicToggle, toArchive: archiveToggle, callback: editCallback
+        })
     }
 
     const submitColorChange = async () => {
         setIsLoading(true)
         await changeColorCategory(selectedCatId, chosenColorId, colorChangeCallback)
-        //toggleFunction();
+
+
+
     }
 
+    const editCallback = () => {
+        setIsLoading(false)
+        toggleFunction(true);
+        alert("Category edited successfully")
+    }
     const colorChangeCallback = () => {
         setIsLoading(false)
         alert("Color changed successfully")
@@ -47,7 +51,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     // can only delete category if user does not currently have to-do items with that category
     const validateDelete = () => {
         var userItems = catState.userTodoItems
-        userItemsSameCat = userItems.filter((req) => (req.category_id == selectedCatId && req.is_active == true))
+        var userItemsSameCat = userItems.filter((req) => (req.category_id == selectedCatId && req.is_active == true))
         if (userItemsSameCat.length > 0) {
             console.log("VALIDATE IS FALSE")
             return false
@@ -69,26 +73,15 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 console.log(e)
             }
         }
-
     }
 
-
-
     const submitDelete = async () => {
-        if (validateDelete() === false) {
-            Alert.alert(
-                "You currently have to-do items with this category. Delete those first before deleting this category"
-            )
-            return
-        } else {
-            setIsArchiving(true)
-            try {
-                await deleteCategory(selectedCatId, deleteCallback)
-            } catch (e) {
-                console.log(e)
-            }
+        setIsArchiving(true)
+        try {
+            await deleteCategory(selectedCatId, deleteCallback)
+        } catch (e) {
+            console.log(e)
         }
-
     }
 
     const archiveCallback = () => {
@@ -97,7 +90,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     }
     const deleteCallback = () => {
         setIsArchiving(false)
-        toggleFunction()
+        toggleFunction(true)
         alert("Deleted successfully")
     }
 
@@ -112,10 +105,10 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             "",
             [
                 {
-                    text: "Go back", onPress: () => { }, style: "cancel"
+                    text: "Go back", onPress: () => { return false }, style: "cancel"
                 },
                 {
-                    text: "Archive", onPress: () => { submitArchive(true) }
+                    text: "Archive", onPress: () => { submitEdit(); }//submitArchive(true) }
                 }
             ]
         );
@@ -127,10 +120,10 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             "",
             [
                 {
-                    text: "Go back", onPress: () => { }, style: "cancel"
+                    text: "Go back", onPress: () => { return false }, style: "cancel"
                 },
                 {
-                    text: "Delete", onPress: () => { submitDelete() }
+                    text: "Delete", onPress: () => { submitDelete(); }
                 }
             ]
         );
@@ -151,10 +144,28 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     }
 
     const togglePublic = async () => {
-        setIsLoading(true)
+        //setIsLoading(true)
         var toChangeTo = !publicToggle
         setPublicToggle(toChangeTo)
-        await changePublicCategory(selectedCatId, toChangeTo, publicChangeCallback)
+        //await changePublicCategory(selectedCatId, toChangeTo, publicChangeCallback)
+    }
+
+    const toggleArchive = () => {
+        var toChangeTo = !archiveToggle
+        setArchiveToggle(!archiveToggle)
+        // cannot have both archive and delete selected
+        if (toChangeTo == true && deleteToggle == true) {
+            setDeleteToggle(false)
+        }
+    }
+
+    const toggleDelete = () => {
+        var toChangeTo = !deleteToggle
+        setDeleteToggle(!deleteToggle)
+        // cannot have both archive and delete selected
+        if (toChangeTo == true && archiveToggle == true) {
+            setArchiveToggle(false)
+        }
     }
 
     return (
@@ -167,100 +178,215 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 }}>Edit Category</Text>
             </View>*/}
 
-                <View style={{}}>
-                    <View
-                        style={[styles.titleContainer, {
-                            width: INPUT_WIDTH, height: 45,
-                            backgroundColor: constants.colors[chosenColorId],
+                <View style={{ marginHorizontal: 20, marginTop: 90, }}>
+
+
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                        marginLeft: 5, color: 'gray',
+                    }]}>Category Name</Text>
+
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={[styles.inputStyle, {
+                            borderRadius: 20,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.3,
                         }]}>
-                        <Text style={styles.title}>{selectedCategoryName}</Text>
+                            <Text style={[styles.textDefaultBold, { fontSize: 16, color: '#67806D', }]}>
+                                {selectedCategoryName}</Text>
+
+                        </View>
                     </View>
-                    <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 5, }]}>Color Selection</Text>
-                    <FlatList
-                        style={{
-                            paddingBottom: 3, marginLeft: 5, width: width / 1.4,
-                            borderWidth: 0.5, borderColor: 'gray', borderRadius: 5, alignSelf: 'center',
-                        }}
-                        horizontal={true}
-                        data={colorArr}
-                        keyExtractor={(item) => item[0]}
-                        renderItem={({ item }) => {
-                            return (
-                                <View style={item[0] === chosenColorId ? [styles.selectOutline, { backgroundColor: 'gray' }] :
-                                    styles.selectOutline} >
-                                    {colorSquare(item)}
-                                </View>
-                            )
-                        }}
-                    />
-                    <View opacity={isLoading ? 0.3 : 1}>
-                        <TouchableOpacity style={[styles.updateColorButton, { width: width / 1.8 }]}
-                            onPress={submitColorChange}>
-                            <Text style={styles.addCategoryText}>Update Color</Text>
-                        </TouchableOpacity>
+
+                    {separator()}
+
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, }}>
+                        <View style={{
+                            borderRadius: 50,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.3,
+                        }}>
+
+                            <View
+                                style={[{
+                                    marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                            >
+                                <FlatList
+                                    horizontal={true}
+                                    data={colorArr}
+                                    keyExtractor={(item) => item[0]}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <>
+                                                {chosenColorId == item[0] ?
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                            borderWidth: 3, borderColor: '#67806D'
+                                                        }]}
+                                                        onPress={() => { setChosenColorId(item[0]) }}
+                                                    />
+
+                                                    :
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                        }]}
+                                                        onPress={() => { setChosenColorId(item[0]) }}
+                                                    />
+                                                }
+                                            </>
+                                        )
+                                    }}
+                                >
+                                </FlatList>
+                            </View>
+
+                        </View>
                     </View>
 
                     <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
                     {separator()}
-                </View>
 
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                        marginTop: 10,
+                    }]}>Public Setting</Text>
 
-                <View style={{}}>
-                    <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Public Setting</Text>
+                    <View style={{ flexDirection: 'row', marginVertical: 10, marginHorizontal: 10, }}>
 
-                    <Switch
-                        style={{ marginHorizontal: 10 }}
-                        disabled={isLoading}
-                        trackColor={{ false: "#ABC57E", true: "#ABC57E" }}
-                        thumbColor={selectedCategoryPublic ? "#67806D" : "#67806D"}
-                        //ios_backgroundColor="#ABC57E"
-                        onValueChange={togglePublic}
-                        value={publicToggle}
-                    />
-                    {publicToggle ?
-                        <Text style={[styles.modalMargin, { marginBottom: 10, }]}>Category is public - your friends will be able to see it on your profile.</Text>
-                        :
-                        <Text style={[styles.modalMargin, { marginBottom: 10, }]}>Category is private - it will not be shown on your profile.</Text>
-                    }
+                        <TouchableOpacity
+                            onPress={() => {
+                                togglePublic()
+                            }}>
+                            {publicToggle ?
 
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: '#67806D', marginHorizontal: 5, fontSize: 12, }]}>
+                            Category is public - your friends will be able to see it on their feed and your profile.</Text>
+                    </View>
                     {separator()}
-                </View>
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                    }]}>Archive Category</Text>
+                    <View style={{ flexDirection: 'row', marginVertical: 10, marginHorizontal: 10, }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleArchive();
+                            }}>
+                            {archiveToggle ?
 
-                <View style={{}}>
-                    <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 10, }]}>Archive Category</Text>
-                    <Text style={[styles.modalMargin, { marginBottom: 10, }]}>You can archive categories to hide them from your summary views and dropdown list. They will still be counted in your statistics.</Text>
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: '#67806D', marginHorizontal: 5, fontSize: 12, }]}>
+                            Archive category to hide from your summary view and dropdown list. They will still be inclued in your statistics.</Text>
+                    </View>
+                    {separator()}
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                    }]}>Delete Category</Text>
+                    <View style={{ flexDirection: 'row', marginVertical: 10, marginHorizontal: 10, }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleDelete();
+                            }}>
+                            {deleteToggle ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: 'red', marginHorizontal: 5, fontSize: 12, }]}>
+                            Remove category. Previous tasks will still be included in summary view and statistics.</Text>
+                    </View>
 
                     <TouchableOpacity style={[styles.updateColorButton, {
-                        width: width / 1.8, backgroundColor: '#F5BBAE',
+                        width: width / 2, backgroundColor: 'white',
                     }]}
                         onPress={() => {
+                            if (deleteToggle) {
+                                if (validateDelete() === false) {
+                                    Alert.alert(
+                                        "You currently have to-do items with this category. Delete those first before deleting this category"
+                                    )
+                                    return
+                                }
+                                var res = areYouSureDelete()
+                                if (res == false) { return }
 
-                            areYouSureArchive()
+                            } else if (archiveToggle) {
+                                if (validateDelete() === false) {
+                                    Alert.alert(
+                                        "You currently have to-do items with this category. Delete those first before archiving this category"
+                                    )
+                                    return
+                                }
+                                var res = areYouSureArchive()
+                                if (res == false) { return }
+                            }
+                            else {
+                                submitEdit();
+                            }
                         }}>
-                        <Text style={styles.addCategoryText}>Archive Category</Text>
+                        <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
                     </TouchableOpacity>
 
+                </View>
+
+                <View style={{}}>
                     <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
-
-                    {separator()}
-
-                    <TouchableOpacity style={[styles.updateColorButton, {
-                        width: width / 1.8, backgroundColor: '#F5BBAE',
-                    }]}
-                        onPress={() => {
-                            areYouSureDelete()
-                        }}>
-                        <Text style={styles.addCategoryText}>Delete Category</Text>
-                    </TouchableOpacity>
                 </View>
-
-
-
             </View>
+
+            <Image
+                source={img}
+                resizeMode='stretch'
+                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+
+            <Text style={[styles.title, { position: 'absolute' }]}>Edit Category</Text>
+
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={toggleFunction}>
+                    onPress={() => { toggleFunction(false) }}>
 
                     <Icon
                         name="close-outline"
@@ -275,6 +401,12 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         backgroundColor: '#f6F2DF',
         alignContent: 'center',
@@ -314,7 +446,7 @@ const styles = StyleSheet.create({
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.6,
+        shadowOpacity: 0.3,
     },
     addCategoryText: {
         fontWeight: '600',
@@ -323,9 +455,11 @@ const styles = StyleSheet.create({
     },
     title: {
         alignSelf: 'center',
-        fontSize: 18,
-        fontWeight: '600',
-        color: 'gray',
+        margin: 20,
+        marginBottom: 50,
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: 'white',
     },
     titleContainer: {
         marginTop: 20,
@@ -339,6 +473,18 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontSize: 18,
         fontWeight: '600',
+    },
+    inputStyle: {
+        borderRadius: 15,
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        color: 'gray',
+        fontSize: 16,
+    }, colorSquare: {
+        marginHorizontal: 5,
+        marginTop: 5,
+        marginBottom: 5,
     },
 })
 

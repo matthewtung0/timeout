@@ -1,22 +1,20 @@
-import React, { useContext, useState, useRef, useCallback } from 'react';
+import React, { useCallback, useRef, useState, useContext } from 'react';
 import {
-    View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, Animated
+    View, StyleSheet, TouchableOpacity, Dimensions, Animated,
+    Image, TextInput, Keyboard, TouchableWithoutFeedback
 } from 'react-native';
-import { Input, Text } from 'react-native-elements';
-import { useFocusEffect } from '@react-navigation/native';
-import { Context as AuthContext } from '../context/AuthContext';
 
-import { Context as CategoryContext } from '../context/CategoryContext'
-import { Context as UserContext } from '../context/userContext'
+import { useFocusEffect } from '@react-navigation/native';
+import { Input, Button, Text } from 'react-native-elements';
+import { Context as AuthContext } from '../src/context/AuthContext';
 import { Easing } from 'react-native-reanimated';
 
 const img_src = require('../../assets/signin_background.png');
+const img = require('../../assets/signup_plant.png')
 const cloud = require('../../assets/cloud.png');
 const character = require('../../assets/character.png');
 const speechBubbleMore = require('../../assets/speech_bubble_more.png');
 const speechBubbleThin = require('../../assets/speech_bubble_thin.png');
-
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -24,35 +22,21 @@ const HideKeyboard = ({ children }) => (
     </TouchableWithoutFeedback>
 );
 
-const SigninScreen = ({ navigation }) => {
+const SignupScreen3 = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
-    const { state, signin, signout, tryLocalSignin, clearErrorMessage } = useContext(AuthContext);
+    const { email, firstName, lastName, bio } = params;
 
-    const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-    const { state: userState, fetchOutgoingRequests, fetchIncomingRequests,
-        fetchFriends, fetchSelf } = useContext(UserContext)
-
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('')
+    const [username, setUsername] = useState('');
+    const [passwordMismatch, setPasswordMismatch] = useState(false)
 
-    const imgWidth = Image.resolveAssetSource(img_src).width
-    const imgHeight = Image.resolveAssetSource(img_src).height
-    const heightSet = width * (imgHeight / imgWidth)
-
-    const signInCallback = async () => {
-        console.log("SIGN IN CALLBACK??")
-        await fetchSelf()
-        console.log('fetched self');
-        await fetchUserCategories();
-        console.log('fetched categories');
-        await fetchUserTodoItems();
-        console.log('fetched todo items');
-        await fetchFriends();
-        console.log('fetched friends');
-        await fetchOutgoingRequests();
-        console.log('fetched outgoing friend requests');
-        await fetchIncomingRequests();
-        console.log('fetched incoming friend requests');
+    const checkValidations = async () => {
+        if (password != passwordConfirm) {
+            setPasswordMismatch(true)
+            return;
+        }
+        navigation.navigate('OnboardCategory', { email, firstName, lastName, bio, password, username })
     }
 
     const anim = useRef(new Animated.Value(0)).current;
@@ -88,11 +72,6 @@ const SigninScreen = ({ navigation }) => {
             ])).start();
     }
 
-    /*const xVal = anim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 3],
-    });*/
-
     useFocusEffect(
         useCallback(() => {
             cloudAnim()
@@ -104,10 +83,11 @@ const SigninScreen = ({ navigation }) => {
 
     return (
         <HideKeyboard>
-            <View style={{ flex: 1 }}>
 
-                <View style={{ flex: 1, backgroundColor: '#FCC759' }}>
-
+            <View style={{
+                flex: 1,
+            }}>
+                <View style={{ flex: 0.8, backgroundColor: '#FCC759' }}>
                     <View style={{
                         position: 'absolute', height: '100%', width: '100%',
                         justifyContent: 'flex-end',
@@ -158,7 +138,7 @@ const SigninScreen = ({ navigation }) => {
                     }}>
                         <Animated.Image
                             style={{
-                                width: width * 0.6, height: height * (1 / 2.5) * 0.45,
+                                width: '60%', height: '45%',
                                 transform: [
                                     {
                                         scale: textBoxFactor
@@ -175,68 +155,90 @@ const SigninScreen = ({ navigation }) => {
                         justifyContent: 'center', alignItems: 'center',
                     }}>
                         <View style={{ width: '60%', height: '45%', padding: 10, }}>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>Good morning!</Text>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>I hope we all make the most out of our time!</Text>
+                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>Just a few more steps!</Text>
+                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>You're almost there, I promise.</Text>
                         </View>
 
+                    </View>
+                </View>
+                <View style={{ flex: 1.5 }}>
+                    <View style={styles.inner}>
+
+                        <Input
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={false}
+                            placeholder="Username"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={username}
+                            onChangeText={setUsername}
+                        />
+
+                        <Input
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={true}
+                            placeholder="Password"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+
+                        <Input
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={true}
+                            placeholder="Confirm Password"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={passwordConfirm}
+                            onChangeText={(value) => {
+                                setPasswordConfirm(value)
+                                setPasswordMismatch(false)
+                            }}
+                            errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 16, color: '#F5BBAE' }]}
+                            errorMessage={passwordMismatch ? "Passwords don't match!" : null}
+                        />
+
+                        <TouchableOpacity
+                            style={[styles.textDefaultBold, styles.signUpBoxStyle]}
+                            onPress={() => {
+                                checkValidations()
+                            }}>
+                            <Text style={styles.signUpTextStyle}>Next</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={{
+                                alignSelf: 'center',
+                            }}
+                            onPress={() => { navigation.navigate('SignUp2', { email, firstName, lastName, bio }) }}>
+                            <Text style={[styles.textDefault, {
+                                color: '#F6F2DF',
+                                alignSelf: 'center',
+                                marginTop: 10,
+                                fontSize: 16,
+                            }]}>Go Back</Text>
+                        </TouchableOpacity>
 
                     </View>
                 </View>
 
-                <View style={[styles.inputContainer, { flex: 1.5 }]}>
-                    <View style={{ marginTop: 35, }} />
-                    <Input
-                        style={[styles.inputStyle, styles.textDefault, { marginBottom: 10, fontSize: 16, }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={email}
-                        placeholder="Email"
-                        onChangeText={setEmail}
-                    />
 
-                    <Input
-                        style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        secureTextEntry={true}
-                        placeholder="Password"
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={password}
-                        onChangeText={setPassword}
-                    />
-                    <TouchableOpacity onPress={() =>
-                        navigation.navigate('ForgotPassword')
-                    }
-                    >
-                        <Text style={[styles.button, styles.textDefault, { fontSize: 16, }]}>Forgot your password?</Text>
 
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.signInBoxStyle}
-                        onPress={() => {
-                            console.log("pressed sign in button")
-                            signin(email, password, signInCallback)
-                        }}>
-                        <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Sign In</Text>
-                    </TouchableOpacity>
-                    {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
-
-                    <TouchableOpacity
-                        style={{ marginTop: 10, }}
-                        onPress={() => navigation.navigate('SignUp', { defaultMenuNum: 0 })}
-                    >
-
-                        <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault,]}>Don't have an account?
-                            <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault]}> Sign up here!</Text>
-                        </Text>
-                    </TouchableOpacity>
-                </View>
 
             </View>
         </HideKeyboard>
     )
+
+}
+
+SignupScreen3.navigationOptions = () => {
+    return {
+        headerShown: false,
+    };
 }
 
 const styles = StyleSheet.create({
@@ -246,15 +248,6 @@ const styles = StyleSheet.create({
     textDefault: {
         fontFamily: 'Inter-Regular',
     },
-    container: {
-    },
-    image: {
-    },
-    title: {
-        fontSize: 30,
-        justifyContent: 'center',
-        margin: 20,
-    },
     inputStyle: {
         backgroundColor: 'white',
         borderRadius: 15,
@@ -262,48 +255,36 @@ const styles = StyleSheet.create({
         paddingHorizontal: 17,
     },
     inputContainer: {
-        backgroundColor: '#67806D',
-    },
-    errorMessage: {
-        fontSize: 16,
-        color: 'red',
-        marginTop: 10,
-        alignSelf: 'center'
-    },
-    button: {
-        color: 'orange',
-        alignSelf: 'center',
-        marginBottom: 15,
+        flex: 1,
+        flexDirection: 'column',
     },
     inputStyleContainer: {
         borderBottomWidth: 0,
     },
-    signInBoxStyle: {
+    signUpBoxStyle: {
         backgroundColor: '#FCC859',
         width: 150,
         height: 40,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        marginTop: 5,
     },
-    signInTextStyle: {
+    signUpTextStyle: {
         color: '#F6F2DF',
         fontSize: 18,
         fontWeight: 'bold'
 
     },
-    redirectToSignInStyleWhite: {
-        color: '#F6F2DF',
-        alignSelf: 'center',
-        marginTop: 10
+    inner: {
+        backgroundColor: '#67806D',
+        flex: 1,
+        paddingVertical: 20,
     },
-    redirectToSignInStyleYellow: {
-        color: 'orange',
-        alignSelf: 'center',
-        marginTop: 10
+    img: {
+        marginTop: 50,
     }
-
 })
 
-export default SigninScreen;
+export default SignupScreen3;

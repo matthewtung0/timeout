@@ -199,7 +199,8 @@ const ProfileScreen = ({ navigation }) => {
                         : <Text style={styles.text}>0h 0m 0s</Text>}
                 </View>
                 <Header
-                    navigation={navigation} />
+                    navigation={navigation}
+                    color={'#67806D'} />
 
                 <View
                     style={{

@@ -12,6 +12,7 @@ import AddCategoryModal from '../components/AddCategoryModal';
 import Header from '../components/Header';
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
+const bg_bottom = require('../../assets/background_sidebar.png')
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -29,6 +30,7 @@ const AddCategoryScreen = ({ navigation }) => {
     const [selectedCategoryPublic, setSelectedCategoryPublic] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false)
+    const [induceRender, setInduceRender] = useState(0)
 
     var colorArr = []
     //let colors = JSON.parse(constants.colors)
@@ -36,8 +38,11 @@ const AddCategoryScreen = ({ navigation }) => {
         colorArr.push([i, constants['colors'][i]])
     }
 
-    const toggleModal = () => {
+    const toggleModal = (rerender) => {
         setModalVisible(!modalVisible);
+        if (rerender) {
+            setInduceRender(induceRender + 1)
+        }
     };
 
     const toggleAddCategoryModal = () => {
@@ -55,6 +60,7 @@ const AddCategoryScreen = ({ navigation }) => {
             { text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) } }]
         );
     }
+    //console.log(catState.userCategories)
     return (
         <HideKeyboard>
             {userState.errorMessage && 0 ?
@@ -62,27 +68,26 @@ const AddCategoryScreen = ({ navigation }) => {
                     <Text style={{ color: 'grey', fontSize: 18, textAlign: 'center', }}>
                         Categories are currently unavailable. Please check your internet connection.</Text>
                 </View>
-                    <><Image
-                        source={img}
-                        resizeMode='stretch'
-                        style={{ maxHeight: 100, position: 'absolute' }} />
-                        <Text style={{
-                            position: 'absolute',
-                            alignSelf: 'center',
-                            marginTop: 60,
-                            marginBottom: 15,
-                            fontSize: 23,
-                            fontWeight: '600',
-                            color: 'white',
-                        }}>My Categories</Text>
+                    <>
                         <Header
                             navigation={navigation} />
                     </>
                 </>
                 :
                 <>
+                    <View style={{
+                        position: 'absolute', flex: 1, width: '100%', height: '100%',
+                        justifyContent: 'flex-end',
+                    }}>
+                        <Image
+                            source={bg_bottom}
+                            style={{ width: '100%', height: 50, }}
+                            resizeMode="cover"
+                        />
+                    </View>
+
                     <ScrollView
-                        style={{ backgroundColor: '#F9EAD3', }}>
+                        style={{}}>
 
                         <Modal isVisible={modalVisible}
                             animationIn='slideInLeft'
@@ -94,7 +99,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                 justifyContent: 'center'
                             }}>
                                 <View style={{
-                                    height: 500
+                                    height: height * 0.8
                                 }}>
                                     <ColorSelectModal
                                         toggleFunction={toggleModal}
@@ -119,16 +124,18 @@ const AddCategoryScreen = ({ navigation }) => {
                                 justifyContent: 'center'
                             }}>
                                 <View style={{
-                                    height: 500
+                                    height: height * 0.7
                                 }}>
                                     <AddCategoryModal
                                         toggleFunction={toggleAddCategoryModal}
                                         colorArr={colorArr}
                                     />
-                                </View></View>
+                                </View>
+                            </View>
                         </Modal>
 
-                        <Text style={{ marginLeft: 25, marginTop: 120, fontSize: 20, }}>Active Categories</Text>
+                        <Text style={[styles.textDefaultBold,
+                        { marginLeft: 25, marginTop: 120, fontSize: 20, color: '#67806D' }]}>Active Categories</Text>
                         <View style={styles.categoryContainer}>
                             {catState.userCategories
                                 .filter((item) => (!item.archived && item.category_name !== 'Unsorted'))
@@ -139,11 +146,21 @@ const AddCategoryScreen = ({ navigation }) => {
                                     return (
                                         <View
                                             key={item.category_id}
-                                            style={{ height: 35, }}>
+                                            style={{ height: 40, }}>
                                             <View style={{ flexDirection: 'row', flex: 1, marginBottom: 5, }}>
 
+                                                <View style={{ flex: 1, marginRight: 10, }}>
+                                                    {item.public ?
+                                                        <Icon name='eye-outline' type='ionicon' size={20} color='#67806D' />
+                                                        :
+                                                        <Icon name='eye-off-outline' type='ionicon' size={20} color='#67806D' />
+                                                    }
+
+                                                </View>
+
                                                 <View style={{ flex: 8, }}>
-                                                    <Text style={[styles.categoryText]}>{item['category_name']}</Text>
+                                                    <Text style={[styles.textDefault,
+                                                    { color: '#67806D', fontSize: 15, }]}>{item['category_name']}</Text>
                                                 </View>
 
                                                 <View style={{ flex: 1, }}>
@@ -183,14 +200,20 @@ const AddCategoryScreen = ({ navigation }) => {
                                 })}
                         </View>
 
-                        <View
-                            style={{
-                                borderBottomColor: 'grey',
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                            }}
-                        />
+                        <TouchableOpacity style={[styles.addCategoryButton, { width: width / 1.8 }]}
+                            onPress={() => {
+                                if (userState.errorMessage) {
+                                    alert("Currently unable to add new category. Please check your internet connection")
+                                } else {
+                                    toggleAddCategoryModal();
+                                }
+                                //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
+                            }}>
+                            <Text style={styles.addCategoryText}>Add Category</Text>
+                        </TouchableOpacity>
 
-                        <Text style={{ marginLeft: 25, marginTop: 10, fontSize: 20, }}>Archived Categories</Text>
+                        <Text style={[styles.textDefaultBold,
+                        { marginLeft: 25, marginTop: 10, fontSize: 20, color: '#67806D' }]}>Archived Categories</Text>
 
                         <View style={styles.categoryContainer}>
                             {catState.userCategories.filter((item) => item.archived)
@@ -202,10 +225,11 @@ const AddCategoryScreen = ({ navigation }) => {
                                         <View
                                             key={item.category_id}
                                             style={{ height: 35, }}>
-                                            <View style={{ flexDirection: 'row', flex: 1, marginBottom: 5, }}>
+                                            <View style={{ flexDirection: 'row', flex: 1, }}>
 
                                                 <View style={{ flex: 8, }}>
-                                                    <Text style={[styles.categoryText]}>{item['category_name']}</Text>
+                                                    <Text style={[styles.categoryText, styles.textDefault,
+                                                    { color: '#67806D', fontSize: 15, }]}>{item['category_name']}</Text>
                                                 </View>
 
                                                 <View style={{ flex: 1, }}>
@@ -240,8 +264,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                                 style={{
                                                     borderBottomColor: '#DCDBDB',
                                                     //borderBottomWidth: StyleSheet.hairlineWidth,
-                                                    borderBottomWidth: 1.5,
-                                                    marginBottom: 10,
+                                                    borderBottomWidth: 1,
                                                 }}
                                             />
                                         </View>
@@ -249,37 +272,12 @@ const AddCategoryScreen = ({ navigation }) => {
                                 })}
                         </View>
 
-
-                        <TouchableOpacity style={[styles.addCategoryButton, { width: width / 1.8 }]}
-                            onPress={() => {
-                                if (userState.errorMessage) {
-                                    alert("Currently unable to add new category. Please check your internet connection")
-                                } else {
-                                    toggleAddCategoryModal();
-                                }
-
-
-                                //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
-                            }}>
-                            <Text style={styles.addCategoryText}>Add New Category</Text>
-                        </TouchableOpacity>
                     </ScrollView>
 
-                    <><Image
-                        source={img}
-                        resizeMode='stretch'
-                        style={{ maxHeight: 100, position: 'absolute' }} />
-                        <Text style={{
-                            position: 'absolute',
-                            alignSelf: 'center',
-                            marginTop: 60,
-                            marginBottom: 15,
-                            fontSize: 23,
-                            fontWeight: '600',
-                            color: 'white',
-                        }}>My Categories</Text>
+                    <>
                         <Header
-                            navigation={navigation} />
+                            navigation={navigation}
+                            color={"#67806D"} />
                     </>
                 </>
             }
@@ -289,6 +287,12 @@ const AddCategoryScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         margin: 30,
         fontSize: 40,
@@ -299,9 +303,8 @@ const styles = StyleSheet.create({
     },
     addCategoryButton: {
         flex: 1,
-        padding: 10,
+        paddingVertical: 15,
         margin: 10,
-        height: 40,
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         alignSelf: 'center',

@@ -107,6 +107,8 @@ const fetchSelf = dispatch => async () => {
 
         await AsyncStorage.setItem('fetchSelf', JSON.stringify(response.data));
         console.log("set asyncstorage fetchself")
+        console.log("Returning this user id: ", response.data.user_info.user_id)
+        return response.data.user_info.user_id;
 
     } catch (err) {
         console.log("TRYING CACHED SELF INFO")
@@ -116,10 +118,11 @@ const fetchSelf = dispatch => async () => {
             dispatch({ type: 'fetch_self', payload: JSON.parse(self_cached) })
         }
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+        return "asdf"
     }
 }
 
-const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false) => {
+const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, isSelf = false) => {
     try {
         var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id}`)
         if (!avatar_dt) {
@@ -129,6 +132,8 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false) =>
             avatar_dt = new Date(avatar_dt);
         }
         console.log("Force retrieve is ", forceRetrieve);
+        console.log("With user id ", user_id);
+        console.log("IS SELF IS", isSelf)
 
         if (forceRetrieve) {
             console.log("Getting avatar from server")
@@ -138,11 +143,20 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false) =>
 
             await AsyncStorage.setItem(`avatar_${user_id}`, base64Icon);
             await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
+
+            if (isSelf) {
+                console.log("is self from server")
+                dispatch({ type: 'fetch_avatar', payload: base64Icon })
+            }
             return base64Icon;
         } else {
             console.log("Getting avatar from asyncstorage");
 
             var base64Icon_cached = await AsyncStorage.getItem(`avatar_${user_id}`);
+            if (isSelf) {
+                console.log("is self from cache")
+                dispatch({ type: 'fetch_avatar', payload: base64Icon_cached })
+            }
             return base64Icon_cached;
         }
     } catch (err) {
@@ -265,17 +279,16 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
-const saveAvatar2 = dispatch => async (avatarJSON, items_to_redeem, items_cost, callback = null, callback_fail = null) => {
+const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, items_cost, callback = null, callback_fail = null) => {
     try {
         console.log("Items to redeem", items_to_redeem)
         const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON, items_to_redeem, items_cost })
         var avatarBase64Data = `data:image/png;base64,${response.data}`
         dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, items_cost } })
-        console.log("saving done")
 
         // save to cache as well
-        await AsyncStorage.setItem('user_avatar', avatarBase64Data);
-        await AsyncStorage.setItem('user_avatar_date', String(new Date()));
+        await AsyncStorage.setItem(`avatar_${user_id}`, avatarBase64Data);
+        await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
 
         if (callback) { callback() }
     } catch (err) {
@@ -314,8 +327,6 @@ const purchaseItems = dispatch => async (itemArr, callback = null) => {
         dispatch({ type: 'add_error', payload: 'Problem purchasing items!' })
     }
 }
-
-
 
 const fetchEveryone = dispatch => async () => { };
 

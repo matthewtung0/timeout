@@ -92,7 +92,8 @@ const InviteScreen = ({ navigation, route: { params } }) => {
             </View>
 
             <Header
-                navigation={navigation} />
+                navigation={navigation}
+                color={'#67806D'} />
         </>
 
     )

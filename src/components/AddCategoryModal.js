@@ -1,17 +1,19 @@
 import React, { useState, useContext } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, TextInput, Switch, ActivityIndicator,
+    Keyboard, TouchableWithoutFeedback, TextInput, Switch, ActivityIndicator, Alert,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext'
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
+const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const AddCategoryModal = ({ toggleFunction, colorArr }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
+    const COLOR_WIDTH = 40;
     const [categoryName, setCategoryName] = useState('')
     const [chosenColor, setChosenColor] = useState('c0')
     const [isEnabled, setIsEnabled] = useState(true);
@@ -19,8 +21,8 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
     const [isLoading, setIsLoading] = useState(false)
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-    const { addCategory, fetchUserCategories } = useContext(CategoryContext)
-    const { userState } = useContext(UserContext)
+    const { state: categoryState, addCategory, fetchUserCategories } = useContext(CategoryContext)
+    const { state: userState } = useContext(UserContext)
 
     const resetInputs = async () => {
         await fetchUserCategories(userState.user_id)
@@ -32,51 +34,147 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
         setIsLoading(false)
     }
     const validateInputs = () => {
+        // check if category name already exists
+        var currentCategories = categoryState.userCategories
+        var categoriesSameName = currentCategories.filter((req) => (req.category_name.toLowerCase() == categoryName.toLowerCase()
+            && req.is_active == true))
+        if (categoriesSameName.length > 0) {
+            alert("You already have a category with that name!")
+            return false
+        }
         return true;
+    }
+    const separator = () => {
+        return (
+            <View
+                style={{
+                    borderBottomColor: '#DCDBDB',
+                    //borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomWidth: 1.5,
+                    marginBottom: 10,
+                }}
+            />
+
+        )
     }
 
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
             <View style={{ flex: 1, backgroundColor: '#F9EAD3' }}>
                 <View style={{ marginHorizontal: 20, marginTop: 90, }}>
-                    <Text style={styles.labelText}>Category Name</Text>
-                    <TextInput
-                        style={[styles.inputStyle, {
-                            width: INPUT_WIDTH, height: 45,
-                            backgroundColor: constants.colors[chosenColor],
-                        }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Category name here'
-                        autoCorrect={false}
-                        value={categoryName}
-                        onChangeText={setCategoryName}
-                    />
-                    <Text style={styles.labelText}>Choose a color:</Text>
-                    < FlatList
-                        horizontal={true}
-                        data={colorArr}
-                        keyExtractor={(item) => item[0]}
-                        renderItem={({ item }) => {
-                            return (
-                                < >
-                                    <TouchableOpacity
-                                        style={[styles.colorSquare, { backgroundColor: item[1] }]}
-                                        onPress={() => { setChosenColor(item[0]) }}
-                                    />
-                                </>
-                            )
-                        }}
-                    >
-                    </FlatList>
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>
+                        Category Name</Text>
 
-                    <Text style={styles.labelText}>Category Visible on your Profile</Text>
-                    <Switch
-                        style={{ marginTop: 10, }}
-                        trackColor={{ false: '#cdd5a0', true: '#90AB72' }}
-                        thumbColor={isEnabled ? "#67806D" : "#f6F2DF"}
-                        ios_backgroundColor="#f6F2DF"
-                        onValueChange={toggleSwitch}
-                        value={isEnabled} />
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={{
+                            borderRadius: 20,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.3,
+                        }}>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, {
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Category'
+                                placeholderTextColor={'gray'}
+                                autoCorrect={false}
+                                value={categoryName}
+                                onChangeText={setCategoryName}
+                            />
+
+                        </View>
+                    </View>
+
+                    {separator()}
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+
+
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={{
+                            borderRadius: 50,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.3,
+                        }}>
+
+                            <View
+                                style={[{
+                                    marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                            >
+                                < FlatList
+                                    horizontal={true}
+                                    data={colorArr}
+                                    keyExtractor={(item) => item[0]}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <>
+                                                {chosenColor == item[0] ?
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                            borderWidth: 3, borderColor: '#67806D'
+                                                        }]}
+                                                        onPress={() => { setChosenColor(item[0]) }}
+                                                    />
+
+                                                    :
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                        }]}
+                                                        onPress={() => { setChosenColor(item[0]) }}
+                                                    />
+                                                }
+                                            </>
+                                        )
+                                    }}
+                                >
+                                </FlatList>
+                            </View>
+                        </View>
+                    </View>
+
+                    {separator()}
+
+                    <Text style={[styles.textDefaultBold, styles.labelText, {
+                        fontSize: 16, color: '#67806D',
+                        marginTop: 10,
+                    }]}>
+                        Public Setting</Text>
+
+                    <View style={{ flexDirection: 'row', marginTop: 10, marginHorizontal: 10, }}>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleSwitch()
+                            }}>
+                            {isEnabled ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: '#67806D', marginHorizontal: 5, }]}>
+                            Category is public - your friends will be able to see it on their feed and your profile.</Text>
+
+                    </View>
 
 
                     <View opacity={isLoading ? 0.3 : 1}>
@@ -124,6 +222,12 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         flex: 1,
     },
@@ -134,11 +238,9 @@ const styles = StyleSheet.create({
     },
     labelText: { marginLeft: 5, color: 'gray', },
     colorSquare: {
-        width: 50,
-        height: 50,
         marginHorizontal: 5,
         marginTop: 5,
-        marginBottom: 15,
+        marginBottom: 5,
     },
     title: {
         alignSelf: 'center',
@@ -202,15 +304,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
     },
     inputStyle: {
-        marginTop: 5,
-        backgroundColor: 'white',
         borderRadius: 15,
-        paddingHorizontal: 10,
-        alignSelf: 'center',
-        marginBottom: 20,
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
         color: 'gray',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 16,
     },
 })
 
