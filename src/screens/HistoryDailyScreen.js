@@ -150,21 +150,22 @@ const HistoryDailyScreen = ({ navigation }) => {
         setMonthlyTasksGrouped(sortedTaskMap)
     }
 
+    const focusEffectFunc = async () => {
+        setIsLoading(true)
+        await fetchMonthly(state.calendarDate, groupMonthlyTasks)
+        await fetchMonthlyCounters(state.calendarDate)
+        setDisplayedMonth(longMonth(state.calendarDate))
+        setDisplayedYear(state.calendarDate.getFullYear())
+        setIsLoading(false)
+    }
+
 
     useFocusEffect(
 
         useCallback(() => {
             //setUseMonthly(true)
-            setIsLoading(true)
 
-            fetchMonthly(state.calendarDate, groupMonthlyTasks)
-
-            fetchMonthlyCounters(state.calendarDate)
-
-            setDisplayedMonth(longMonth(state.calendarDate))
-            setDisplayedYear(state.calendarDate.getFullYear())
-            setIsLoading(false)
-
+            focusEffectFunc();
             return () => {
             }
         }, [state.calendarDate])
@@ -316,57 +317,57 @@ const HistoryDailyScreen = ({ navigation }) => {
                 </View>
             </Modal>
 
-            <View style={{
-                flex: 1, flexDirection: 'row', alignItems: 'center', height: 30, borderRadius: 15,
-                backgroundColor: '#90AB72', marginHorizontal: 20,
-            }}>
-                <View style={{ flex: 1, }}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (!isLoading) {
-                                goToPrevMonth()
-                            }
-                        }
-                        }>
-                        <Icon
-                            name="chevron-back-outline"
-                            type='ionicon'
-                            size={25}
-                            color='white' />
-                    </TouchableOpacity>
-                </View>
+            <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, }}>
                 <View style={{
-                    flex: 3,
-                    alignItems: 'center', justifyContent: 'center', alignContent: 'center',
+                    flex: 1, flexDirection: 'row', alignItems: 'center', height: 30, borderRadius: 15,
+                    backgroundColor: '#90AB72', marginHorizontal: 20,
                 }}>
-                    <Text style={[styles.overviewTitle, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
+                    <View style={{ flex: 1, }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (!isLoading) {
+                                    goToPrevMonth()
+                                }
+                            }
+                            }>
+                            <Icon
+                                name="chevron-back-outline"
+                                type='ionicon'
+                                size={25}
+                                color='white' />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{
+                        flex: 3,
+                        alignItems: 'center', justifyContent: 'center', alignContent: 'center',
+                    }}>
+                        <Text style={[styles.overviewTitle, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
+                    </View>
+
+                    <View style={{ flex: 1, }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (!isLoading) {
+                                    goToNextMonth()
+                                }
+                            }
+                            }>
+                            {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) < 0 ?
+                                <Icon
+                                    name="chevron-forward-outline"
+                                    type='ionicon'
+                                    size={25}
+                                    color='#E8D39E' />
+                                :
+                                <Icon
+                                    name="chevron-forward-outline"
+                                    type='ionicon'
+                                    size={25}
+                                    color='white' />}
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={{ flex: 1, }}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (!isLoading) {
-                                goToNextMonth()
-                            }
-                        }
-                        }>
-                        {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) < 0 ?
-                            <Icon
-                                name="chevron-forward-outline"
-                                type='ionicon'
-                                size={25}
-                                color='#E8D39E' />
-                            :
-                            <Icon
-                                name="chevron-forward-outline"
-                                type='ionicon'
-                                size={25}
-                                color='white' />}
-                    </TouchableOpacity>
-                </View>
-            </View>
-            {isLoading ?
-                <ActivityIndicator size="large" color="gray" /> :
                 <View style={{ flex: 12, }}>
 
                     {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
@@ -476,7 +477,20 @@ const HistoryDailyScreen = ({ navigation }) => {
 
                         </View>
                     </View>
-                </View>}
+                </View>
+            </View>
+
+            {isLoading ?
+                <View style={{
+                    width: '100%', height: '100%', position: 'absolute',
+                    justifyContent: 'center', alignItems: 'center',
+                }}>
+                    <ActivityIndicator style={{ width: 100, height: 100 }} size="large" color="black" />
+                </View>
+                :
+                null}
+
+
         </View>
     )
 }

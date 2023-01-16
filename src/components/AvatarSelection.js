@@ -6,7 +6,7 @@ const base2 = require('../../assets/avatar/16_base/2.png');
 const base3 = require('../../assets/avatar/16_base/3.png');
 const base4 = require('../../assets/avatar/16_base/4.png');
 const base5 = require('../../assets/avatar/16_base/5.png');
-const baseTypes = [base1, base2, base3, base4, base5]
+const baseTypes = [[base1], [base2], [base3], [base4], [base5]]
 
 const ear1 = require('../../assets/avatar/3_ear/1.png')
 const ear2 = require('../../assets/avatar/3_ear/2.png')

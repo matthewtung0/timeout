@@ -5,6 +5,15 @@ import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
 import Header from '../components/Header';
+import AvatarMenuComponent from '../components/AvatarMenuComponent';
+import AvatarColorMenuComponent from '../components/AvatarColorMenuComponent';
+import colorWheelIcon from '../../assets/color_wheel_icon.png';
+import hairIconActive from '../../assets/hair_icon_active.png';
+import clothesIconInactive from '../../assets/clothes_icon_inactive.png';
+import accessoriesIconInactive from '../../assets/accessories_icon_inactive.png';
+import backgroundIconInactive from '../../assets/background_icon_inactive.png';
+import pointSquares from '../../assets/point_squares.png';
+
 
 import {
     SvgTestScreen2,
@@ -25,19 +34,26 @@ import {
     Bg2_svg, Bg2_1_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
     NoItem1_svg,
 } from '../components/AvatarSelection2';
+import { color } from 'react-native-reanimated';
 
-const THUMBNAIL_SIZE = 50;
-const AVATAR_SIZE = 250;
-const THUMBNAIL_COLOR = "#000000";
-const ITEM_R = 52;
-const ITEM_G = 52;
-const ITEM_B = 52;
+
 
 const SvgTestScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
+    const THUMBNAIL_SIZE = width / 8;
+    const AVATAR_SIZE = 250;
+    const THUMBNAIL_COLOR = "#000000";
+    const ITEM_R = 52;
+    const ITEM_G = 52;
+    const ITEM_B = 52;
     const [isLoading, setIsLoading] = useState(false)
     const [activeMenu, setActiveMenu] = useState(0)
+    const [colorMenuActive, setColorMenuActive] = useState(false)
     const { state, saveAvatar2, fetchAvatarItemsOwned } = useContext(UserContext)
+
+    const toggleColorMenuActive = () => {
+        setColorMenuActive(!colorMenuActive);
+    }
 
     const piercing_types = (size, c) => {
         return [{
@@ -503,6 +519,7 @@ const SvgTestScreen = ({ navigation }) => {
     const [avatarJSON, setAvatarJSON] = useState({});
 
     useEffect(() => {
+        console.log("Setting total unowned from useEffect")
         setTotalUnowned(unownedMouth + unownedEyes + unownedMakeup + unownedEyebrows + unownedBase +
             unownedHairAccessories + unownedGenAccessories + unownedPiercings + unownedGlasses +
             unownedBackground + unownedUnder + unownedTop + unownedOuter + unownedHairBase + unownedHairFront +
@@ -556,9 +573,6 @@ const SvgTestScreen = ({ navigation }) => {
             setHasEyeMakeup(state.avatarJSON.face.makeup.active)
             setHasPiercings(state.avatarJSON.accessories.piercings.active)
             setHasGlasses(state.avatarJSON.accessories.glasses.active)
-
-
-
 
             console.log("test focus effect")
         }, [state.avatarJSON, state.avatarItemsOwned])
@@ -851,6 +865,8 @@ const SvgTestScreen = ({ navigation }) => {
         })
     }
 
+    console.log("total unowned: ", totalUnowned)
+
     return (
         <>
             <View style={{ marginTop: 80, }}>
@@ -873,7 +889,7 @@ const SvgTestScreen = ({ navigation }) => {
                     </View>*/}
                     <Image
                         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
-                        source={DIR.baseTypes[baseIndex]} />
+                        source={DIR.baseTypes[baseIndex][0]} />
 
                     <View style={{ position: 'absolute' }}>
                         {eyebrow_types(AVATAR_SIZE, mouth_colors[eyebrowColorIndex].hex)[eyebrowIndex].svg}
@@ -937,413 +953,312 @@ const SvgTestScreen = ({ navigation }) => {
 
                 </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 5, }}>
                 {totalUnowned > 0 ?
-                    <View><Text>This outfit will cost {totalUnowned} points</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={[styles.textDefault, { color: '#67806D' }]}>Total cost: {totalUnowned} points</Text>
+                        <Image
+                            style={{ width: 20, height: 20, marginLeft: 10, }}
+                            source={pointSquares} />
                     </View>
                     :
-                    <View opacity='0'><Text>This outfit will cost {totalUnowned} points</Text></View>}
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                <TouchableOpacity style={[activeMenu == 0 ? styles.itemSelectorNewActive :
-                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(0) }}>
-                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
-                        <Text>Face</Text>
+                    <View style={{ flexDirection: 'row', opacity: 0, }}>
+                        <Text style={[styles.textDefault, { color: '#67806D' }]}>Total cost: {totalUnowned} points</Text>
+                        <Image
+                            style={{ width: 20, height: 20, marginLeft: 10, }}
+                            source={pointSquares} />
                     </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={[activeMenu == 1 ? styles.itemSelectorNewActive :
-                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(1) }}>
-                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
-                        <Text>Accessories</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={[activeMenu == 2 ? styles.itemSelectorNewActive :
-                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(2) }}>
-                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
-                        <Text>Clothes</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity style={[activeMenu == 3 ? styles.itemSelectorNewActive :
-                    styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(3) }}>
-                    <View style={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 25, }}>
-                        <Text>Hair</Text>
-                    </View>
-                </TouchableOpacity>
+                }
             </View>
 
-            <View>
-                {activeMenu == 0 ?
+
+            <View style={{ flex: 3, }}>
+
+                {colorMenuActive ?
                     <View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 1, borderWidth: 1, }}>
-                                <TouchableOpacity
-                                    style={skinPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setSkinPickerVisible(true)
-                                        setEyePickerVisible(false)
-                                        setMouthPickerVisible(false)
-                                        setEyeMakeupPickerVisible(false)
-                                        setEyebrowPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Skin</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={eyePickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setSkinPickerVisible(false)
-                                        setEyePickerVisible(true)
-                                        setMouthPickerVisible(false)
-                                        setEyeMakeupPickerVisible(false)
-                                        setEyebrowPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Eyes</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={mouthPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setSkinPickerVisible(false)
-                                        setEyePickerVisible(false)
-                                        setMouthPickerVisible(true)
-                                        setEyeMakeupPickerVisible(false)
-                                        setEyebrowPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Mouth</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={eyeMakeupPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setSkinPickerVisible(false)
-                                        setEyePickerVisible(false)
-                                        setMouthPickerVisible(false)
-                                        setEyeMakeupPickerVisible(true)
-                                        setEyebrowPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Eye Makeup</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={eyebrowPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setSkinPickerVisible(false)
-                                        setEyePickerVisible(false)
-                                        setMouthPickerVisible(false)
-                                        setEyeMakeupPickerVisible(false)
-                                        setEyebrowPickerVisible(true)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Eyebrows</Text>
-                                </TouchableOpacity>
+                        <View style={{ flex: 1, backgroundColor: '#CAE3B7', }} />
+                        {/*<TouchableOpacity
+                            style={{
+                                backgroundColor: '#A7BEAD', width: 40, height: 40, borderRadius: 25,
+                                justifyContent: 'center', alignItems: 'center',
+                            }}
+                        onPress={() => { toggleColorMenuActive() }}><Text>X</Text></TouchableOpacity>*/}
+                    </View>
+                    :
+                    <View style={{ flex: 0.2, flexDirection: 'row', justifyContent: 'space-around' }}>
+                        <TouchableOpacity style={[activeMenu == 0 ? styles.itemSelectorNewActive :
+                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(0) }}>
+                            <View style={{
+                                paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <Image
+                                    style={{ height: 40, }}
+                                    resizeMode="contain"
+                                    source={hairIconActive} />
                             </View>
-                            <View style={{ flex: 3 }}>
+
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[activeMenu == 1 ? styles.itemSelectorNewActive :
+                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(1) }}>
+                            <View style={{
+                                paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <Image
+                                    style={{ height: 40, }}
+                                    resizeMode="contain"
+                                    source={clothesIconInactive} />
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[activeMenu == 2 ? styles.itemSelectorNewActive :
+                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(2) }}>
+                            <View style={{
+                                paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <Image
+                                    style={{ height: 40, }}
+                                    resizeMode="contain"
+                                    source={accessoriesIconInactive} />
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[activeMenu == 3 ? styles.itemSelectorNewActive :
+                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(3) }}>
+                            <View style={{
+                                paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <Image
+                                    style={{ height: 40, }}
+                                    resizeMode="contain"
+                                    source={backgroundIconInactive} />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                }
+
+                {activeMenu == 0 ?
+                    <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'column', flex: 1, }}>
+                            {!colorMenuActive ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                        onPress={() => {
+                                            if (eyePickerVisible) {
+                                                setEyePickerVisible(false)
+                                                setSkinPickerVisible(true)
+                                            } else if (mouthPickerVisible) {
+                                                setMouthPickerVisible(false)
+                                                setEyePickerVisible(true)
+                                            } else if (eyeMakeupPickerVisible) {
+                                                setEyeMakeupPickerVisible(false)
+                                                setMouthPickerVisible(true)
+                                            } else if (eyebrowPickerVisible) {
+                                                setEyebrowPickerVisible(false)
+                                                setEyeMakeupPickerVisible(true)
+                                            }
+                                        }}>
+                                        <Icon
+                                            name='caret-back'
+                                            size={20}
+                                            type='ionicon'
+                                            color='##B3B2B3' />
+                                    </TouchableOpacity>
+
+                                    <View
+                                        style={skinPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={eyePickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={mouthPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={eyeMakeupPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={eyebrowPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (skinPickerVisible) {
+                                                setSkinPickerVisible(false)
+                                                setEyePickerVisible(true)
+                                            } else if (eyePickerVisible) {
+                                                setEyePickerVisible(false)
+                                                setMouthPickerVisible(true)
+                                            } else if (mouthPickerVisible) {
+                                                setMouthPickerVisible(false)
+                                                setEyeMakeupPickerVisible(true)
+                                            } else if (eyeMakeupPickerVisible) {
+                                                setEyeMakeupPickerVisible(false)
+                                                setEyebrowPickerVisible(true)
+                                            }
+                                        }}
+                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        <Icon
+                                            name='caret-forward'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
+
+                                </View>
+                                : null}
+
+                            <View style={{ flex: 1, }}>
 
                                 {/* skin */}
                                 {skinPickerVisible ?
-                                    <><Text>Skin Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            //data={base_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                            data={DIR.baseTypes}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${baseIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setBaseIndex(index)
-                                                        }}>
-                                                        {/*{item.svg}*/}
-                                                        <Image
-                                                            style={{ width: THUMBNAIL_SIZE, height: THUMBNAIL_SIZE }}
-                                                            source={item} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                    <>
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Skin tone"}
+                                                data={DIR.baseTypes}
+                                                noItemOption={false}
+                                                pngOption={true}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setBaseIndex}
+                                                itemIndex={baseIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedBase}
+                                                setUnownedCallback={setUnownedBase}
+                                            />
+                                            : null}
                                     </>
                                     : null}
 
                                 {/* eyes */}
                                 {eyePickerVisible ?
                                     <>
-                                        <Text>Eye Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={DIR.eyeTypes}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${eyeIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setEyeIndex(index)
-                                                        }}>
-                                                        <Image
-                                                            style={{ width: THUMBNAIL_SIZE, height: THUMBNAIL_SIZE }}
-                                                            source={item[0]} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Eye Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(DIR.eyeColors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Eyes"}
+                                                data={DIR.eyeTypes}
+                                                noItemOption={false}
+                                                pngOption={true}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setEyeIndex}
+                                                itemIndex={eyeIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedEyes}
+                                                setUnownedCallback={setUnownedEyes}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Eye Colors"}
+                                                usesPng={true}
                                                 data={DIR.eyeColors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setEyeColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${eyeColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setEyeColorIndex}
+                                                colorIndex={eyeColorIndex}
+                                            />
+                                        }
                                     </>
                                     : null}
 
                                 {/* mouth */}
                                 {mouthPickerVisible ? <>
-                                    <Text>Mouth Types</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={mouth_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    style={[styles.menuItemDefault,
-                                                    {
-                                                        borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${mouthIndex == index ? 1.00 : 0.00})`
-                                                    }]}
-                                                    onPress={() => {
-                                                        setMouthIndex(index)
-                                                    }}>
-                                                    {item.svg}
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text>Mouth Colors</Text>
-                                    <ScrollView
-                                        horizontal
-                                        showsVerticalScrollIndicator={false}
-                                        showsHorizontalScrollIndicator={true}
-                                        style={{}}>
-                                        <FlatList
-                                            style={{}}
-                                            //horizontal={true}
-                                            scrollEnabled={false}
-                                            numColumns={Math.ceil(mouth_colors.length / 2)}
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Mouth"}
+                                            data={mouth_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                            noItemOption={false}
+                                            pngOption={false}
+                                            thumbnailSize={THUMBNAIL_SIZE}
+                                            //hasItem={}
+                                            //setHasItemCallback={}
+                                            setIndexCallback={setMouthIndex}
+                                            itemIndex={mouthIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedMouth}
+                                            setUnownedCallback={setUnownedMouth}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Mouth Colors"}
+                                            usesPng={false}
                                             data={mouth_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            console.log("Mouth color index ", index)
-                                                            setMouthColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${mouthColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        /></ScrollView>
+                                            setIndexCallback={setMouthColorIndex}
+                                            colorIndex={mouthColorIndex}
+                                        />
+                                    }
                                 </>
                                     : null}
 
                                 {/* eye makeup */}
                                 {eyeMakeupPickerVisible ?
                                     <>
-                                        <Text>Eye Makeup Types</Text><FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                eye_makeup_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${eyeMakeupIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasEyeMakeup(index > 0)
-                                                            if (index > 0) {
-                                                                setEyeMakeupIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-
-                                        <Text>Eye Makeup Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={eye_makeup_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setEyeMakeupColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${eyeMakeupColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Eye Makeup"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    eye_makeup_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasEyeMakeup}
+                                                setHasItemCallback={setHasEyeMakeup}
+                                                setIndexCallback={setEyeMakeupIndex}
+                                                itemIndex={eyeMakeupIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedMakeup}
+                                                setUnownedCallback={setUnownedMakeup}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Eye Makeup Colors"}
+                                                usesPng={false}
+                                                data={eye_makeup_colors}
+                                                setIndexCallback={setEyeMakeupColorIndex}
+                                                colorIndex={eyeMakeupColorIndex}
+                                            />
+                                        }
                                     </> : null}
 
 
                                 {/* Eyebrows */}
                                 {eyebrowPickerVisible ?
                                     <>
-                                        <Text>Eyebrow Types</Text><FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={eyebrow_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${eyebrowIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setEyebrowIndex(index)
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Eyebrow Colors</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={eye_makeup_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setEyebrowColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${eyebrowColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Eyebrows"}
+                                                data={eyebrow_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                                noItemOption={false}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setEyebrowIndex}
+                                                itemIndex={eyebrowIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedEyebrows}
+                                                setUnownedCallback={setUnownedEyebrows}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Eyebrow Colors"}
+                                                usesPng={false}
+                                                data={eye_makeup_colors}
+                                                setIndexCallback={setEyebrowColorIndex}
+                                                colorIndex={eyebrowColorIndex}
+                                            />
+                                        }
                                     </> : null}
 
                             </View>
@@ -1352,371 +1267,201 @@ const SvgTestScreen = ({ navigation }) => {
                     : null}
 
                 {activeMenu == 1 ?
-                    <View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 1, borderWidth: 1, }}>
-                                <TouchableOpacity
-                                    style={hairAccessoriesPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairAccessoriesPickerVisible(true)
-                                        setAccessoriesPickerVisible(false)
-                                        setBackgroundPickerVisible(false)
-                                        setPiercingPickerVisible(false)
-                                        setGlassesPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Hair accessories</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={accessoriesPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairAccessoriesPickerVisible(false)
-                                        setAccessoriesPickerVisible(true)
-                                        setBackgroundPickerVisible(false)
-                                        setPiercingPickerVisible(false)
-                                        setGlassesPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>General accessories</Text>
-                                </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'column', flex: 1, }}>
+                            {!colorMenuActive ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                        onPress={() => {
+                                            if (accessoriesPickerVisible) {
+                                                setAccessoriesPickerVisible(false)
+                                                setHairAccessoriesPickerVisible(true)
+                                            } else if (piercingPickerVisible) {
+                                                setPiercingPickerVisible(false)
+                                                setAccessoriesPickerVisible(true)
+                                            } else if (glassesPickerVisible) {
+                                                setGlassesPickerVisible(false)
+                                                setPiercingPickerVisible(true)
+                                            } else if (backgroundPickerVisible) {
+                                                setBackgroundPickerVisible(false)
+                                                setGlassesPickerVisible(true)
+                                            }
+                                        }}>
+                                        <Icon
+                                            name='caret-back'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
 
-                                <TouchableOpacity
-                                    style={piercingPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairAccessoriesPickerVisible(false)
-                                        setAccessoriesPickerVisible(false)
-                                        setPiercingPickerVisible(true)
-                                        setBackgroundPickerVisible(false)
-                                        setGlassesPickerVisible(false)
+                                    <View
+                                        style={hairAccessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
 
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Piercings</Text>
-                                </TouchableOpacity>
+                                    </View>
+                                    <View
+                                        style={accessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
 
-                                <TouchableOpacity
-                                    style={glassesPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairAccessoriesPickerVisible(false)
-                                        setAccessoriesPickerVisible(false)
-                                        setPiercingPickerVisible(false)
-                                        setBackgroundPickerVisible(false)
-                                        setGlassesPickerVisible(true)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Glasses</Text>
-                                </TouchableOpacity>
+                                    </View>
+                                    <View
+                                        style={piercingPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
 
-                                <TouchableOpacity
-                                    style={backgroundPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairAccessoriesPickerVisible(false)
-                                        setAccessoriesPickerVisible(false)
-                                        setBackgroundPickerVisible(true)
-                                        setPiercingPickerVisible(false)
-                                        setGlassesPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Background</Text>
-                                </TouchableOpacity>
+                                    </View>
+                                    <View
+                                        style={glassesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
 
+                                    </View>
+                                    <View
+                                        style={backgroundPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
 
-                            </View>
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (glassesPickerVisible) {
+                                                setGlassesPickerVisible(false)
+                                                setBackgroundPickerVisible(true)
+                                            } else if (piercingPickerVisible) {
+                                                setPiercingPickerVisible(false)
+                                                setGlassesPickerVisible(true)
+                                            } else if (accessoriesPickerVisible) {
+                                                setAccessoriesPickerVisible(false)
+                                                setPiercingPickerVisible(true)
+                                            } else if (hairAccessoriesPickerVisible) {
+                                                setHairAccessoriesPickerVisible(false)
+                                                setAccessoriesPickerVisible(true)
+                                            }
+                                        }}
+                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        <Icon
+                                            name='caret-forward'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
 
-                            <View style={{ flex: 3, borderWidth: 1, }}>
+                                </View>
+                                : null}
+
+                            <View style={{ flex: 1, }}>
                                 {/* hair accessories */}
                                 {hairAccessoriesPickerVisible ? <>
-                                    <Text>Hair Accessory Types</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                            hair_accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    style={[styles.menuItemDefault,
-                                                    {
-                                                        borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${(hairAccessoriesIndex == index - 1 && index > 0 && hasHairAccessories)
-                                                                || !hasHairAccessories && index == 0 ? 1.00 : 0.00})`
-                                                    }]}
-                                                    onPress={() => {
-                                                        setHasHairAccessories(index > 0)
-                                                        if (index > 0) {
-                                                            setHairAccessoriesIndex(index - 1)
-                                                        }
-
-                                                    }}>
-                                                    {item.svg}
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text>Hair Accessory Colors</Text>
-                                    <ScrollView
-                                        horizontal
-                                        showsVerticalScrollIndicator={false}
-                                        showsHorizontalScrollIndicator={true}
-                                        style={{}}>
-                                        <FlatList
-                                            style={{}}
-                                            //horizontal={true}
-                                            scrollEnabled={false}
-                                            numColumns={Math.ceil(underlayer_colors.length / 2)}
-                                            data={underlayer_colors}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setHairAccessoriesColorIndex(index)
-                                                        }}>
-                                                        <View style={{
-                                                            width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                            borderWidth: 2,
-                                                            borderColor: `rgba(
-                                                    ${ITEM_R},
-                                                    ${ITEM_G},
-                                                    ${ITEM_B},
-                                                    ${hairAccessoriesColorIndex == index ? 1.00 : 0.00})`
-                                                        }} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Hair Accessories"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                hair_accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            noItemOption={true}
+                                            hasItem={hasHairAccessories}
+                                            setHasItemCallback={setHasHairAccessories}
+                                            setIndexCallback={setHairAccessoriesIndex}
+                                            itemIndex={hairAccessoriesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedHairAccessories}
+                                            setUnownedCallback={setUnownedHairAccessories}
                                         />
-                                    </ScrollView>
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Hair Accessory Colors"}
+                                            usesPng={false}
+                                            data={underlayer_colors}
+                                            setIndexCallback={setHairAccessoriesColorIndex}
+                                            colorIndex={hairAccessoriesColorIndex}
+                                        />
+                                    }
+
+
                                 </> : null}
 
                                 {/* accessories */}
                                 {accessoriesPickerVisible ?
                                     <>
-                                        <Text>General Accessory Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
+                                        <AvatarMenuComponent
+                                            title={"General Accessories"}
                                             data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
                                                 accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${(accessoriesIndex == index - 1 && index > 0 && hasAccessories)
-                                                                    || !hasAccessories && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasAccessories(index > 0)
-                                                            if (index > 0) {
-                                                                setAccessoriesIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
+                                            noItemOption={true}
+                                            hasItem={hasAccessories}
+                                            setHasItemCallback={setHasAccessories}
+                                            setIndexCallback={setAccessoriesIndex}
+                                            itemIndex={accessoriesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedGenAccessories}
+                                            setUnownedCallback={setUnownedGenAccessories}
                                         />
                                     </>
                                     : null}
                                 {/* background */}
                                 {backgroundPickerVisible ?
                                     <>
-                                        <Text>Background Types</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR).length / 3)}
-                                                data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            style={[styles.menuItemDefault,
-                                                            {
-                                                                borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${backgroundIndex == index ? 1.00 : 0.00})`
-                                                            }]}
-                                                            onPress={() => {
-                                                                setBackgroundIndex(index)
-                                                                updateUnowned(setUnownedBackground, unownedBackground,
-                                                                    item.id, item.owned, item.cost)
-                                                            }}>
-                                                            <View>
-
-                                                                {item.svg}
-                                                                {!item.owned ?
-                                                                    <Text style={{ position: 'absolute' }}>Locked</Text>
-                                                                    : null}
-
-
-                                                            </View>
-
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            />
-                                        </ScrollView>
+                                        <AvatarMenuComponent
+                                            title={"Background"}
+                                            data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                            //hasItemCallback={}
+                                            setIndexCallback={setBackgroundIndex}
+                                            itemIndex={backgroundIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedBackground}
+                                            setUnownedCallback={setUnownedBackground}
+                                        />
                                     </>
                                     : null}
 
                                 {piercingPickerVisible ? <>
-                                    <Text>Piercing Types</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                            piercing_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    style={[styles.menuItemDefault,
-                                                    {
-                                                        borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${(piercingIndex == index - 1 && index > 0 && hasPiercings)
-                                                                || !hasPiercings && index == 0 ? 1.00 : 0.00})`
-                                                    }]}
-                                                    onPress={() => {
-                                                        setHasPiercings(index > 0)
-                                                        if (index > 0) {
-                                                            setPiercingIndex(index - 1)
-                                                        }
-                                                    }}>
-                                                    {item.svg}
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text>Piercing Colors</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={piercing_colors}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        setPiercingColorIndex(index)
-                                                    }}>
-                                                    <View style={{
-                                                        width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                        borderWidth: 2,
-                                                        borderColor: `rgba(
-                                                    ${ITEM_R},
-                                                    ${ITEM_G},
-                                                    ${ITEM_B},
-                                                    ${piercingColorIndex == index ? 1.00 : 0.00})`
-                                                    }} />
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Piercings"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                piercing_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            noItemOption={true}
+                                            hasItem={hasPiercings}
+                                            setHasItemCallback={setHasPiercings}
+                                            setIndexCallback={setPiercingIndex}
+                                            itemIndex={piercingIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedPiercings}
+                                            setUnownedCallback={setUnownedPiercings}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Piercing Colors"}
+                                            usesPng={false}
+                                            data={piercing_colors}
+                                            setIndexCallback={setPiercingColorIndex}
+                                            colorIndex={piercingColorIndex}
+                                        />
+                                    }
                                 </> : null}
 
                                 {glassesPickerVisible ? <>
-                                    <Text>Glasses Types</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                            DIR.glassesTypes)}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    style={[styles.menuItemDefault,
-                                                    {
-                                                        borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${(glassesIndex == index - 1 && index > 0 && hasGlasses)
-                                                                || !hasGlasses && index == 0 ? 1.00 : 0.00})`
-                                                    }]}
-                                                    onPress={() => {
-                                                        setHasGlasses(index > 0)
-                                                        if (index > 0) {
-                                                            setGlassesIndex(index - 1)
-                                                        }
-                                                    }}>
-                                                    {index == 0 ? item.svg :
-                                                        <Image
-                                                            style={{ width: THUMBNAIL_SIZE, height: THUMBNAIL_SIZE }}
-                                                            source={item[0]} />}
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
-                                    <Text>Glasses Colors</Text>
-                                    <FlatList
-                                        style={{}}
-                                        horizontal={true}
-                                        data={piercing_colors}
-                                        showsHorizontalScrollIndicator={false}
-                                        keyExtractor={(item) => item.id}
-                                        renderItem={({ item, index }) => {
-                                            return (<View>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        setGlassesColorIndex(index)
-                                                    }}>
-                                                    <View style={{
-                                                        width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                        borderWidth: 2,
-                                                        borderColor: `rgba(
-                                                    ${ITEM_R},
-                                                    ${ITEM_G},
-                                                    ${ITEM_B},
-                                                    ${glassesColorIndex == index ? 1.00 : 0.00})`
-                                                    }} />
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            )
-                                        }}
-                                    />
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Glasses"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                DIR.glassesTypes)}
+                                            noItemOption={true}
+                                            pngOption={true}
+                                            thumbnailSize={THUMBNAIL_SIZE}
+                                            hasItem={hasGlasses}
+                                            setHasItemCallback={setHasGlasses}
+                                            setIndexCallback={setGlassesIndex}
+                                            itemIndex={glassesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedGlasses}
+                                            setUnownedCallback={setUnownedGlasses}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Glasses Colors"}
+                                            usesPng={false}
+                                            data={piercing_colors}
+                                            setIndexCallback={setGlassesColorIndex}
+                                            colorIndex={glassesColorIndex}
+                                        />
+                                    }
                                 </> : null}
                             </View>
                         </View>
@@ -1724,269 +1469,152 @@ const SvgTestScreen = ({ navigation }) => {
                     : null}
 
                 {activeMenu == 2 ?
-                    <View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 1, borderWidth: 1, }}>
-                                <TouchableOpacity
-                                    style={underlayerPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setUnderlayerPickerVisible(true)
-                                        setTopPickerVisible(false)
-                                        setOuterwearlayerPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Under layer</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={topPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setUnderlayerPickerVisible(false)
-                                        setTopPickerVisible(true)
-                                        setOuterwearlayerPickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Top layer</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={outerwearPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setUnderlayerPickerVisible(false)
-                                        setTopPickerVisible(false)
-                                        setOuterwearlayerPickerVisible(true)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Outer wear</Text>
-                                </TouchableOpacity>
-                            </View>
+                    <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'column', flex: 1, }}>
+                            {!colorMenuActive ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                        onPress={() => {
+                                            if (topPickerVisible) {
+                                                setTopPickerVisible(false)
+                                                setUnderlayerPickerVisible(true)
+                                            } else if (outerwearPickerVisible) {
+                                                setOuterwearlayerPickerVisible(false)
+                                                setTopPickerVisible(true)
+                                            }
+                                        }}>
+                                        <Icon
+                                            name='caret-back'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
 
-                            <View style={{ flex: 3, borderWidth: 1, }}>
+                                    <View
+                                        style={underlayerPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={topPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={outerwearPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (underlayerPickerVisible) {
+                                                setUnderlayerPickerVisible(false)
+                                                setTopPickerVisible(true)
+                                            } else if (topPickerVisible) {
+                                                setTopPickerVisible(false)
+                                                setOuterwearlayerPickerVisible(true)
+                                            }
+                                        }}
+                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        <Icon
+                                            name='caret-forward'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
+
+                                </View>
+                                : null}
+
+                            <View style={{ flex: 1, }}>
                                 {/* underlayer */}
 
                                 {underlayerPickerVisible ?
                                     <>
-                                        <Text>Underlayer Types</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{ marginBottom: 10, }}>
-                                            <FlatList
-                                                style={{}}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(underlayer_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR).length / 2)}
-                                                //horizontal={true}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Underlayer"}
                                                 data={underlayer_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            style={[styles.menuItemDefault,
-                                                            {
-                                                                borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${underlayerIndex == index ? 1.00 : 0.00})`
-                                                            }]}
-                                                            onPress={() => {
-                                                                setUnderlayerIndex(index)
-                                                                updateUnowned(setUnownedUnder, unownedUnder,
-                                                                    item.id, item.owned, item.cost)
-                                                            }}>
-                                                            {item.svg}
-                                                            {!item.owned ?
-                                                                <Text style={{ position: 'absolute' }}>Locked</Text>
-                                                                : null}
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
+                                                noItemOption={false}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setUnderlayerIndex}
+                                                itemIndex={underlayerIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedUnder}
+                                                setUnownedCallback={setUnownedUnder}
                                             />
-                                        </ScrollView>
-                                        <Text>Underlayer Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Underlayer Colors"}
+                                                usesPng={false}
                                                 data={underlayer_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setUnderlayerColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${underlayerColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setUnderlayerColorIndex}
+                                                colorIndex={underlayerColorIndex}
+                                            />
+                                        }
                                     </> : null}
 
                                 {/* top layer */}
                                 {topPickerVisible ?
                                     <>
-                                        <Text>Top Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                top_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${(topIndex == index - 1 && index > 0 && hasTop)
-                                                                    || !hasTop && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-
-                                                            setHasTop(index > 0)
-                                                            if (index > 0) {
-                                                                setTopIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Top Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Tops"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    top_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasTop}
+                                                setHasItemCallback={setHasTop}
+                                                setIndexCallback={setTopIndex}
+                                                itemIndex={topIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedTop}
+                                                setUnownedCallback={setUnownedTop}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Top Colors"}
+                                                usesPng={false}
                                                 data={underlayer_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setTopColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${topColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setTopColorIndex}
+                                                colorIndex={topColorIndex}
+                                            />
+                                        }
                                     </> : null}
 
                                 {/* outerwear */}
                                 {outerwearPickerVisible ?
                                     <>
-                                        <Text>Outerwear Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                outerwear_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${(outerwearIndex == index - 1 && index > 0 && hasOuterwear)
-                                                                    || !hasOuterwear && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasOuterwear(index > 0)
-                                                            if (index > 0) {
-                                                                setOuterwearIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Outerwear Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(underlayer_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Outerwear"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    outerwear_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasOuterwear}
+                                                setHasItemCallback={setHasOuterwear}
+                                                setIndexCallback={setOuterwearIndex}
+                                                itemIndex={outerwearIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedOuter}
+                                                setUnownedCallback={setUnownedOuter}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Outerwear Colors"}
+                                                usesPng={false}
                                                 data={underlayer_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setOuterwearColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${outerwearColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setOuterwearColorIndex}
+                                                colorIndex={outerwearColorIndex}
+                                            />
+                                        }
                                     </> : null}
                             </View>
                         </View>
@@ -1995,352 +1623,202 @@ const SvgTestScreen = ({ navigation }) => {
                     : null}
 
                 {activeMenu == 3 ?
-                    <View>
+                    <View style={{ flex: 1 }}>
 
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 1, borderWidth: 1, }}>
-                                <TouchableOpacity
-                                    style={hairPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairPickerVisible(true)
-                                        setHairFrontPickerVisible(false)
-                                        setHairBackPickerVisible(false)
-                                        setHairSidePickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Hair base</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={hairFrontPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairPickerVisible(false)
-                                        setHairFrontPickerVisible(true)
-                                        setHairBackPickerVisible(false)
-                                        setHairSidePickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Hair front</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={hairBackPickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairPickerVisible(false)
-                                        setHairFrontPickerVisible(false)
-                                        setHairBackPickerVisible(true)
-                                        setHairSidePickerVisible(false)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Hair back</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={hairSidePickerVisible ? [styles.itemSelectorActive] :
-                                        styles.itemSelector}
-                                    onPress={() => {
-                                        setHairPickerVisible(false)
-                                        setHairFrontPickerVisible(false)
-                                        setHairBackPickerVisible(false)
-                                        setHairSidePickerVisible(true)
-                                    }}>
-                                    <Text style={{ textAlign: 'center', }}>Hair side</Text>
-                                </TouchableOpacity>
+                        <View style={{ flexDirection: 'column', flex: 1, }}>
+                            {!colorMenuActive ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                        onPress={() => {
+                                            if (hairFrontPickerVisible) {
+                                                setHairFrontPickerVisible(false)
+                                                setHairPickerVisible(true)
+                                            } else if (hairBackPickerVisible) {
+                                                setHairBackPickerVisible(false)
+                                                setHairFrontPickerVisible(true)
+                                            } else if (hairSidePickerVisible) {
+                                                setHairSidePickerVisible(false)
+                                                setHairBackPickerVisible(true)
+                                            }
+                                        }}>
+                                        <Icon
+                                            name='caret-back'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
 
-                            </View>
-                            <View style={{ flex: 3, borderWidth: 1, }}>
+                                    <View
+                                        style={hairPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={hairFrontPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={hairBackPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={hairSidePickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (hairPickerVisible) {
+                                                setHairPickerVisible(false)
+                                                setHairFrontPickerVisible(true)
+                                            } else if (hairFrontPickerVisible) {
+                                                setHairFrontPickerVisible(false)
+                                                setHairBackPickerVisible(true)
+                                            } else if (hairBackPickerVisible) {
+                                                setHairBackPickerVisible(false)
+                                                setHairSidePickerVisible(true)
+                                            }
+                                        }}
+                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        <Icon
+                                            name='caret-forward'
+                                            size={20}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
+                                </View>
+                                : null}
+
+                            <View style={{ flex: 1, }}>
 
                                 {/* hair base */}
                                 {hairPickerVisible ?
                                     <>
-                                        <Text>Hair Base Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={DIR.hairTypes}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${hairIndex == index ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHairIndex(index)
-                                                        }}>
-                                                        <Image
-                                                            style={{ width: THUMBNAIL_SIZE, height: THUMBNAIL_SIZE }}
-                                                            source={item[0]} />
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Hair Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair base"}
+                                                data={DIR.hairTypes}
+                                                noItemOption={false}
+                                                pngOption={true}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setHairIndex}
+                                                itemIndex={hairIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairBase}
+                                                setUnownedCallback={setUnownedHairBase}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair base colors"}
+                                                usesPng={false}
                                                 data={hair_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setHairColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
 
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+
                                     </> : null}
                                 {/* hair front */}
                                 {hairFrontPickerVisible ?
                                     <>
-                                        <Text>Hair Front Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                hair_front_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                                ${ITEM_R},
-                                                                ${ITEM_G},
-                                                                ${ITEM_B},
-                                                                ${(hairFrontIndex == index - 1 && index > 0 && hasHairFront)
-                                                                    || !hasHairFront && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasHairFront(index > 0)
-                                                            if (index > 0) {
-                                                                setHairFrontIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Hair Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair front"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_front_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairFront}
+                                                setHasItemCallback={setHasHairFront}
+                                                setIndexCallback={setHairFrontIndex}
+                                                itemIndex={hairFrontIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairFront}
+                                                setUnownedCallback={setUnownedHairFront}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
                                                 data={hair_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setHairColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
                                     </> : null}
                                 {/* hair back */}
                                 {hairBackPickerVisible ?
                                     <>
-                                        <Text>Hair Back Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                hair_back_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                            ${ITEM_R},
-                                                            ${ITEM_G},
-                                                            ${ITEM_B},
-                                                            ${(hairBackIndex == index - 1 && index > 0 && hasHairBack)
-                                                                    || !hasHairBack && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasHairBack(index > 0)
-                                                            if (index > 0) {
-                                                                setHairBackIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Hair Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair back"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_back_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairBack}
+                                                setHasItemCallback={setHasHairBack}
+                                                setIndexCallback={setHairBackIndex}
+                                                itemIndex={hairBackIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairBack}
+                                                setUnownedCallback={setUnownedHairBack}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
                                                 data={hair_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setHairColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
                                     </> : null}
                                 {/* hair side */}
                                 {hairSidePickerVisible ?
                                     <>
-                                        <Text>Hair Side Types</Text>
-                                        <FlatList
-                                            style={{}}
-                                            horizontal={true}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                hair_side_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            showsHorizontalScrollIndicator={false}
-                                            keyExtractor={(item) => item.id}
-                                            renderItem={({ item, index }) => {
-                                                return (<View>
-                                                    <TouchableOpacity
-                                                        style={[styles.menuItemDefault,
-                                                        {
-                                                            borderColor: `rgba(
-                                                                ${ITEM_R},
-                                                                ${ITEM_G},
-                                                                ${ITEM_B},
-                                                                ${(hairSideIndex == index - 1 && index > 0 && hasHairSide)
-                                                                    || !hasHairSide && index == 0 ? 1.00 : 0.00})`
-                                                        }]}
-                                                        onPress={() => {
-                                                            setHasHairSide(index > 0)
-                                                            if (index > 0) {
-                                                                setHairSideIndex(index - 1)
-                                                            }
-                                                        }}>
-                                                        {item.svg}
-
-                                                    </TouchableOpacity>
-                                                </View>
-                                                )
-                                            }}
-                                        />
-                                        <Text>Hair Colors</Text>
-                                        <ScrollView
-                                            horizontal
-                                            showsVerticalScrollIndicator={false}
-                                            showsHorizontalScrollIndicator={true}
-                                            style={{}}>
-                                            <FlatList
-                                                style={{}}
-                                                //horizontal={true}
-                                                scrollEnabled={false}
-                                                numColumns={Math.ceil(hair_colors.length / 2)}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair side"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_side_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairSide}
+                                                setHasItemCallback={setHasHairSide}
+                                                setIndexCallback={setHairSideIndex}
+                                                itemIndex={hairSideIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairSide}
+                                                setUnownedCallback={setUnownedHairSide}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
                                                 data={hair_colors}
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(item) => item.id}
-                                                renderItem={({ item, index }) => {
-                                                    return (<View>
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setHairColorIndex(index)
-                                                            }}>
-                                                            <View style={{
-                                                                width: 50, height: 50, borderRadius: 100, margin: 2, backgroundColor: item.hex,
-                                                                borderWidth: 2,
-                                                                borderColor: `rgba(
-                                                        ${ITEM_R},
-                                                        ${ITEM_G},
-                                                        ${ITEM_B},
-                                                        ${hairColorIndex == index ? 1.00 : 0.00})`
-                                                            }} />
-
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                    )
-                                                }}
-                                            /></ScrollView>
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
                                     </> : null}
-
                             </View>
 
                         </View>
                     </View>
                     : null}
+
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 1, flexDirection: 'row', borderWidth: 2, }}>
                 <View style={{ flex: 1 }}></View>
                 <View style={{ flex: 2, }}
                     opacity={isLoading ? 0.3 : 1}>
@@ -2357,8 +1835,8 @@ const SvgTestScreen = ({ navigation }) => {
 
                         }}>
                         {totalUnowned > 0 ?
-                            <Text style={{ textAlign: 'center', }}>Redeem and Save Avatar</Text> :
-                            <Text style={{ textAlign: 'center', }}>Save Avatar</Text>}
+                            <Text style={[styles.textDefault, { textAlign: 'center', }]}>Redeem and Save Avatar</Text> :
+                            <Text style={[styles.textDefault, { textAlign: 'center', }]}>Save Avatar</Text>}
                     </TouchableOpacity>
                 </View>
                 <View style={{ flex: 1 }}></View>
@@ -2370,6 +1848,14 @@ const SvgTestScreen = ({ navigation }) => {
             <Header
                 navigation={navigation}
                 header={'#67806D'} />
+            <TouchableOpacity
+                style={{ position: 'absolute', marginTop: height - 100, }}
+                onPress={toggleColorMenuActive}>
+                <Image
+                    style={{ width: 60, height: 60, marginLeft: 15, }}
+                    source={colorWheelIcon}
+                />
+            </TouchableOpacity>
         </>
 
     )
@@ -2382,6 +1868,12 @@ SvgTestScreen.navigationOptions = () => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         margin: 30,
         fontSize: 40,
@@ -2397,11 +1889,19 @@ const styles = StyleSheet.create({
         margin: 2, borderWidth: 2,
     },
     itemSelectorNew: {
-        backgroundColor: '#E6F4DB', alignItems: 'center',
+        backgroundColor: '#E6F4DB', alignItems: 'center', justifyContent: 'center'
     },
     itemSelectorNewActive: {
         alignItems: 'center',
-        backgroundColor: '#CAE3B7',
+        backgroundColor: '#CAE3B7', justifyContent: 'center',
+    },
+    subItemSelector: {
+        width: 15, height: 15, borderRadius: 7.5, borderWidth: 1, marginHorizontal: 5,
+        borderColor: '#B3B2B3'
+    },
+    subItemSelectorActive: {
+        width: 15, height: 15, borderRadius: 7.5, borderWidth: 1, marginHorizontal: 5,
+        borderColor: '#B3B2B3', backgroundColor: '#B3B2B3'
     }
 })
 
