@@ -71,7 +71,7 @@ const clearErrorMessage = dispatch => () => {
     dispatch({ type: 'clear_error_message' })
 }
 
-const signin = (dispatch) => async (email, password, callback = null) => {
+const signin = (dispatch) => async (email, password, callback = null, callbackFail = null) => {
     console.log("signin client side");
     try {
 
@@ -90,6 +90,7 @@ const signin = (dispatch) => async (email, password, callback = null) => {
     } catch (err) {
         console.log(err)
         dispatch({ type: 'add_error', payload: 'Something went wrong with sign in' })
+        if (callbackFail) { callbackFail() }
     }
 };
 

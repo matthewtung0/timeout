@@ -72,41 +72,48 @@ const EditProfileScreen = ({ navigation }) => {
 
                     <ScrollView>
 
-                        <Text style={styles.title}>Edit User Information</Text>
+                        <Text style={[styles.title, styles.textDefaultBold, { fontSize: 20, }]}>Edit User Information</Text>
 
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
                             value={firstName}
                             placeholder="First name"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
+                            input
                             label="First name"
                             onChangeText={setFirstName}
                         />
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
                             value={lastName}
                             placeholder="Last name"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="Last name"
                             onChangeText={setLastName}
                         />
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
                             value={username}
                             placeholder="username"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="Username"
                             onChangeText={setUsername}
                         />
 
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -117,6 +124,8 @@ const EditProfileScreen = ({ navigation }) => {
                             editable
                             maxLength={150}
                             placeholder="bio"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="Bio"
                             onChangeText={setBio}
                         />
@@ -126,7 +135,7 @@ const EditProfileScreen = ({ navigation }) => {
                                 setIsLoading(true)
                                 editSelf(firstName, lastName, username, bio, updateInfoCallback)
                             }}>
-                            <Text style={styles.signInTextStyle}>Update Information</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Update Information</Text>
                         </TouchableOpacity>
 
                         {isLoading ?
@@ -134,25 +143,29 @@ const EditProfileScreen = ({ navigation }) => {
 
                         {/*{state.responseMessage ? <Text>{state.responseMessage}</Text> : null}*/}
 
-                        <Text style={[styles.title, { marginTop: 15 }]}>Change Password</Text>
+                        <Text style={[styles.title, styles.textDefaultBold, { marginTop: 15, fontSize: 20 }]}>Change Password</Text>
 
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14 }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
                             value={oldPassword}
                             placeholder="Current Password"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="Current Password"
                             onChangeText={setOldPassword}
                         />
                         <Input
-                            style={styles.inputStyle}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14 }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
                             value={newPassword}
                             placeholder="New Password"
+                            placeholderTextColor={'#67806D'}
+                            labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="New Password"
                             onChangeText={setNewPassword}
                         />
@@ -161,7 +174,7 @@ const EditProfileScreen = ({ navigation }) => {
                             onPress={() => {
                                 changePassword(oldPassword, newPassword, resultCallback)
                             }}>
-                            <Text style={styles.signInTextStyle}>Change Password</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Change Password</Text>
                         </TouchableOpacity>
 
                         {passwordMessage ? <Text>{passwordMessage}</Text> : null}
@@ -182,6 +195,12 @@ const EditProfileScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         color: '#67806D',
         fontSize: 24,

@@ -638,6 +638,7 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
               ? options.title
               : route.name;
         const iconLabel = options.tabBarIconLabel
+        const iconLabelActive = options.tabBarIconLabelActive
 
         const isFocused = tabState.index === index;
 
@@ -674,10 +675,10 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
           >
 
             <Ionicons
-              name={iconLabel}
+              name={isFocused ? iconLabelActive : iconLabel}
               size={24}
-              color={isFocused ? '#673ab7' : 'white'} />
-            <Text style={{ color: isFocused ? '#673ab7' : 'white' }}>
+              color={'white'} />
+            <Text style={{ color: 'white' }}>
               {label}
             </Text>
           </TouchableOpacity>
@@ -702,22 +703,26 @@ function CreateMainFlowTab() {
       <Tab.Screen name="SessionSelect" component={SessionSelectScreen}
         options={{
           tabBarLabel: 'Timer',
-          tabBarIconLabel: 'time-outline'
+          tabBarIconLabel: 'time-outline',
+          tabBarIconLabelActive: 'time'
         }} />
       <Tab.Screen name="CounterFlow" component={CounterScreen}
         options={{
           tabBarLabel: 'Counter',
           tabBarIconLabel: 'copy-outline',
+          tabBarIconLabelActive: 'copy'
         }} />
       <Tab.Screen name="friendFeedFlow" component={CreateFriendFeedStack}
         options={{
           tabBarLabel: 'Friends',
           tabBarIconLabel: 'people-outline',
+          tabBarIconLabelActive: 'people'
         }} />
       <Tab.Screen name="profileFlow" component={HistoryDailyScreen}
         options={{
           tabBarLabel: 'History',
           tabBarIconLabel: 'calendar-outline',
+          tabBarIconLabelActive: 'calendar'
         }} />
     </Tab.Navigator>
   )
@@ -732,6 +737,7 @@ function CreateMainNavigator() {
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
     'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
   });
+
   useEffect(() => {
     async function startup() {
       console.log("trying local sign in ")
@@ -740,25 +746,38 @@ function CreateMainNavigator() {
       let res = await tryLocalSignin();
       let firstTime = new Date()
       let splashDisplayTime = 5000;
+      let asdf = null
       if (res) {
+        /*asdf = await Promise.all([
+          updateLastSignin(),
+          fetchSelf(),
+          fetchAvatarGeneral(userState.user_id, forceRetrieve = true, isSelf = true),
+          fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true),
+          fetchUserCounters(),
+          fetchAvatarItemsOwned(),
+          fetchUserTodoItems(isSelf = true),
+          fetchFriends(),
+          fetchOutgoingRequests(),
+          fetchIncomingRequests()
+        ])*/
         await updateLastSignin()
-        var user_id_temp = await fetchSelf()
-        console.log('fetched self');
-        await fetchAvatarGeneral(user_id_temp, forceRetrieve = true, isSelf = true)
-        await fetchUserCategories(user_id_temp, getPrivate = true, isSelf = true);
-        console.log('fetched categories');
+          .then((res) => fetchSelf().then(
+            (res) => {
+              fetchAvatarGeneral(res, forceRetrieve = true, isSelf = true)
+              fetchUserCategories(res, getPrivate = true, isSelf = true);
+            }
+          ))
+
+        //const fetchSelfPromise = await fetchSelf()
+        //await fetchAvatarGeneral(userState.user_id, forceRetrieve = true, isSelf = true)
+        //var asdf = await fetchAvatarGeneral(user_id_temp, forceRetrieve = true, isSelf = true)
+        //await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
         await fetchUserCounters();
-        console.log('fetched counters')
         await fetchAvatarItemsOwned();
-        console.log('fetched avatar items owned')
         await fetchUserTodoItems(isSelf = true);
-        console.log('fetched todo items');
         await fetchFriends();
-        console.log('fetched friends');
         await fetchOutgoingRequests();
-        console.log('fetched outgoing friend requests');
         await fetchIncomingRequests();
-        console.log('fetched incoming friend requests');
 
         let secondTime = new Date();
         let timeDiff = (secondTime.getTime() - firstTime.getTime());

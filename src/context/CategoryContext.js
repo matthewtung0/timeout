@@ -165,7 +165,6 @@ const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = t
     console.log("trying to fetch user categories with id ", id);
     try {
         const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate, isSelf } })
-        console.log("CATEGORIES FETCHED", response.data)
         dispatch({ type: 'fetch_categories', payload: response.data })
 
         // cache user's categories
@@ -173,6 +172,7 @@ const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = t
             console.log("Trying to cache categories")
             const a = await AsyncStorage.setItem('categories', JSON.stringify(response.data));
         }
+        console.log("fetchUserCategories complete")
 
     } catch (err) {
         console.log("error fetching categories, trying cache");
@@ -190,7 +190,6 @@ const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = t
 
 // putting todo items in this context for now..
 const fetchUserTodoItems = dispatch => async (isSelf = true) => {
-    console.log("trying to fetch todo items");
     try {
         const response = await timeoutApi.get('/todoItem')
         dispatch({ type: 'fetch_todo_items', payload: response.data })
@@ -199,6 +198,7 @@ const fetchUserTodoItems = dispatch => async (isSelf = true) => {
             console.log("Tryign to cache todo items")
             await AsyncStorage.setItem('todo_items', JSON.stringify(response.data));
         }
+        console.log("fetchUserTodoItems complete")
     } catch (err) {
         console.log("error fetching todo items:", err);
         try {

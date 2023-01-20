@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, Animated
+    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator,
 } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
@@ -29,21 +29,34 @@ const SigninScreen = ({ navigation }) => {
     const { state, signin, signout, tryLocalSignin, clearErrorMessage } = useContext(AuthContext);
 
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-    const { state: userState, fetchOutgoingRequests, fetchIncomingRequests,
+    const { state: userState, fetchOutgoingRequests, fetchIncomingRequests, fetchAvatarGeneral,
         fetchFriends, fetchSelf } = useContext(UserContext)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const imgWidth = Image.resolveAssetSource(img_src).width
     const imgHeight = Image.resolveAssetSource(img_src).height
     const heightSet = width * (imgHeight / imgWidth)
 
+    const signInCallbackFail = async () => {
+        setPassword('')
+        setIsLoading(false)
+    }
+
     const signInCallback = async () => {
         console.log("SIGN IN CALLBACK??")
-        await fetchSelf()
-        console.log('fetched self');
-        await fetchUserCategories();
+        await fetchSelf().then(
+            (res) => {
+                console.log('fetched self');
+                fetchAvatarGeneral(res, forceRetrieve = true, isSelf = true)
+                fetchUserCategories(res, getPrivate = true, isSelf = true);
+            }
+        )
+
+        //await fetchUserCategories();
         console.log('fetched categories');
         await fetchUserTodoItems();
         console.log('fetched todo items');
@@ -53,6 +66,7 @@ const SigninScreen = ({ navigation }) => {
         console.log('fetched outgoing friend requests');
         await fetchIncomingRequests();
         console.log('fetched incoming friend requests');
+        setIsLoading(false)
     }
 
     const anim = useRef(new Animated.Value(0)).current;
@@ -214,13 +228,21 @@ const SigninScreen = ({ navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={styles.signInBoxStyle}
+                        style={isLoading ? [styles.signInBoxStyle, { backgroundColor: '#FFDA95' }] : [styles.signInBoxStyle]}
                         onPress={() => {
-                            console.log("pressed sign in button")
-                            signin(email, password, signInCallback)
+                            if (!isLoading) {
+                                setIsLoading(true)
+                                console.log("pressed sign in button")
+                                signin(email, password, signInCallback, signInCallbackFail)
+                            }
                         }}>
-                        <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Sign In</Text>
+                        {isLoading ?
+                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Signing in ...</Text>
+                            :
+                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Sign In</Text>
+                        }
                     </TouchableOpacity>
+
                     {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
 
                     <TouchableOpacity
@@ -232,6 +254,11 @@ const SigninScreen = ({ navigation }) => {
                             <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault]}> Sign up here!</Text>
                         </Text>
                     </TouchableOpacity>
+                    {isLoading ? <ActivityIndicator style={{ marginTop: 10 }} size="large" color="white"></ActivityIndicator>
+                        : null}
+                </View>
+                <View>
+
                 </View>
 
             </View>

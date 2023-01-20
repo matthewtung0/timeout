@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image,
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator
 } from 'react-native';
 import Slider from '@react-native-community/slider'
 import { useFocusEffect } from '@react-navigation/native';
@@ -261,10 +261,11 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
     const sessionRewardView = () => {
         return (
-            <View style={{
-                borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center', zIndex: 1,
-                borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
-            }}>
+            <View
+                style={{
+                    borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center', zIndex: 1,
+                    borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
+                }}>
                 <View style={{ flex: 1, alignItems: 'center', }}>
                     <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                         <Text style={[styles.textDefaultBold,
@@ -324,7 +325,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     <Text>toKeep: {toKeep.toString()}</Text>
                     <Text>toAdd: {toAdd.toString()}</Text>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
+                <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
                     <TouchableOpacity
                         style={{
                             backgroundColor: "#CAE3B7", alignItems: 'center', paddingVertical: 13,
@@ -338,8 +339,11 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             fontSize: 18,
                         }}
                         onPress={() => {
-                            setIsLoading(true)
-                            saveSession()
+                            if (!isLoading) {
+                                setIsLoading(true)
+                                saveSession()
+                            }
+
                         }}>
                         <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 18, }]}>OK</Text>
 
@@ -360,7 +364,8 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
 
     return (
-        <View style={[styles.container, { width: width * 0.9, flex: 1, }]}>
+        <><View
+            style={[styles.container, { width: width * 0.9, flex: 1, }]}>
             <View style={{ borderWidth: 1, flex: 1, }}>
 
             </View>
@@ -375,7 +380,8 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
             </View>
 
-            <View style={{ borderWidth: 3, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
+            <View
+                style={{ borderWidth: 3, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
                 <View style={{ borderWidth: 1, borderColor: 'pink', flex: 1 }}>
                     <Image
                         source={sessionCompleteBanner}
@@ -389,6 +395,18 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             </View>
 
         </View>
+            {isLoading ?
+                <View
+                    style={{
+                        width: '100%', height: '100%', position: 'absolute',
+                        justifyContent: 'center', alignItems: 'center',
+                    }}>
+                    <ActivityIndicator style={{ width: 100, height: 100 }} size="large" color="black" />
+                </View>
+                :
+                null}
+        </>
+
     )
 
 }

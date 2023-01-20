@@ -94,14 +94,6 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
-            /*navigate('SessionEval', {
-                sessionObj, sessionEndTime: getUnixTime(new Date()),
-                endEarlyFlag: true, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
-            })*/
-            /*navigate('SessionSelect', {
-                sessionObj, sessionEndTime: getUnixTime(new Date()),
-                endEarlyFlag: true, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
-            })*/
             setSessionEndTime(getUnixTime(new Date()))
             setSessionStartTime(getUnixTime(startTime))
             setEndEarlyFlag(true)
@@ -124,7 +116,6 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
         useCallback(() => {
             setStartTime(new Date())
-            //setSessionObj({ ...sessionObj, sessionStartTime: now_dt })
 
             if (isThisSecond(fromUnixTime(endTime))) {
                 handleReset(false, numMins)

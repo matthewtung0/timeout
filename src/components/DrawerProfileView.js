@@ -15,7 +15,6 @@ const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc, u
         useCallback(() => {
             fetchAvatarGeneral(userId, forceRetrieve = true, isSelf = true)
             console.log("Drawer updating:")
-            console.log(userState)
             if (hours) { setH(hours) }
             if (minutes) { setM(minutes) }
             if (seconds) { setS(seconds) }

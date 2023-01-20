@@ -1,6 +1,7 @@
 import timeoutApi from '../api/timeout';
 import createDataContext from './createDataContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { compareAsc, parseISO } from 'date-fns';
 
 const userReducer = (state, action) => {
     switch (action.type) {
@@ -106,9 +107,9 @@ const fetchSelf = dispatch => async () => {
         dispatch({ type: 'fetch_self', payload: response.data })
 
         await AsyncStorage.setItem('fetchSelf', JSON.stringify(response.data));
-        console.log("set asyncstorage fetchself")
-        console.log("Returning this user id: ", response.data.user_info.user_id)
-        return response.data.user_info.user_id;
+        console.log("fetchSelf complete. Returning this user id: ", response.data.user_info.user_id)
+        const user_id_temp = response.data.user_info.user_id
+        return user_id_temp;
 
     } catch (err) {
         console.log("TRYING CACHED SELF INFO")
@@ -122,21 +123,44 @@ const fetchSelf = dispatch => async () => {
     }
 }
 
+const checkAvatarLastUpdated = async (user_id, cur_avatar_dt) => {
+    try {
+        console.log("Checking last updated with this user_id: ", user_id)
+        let response = await timeoutApi.get(`/avatar12345/last_updated/${user_id}`)
+        let last_updated_dt = response.data.last_updated;
+        var actual_date = new Date(last_updated_dt)
+        console.log(`${user_id}: Last avatar updated: ${actual_date.toISOString()}, and cur cache date: ${new Date(cur_avatar_dt).toISOString()}`)
+        var comparison = compareAsc(actual_date, new Date(cur_avatar_dt))
+        if (comparison < 0) { // < 0 if last updated is before we retrieve, means we are good
+            console.log("Last updated is before retrieval, no need to retrieve")
+            return false
+        }
+        console.log("DO need to retrieve")
+        return true
+    } catch (err) {
+        return false
+    }
+
+}
+
 const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, isSelf = false) => {
     try {
         var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id}`)
         if (!avatar_dt) {
             forceRetrieve = true
-        } else {
+        } else if (!forceRetrieve) {
             //forceRetrieve = true
-            avatar_dt = new Date(avatar_dt);
+
+            // check if our version is stale
+            let result = await checkAvatarLastUpdated(user_id, avatar_dt);
+            result ? forceRetrieve = true : forceRetrieve = false;
         }
-        console.log("Force retrieve is ", forceRetrieve);
-        console.log("With user id ", user_id);
-        console.log("IS SELF IS", isSelf)
+        //console.log("Force retrieve is ", forceRetrieve);
+        //console.log("With user id ", user_id);
+        //console.log("IS SELF IS", isSelf)
 
         if (forceRetrieve) {
-            console.log("Getting avatar from server")
+            console.log("Getting avatar from server and user id ", user_id)
             const response = await timeoutApi.get(`/avatar12345/${user_id}`)
             console.log("Got avatar from server")
             var base64Icon = `data:image/png;base64,${response.data}`
@@ -198,11 +222,9 @@ const fetchAvatar = dispatch => async (forceRetrieve = false) => {
 
 const fetchAvatarItemsOwned = dispatch => async () => {
     try {
-        console.log("Fetching avatar items owned")
         const response = await timeoutApi.get('/user/owned')
-        //console.log(base64Icon)
-        console.log("Items owned: ", response.data)
         dispatch({ type: 'fetch_items_owned', payload: response.data })
+        console.log("fetchAvatarItemsOwned complete")
     } catch (err) {
         console.log(err)
         dispatch({ type: 'add_error', payload: 'Must be signed in!' })
@@ -252,6 +274,7 @@ const fetchOutgoingRequests = dispatch => async (callback = null) => {
         const response = await timeoutApi.get('/friendRequestsOutgoing')
         dispatch({ type: 'request_outgoing_reqs', payload: response.data })
         if (callback) { callback() }
+        console.log("fetchOutgoingRequests completed")
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem getting outgoing friend reqs!' })
     }
@@ -262,6 +285,7 @@ const fetchIncomingRequests = dispatch => async (callback = null) => {
         const response = await timeoutApi.get('/friendRequestsIncoming')
         dispatch({ type: 'request_incoming_reqs', payload: response.data })
         if (callback) { callback() }
+        console.log("fetchIncomingRequests completed")
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem getting incoming friend reqs!' })
     }
@@ -272,6 +296,7 @@ const fetchFriends = dispatch => async (callback = null) => {
         const response = await timeoutApi.get('/friendsList')
         dispatch({ type: 'fetch_friends', payload: response.data })
         if (callback) { callback() }
+        console.log("Fetch friends complete")
 
     } catch (err) {
         console.log("Problem fetching friends:", err)
@@ -370,7 +395,6 @@ const editFriends = dispatch => async () => { }
 const updateLastSignin = dispatch => async (callback = null) => {
     try {
         const response = await timeoutApi.patch('/self_user/lastsignin')
-        console.log("updated last sign in")
         if (callback) { callback() }
     } catch (err) {
         console.log("can't update last sign in", err)

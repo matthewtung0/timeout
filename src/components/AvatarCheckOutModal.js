@@ -21,7 +21,7 @@ const AvatarCheckOutModal = ({ selectedItems, selectedColors, toggleFunction, ow
     }
 
     const resetStuff = () => {
-        console.log("avatar items owned", ownedItems)
+        //console.log("avatar items owned", ownedItems)
         checkEquippedItems()
     }
 

@@ -15,7 +15,6 @@ const MARGIN_HORIZONTAL = 0
 import HistoryComponent from '../components/HistoryComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
-import { ConsoleLogger } from '@aws-amplify/core';
 
 //const background_desk = require('../../assets/background_desk.png');
 
