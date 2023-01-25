@@ -1,10 +1,9 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useContext, useState, useCallback, useRef } from 'react';
 import {
-    View, StyleSheet, Text, Dimensions, ActivityIndicator, ScrollView, TouchableOpacity, FlatList,
-    ImageBackground
+    View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, //Modal
 } from 'react-native';
 import {
-    startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format, min
+    startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format, parseISO
 } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import MonthlySumComponent from '../components/MonthlySumComponent';
@@ -15,33 +14,36 @@ const MARGIN_HORIZONTAL = 0
 import HistoryComponent from '../components/HistoryComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
-
-//const background_desk = require('../../assets/background_desk.png');
+import enUS from 'date-fns/locale/en-US';
 
 const HistoryDailyScreen = ({ navigation }) => {
+
     console.log("History daily screen rerender")
     var options = { month: 'long' };
     const { height, width } = Dimensions.get('window');
     const [scrollPosition, setScrollPosition] = useState(0);
     const [viewableArray, setViewableArray] = useState([0]);
-    const [displayedMonth, setDisplayedMonth] = useState(new Intl.DateTimeFormat('en-US', options).format(new Date()))
+    const [displayedMonth, setDisplayedMonth] = useState(format(new Date(), 'MMMM', { locale: enUS }))
+    const [displayMonthKey, setDisplayedMonthKey] = useState(format(new Date(), 'M/yyyy', { locale: enUS }).toString())
     const [displayedYear, setDisplayedYear] = useState(new Date().getFullYear())
 
-    const [useMonthly, setUseMonthly] = useState(true);
-
-    const { state, fetchMonthly, resetCalendarDate } = useContext(SessionContext)
+    const { state, fetchMonthly, fetchMultipleMonths, resetCalendarDate } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(true)
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedObject, setSelectedObject] = useState({})
 
-    const longMonth = (date) => {
-        return new Intl.DateTimeFormat('en-US', options).format(date)
-    }
+    // number of months prior to current month that is currently fetched from server
+    const [offsetFetched, setOffsetFetched] = useState(3);
+    const [curOffset, setCurOffset] = useState(0);
+
+    const longMonth = (date) => { return format(date, 'MMMM', { locale: enUS }) }
 
     const [monthlyCounters, setMonthlyCounters] = useState([])
     const [monthlyCountersGrouped, setMonthlyCountersGrouped] = useState([])
 
     const [monthlyTasksGrouped, setMonthlyTasksGrouped] = useState([])
+
+    const [batchTasksGrouped, setBatchTasksGrouped] = useState({})
 
 
     const fetchMonthlyCounters = async (date) => {
@@ -79,11 +81,13 @@ const HistoryDailyScreen = ({ navigation }) => {
             return
         }
         setIsLoading(true)
-        setUseMonthly(true)
         resetCalendarDate(dt)
-        await fetchMonthly(dt)
-        await fetchMonthlyCounters(dt)
+        //await fetchMonthly(dt)
+        //await fetchMonthlyCounters(dt)
+
         setDisplayedMonth(longMonth(dt))
+        setDisplayedMonthKey(format(dt, 'M/yyyy', { locale: enUS }).toString())
+        setCurOffset(curOffset - 1)
         setDisplayedYear(dt.getFullYear())
         //setTestMonth(month)
         setIsLoading(false)
@@ -93,27 +97,41 @@ const HistoryDailyScreen = ({ navigation }) => {
         if (isLoading) { return }
         var dt = subMonths(startOfMonth(state.calendarDate), 1)
         setIsLoading(true)
-        setUseMonthly(true)
         resetCalendarDate(dt)
-        await fetchMonthly(dt)
-        await fetchMonthlyCounters(dt)
+
+        //await fetchMonthly(dt)
+        //await fetchMonthlyCounters(dt)
         setDisplayedMonth(longMonth(dt))
+        var monthKey = format(dt, 'M/yyyy', { locale: enUS }).toString()
+        setDisplayedMonthKey(monthKey)
+
+        if (curOffset + 1 > offsetFetched) { // need to fetch more 
+            setIsLoading(true)
+            var endTime = endOfMonth(dt)
+            var startTime = startOfMonth(subMonths(startOfMonth(dt), 3))
+            //await fetchMultipleMonths(startTime, endTime, groupMonthlyTasks)
+            await fetchMultipleMonths(startTime, endTime)
+            setOffsetFetched(offsetFetched + 4)
+        }
+
+
+        setCurOffset(curOffset + 1)
         setDisplayedYear(dt.getFullYear())
-        //setTestMonth(month)
         setIsLoading(false)
     }
 
-    const date_Subtitle = (dt) => {
-        var actual_date = new Date(dt).toLocaleDateString() // to compensate for being sent UTC times
-        //var parts = dt.split('T')
-        //var actual_date = parts[0]
-        //var actual_parts = actual_date.split('-')
+    const byMonthKey = (dt) => {
+        return format(parseISO(dt), 'M/yyyy', { locale: enUS }).toString()
+    }
+
+    const byDayKey = (dt) => {
+        var actual_date = format(parseISO(dt), 'M/dd/yyyy', { locale: enUS })
         var actual_parts = actual_date.split('/')
         var yr = actual_parts[2]
         var month = actual_parts[0]
         var day = actual_parts[1]
 
-        return { formatted: month + "/" + day + "/" + yr }
+        return month + "/" + day + "/" + yr
     }
 
     const getDayFromFormatted = (dt) => {
@@ -126,48 +144,75 @@ const HistoryDailyScreen = ({ navigation }) => {
     const getMonthFromFormatted = (dt) => {
         var actual_dt = new Date(dt)
         return format(actual_dt, 'LLL')
-        var actual_parts = dt.split('/')
-        var month = actual_parts[0]
-        var day = actual_parts[1]
-        var yr = actual_parts[2]
     }
 
     const groupMonthlyTasks = (monthSessions) => {
+        var overallMap = {}
         var taskMap = {}
         for (var i = 0; i < monthSessions.length; i++) {
             var session = monthSessions[i]
-            var formattedTime = date_Subtitle(session.time_start)
-            //timeDiffSec = differenceInSeconds(parseISO(act.time_end), parseISO(act.time_start))
-            if (formattedTime.formatted in taskMap) {
-                taskMap[formattedTime.formatted].push(session)
+            var dayKey = byDayKey(session.time_start)
+            var monthKey = byMonthKey(session.time_start)
+
+            if (monthKey in overallMap) {
+                if (dayKey in overallMap[monthKey]) {
+                    overallMap[monthKey][dayKey].push(session)
+                } else {
+                    overallMap[monthKey][dayKey] = [session]
+                }
             } else {
-                taskMap[formattedTime.formatted] = [session]
+                overallMap[monthKey] = {}
+                overallMap[monthKey][dayKey] = [session]
+            }
+            if (dayKey in taskMap) {
+                taskMap[dayKey].push(session)
+            } else {
+                taskMap[dayKey] = [session]
             }
         }
 
-        let sortedTaskMap = Object.entries(taskMap).sort((a, b) => { return a })
-        setMonthlyTasksGrouped(sortedTaskMap)
+        console.log(Object.keys(overallMap))
+        for (const [key, value] of Object.entries(overallMap)) {
+            Object.entries(value).sort((a, b) => { return a })
+            console.log(Object.keys(value))
+        }
+        let sortedTaskMapOld = Object.entries(taskMap).sort((a, b) => { return a })
+
+        // map to existing format that works
+        var finalMap = {}
+        for (var K in overallMap) {
+            finalMap[K] = Object.keys(overallMap[K]).map((key) => [key, overallMap[K][key]])
+        }
+        console.log(finalMap)
+        setBatchTasksGrouped({ ...batchTasksGrouped, ...finalMap })
+        setMonthlyTasksGrouped(sortedTaskMapOld)
     }
 
     const focusEffectFunc = async () => {
         setIsLoading(true)
-        await fetchMonthly(state.calendarDate, groupMonthlyTasks)
-        await fetchMonthlyCounters(state.calendarDate)
+        var endTime = endOfMonth(state.calendarDate)
+        var startTime = startOfMonth(subMonths(startOfMonth(state.calendarDate), 3))
+        //await fetchMultipleMonths(startTime, endTime)
+
+        //await fetchMonthly(state.calendarDate, groupMonthlyTasks)
+
+        //await fetchMonthlyCounters(state.calendarDate)
         setDisplayedMonth(longMonth(state.calendarDate))
         setDisplayedYear(state.calendarDate.getFullYear())
         setIsLoading(false)
     }
-
-
+    const modalVis = useRef();
     useFocusEffect(
 
         useCallback(() => {
-            //setUseMonthly(true)
+            console.log("focus effect")
 
             focusEffectFunc();
             return () => {
             }
-        }, [state.calendarDate])
+        }, []
+            //[state.calendarDate])
+        )
     )
 
     const scrollEvent = (e) => {
@@ -189,12 +234,20 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
-    };
+    }
+
+
+
 
     const modalCallback = async (item_deleted = false) => {
         if (item_deleted) {
             //console.log("CALLING MODAL CALLBACK")
-            fetchMonthly(state.calendarDate, groupMonthlyTasks)
+
+            var endTime = endOfMonth(state.calendarDate)
+            var startTime = startOfMonth(state.calendarDate)
+            await fetchMultipleMonths(startTime, endTime)
+
+            //fetchMonthly(state.calendarDate, groupMonthlyTasks)
         }
 
     }
@@ -234,7 +287,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                             fontSize: 17, alignSelf: 'auto', marginHorizontal: 10,
                             marginTop: 2, marginBottom: 3, color: '#67806D'
                         }]}>
-                            {state.monthSessions.length} Tasks</Text>
+                            {state.batchData[displayMonthKey].length} Tasks</Text>
                         <View
                             style={{
                                 borderBottomColor: 'grey',
@@ -244,8 +297,12 @@ const HistoryDailyScreen = ({ navigation }) => {
                             }}
                         />
 
-                        {state.monthSessions.length > 0 ?
-                            <MonthlySumComponent monthBatch={state.monthSessions} />
+                        {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
+                            state.batchDataForSummary[displayMonthKey].length > 0 ?
+                            <MonthlySumComponent
+                                //monthBatch={state.monthSessions} 
+                                monthBatch={state.batchDataForSummary[displayMonthKey]}
+                            />
                             :
                             <View style={{ marginHorizontal: 10, marginTop: 5, }}>
                                 <Text style={{ color: '#67806D' }}>No tasks for this month</Text>
@@ -293,9 +350,14 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     return (
         <View style={styles.viewContainer}>
-            <Modal isVisible={modalVisible}
+            <Modal
+                //ref={modalVis}
+                //transparent={true}
+                isVisible={modalVisible}
+                //animationType="fade"
                 animationIn='slideInLeft'
                 animationOut='slideOutLeft'
+                backdropTransitionOutTiming={0}
             >
 
                 <View style={{
@@ -307,7 +369,8 @@ const HistoryDailyScreen = ({ navigation }) => {
                         height: height * 0.6
                     }}>
 
-                        <HistoryDailyModal toggleFunction={toggleModal}
+                        <HistoryDailyModal
+                            toggleFunction={toggleModal}
                             selectedObject={selectedObject}
                             callback={modalCallback}>
                         </HistoryDailyModal>
@@ -316,7 +379,9 @@ const HistoryDailyScreen = ({ navigation }) => {
                 </View>
             </Modal>
 
-            <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, }}>
+            <View opacity={isLoading || modalVisible ? 0.3 : 1}
+                style={modalVisible ? { flex: 1 } : { flex: 1, }}
+            >
                 <View style={{
                     flex: 1, flexDirection: 'row', alignItems: 'center', height: 30, borderRadius: 15,
                     backgroundColor: '#90AB72', marginHorizontal: 20,
@@ -386,16 +451,17 @@ const HistoryDailyScreen = ({ navigation }) => {
                                 ListHeaderComponent={renderHeader}
                                 style={{ marginHorizontal: 10, }}
                                 horizontal={false}
-                                data={monthlyTasksGrouped}
-                                //onScroll={scrollEvent}
-                                onViewableItemsChanged={_onViewableItemsChanged}
-                                viewabilityConfig={_viewabilityConfig}
+                                //data={monthlyTasksGrouped}
+                                //data={batchTasksGrouped[displayMonthKey]}
+                                data={state.batchData[displayMonthKey]}
+                                //onViewableItemsChanged={_onViewableItemsChanged}
+                                //viewabilityConfig={_viewabilityConfig}
                                 showsHorizontalScrollIndicator={false}
                                 keyExtractor={(item) => item[0]}
                                 renderItem={({ item, index }) =>
                                     <View
                                         style={{ flex: 1, flexDirection: 'row', }}>
-                                        <View opacity={Math.min(...viewableArray) == index ? 1 : 0.7}>
+                                        <View opacity={Math.min(...viewableArray) == index || 1 ? 1 : 0.7}>
                                             <Text style={[styles.overviewTitle, {
                                                 fontSize: 20, color: '#013220', fontWeight: '700',
                                                 alignSelf: 'auto',
@@ -406,7 +472,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                         </View>
                                         <View style={{ flex: 0.7, borderWidth: 0, alignItems: 'center', }}>
                                             {(Math.min(...viewableArray) == index ||
-                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) ?
+                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) || 1 ?
                                                 <View style={{
                                                     width: 15, height: 15, borderRadius: 7.5,
                                                     borderWidth: 2, borderColor: '#67806D',
@@ -419,7 +485,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                 }} />
                                             }
                                             {(Math.min(...viewableArray) == index ||
-                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) ?
+                                                (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))) || 1 ?
                                                 <View style={{
                                                     height: '100%', width: 4, backgroundColor: '#67806D',
                                                     borderWidth: 2, borderColor: '#67806D',
@@ -459,7 +525,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                                                 <HistoryComponent
                                                                     session_obj={j}
                                                                     is_active={Math.min(...viewableArray) == index ||
-                                                                        (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index))}>
+                                                                        (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index)) || 1}>
                                                                 </HistoryComponent>
                                                             </TouchableOpacity>
 

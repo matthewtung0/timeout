@@ -12,7 +12,7 @@ const clock_top = require('../../assets/clock_top.png');
 
 
 const { height, width } = Dimensions.get('window');
-const picked_width = width / 2 / 0.8
+const picked_width = width / 2 / 0.80
 
 const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     const timer_radius_pct = 0.45 // fraction of screen that the radius takes
@@ -49,11 +49,18 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
         let mins = Math.round((angle / 360) * maxTime)
         setTime(mins)
         updateCallback(mins)
+        let formatted_mins = "00"
+        if (mins < 10) {
+            formatted_mins = "0" + mins.toString()
+        } else {
+            formatted_mins = mins.toString();
+        }
 
-        let formatted_mins = mins.toLocaleString('en-US', {
+        /*let formatted_mins = mins.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
-        })
+        })*/
+
         setFormattedTens(formatted_mins.charAt(0))
         setFormattedOnes(formatted_mins.charAt(1))
         return formatted_mins
@@ -312,7 +319,7 @@ const styles = StyleSheet.create({
     },
     wrappedView: {
         aspectRatio: 1,
-        borderWidth: 1,
+        borderWidth: 0.3,
         borderColor: 'yellow',
         width: picked_width,
     },

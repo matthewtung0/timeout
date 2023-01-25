@@ -58,6 +58,7 @@ import Eyebrows2 from '../../assets/avatar_svg/15_eyebrows/2_neutral-thin_1.svg'
 /* 16 base */
 import Base1 from '../../assets/avatar_svg/16_base/base_1.svg'
 import Base2 from '../../assets/avatar_svg/16_base/base_2.svg'
+import Base2_new from '../../assets/avatar_svg/16_base/base_2_new.svg'
 import Base3 from '../../assets/avatar_svg/16_base/base_3.svg'
 import Base4 from '../../assets/avatar_svg/16_base/base_4.svg'
 import Base5 from '../../assets/avatar_svg/16_base/base_5.svg'
@@ -224,6 +225,9 @@ const Base1_svg = ({ colorFill, len }) => {
 const Base2_svg = ({ colorFill, len }) => {
     return (<Base2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
+const Base2_new_svg = ({ colorFill, len }) => {
+    return (<Base2_new style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
 const Base3_svg = ({ colorFill, len }) => {
     return (<Base3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
@@ -326,7 +330,7 @@ module.exports = {
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg,
     EyeMakeup1_svg,
-    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base5_svg,
+    Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg,
     Eyebrows1_svg, Eyebrows2_svg,
     HairAccessories1_svg,
     Hairback1_svg, Hairback2_svg,

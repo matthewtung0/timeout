@@ -4,6 +4,7 @@ import {
     fromUnixTime, getUnixTime, isThisSecond, format,
     differenceInMilliseconds, addSeconds
 } from 'date-fns';
+import uuid from 'uuid-random'
 import Svg, {
     Circle,
     Path,
@@ -11,7 +12,7 @@ import Svg, {
 import Modal from 'react-native-modal'
 
 import { Text as TextSVG } from 'react-native-svg';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useLinkBuilder } from '@react-navigation/native';
 import SessionRatingModal from '../components/SessionRatingModal';
 const constants = require('../components/constants.json')
 const clock_middle = require('../../assets/clock_middle.png');
@@ -59,12 +60,10 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
     }
 
     const [sessionObj, setSessionObj] = useState({
+        activity_id: uuid(),
         chosenCategory: categoryName,
-        chosenCatId: categoryId,
-        customActivity: activityName,
-        //sessionStartTime: '',
-        //sessionEndTime: '',
-        //endEarlyFlag: '',
+        cat_id: categoryId,
+        activity_name: activityName,
         prodRating: '',
     })
     const toggleRewardModal = () => {

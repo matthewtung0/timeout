@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     parentContainer: {
         flex: 1,
         justifyContent: 'space-around',
-        backgroundColor: '#F9EAD3',
+        //backgroundColor: '#F9EAD3',
     },
     modal: {
         flex: 1,

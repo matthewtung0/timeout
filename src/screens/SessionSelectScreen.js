@@ -10,6 +10,7 @@ import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 import DropDownComponent from '../components/DropDownComponent';
+import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import timeoutApi from '../api/timeout';
@@ -92,7 +93,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     useFocusEffect(
         useCallback(() => {
             console.log("FOCUS EFFECT SESSION SELECT")
-            checkStoredSessions()
+
+            AsyncStorage.removeItem('storedSessions'); // TEMP
+            //checkStoredSessions()
         }, [])
     )
     console.log("Error message: ", state.errorMessage);
@@ -173,12 +176,15 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
             <>
                 <View style={[styles.viewContainer, { opacity: pageOpacity }]}>
 
-                    <View style={{ flex: 6 }}>
+                    <View style={{
+                        //flex: 5 
+                    }}>
                         {/* TO-DO SELECTOR MODAL */}
                         <View>
                             <Modal isVisible={modalVisible}
                                 animationIn='slideInLeft'
                                 animationOut='slideOutLeft'
+                                backdropTransitionOutTiming={0}
                             >
 
                                 <View style={{
@@ -206,7 +212,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         <Image
                             source={clock_top}
                             style={{
-                                width: 235, height: 52, alignSelf: "center", borderWidth: 1, borderColor: 'yellow',
+                                //width: 235, 
+                                width: width / 2 / 0.80,
+                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0.3, borderColor: 'yellow',
                                 marginTop: 30,
                             }}
                             resizeMode="contain" />
@@ -216,13 +224,19 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             ref={circularRef} />
                         <Image
                             source={clock_bottom}
-                            style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                            style={{
+                                width: width / 2 / 0.80,
+                                height: (width / 2 / 0.80) * 0.085, alignSelf: "center", borderWidth: 0.3, borderColor: 'yellow'
+                            }}
                             resizeMode="contain" />
                     </View>
 
-                    <View style={{ flex: 1.2 }}>
+                    <View style={{
+                        //flex: 1
+                        marginTop: 10,
+                    }}>
                         <TextInput
-                            style={[styles.input, { width: width * 0.9, marginBottom: 20, height: 45 }]}
+                            style={[styles.input, { width: width * 0.8, marginBottom: 20, height: 45 }]}
                             placeholder="Task"
                             placeholderTextColor={'#DCDBDB'}
                             rightIconContainerStyle={styles.rightIconInput}
@@ -238,9 +252,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         />
                     </View>
 
-                    <View style={{ flex: 4 }}>
 
-                        <DropDownComponent
+                    <View style={{ minHeight: 50, }}>
+                        <DropDownComponent2
                             isInModal={false}
                             categoryId={categoryId}
                             catName={newCatName}
@@ -249,44 +263,45 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             setColorIdCallback={setNewColorId}
                             setCategoryIdCallback={setCategoryId}
                         />
-
-
-                        <TouchableOpacity
-                            style={[styles.start, { width: width / 2.2, height: height / 12 }]}
-                            onPress={() => {
-                                if (!validateInputs() || isLoading) {
-                                    return;
-                                }
-                                let cat_Name = newCatName
-                                let cat_Id = categoryId
-                                let timer_Time = time
-
-                                clearInputs()
-                                circularRef.current.resetSlider()
-
-                                navigate('SessionOngoing', {
-                                    numMins: timer_Time,
-                                    categoryId: cat_Id,
-                                    categoryName: cat_Name,
-                                    activityName: customActivity,
-                                    colorId: newColorId,
-                                })
-                            }}>
-                            <Text style={[styles.startText, styles.textDefault]}>Start</Text>
-
-                        </TouchableOpacity>
-
-                        {state.errorMessage ?
-                            <View style={{ height: 100, backgroundColor: '#F5BBAE', width: '100%', }}>
-                                <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>
-                                    No internet connection! Any sessions will not be saved.
-                                </Text>
-                            </View>
-
-                            : null}
-                        {isLoading ?
-                            <ActivityIndicator size="large" color="black" /> : null}
                     </View>
+
+
+
+                    <TouchableOpacity
+                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
+                        onPress={() => {
+                            if (!validateInputs() || isLoading) {
+                                return;
+                            }
+                            let cat_Name = newCatName
+                            let cat_Id = categoryId
+                            let timer_Time = time
+
+                            clearInputs()
+                            circularRef.current.resetSlider()
+
+                            navigate('SessionOngoing', {
+                                numMins: timer_Time,
+                                categoryId: cat_Id,
+                                categoryName: cat_Name,
+                                activityName: customActivity,
+                                colorId: newColorId,
+                            })
+                        }}>
+                        <Text style={[styles.startText, styles.textDefault]}>Start</Text>
+
+                    </TouchableOpacity>
+
+                    {state.errorMessage ?
+                        <View style={{ height: height * 0.2, backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
+                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 18 }]}>
+                                No internet connection - will attempt to be save any sessions once connection is restored.
+                            </Text>
+                        </View>
+
+                        : null}
+                    {isLoading ?
+                        <ActivityIndicator size="large" color="black" /> : null}
 
                     <View style={styles.modalContainer}>
                         <View style={styles.modalDummy} />
@@ -398,7 +413,6 @@ const styles = StyleSheet.create({
     },
     viewContainer: {
         marginTop: 55,
-        flexDirection: 'column',
         flex: 1
     },
     input: {

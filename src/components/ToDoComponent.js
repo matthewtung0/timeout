@@ -23,11 +23,11 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
                 }}>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={[styles.categoryStyle, { backgroundColor: bgColorHex }]}>
-                        <Text style={[styles.categoryText, styles.textDefaultBold]}>{item.category_name}</Text>
+                    <View style={[styles.categoryStyle, { flex: 1, backgroundColor: bgColorHex }]}>
+                        <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultBold]}>{item.category_name}</Text>
                     </View>
                     <View style={{ flex: 2.5, justifyContent: 'center' }}>
-                        <Text style={[styles.text, styles.textDefaultBold,]}>{item.item_desc}</Text>
+                        <Text numberOfLines={2} style={[styles.text, styles.textDefaultBold,]}>{item.item_desc}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     categoryText: {
         color: 'white',
-        fontSize: 11,
+        fontSize: 10,
         textAlign: 'center',
     },
     container: {
@@ -87,8 +87,6 @@ const styles = StyleSheet.create({
         alignContent: 'center',
     },
     categoryStyle: {
-
-        flex: 1,
         alignSelf: 'flex-end',
         borderRadius: 10,
         padding: 5,

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, FlatList, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import * as DIR from '../components/AvatarSelection';
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,7 +26,7 @@ import {
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg,
     EyeMakeup1_svg,
-    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base5_svg,
+    Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg,
     Eyebrows1_svg, Eyebrows2_svg,
     HairAccessories1_svg,
     Hairback1_svg, Hairback2_svg,
@@ -112,7 +112,7 @@ const SvgTestScreen = ({ navigation }) => {
                 colorFill={c} len={size} />, id: 1,
             owned: true
         }, {
-            svg: <Base2_svg
+            svg: <Base2_new_svg
                 colorFill={c} len={size} />, id: 2,
             owned: true
         }, {
@@ -884,12 +884,12 @@ const SvgTestScreen = ({ navigation }) => {
                         <View style={{ position: 'absolute' }}>
                             {hair_accessories_types(AVATAR_SIZE, underlayer_colors[hairAccessoriesColorIndex].hex)[hairAccessoriesIndex].svg}
                         </View> : null}
-                    {/*<View style={{ position: 'absolute' }}>
+                    <View style={{ position: 'absolute' }}>
                         {base_types(AVATAR_SIZE, mouth_colors[0].hex)[baseIndex].svg}
-                    </View>*/}
-                    <Image
+                    </View>
+                    {/*<Image
                         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
-                        source={DIR.baseTypes[baseIndex][0]} />
+                        source={DIR.baseTypes[baseIndex][0]} />*/}
 
                     <View style={{ position: 'absolute' }}>
                         {eyebrow_types(AVATAR_SIZE, mouth_colors[eyebrowColorIndex].hex)[eyebrowIndex].svg}
@@ -1063,7 +1063,7 @@ const SvgTestScreen = ({ navigation }) => {
                                             name='caret-back'
                                             size={20}
                                             type='ionicon'
-                                            color='##B3B2B3' />
+                                            color='#B3B2B3' />
                                     </TouchableOpacity>
 
                                     <View
@@ -1126,12 +1126,12 @@ const SvgTestScreen = ({ navigation }) => {
                                         {!colorMenuActive ?
                                             <AvatarMenuComponent
                                                 title={"Skin tone"}
-                                                data={DIR.baseTypes}
+                                                //data={DIR.baseTypes}
+                                                data={base_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
                                                 noItemOption={false}
-                                                pngOption={true}
+                                                //pngOption={true}
+                                                pngOption={false}
                                                 thumbnailSize={THUMBNAIL_SIZE}
-                                                //hasItem={}
-                                                //setHasItemCallback={}
                                                 setIndexCallback={setBaseIndex}
                                                 itemIndex={baseIndex}
                                                 updateUnownedCallback={updateUnowned}

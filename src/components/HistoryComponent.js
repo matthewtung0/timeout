@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, } from 'react-native';
-import { parseISO, differenceInSeconds } from 'date-fns';
+import { parseISO, differenceInSeconds, format } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 const PRODUCTIVITY_WIDTH = 100
@@ -20,7 +21,8 @@ const timeDifference = (timeStart, timeEnd) => {
 }
 
 const timeFormat = (dt) => {
-    var date = new Date(dt).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
+    //var date = new Date(dt).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
+    var date = format(parseISO(dt), "h:mm aaaa", { locale: enUS })
     return date;
 }
 

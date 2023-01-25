@@ -6,9 +6,9 @@ import { Context as userContext } from '../context/userContext';
 //import { Context as UserContext } from '../context/userContext';
 const default_img = require('../../assets/avatar/20_BACKGROUND/1_pink.png')
 
-const AvatarComponent = ({ w, pfpSrc, id }) => {
+const AvatarComponent = ({ w, pfpSrc, id, modalView, checkForNew }) => {
     const { width, height } = Dimensions.get('window')
-    const [pngData, setPngData] = useState('')
+    const [pngData, setPngData] = useState(pfpSrc)
     const [idDisplay, setIdDisplay] = useState('')
     const { state: userState, fetchAvatarGeneral } = useContext(userContext)
 
@@ -32,7 +32,9 @@ const AvatarComponent = ({ w, pfpSrc, id }) => {
     useFocusEffect(
         useCallback(() => {
             setIdDisplay(id)
-            pullPfp()
+            if (!pfpSrc) {
+                pullPfp()
+            }
             return () => {
                 setPngData('')
             }
@@ -44,15 +46,16 @@ const AvatarComponent = ({ w, pfpSrc, id }) => {
         <View>
             {pngData == '' ?
                 <Image
-                    style={[styles.default, { width: w, height: w }]}
+                    style={modalView ? [styles.modalView, { width: w, height: w, borderRadius: w / 2, }] :
+                        [styles.default, { width: w, height: w, borderRadius: w / 2, }]}
                     source={default_img}
                 />
                 :
                 <Image
-                    style={[styles.default, { width: w, height: w }]}
+                    style={modalView ? [styles.modalView, { width: w, height: w, borderRadius: w / 2, }] :
+                        [styles.default, { width: w, height: w, borderRadius: w / 2, }]}
                     source={{ uri: pngData }}
                 />
-
             }
         </View>
     )
@@ -60,7 +63,10 @@ const AvatarComponent = ({ w, pfpSrc, id }) => {
 
 const styles = StyleSheet.create({
     default: {
-        position: 'absolute', borderRadius: 100, //marginTop: 170, marginLeft: 50
+        position: 'absolute',//marginTop: 170, marginLeft: 50
+    },
+    modalView: {
+
     }
 })
 

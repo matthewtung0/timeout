@@ -1,10 +1,8 @@
 import timeoutApi from '../api/timeout';
 import createDataContext from './createDataContext';
-import {
-    compareAsc, eachDayOfInterval, format, subDays, addDays,
-    endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
-} from 'date-fns';
-import { call } from 'react-native-reanimated';
+import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const sessionReducer = (state, action) => {
     switch (action.type) {
@@ -18,6 +16,14 @@ const sessionReducer = (state, action) => {
             return { ...state, selfOnlySessions: [...state.selfOnlySessions, ...action.payload] }
         case 'fetch_monthly':
             return { ...state, monthSessions: action.payload.monthlyData }//, calendarDate: action.payload.startOfMonth }
+        case 'fetch_multiple_months':
+            return {
+                ...state,
+                batchDataForSummary: { ...state.batchDataForSummary, ...action.payload.batchDataForSummary },
+                batchData: { ...state.batchData, ...action.payload.batchData },
+                batchDataStart: action.payload.batchDataStart,
+                batchDataEnd: action.payload.batchDataEnd
+            }
         case 'reset_calendar_date':
             return { ...state, calendarDate: action.payload }
         case 'fetch_reaction':
@@ -94,6 +100,27 @@ const sessionReducer = (state, action) => {
                     })
                 }
             }
+        case 'save_session':
+            var updatedBatchData = state.batchData;
+            var monthKey = action.payload.monthKey
+            var dayKey = action.payload.dayKey
+            var sessionObjFinal = action.payload.sessionObjFinal
+            if (typeof (state.batchData[monthKey]) === 'undefined') { // this is first session of the month
+                console.log("Updating new month")
+                updatedBatchData[monthKey] = [[dayKey, [sessionObjFinal]]]
+            } else if (state.batchData[monthKey][0].length > 1 && state.batchData[monthKey][0][0] != dayKey) { // this is first session of day
+                console.log("Updating new day")
+                updatedBatchData[monthKey].unshift([dayKey, [sessionObjFinal]])
+            } else { // not the first session of the day
+                console.log("Adding on to day")
+                updatedBatchData[monthKey][0][1].push(sessionObjFinal)
+            }
+
+            console.log("UPDATED BATCH DATA ", updatedBatchData)
+            return {
+                ...state,
+                batchData: updatedBatchData
+            }
         case 'clear_context':
             return {
                 userSessions: [],
@@ -108,8 +135,6 @@ const sessionReducer = (state, action) => {
             return state;
     }
 }
-
-
 
 const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
     var friendsArr = []
@@ -169,8 +194,153 @@ const fetchAvatars = dispatch => async (friendId) => {
     }
 }
 
+const byMonthKey = (dt, parse = true) => {
+    if (parse) {
+        return format(parseISO(dt), 'M/yyyy', { locale: enUS }).toString()
+    }
+    return format(dt, 'M/yyyy', { locale: enUS }).toString()
 
-// fetch all tasks in the given day
+}
+
+const byDayKey = (dt, parse = true) => {
+    if (parse) {
+        var actual_date = format(parseISO(dt), 'M/dd/yyyy', { locale: enUS })
+        var actual_parts = actual_date.split('/')
+        var yr = actual_parts[2]
+        var month = actual_parts[0]
+        var day = actual_parts[1]
+
+        return month + "/" + day + "/" + yr
+    } else {
+        var actual_date = format(dt, 'M/dd/yyyy', { locale: enUS })
+        var actual_parts = actual_date.split('/')
+        var yr = actual_parts[2]
+        var month = actual_parts[0]
+        var day = actual_parts[1]
+
+        return month + "/" + day + "/" + yr
+    }
+
+}
+
+// key is month only, for summary
+const groupMonthlyTasksForSummary = (monthSessions) => {
+    var overallMap = {}
+    for (var i = 0; i < monthSessions.length; i++) {
+        var session = monthSessions[i]
+        var monthKey = byMonthKey(session.time_start)
+
+        if (monthKey in overallMap) {
+            overallMap[monthKey].push(session)
+        } else {
+            overallMap[monthKey] = [session]
+        }
+    }
+    return overallMap //Object.entries(overallMap)
+}
+
+// key is month as well as day, for detail
+const groupMonthlyTasks = (monthSessions) => {
+    var overallMap = {}
+    for (var i = 0; i < monthSessions.length; i++) {
+        var session = monthSessions[i]
+        var dayKey = byDayKey(session.time_start)
+        var monthKey = byMonthKey(session.time_start)
+
+        if (monthKey in overallMap) {
+            if (dayKey in overallMap[monthKey]) {
+                overallMap[monthKey][dayKey].push(session)
+            } else {
+                overallMap[monthKey][dayKey] = [session]
+            }
+        } else {
+            overallMap[monthKey] = {}
+            overallMap[monthKey][dayKey] = [session]
+        }
+    }
+    for (const [key, value] of Object.entries(overallMap)) {
+        Object.entries(value).sort((a, b) => { return a })
+    }
+
+    // map to existing format that works
+    var finalMap = {}
+    for (var K in overallMap) {
+        finalMap[K] = Object.keys(overallMap[K]).map((key) => [key, overallMap[K][key]])
+    }
+    return finalMap
+}
+
+const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = null) => {
+    console.log(`Fetching sessions between ${startTime} and ${endTime}`)
+    try {
+        const response = await timeoutApi.get('/monthSessions', { params: { startTime: startTime, endTime: endTime } })
+        var groupedTasks = groupMonthlyTasks(response.data);
+        var groupedTasksForSummary = groupMonthlyTasksForSummary(response.data);
+        dispatch({
+            type: 'fetch_multiple_months', payload: {
+                batchDataForSummary: groupedTasksForSummary,
+                batchData: groupedTasks,
+                batchDataStart: format(startTime, 'yyyy-MM-dd'),
+                batchDataEnd: format(endTime, 'yyyy-MM-dd'),
+            }
+        })
+        if (callback) { callback(response.data) }
+    } catch (err) {
+        console.log("Problem getting multiple month sessions", err)
+    }
+}
+
+const saveSession = dispatch => async (sessionObjFinal, callback = null, errorCallback = null) => {
+
+    try {
+        const response = await timeoutApi.post('/save_session', [sessionObjFinal])
+        console.log("Session save successful!")
+        console.log("Response is ", response.data);
+
+        // put into batchData and batchDataForSummary
+
+        //state.batchData["1/2023"] example [["1/23/2023",[]], ["1/22/2023",[]], ...]
+        //state.batchData["1/2023"][0] example [ "1/23/2023", [{session},{session},{session}] ]
+        //state.batchData["1/2023"][0][0] example: 1/23/2023
+        // state.batchData["1/2023"][0][1] example: [{session},{session},{session}]
+
+
+        /*var dayKey = byDayKey(sessionObjFinal.sessionStartTime, parse = false);
+        var monthKey = byMonthKey(sessionObjFinal.sessionStartTime, parse = false);
+
+        dispatch({
+            type: 'save_session', payload: {
+                monthKey: monthKey,
+                dayKey: dayKey,
+                sessionObjFinal: sessionObjFinal,
+            }
+        })*/
+
+
+        if (callback) { callback() };
+    } catch (err) {
+        console.log("Problem adding session", err)
+
+        // save session to asyncStorage to enter later
+        /*var storedSessions = await AsyncStorage.getItem('storedSessions')
+        if (storedSessions) {
+            var temp = JSON.parse(storedSessions)
+            temp.push(sessionObjFinal)
+            storedSessions = JSON.stringify(temp)
+        } else {
+            storedSessions = JSON.stringify([sessionObjFinal])
+        }
+        await AsyncStorage.setItem('storedSessions', storedSessions);*/
+
+        alert("Sorry, we ran into a problem - your session will be saved when internet connection is stored")
+
+        if (errorCallback) { errorCallback() };
+    }
+}
+
+
+
+// phase out using this one
 const fetchMonthly = dispatch => async (date, callback = null) => {
     //let date = parseISO(dayObject.dateString)
     let startOfMonthTemp = startOfMonth(date)
@@ -181,7 +351,7 @@ const fetchMonthly = dispatch => async (date, callback = null) => {
         const response = await timeoutApi.get('/monthSessions', { params: { startTime: startRange, endTime: endRange } })
         dispatch({
             type: 'fetch_monthly', payload: {
-                monthlyData: response.data,
+                x: response.data,
                 startOfMonth: format(startOfMonthTemp, 'yyyy-MM-dd')
             }
         })
@@ -304,7 +474,7 @@ export const { Provider, Context } = createDataContext(
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
         resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
-        fetchLikersOfActivity
+        fetchLikersOfActivity, fetchMultipleMonths, saveSession,
     },
     {
         userSessions: [],
@@ -312,6 +482,8 @@ export const { Provider, Context } = createDataContext(
         userNotifications: [],
         daySessions: [],
         monthSessions: [],
+        batchData: {},
+        batchDataForSummary: {},
         calendarDate: new Date(),
         selfOnlySessions: [],
     }

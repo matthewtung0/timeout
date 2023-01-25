@@ -9,7 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
-import { fromUnixTime } from 'date-fns';
+import { Context as SessionContext } from '../context/SessionContext';
+import { fromUnixTime, startOfMonth, endOfMonth, subDays } from 'date-fns';
 const constants = require('../components/constants.json')
 const sessionCompleteBanner = require('../../assets/sessionCompleteBanner.png');
 const iconRatingNull = require('../../assets/icon_rating-null.png')
@@ -29,14 +30,16 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const [sessionObjFinal, setSessionObjFinal] = useState({
         ...sessionObj,
         //sessionEndTime: sessionEndTime,
-        endEarlyFlag: endEarlyFlag,
+        end_early: endEarlyFlag,
         plannedMin: plannedMin,
-        prodRating: 50, // 50 if user doesn't pick productivity
-        sessionStartTime: fromUnixTime(sessionStartTime),
-        sessionEndTime: fromUnixTime(sessionEndTime),
+        prod_rating: 50, // 50 if user doesn't pick productivity
+        time_start: fromUnixTime(sessionStartTime),
+        time_end: fromUnixTime(sessionEndTime),
 
-        //sessionStartTime: fromUnixTime(sessionObj.sessionStartTime),
-        //sessionEndTime: fromUnixTime(sessionEndTime)
+        //startRange: startOfDay(fromUnixTime(sessionStartTime)),
+        //endRange: endOfDay(fromUnixTime(sessionStartTime)),
+        //yesterdayStartRange: subDays(startOfDay(fromUnixTime(sessionStartTime)), 1),
+        //yesterdayEndRange: subDays(endOfDay(fromUnixTime(sessionStartTime)), 1),
     })
 
     // handle adding to Todo List or not
@@ -48,6 +51,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
     const { state: s, deleteTodoItem, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
     const { state: userState, addPoints, fetchSelf } = useContext(UserContext)
+    const { saveSession, fetchMultipleMonths } = useContext(SessionContext)
 
     const toggleRatingViewActive = () => {
         setRatingViewActive(!ratingViewActive)
@@ -63,11 +67,53 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     console.log("End early flag: ", endEarlyFlag)
     console.log("End time: ", sessionEndTime)
 
-    const saveSession = async () => {
+    const saveSession_callback = async () => {
+        console.log("sessionStartTime is ", fromUnixTime(sessionStartTime));
+        var endTime = endOfMonth(fromUnixTime(sessionStartTime))
+        var startTime = startOfMonth(fromUnixTime(sessionStartTime))
+        try {
+            await fetchMultipleMonths(startTime, endTime)
+        } catch (err) {
+            console.log("Problem fetching months")
+            offBoard();
+            return
+        }
+
+        try {
+            // deleting an existing task
+            if (existingItem && !toKeep) {
+                console.log("DELETING ITEM")
+                await deleteItem()
+                // adding a new task
+            } else if (!existingItem && toAdd) {
+
+                await addItem()
+            }
+
+            await fetchUserTodoItems()
+        } catch (err) {
+            console.log("Problem updating the todo lists");
+            offBoard();
+            return
+        }
+
+        try {
+            await addPoints(userState.user_id, 100000, offBoard())
+        } catch (err) {
+            console.log("Problem adding points")
+            offBoard();
+        }
+
+
+
+    }
+
+    const saveSession_TEMPDISABLE = async () => {
 
         try {
             const response = await timeoutApi.post('/save_session', [sessionObjFinal])
             console.log("Session save successful!")
+            console.log("Response is ", response);
 
             // after save session, fetch self to update stats, and then update the points
             await fetchSelf()
@@ -121,7 +167,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
 
     const addItem = async () => {
-        await addTodoItem(sessionObjFinal.customActivity, new Date(), sessionObjFinal.chosenCatId)
+        await addTodoItem(sessionObjFinal.activity_name, new Date(), sessionObjFinal.cat_id)
         console.log("Added this task from todo list")
     }
     const offBoard = () => {
@@ -137,7 +183,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             var _catId = curTodoItems[i]['category_id']
             var _itemDesc = curTodoItems[i]['item_desc']
 
-            if (_catId == sessionObjFinal.chosenCatId && _itemDesc == sessionObjFinal.customActivity) {
+            if (_catId == sessionObjFinal.cat_id && _itemDesc == sessionObjFinal.activity_name) {
                 console.log("This is an existing item")
                 setExistingItem(true)
                 setExistingId(curTodoItems[i]['item_id'])
@@ -152,7 +198,8 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const sessionRatingView = () => {
         return (
             <View style={{
-                borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center', zIndex: 1,
+                borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center',
+                zIndex: 1, elevation: 1,
                 borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
             }}>
                 <View style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
@@ -263,7 +310,8 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         return (
             <View
                 style={{
-                    borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center', zIndex: 1,
+                    borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center',
+                    zIndex: 1, elevation: 1,
                     borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
                 }}>
                 <View style={{ flex: 1, alignItems: 'center', }}>
@@ -341,7 +389,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         onPress={() => {
                             if (!isLoading) {
                                 setIsLoading(true)
-                                saveSession()
+                                saveSession(sessionObjFinal, saveSession_callback)
                             }
 
                         }}>

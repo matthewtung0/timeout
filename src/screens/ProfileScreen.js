@@ -21,7 +21,7 @@ const BANNER_HEIGHT = 230;
 const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
     const [pfpModalVisible, setPFPModalVisible] = useState(false)
-    const { state, fetchSelf, fetchAvatar } = useContext(UserContext)
+    const { state, fetchSelf, fetchAvatarGeneral } = useContext(UserContext)
     const { state: catState, } = useContext(CategoryContext)
     const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
     const [offset, setOffset] = useState(0)
@@ -29,6 +29,7 @@ const ProfileScreen = ({ navigation }) => {
     const [isMe, setIsMe] = useState(false)
     const [profileSessions, setProfileSessions] = useState([])
     const [profileCategories, setProfileCategories] = useState([])
+    const [pfpSrc, setPfpSrc] = useState('');
     const [profileStats, setProfileStats] = useState({
         totalTime: { hours: 0, minutes: 0, seconds: 0 },
         totalTasks: 0,
@@ -101,6 +102,11 @@ const ProfileScreen = ({ navigation }) => {
             setOffset(0)
             //await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
             //await fetchAllSessions(state.user_id);
+
+            // try to get the pfp only once
+            const pfpSrc_res = await fetchAvatarGeneral(state.idToView)
+            setPfpSrc(pfpSrc_res);
+
             await fetchAllSessions(state.idToView);
             setOffset(offset + 10)
             await fetchStatsProfile(state.idToView)
@@ -167,6 +173,7 @@ const ProfileScreen = ({ navigation }) => {
     }
 
     const togglePFPModal = () => {
+        console.log("Toggling with ", state.idToView);
         setPFPModalVisible(!pfpModalVisible)
     }
 
@@ -181,7 +188,7 @@ const ProfileScreen = ({ navigation }) => {
                     style={[styles.pfp, { marginLeft: (width - 120) / 1.08, marginTop: BANNER_HEIGHT - 60, }]}
                     onPress={togglePFPModal}>
                     <View>
-                        <AvatarComponent w={115} pfpSrc={state.base64pfp} //isSelf={false}
+                        <AvatarComponent w={115} pfpSrc={pfpSrc} //isSelf={false}
                             id={state.idToView} />
 
                     </View>
@@ -300,6 +307,7 @@ const ProfileScreen = ({ navigation }) => {
                     }}>
                         <PFPModal
                             toggleFunction={togglePFPModal}
+                            idToView={state.idToView}
                         />
                     </View></View>
             </Modal>
@@ -326,7 +334,7 @@ const ProfileScreen = ({ navigation }) => {
                                 {/* SMALLER PROFILE PICS HERE */}
                                 <View style={styles.pfpTEMP}>
                                     {/*<AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={true} />*/}
-                                    <AvatarComponent w={48} pfpSrc={state.base64pfp} //isSelf={false} 
+                                    <AvatarComponent w={48} pfpSrc={pfpSrc} //isSelf={false} 
                                         id={state.idToView} />
                                 </View>
                             </View>

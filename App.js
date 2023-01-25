@@ -64,6 +64,10 @@ import { Context as UserContext } from './src/context/userContext';
 import { Context as SessionContext } from './src/context/SessionContext'
 
 import { useFonts } from 'expo-font';
+import {
+  compareAsc, eachDayOfInterval, format, subMonths, addMonths,
+  endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
+} from 'date-fns';
 
 const drawer_bg = require('./assets/background_sidebar.png');
 
@@ -100,14 +104,20 @@ function mainOptions(points) {
     drawerLabelStyle: { color: '#67806D', fontSize: 18, fontWeight: 'bold', },
     drawerActiveTintColor: '#E8D39E',
     drawerItemStyle: { display: 'none', },
+    headerTitleAlign: 'center',
     headerTitle: () => {
       return (
         <View style={{
-          backgroundColor: '#F6F2DF', padding: 5, borderTopRightRadius: 50, borderBottomRightRadius: 50, flexDirection: 'row', borderWidth: 1,
-          borderColor: '#EAD39E'
+          backgroundColor: '#F6F2DF', padding: 5, borderTopRightRadius: 50, borderBottomRightRadius: 50,
+          flexDirection: 'row', borderWidth: 1, borderColor: '#EAD39E',
         }}>
           <View style={{ backgroundColor: '#ABC57E', height: 20, width: 20, }}></View>
-          <Text style={{ fontSize: 15, color: '#67806D', marginHorizontal: 5, }}>{parseInt(points).toLocaleString()}</Text>
+          <Text style={{ fontSize: 15, color: '#67806D', marginHorizontal: 5, }}>
+            {points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+              //parseInt(points).toLocaleString()
+            }
+
+          </Text>
         </View>
       )
     },
@@ -379,6 +389,7 @@ function CreateDrawer() {
 
       <Drawer.Screen name="mainFlow"
         component={CreateMainFlowTab}
+        headerTitleAlign='center'
         options={mainOptions(userState.points)}
       //options={[{ drawerLabel: 'Back', title: '', drawerItemStyle: { display: "flex" } },]} />
       />
@@ -687,7 +698,7 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
     </View>
   );
 }
-//options={mainOptions(userState.points)}
+
 function CreateMainFlowTab() {
   return (
     <Tab.Navigator tabBar={(props) => <MyTabBar {...props} />}
@@ -730,6 +741,7 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+  const { state: sessionState, fetchMultipleMonths } = useContext(SessionContext)
   const { fetchUserCounters } = useContext(CounterContext)
   const { state: userState, fetchAvatar, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
@@ -772,6 +784,9 @@ function CreateMainNavigator() {
         //await fetchAvatarGeneral(userState.user_id, forceRetrieve = true, isSelf = true)
         //var asdf = await fetchAvatarGeneral(user_id_temp, forceRetrieve = true, isSelf = true)
         //await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
+        var endTime = endOfMonth(sessionState.calendarDate)
+        var startTime = startOfMonth(subMonths(startOfMonth(sessionState.calendarDate), 3))
+        await fetchMultipleMonths(startTime, endTime);
         await fetchUserCounters();
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);

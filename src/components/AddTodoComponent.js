@@ -6,6 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import DropDownComponent from '../components/DropDownComponent';
+import DropDownComponent2 from './DropDownComponent2';
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const HideKeyboard = ({ children }) => (
@@ -95,35 +96,39 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
 
     return (
 
-        <HideKeyboard>
 
-            <View style={styles.container}>
-                <Text style={styles.title}></Text>
+        <View style={[styles.container, { minHeight: 300 }]}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <><Text style={styles.title}></Text>
 
-                < TextInput
-                    inputContainerStyle={styles.inputStyleContainer}
-                    style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
-                    placeholder='Task'
-                    maxLength={30}
-                    autoCorrect={false}
-                    value={toDoItemName}
-                    onChangeText={setToDoItemName}
-                />
-                <TextInput
-                    style={[styles.notes, { width: INPUT_WIDTH }]}
-                    multiline={true}
-                    numberOfLines={4}
-                    maxHeight={120}
-                    editable
-                    maxLength={150}
-                    placeholder={'Enter notes (optional)'}
-                    value={notes}
-                    textAlignVertical='top'
-                    onChangeText={setNotes}
+                    < TextInput
+                        inputContainerStyle={styles.inputStyleContainer}
+                        style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
+                        placeholder='Task'
+                        maxLength={30}
+                        autoCorrect={false}
+                        value={toDoItemName}
+                        onChangeText={setToDoItemName}
+                    />
+                    <TextInput
+                        style={[styles.notes, { width: INPUT_WIDTH }]}
+                        multiline={true}
+                        numberOfLines={4}
+                        maxHeight={120}
+                        editable
+                        maxLength={150}
+                        placeholder={'Enter notes (optional)'}
+                        value={notes}
+                        textAlignVertical='top'
+                        onChangeText={setNotes}
 
-                />
+                    />
+                </>
 
-                <DropDownComponent
+            </TouchableWithoutFeedback>
+
+            <View style={{ minHeight: 50, }}>
+                <DropDownComponent2
                     isInModal={true}
                     categoryId={categoryId}
                     catName={categoryName}
@@ -132,67 +137,67 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                     setColorIdCallback={setColorId}
                     setCategoryIdCallback={setCategoryId}
                 />
-                {/* toggle delete the item */}
+            </View>
 
-                {item ?
-                    <View style={{
-                        flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
-                    }}>
+            {/* toggle delete the item */}
 
-                        <TouchableOpacity
-                            onPress={() => {
-                                toggleDeleteFunction();
-                                //areYouSureDelete(item.item_id, "Task deleted successfully")
-                            }}>
-                            {toggleDelete ?
+            {item ?
+                <View style={{
+                    flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
+                }}>
 
-                                <Image
-                                    source={yellowCheckmark}
-                                    style={{ width: 25, height: 25, marginRight: 10, }} />
-                                :
-                                <View style={{
-                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
-                                    borderWidth: 5
-                                }}></View>}
-                        </TouchableOpacity>
-
-                        <Text style={[styles.textDefault,
-                        { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
-                            Delete task from your history. This action will be permanent.</Text>
-                    </View>
-                    : null}
-
-                {/* add or edit the item */}
-                <View opacity={isLoading ? 0.3 : 1}>
                     <TouchableOpacity
-                        style={[styles.plus, { width: width / 2.5, }]}
                         onPress={() => {
-                            if (!validateInputs()) { return }
-                            setIsLoading(true)
-
-                            if (item) {
-                                if (toggleDelete) {
-                                    areYouSureDelete(item.item_id, "Task deleted successfully")
-                                } else {
-                                    editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
-                                        resetInputs, errorReset)
-                                }
-
-                            } else {
-                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
-                            }
+                            toggleDeleteFunction();
+                            //areYouSureDelete(item.item_id, "Task deleted successfully")
                         }}>
-                        <Text style={styles.plusText}>{buttonText}</Text>
+                        {toggleDelete ?
+
+                            <Image
+                                source={yellowCheckmark}
+                                style={{ width: 25, height: 25, marginRight: 10, }} />
+                            :
+                            <View style={{
+                                width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                borderWidth: 5
+                            }}></View>}
                     </TouchableOpacity>
+
+                    <Text style={[styles.textDefault,
+                    { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                        Delete task from your history. This action will be permanent.</Text>
                 </View>
 
+                : null}
 
+            {/* add or edit the item */}
+            <View opacity={isLoading ? 0.3 : 1}>
+                <TouchableOpacity
+                    style={[styles.plus, { width: width / 2.5, }]}
+                    onPress={() => {
+                        if (!validateInputs()) { return }
+                        setIsLoading(true)
 
-                {isLoading ?
-                    <ActivityIndicator size="large" color="white" /> : null}
+                        if (item) {
+                            if (toggleDelete) {
+                                areYouSureDelete(item.item_id, "Task deleted successfully")
+                            } else {
+                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                    resetInputs, errorReset)
+                            }
 
+                        } else {
+                            addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
+                        }
+                    }}>
+                    <Text style={styles.plusText}>{buttonText}</Text>
+                </TouchableOpacity>
             </View>
-        </HideKeyboard>
+
+            {isLoading ?
+                <ActivityIndicator size="large" color="white" /> : null}
+
+        </View>
 
     )
 }

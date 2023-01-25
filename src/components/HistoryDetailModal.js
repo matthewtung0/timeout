@@ -11,14 +11,13 @@ const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
-const HistoryDailyModal = ({ toggleFunction, colorArr, selectedObject, callback }) => {
+const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
     const { state, deleteSession, patchSession } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
     const [itemDeleted, setItemDeleted] = useState(false)
     const [notes, setNotes] = useState(selectedObject.notes)
-    console.log("Notes is ", notes)
 
     const HideKeyboard = ({ children }) => (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -47,6 +46,7 @@ const HistoryDailyModal = ({ toggleFunction, colorArr, selectedObject, callback 
     }
 
     const patchCallback = () => {
+
         setIsLoading(false)
         toggleFunction()
         callback(true)
@@ -54,6 +54,7 @@ const HistoryDailyModal = ({ toggleFunction, colorArr, selectedObject, callback 
     }
 
     const deleteCallback = () => {
+
         setIsLoading(false)
         setItemDeleted(true)
         toggleFunction()
@@ -192,7 +193,13 @@ const HistoryDailyModal = ({ toggleFunction, colorArr, selectedObject, callback 
                                 if (itemDeleted) {
                                     areYouSureDelete();
                                 } else {
-                                    submitPatch();
+                                    if (notes != selectedObject.notes) {
+                                        submitPatch();
+                                    } else {
+                                        //reference.current = !reference.current
+                                        toggleFunction();
+                                    }
+
                                 }
                             }}>
                             <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#67806D' }]}>OK</Text>

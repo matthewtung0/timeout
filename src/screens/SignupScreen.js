@@ -63,8 +63,11 @@ const SignupScreen = ({ navigation, route: { params } }) => {
             alert("Please fill in all fields")
             return false
         }
-        return true
+        // simple email check: anystring@anystring.any
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
     }
+
     const checkValidations = async () => {
         if (password != passwordConfirm) {
             setPasswordMismatch(true)

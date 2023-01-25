@@ -91,7 +91,8 @@ const AddCategoryScreen = ({ navigation }) => {
 
                         <Modal isVisible={modalVisible}
                             animationIn='slideInLeft'
-                            animationOut='slideOutLeft'>
+                            animationOut='slideOutLeft'
+                            backdropTransitionOutTiming={0}>
 
                             <View style={{
                                 flex: 1,
@@ -116,7 +117,8 @@ const AddCategoryScreen = ({ navigation }) => {
 
                         <Modal isVisible={addCategoryModalVisible}
                             animationIn='slideInUp'
-                            animationOut='slideOutUp'>
+                            animationOut='slideOutUp'
+                            backdropTransitionOutTiming={0}>
 
                             <View style={{
                                 flex: 1,

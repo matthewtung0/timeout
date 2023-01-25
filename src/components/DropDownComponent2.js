@@ -2,13 +2,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useContext, useCallback } from 'react';
 import { StyleSheet, Dimensions, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
+import { Dropdown } from 'react-native-element-dropdown';
 import { BorderlessButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 
 const { height, width } = Dimensions.get('window');
 
-const DropDownComponent = ({ catName, colorId, categoryId,
+const DropDownComponent2 = ({ catName, colorId, categoryId,
     setCatNameCallback, setColorIdCallback, setCategoryIdCallback, isInModal }) => {
     const { state: categoryState } = useContext(CategoryContext)
     const [open, setOpen] = useState(false);
@@ -45,7 +46,7 @@ const DropDownComponent = ({ catName, colorId, categoryId,
             <TouchableOpacity
                 style={{}}
                 onPress={() => { props.onPress(props) }}>
-                <View style={{ flexDirection: 'row', height: 35, alignItems: 'center', }}
+                <View style={{ flexDirection: 'row', height: 45, alignItems: 'center', }}
                 >
                     <View style={{
                         backgroundColor: constants.colors[props.item.color],
@@ -57,6 +58,55 @@ const DropDownComponent = ({ catName, colorId, categoryId,
 
         )
     }
+
+    const dropdownItem = (item) => {
+        return (
+            <View style={{ flexDirection: 'row', height: 45, alignItems: 'center', }}
+            >
+                <View style={{
+                    backgroundColor: constants.colors[item.color],
+                    width: 20, height: 20, marginHorizontal: 10,
+                }} />
+                <Text style={[styles.textDefault, { color: '#67806D' }]}>{item.label}</Text>
+            </View>
+        )
+    }
+    return (
+        <Dropdown
+            style={[{
+                width: selectedWidth,
+                margin: 0,
+                alignSelf: 'center', borderRadius: 15, paddingHorizontal: 17,
+                paddingVertical: 5,
+                backgroundColor: constants.colors[colorId],
+            }]}
+            data={items}
+            value={categoryId}
+            placeholderStyle={{ height: 0 }}
+            inputSearchStyle={{ height: 0 }}
+            dropdownPosition={'bottom'}
+            autoScroll={false}
+            labelField="label"
+            valueField="value"
+            search={false}
+            onChange={item => {
+                console.log("Changing to ", item)
+                setCatNameCallback(item.label)
+                setColorIdCallback(item.color)
+                setCategoryIdCallback(item.value)
+            }}
+            itemContainerStyle={{ borderBottomWidth: 0.3, }}
+            containerStyle={{
+                //borderWidth: 0,
+                //width: selectedWidth,
+            }}
+            selectedTextStyle={
+                [styles.textDefaultBold, { color: 'white' }]
+            }
+            maxHeight={height * 0.25}
+            renderItem={dropdownItem}
+        />
+    )
 
     return (
         <DropDownPicker
@@ -116,4 +166,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default DropDownComponent;
+export default DropDownComponent2;
