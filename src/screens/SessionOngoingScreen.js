@@ -192,6 +192,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                     <Modal isVisible={rewardModalVisible}
                         animationIn='slideInLeft'
                         animationOut='slideOutLeft'
+                        backdropTransitionOutTiming={0}
                     >
 
                         <View style={{

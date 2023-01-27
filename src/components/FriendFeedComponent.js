@@ -1,7 +1,7 @@
-import React, { useContext, useState, useCallback, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-  View, SafeAreaView, StyleSheet, Text, FlatList, Pressable,
-  TouchableOpacity, ActivityIndicator, Dimensions
+  View, StyleSheet, Text, Pressable,
+  TouchableOpacity, Dimensions
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import {
@@ -158,7 +158,8 @@ export function FriendFeedComponent({ item, navigation }) {
 
       <Modal isVisible={modalVisible}
         animationIn='slideInUp'
-        animationOut='slideOutUp'>
+        animationOut='slideOutUp'
+        backdropTransitionOutTiming={0}>
 
         <View style={{
           flex: 1,
@@ -188,7 +189,8 @@ export function FriendFeedComponent({ item, navigation }) {
             <AvatarComponent w={50}
               //isSelf={item.username == userState.username}
               id={item.user_id}
-              pfpSrc={userState.base64pfp} />
+            //pfpSrc={userState.base64pfp} 
+            />
           </TouchableOpacity>
         </View>
       </View>

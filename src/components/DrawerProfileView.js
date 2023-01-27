@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Image } from 'rea
 import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
+import { defaultPfp } from './Images.js'
+
 
 const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc, userId }) => {
     const [h, setH] = useState(0)
@@ -23,8 +25,10 @@ const DrawerProfileView = ({ friends, username, totalTasks, totalTime, pfpSrc, u
     return (
         <View style={styles.outerContainer}>
             <View>
-                {userState.base64pfp == '' ?
-                    null :
+                {userState.base64pfp == 'default' || userState.base64pfp == '' ?
+                    <Image
+                        style={[styles.default]}
+                        source={defaultPfp} /> :
                     <Image
                         style={[styles.default]}
                         source={{ uri: userState.base64pfp }} />

@@ -1,21 +1,26 @@
 import React, { useContext, useState } from 'react';
 import {
     View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
-    TouchableOpacity, Alert, Switch, Image
+    TouchableOpacity, Alert, Image
 } from 'react-native';
+import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
+import { Context as SessionContext } from '../context/SessionContext';
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
-const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedCategoryName, selectedCategoryPublic, selectedCatId }) => {
+const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
+    selectedCategoryName, selectedCategoryPublic, selectedCatId }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.65
+    const BORDER_RADIUS = 20;
     const COLOR_WIDTH = 40;
     const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
     const [publicToggle, setPublicToggle] = useState(selectedCategoryPublic)
+    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset } = useContext(SessionContext)
     const [archiveToggle, setArchiveToggle] = useState(false)
     const [deleteToggle, setDeleteToggle] = useState(false)
 
@@ -25,27 +30,47 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     const [isArchiving, setIsArchiving] = useState(false)
 
     const submitEdit = async () => {
+        // handle changes to public setting and color
         await editCategory({
             categoryId: selectedCatId,
             newColorId: chosenColorId, toPublic: publicToggle, toArchive: archiveToggle, callback: editCallback
         })
     }
 
+    const editCallback = async () => {
+        if (selectedColorId != chosenColorId) {
+            var dt = new Date()
+            var endTime = endOfMonth(dt)
+            var startTime = startOfMonth(subMonths(startOfMonth(dt), 3))
+
+            // hard reset of the history screen needed
+            await fetchMultipleMonths(startTime, endTime, null, true).then(
+                await resetCalendarDate(startOfMonth(dt)).then(
+                    await setOffsetFetched(3).then(
+                        await setCurOffset(0)
+                    )
+                )
+            )
+
+            toggleFunction(true)
+        } else {
+            toggleFunction(true)
+        }
+        setIsLoading(false)
+        alert("Category edited successfully")
+    }
+
     const submitColorChange = async () => {
         setIsLoading(true)
         await changeColorCategory(selectedCatId, chosenColorId, colorChangeCallback)
-
-
-
     }
 
-    const editCallback = () => {
-        setIsLoading(false)
-        toggleFunction(true);
-        alert("Category edited successfully")
-    }
-    const colorChangeCallback = () => {
-        setIsLoading(false)
+    const colorChangeCallback = async () => {
+        var endTime = endOfMonth(state.calendarDate)
+        var startTime = startOfMonth(subMonths(startOfMonth(state.calendarDate), 3))
+        await fetchMultipleMonths(startTime, endTime, null, true).then(
+            setIsLoading(false)
+        )
         alert("Color changed successfully")
     }
     // can only delete category if user does not currently have to-do items with that category
@@ -134,7 +159,6 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             <View
                 style={{
                     borderBottomColor: '#DCDBDB',
-                    //borderBottomWidth: StyleSheet.hairlineWidth,
                     borderBottomWidth: 1.5,
                     marginBottom: 10,
                 }}
@@ -170,7 +194,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={[styles.container, { borderRadius: BORDER_RADIUS }]}>
 
                 {/*<View style={{ backgroundColor: '#abc57e' }}>
                 <Text style={{
@@ -178,7 +202,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 }}>Edit Category</Text>
             </View>*/}
 
-                <View style={{ marginHorizontal: 20, marginTop: 90, }}>
+                <View style={{ marginHorizontal: 20, marginTop: 90 }}>
 
 
                     <Text style={[styles.textDefaultBold, {
@@ -379,7 +403,10 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
             <Text style={[styles.title, { position: 'absolute' }]}>Edit Category</Text>
 
@@ -392,7 +419,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                         name="close-outline"
                         type='ionicon'
                         size={35}
-                        color='black' />
+                        color='white' />
                 </TouchableOpacity>
             </View>
         </>
@@ -427,7 +454,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'flex-end',
         justifyContent: 'flex-end',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
     },
     backButton: {
         width: 40,

@@ -105,6 +105,7 @@ const ProfileScreen = ({ navigation }) => {
 
             // try to get the pfp only once
             const pfpSrc_res = await fetchAvatarGeneral(state.idToView)
+            //console.log("pfpSrc_res is ", pfpSrc_res)
             setPfpSrc(pfpSrc_res);
 
             await fetchAllSessions(state.idToView);
@@ -295,7 +296,8 @@ const ProfileScreen = ({ navigation }) => {
 
             <Modal isVisible={pfpModalVisible}
                 animationIn='slideInUp'
-                animationOut='slideOutUp'>
+                animationOut='slideOutUp'
+                backdropTransitionOutTiming={0}>
 
                 <View style={{
                     flex: 1,

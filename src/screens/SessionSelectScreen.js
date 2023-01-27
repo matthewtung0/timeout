@@ -18,6 +18,7 @@ import timeoutApi from '../api/timeout';
 const constants = require('../components/constants.json')
 
 const table_bg = require('../../assets/sessionselect_tablebg.png');
+const background_desk = require('../../assets/background_desk.png')
 
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
@@ -176,39 +177,49 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
             <>
                 <View style={[styles.viewContainer, { opacity: pageOpacity }]}>
 
-                    <View style={{
-                        //flex: 5 
-                    }}>
-                        {/* TO-DO SELECTOR MODAL */}
-                        <View>
-                            <Modal isVisible={modalVisible}
-                                animationIn='slideInLeft'
-                                animationOut='slideOutLeft'
-                                backdropTransitionOutTiming={0}
-                            >
+                    {/* TO-DO SELECTOR MODAL */}
+                    <View>
+                        <Modal isVisible={modalVisible}
+                            animationIn='slideInLeft'
+                            animationOut='slideOutLeft'
+                            backdropTransitionOutTiming={0}
+                        >
 
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                            }}>
                                 <View style={{
-                                    flex: 1,
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
+                                    height: height * 0.7,
+                                    borderRadius: 20,
                                 }}>
-                                    <View style={{
-                                        height: height * 0.7,
-                                        borderRadius: 20,
-                                    }}>
 
-                                        <ToDoSelector
-                                            toggleFunction={toggleModal}
-                                            todoItems={categoryState.userTodoItems}
-                                            show_error={state.errorMessage}
-                                            callback={fillInWithItem} />
+                                    <ToDoSelector
+                                        toggleFunction={toggleModal}
+                                        todoItems={categoryState.userTodoItems}
+                                        show_error={state.errorMessage}
+                                        callback={fillInWithItem} />
 
-                                    </View>
                                 </View>
-                            </Modal>
+                            </View>
+                        </Modal>
+                    </View>
+
+                    <View>
+                        <View style={{ position: 'absolute', flex: 1, width: '100%', height: '100%', }}>
+                            <View style={{ flex: 1, }}>
+
+                            </View>
+                            <View style={{ flex: 1, }}>
+                                <Image
+                                    source={background_desk}
+                                    style={{ width: '100%', height: '100%', }}
+                                //resizeMode='contain'
+                                />
+                            </View>
+
                         </View>
-
-
                         <Image
                             source={clock_top}
                             style={{
@@ -229,11 +240,14 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 height: (width / 2 / 0.80) * 0.085, alignSelf: "center", borderWidth: 0.3, borderColor: 'yellow'
                             }}
                             resizeMode="contain" />
-                    </View>
+                        {/* some space for desk */}
+                        <View style={{ height: height * 0.05, }} />
 
+
+                    </View>
                     <View style={{
                         //flex: 1
-                        marginTop: 10,
+                        paddingTop: 15, backgroundColor: '#F8E9D2'
                     }}>
                         <TextInput
                             style={[styles.input, { width: width * 0.8, marginBottom: 20, height: 45 }]}
@@ -253,7 +267,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
 
-                    <View style={{ minHeight: 50, }}>
+                    <View style={{ minHeight: 50, backgroundColor: '#F8E9D2', paddingBottom: 20, }}>
                         <DropDownComponent2
                             isInModal={false}
                             categoryId={categoryId}
@@ -475,7 +489,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 20,
-        marginTop: 30,
+        marginTop: 20,
         shadowOffset: {
             width: 0.3,
             height: 0.3,

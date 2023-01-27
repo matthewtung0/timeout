@@ -49,16 +49,17 @@ const signupValidation = (email, password) => {
     return (email_re.test(email) && password_re.test(password));
 }
 
-const signup = (dispatch) => async ({ email, password, username, firstName, lastName, categoryArr }) => {
+const signup = (dispatch) => async ({ email, password, username, firstName, lastName, categoryArr, bio }) => {
     /*if (!signupValidation(email, password)) {
         dispatch({ type: 'add_error', payload: 'Invalid username or password!' })
         return
     }*/
     try {
-        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName, categoryArr });
+        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName, categoryArr, bio });
         res = await AsyncStorage.setItem('token', response.data.token);
 
         //sign up successful
+        console.log("SIGN UP SUCCESSFUL. UPDATING TOKEN WITH ", response.data.token)
         dispatch({ type: 'signin', payload: response.data.token });
 
         //navigate('profileFlow');

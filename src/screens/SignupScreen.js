@@ -65,7 +65,12 @@ const SignupScreen = ({ navigation, route: { params } }) => {
         }
         // simple email check: anystring@anystring.any
         var re = /\S+@\S+\.\S+/;
-        return re.test(email);
+        var res = re.test(email)
+        if (!res) {
+            alert("Email not in a proper format")
+            return false
+        }
+        return true;
     }
 
     const checkValidations = async () => {

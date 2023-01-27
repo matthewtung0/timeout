@@ -722,7 +722,8 @@ const EditAvatarScreen = ({ navigation }) => {
 
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
-                animationOut='slideOutLeft'>
+                animationOut='slideOutLeft'
+                backdropTransitionOutTiming={0}>
                 <AvatarCheckOutModal
                     selectedItems={avatarItems}
                     selectedColors={avatarColors}

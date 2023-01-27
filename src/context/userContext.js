@@ -2,6 +2,7 @@ import timeoutApi from '../api/timeout';
 import createDataContext from './createDataContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { compareAsc, parseISO } from 'date-fns';
+const constants = require('../components/constants.json')
 
 const userReducer = (state, action) => {
     switch (action.type) {
@@ -107,8 +108,8 @@ const fetchSelf = dispatch => async () => {
         dispatch({ type: 'fetch_self', payload: response.data })
 
         await AsyncStorage.setItem('fetchSelf', JSON.stringify(response.data));
-        console.log("fetchSelf complete. Returning this user id: ", response.data.user_info.user_id)
-        const user_id_temp = response.data.user_info.user_id
+        console.log("fetchSelf complete. Returning this user id: ", response.data)
+        const user_id_temp = response.data.user_info
         return user_id_temp;
 
     } catch (err) {
@@ -128,6 +129,7 @@ const checkAvatarLastUpdated = async (user_id, cur_avatar_dt) => {
         console.log("Checking last updated with this user_id: ", user_id)
         let response = await timeoutApi.get(`/avatar12345/last_updated/${user_id}`)
         let last_updated_dt = response.data.last_updated;
+        console.log("LAST UPDATED DT IS ", last_updated_dt)
         var actual_date = new Date(last_updated_dt)
         console.log(`${user_id}: Last avatar updated: ${actual_date.toISOString()}, and cur cache date: ${new Date(cur_avatar_dt).toISOString()}`)
         var comparison = compareAsc(actual_date, new Date(cur_avatar_dt))
@@ -155,9 +157,6 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, is
             let result = await checkAvatarLastUpdated(user_id, avatar_dt);
             result ? forceRetrieve = true : forceRetrieve = false;
         }
-        //console.log("Force retrieve is ", forceRetrieve);
-        //console.log("With user id ", user_id);
-        //console.log("IS SELF IS", isSelf)
 
         if (forceRetrieve) {
             console.log("Getting avatar from server and user id ", user_id)
@@ -185,7 +184,8 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, is
         }
     } catch (err) {
         console.log("ERROR", err)
-        dispatch({ type: 'add_error', payload: 'Must be signed in!' })
+        return constants.defaultBase64;
+        //dispatch({ type: 'add_error', payload: 'Must be signed in!' })
     }
 }
 
@@ -443,6 +443,7 @@ export const { Provider, Context } = createDataContext(
         totalTime: 0,
         base64pfp: '',
         bio: '',
+        avatar_active: false,
         /*avatarItems: {
             face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },
             accessories: { glasses: 1, piercings: 1, accessories: 0, hairAccessories: 0, },

@@ -741,7 +741,7 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-  const { state: sessionState, fetchMultipleMonths } = useContext(SessionContext)
+  const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
   const { fetchUserCounters } = useContext(CounterContext)
   const { state: userState, fetchAvatar, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
@@ -775,8 +775,8 @@ function CreateMainNavigator() {
         await updateLastSignin()
           .then((res) => fetchSelf().then(
             (res) => {
-              fetchAvatarGeneral(res, forceRetrieve = true, isSelf = true)
-              fetchUserCategories(res, getPrivate = true, isSelf = true);
+              fetchAvatarGeneral(res.user_id, forceRetrieve = true, isSelf = true)
+              fetchUserCategories(res.user_id, getPrivate = true, isSelf = true);
             }
           ))
 
@@ -786,7 +786,9 @@ function CreateMainNavigator() {
         //await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
         var endTime = endOfMonth(sessionState.calendarDate)
         var startTime = startOfMonth(subMonths(startOfMonth(sessionState.calendarDate), 3))
-        await fetchMultipleMonths(startTime, endTime);
+        await fetchMultipleMonths(startTime, endTime).then(
+          await setOffsetFetched(3)
+        )
         await fetchUserCounters();
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);

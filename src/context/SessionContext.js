@@ -22,10 +22,22 @@ const sessionReducer = (state, action) => {
                 batchDataForSummary: { ...state.batchDataForSummary, ...action.payload.batchDataForSummary },
                 batchData: { ...state.batchData, ...action.payload.batchData },
                 batchDataStart: action.payload.batchDataStart,
-                batchDataEnd: action.payload.batchDataEnd
+                batchDataEnd: action.payload.batchDataEnd,
+            }
+        case 'fetch_multiple_months_reset_all':
+            return {
+                ...state,
+                batchDataForSummary: action.payload.batchDataForSummary,
+                batchData: action.payload.batchData,
+                batchDataStart: action.payload.batchDataStart,
+                batchDataEnd: action.payload.batchDataEnd,
             }
         case 'reset_calendar_date':
             return { ...state, calendarDate: action.payload }
+        case 'set_offset_fetched':
+            return { ...state, offsetFetched: action.payload }
+        case 'set_cur_offset':
+            return { ...state, curOffset: action.payload }
         case 'fetch_reaction':
             return { ...state, userReaction: action.payload }
         case 'fetch_notification':
@@ -129,6 +141,7 @@ const sessionReducer = (state, action) => {
                 daySessions: [],
                 monthSessions: [],
                 calendarDate: new Date(),
+                offsetFetched: 0,
                 selfOnlySessions: [],
             }
         default:
@@ -270,20 +283,31 @@ const groupMonthlyTasks = (monthSessions) => {
     return finalMap
 }
 
-const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = null) => {
+const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = null, resetAll = false) => {
     console.log(`Fetching sessions between ${startTime} and ${endTime}`)
     try {
         const response = await timeoutApi.get('/monthSessions', { params: { startTime: startTime, endTime: endTime } })
         var groupedTasks = groupMonthlyTasks(response.data);
         var groupedTasksForSummary = groupMonthlyTasksForSummary(response.data);
-        dispatch({
-            type: 'fetch_multiple_months', payload: {
-                batchDataForSummary: groupedTasksForSummary,
-                batchData: groupedTasks,
-                batchDataStart: format(startTime, 'yyyy-MM-dd'),
-                batchDataEnd: format(endTime, 'yyyy-MM-dd'),
-            }
-        })
+        if (resetAll) {
+            dispatch({
+                type: 'fetch_multiple_months_reset_all', payload: {
+                    batchDataForSummary: groupedTasksForSummary,
+                    batchData: groupedTasks,
+                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
+                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
+                }
+            })
+        } else {
+            dispatch({
+                type: 'fetch_multiple_months', payload: {
+                    batchDataForSummary: groupedTasksForSummary,
+                    batchData: groupedTasks,
+                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
+                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
+                }
+            })
+        }
         if (callback) { callback(response.data) }
     } catch (err) {
         console.log("Problem getting multiple month sessions", err)
@@ -368,6 +392,17 @@ const resetCalendarDate = dispatch => async (reset_dt) => {
     })
 }
 
+const setOffsetFetched = dispatch => async (num) => {
+    dispatch({
+        type: 'set_offset_fetched', payload: num
+    })
+}
+const setCurOffset = dispatch => async (num) => {
+    dispatch({
+        type: 'set_cur_offset', payload: num
+    })
+}
+
 const postSession = dispatch => async () => { };
 
 const fetchFriendSession = dispatch => async () => {
@@ -389,10 +424,20 @@ const patchSession = dispatch => async (sessionId, notes, callback = null, error
     }
 }
 
-const deleteSession = dispatch => async (sessionId, callback = null, errorCallback = null) => {
+const deleteSession = dispatch => async (sessionObj, callback = null, errorCallback = null) => {
+    var dt = sessionObj.time_start
+
+    // get month and day key to zero in on item to delete from batchData
+
+    var monthKey = byMonthKey(dt)
+    var dayKey = byDayKey(dt)
+
+    console.log("Deleting session with id ", sessionObj.activity_id)
+
     try {
-        const response = await timeoutApi.delete(`/session/${sessionId}`, { params: { sessionId } })
-        dispatch({ type: 'delete_session', payload: { sessionId } })
+        const response = await timeoutApi.delete(`/session/${sessionObj.activity_id}`,
+            { params: { sessionId: sessionObj.activity_id } })
+        dispatch({ type: 'delete_session', payload: { sessionId: sessionObj.activity_id } })
         if (callback) { callback() }
     } catch (err) {
         console.log("error deleting session:", err);
@@ -474,7 +519,7 @@ export const { Provider, Context } = createDataContext(
         fetchSessions, fetchMonthly, fetchUserReactions, reactToActivity, fetchSessionsNextBatch,
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
         resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
-        fetchLikersOfActivity, fetchMultipleMonths, saveSession,
+        fetchLikersOfActivity, fetchMultipleMonths, saveSession, setOffsetFetched, setCurOffset,
     },
     {
         userSessions: [],
@@ -485,6 +530,8 @@ export const { Provider, Context } = createDataContext(
         batchData: {},
         batchDataForSummary: {},
         calendarDate: new Date(),
+        offsetFetched: 0,
+        curOffset: 0,
         selfOnlySessions: [],
     }
 );

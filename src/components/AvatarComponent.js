@@ -4,7 +4,8 @@ import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as userContext } from '../context/userContext';
 //import { Context as UserContext } from '../context/userContext';
-const default_img = require('../../assets/avatar/20_BACKGROUND/1_pink.png')
+//const default_img = require('../../assets/avatar/16_base/2.png')
+import { defaultPfp } from './Images.js'
 
 const AvatarComponent = ({ w, pfpSrc, id, modalView, checkForNew }) => {
     const { width, height } = Dimensions.get('window')
@@ -44,11 +45,11 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, checkForNew }) => {
 
     return (
         <View>
-            {pngData == '' ?
+            {pngData == 'default' || pngData == '' ?
                 <Image
                     style={modalView ? [styles.modalView, { width: w, height: w, borderRadius: w / 2, }] :
                         [styles.default, { width: w, height: w, borderRadius: w / 2, }]}
-                    source={default_img}
+                    source={defaultPfp}
                 />
                 :
                 <Image

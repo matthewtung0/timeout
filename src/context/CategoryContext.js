@@ -165,6 +165,7 @@ const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = t
     console.log("trying to fetch user categories with id ", id);
     try {
         const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate, isSelf } })
+        console.log("Response for categories: ", response.data)
         dispatch({ type: 'fetch_categories', payload: response.data })
 
         // cache user's categories

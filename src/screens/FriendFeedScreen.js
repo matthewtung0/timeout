@@ -1,21 +1,14 @@
 import React, { useContext, useState, useCallback, useRef } from 'react';
 import {
-    View, SafeAreaView, StyleSheet, Text, FlatList, Pressable,
+    View, StyleSheet, Text, FlatList,
     TouchableOpacity, ActivityIndicator, Dimensions
 } from 'react-native';
-import { Icon } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Context as SessionContext } from '../context/SessionContext';
 import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
-
-import {
-    differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
-    differenceInMinutes,
-    parseISO, differenceInSeconds, isThisMinute
-} from 'date-fns';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { SceneMap, TabBar } from 'react-native-tab-view';
 
 import timeoutApi from '../api/timeout';
 import AvatarComponent from '../components/AvatarComponent';
@@ -68,13 +61,16 @@ const FriendFeedScreen = ({ navigation }) => {
         for (var i in friends) {
             friendsArr.push(friends[i]['friend'])
         }
-        try {
-            const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
-            //console.log("got this response", response.data)
-            setFeed(response.data)
-        } catch (err) {
-            setIsOnline(false)
+        if (friendsArr.length > 0) {
+            try {
+                const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+                //console.log("got this response", response.data)
+                setFeed(response.data)
+            } catch (err) {
+                setIsOnline(false)
+            }
         }
+
 
     }
 
@@ -105,25 +101,6 @@ const FriendFeedScreen = ({ navigation }) => {
             setOffset(offset + 10)
 
             await fetchUserReactions()
-
-            /*for (let i = 0; i < userState.friends.length; i++) {
-                var friend_id = userState.friends[i].friend
-                console.log("Fetching avatar for ", friend_id)
-
-                try {
-                    const response = await timeoutApi.get('/avatar', { params: { friend: friend_id } })
-
-                    var base64Icon = `data:image/png;base64,${response.data}`
-                    var friendsPfpMapTemp = friendsPfpMap
-                    friendsPfpMapTemp[friend_id] = base64Icon
-                    setFriendsPfpMap(friendsPfpMapTemp)
-                    console.log(base64Icon.length)
-                } catch (err) {
-                    console.log(err)
-                }
-
-                //fetchAvatars(userState.friends[i].friend)
-            }*/
             setIsLoadingRefresh(false)
         } catch (err) {
             console.log("Problem retrieving feed", err)
@@ -234,29 +211,42 @@ const FriendFeedScreen = ({ navigation }) => {
                                 </TouchableOpacity>
                             </View>
                         </View>
+
                         {/*<Text>{JSON.stringify(state.userReaction)}</Text>*/}
                         {isLoadingRefresh ? <ActivityIndicator
                             style={{ marginTop: 15 }}
                             size="large"
                             color='black' /> : null}
-                        <View style={styles.flatListContainer}>
-                            <FlatList
-                                ref={flatListRef}
-                                style={styles.flatlistStyle}
-                                horizontal={false}
-                                onScroll={scrollEvent}
-                                scrollEventThrottle={SCROLL_THROTTLE_RATE}
-                                data={feed}
-                                ItemSeparatorComponent={renderSeparator}
-                                showsHorizontalScrollIndicator={false}
-                                keyExtractor={(item) => item.activity_id}
-                                ListFooterComponent={renderFooter}
-                                renderItem={({ item }) =>
-                                    <MemoizedComponent item={item} navigation={navigation} />
-                                }
-                            >
-                            </FlatList>
-                        </View>
+
+
+                        {feed.length == 0 ?
+                            <View style={{ alignItems: 'center' }}>
+                                <Text style={[styles.textDefault, {
+                                    marginTop: 20, marginBottom: 10,
+                                    color: '#67806D', fontSize: 16, textAlign: 'center', marginHorizontal: 10,
+                                }]}>
+                                    Nothing in your feed yet. Tell your friends to start getting productive!</Text>
+                            </View>
+                            :
+                            <View style={styles.flatListContainer}>
+                                <FlatList
+                                    ref={flatListRef}
+                                    style={styles.flatlistStyle}
+                                    horizontal={false}
+                                    onScroll={scrollEvent}
+                                    scrollEventThrottle={SCROLL_THROTTLE_RATE}
+                                    data={feed}
+                                    ItemSeparatorComponent={renderSeparator}
+                                    showsHorizontalScrollIndicator={false}
+                                    keyExtractor={(item) => item.activity_id}
+                                    ListFooterComponent={renderFooter}
+                                    renderItem={({ item }) =>
+                                        <MemoizedComponent item={item} navigation={navigation} />
+                                    }
+                                >
+                                </FlatList>
+                            </View>
+                        }
                     </>}
             </View>
         )

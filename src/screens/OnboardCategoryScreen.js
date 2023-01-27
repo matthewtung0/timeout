@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, ScrollView, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Button, TouchableOpacity } from 'react-native';
 const constants = require('../components/constants.json')
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal'
@@ -52,7 +52,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
         }))
     }
 
-    console.log(colorArr)
+    console.log("category Arr: ", categoryArr)
     return (
         <ScrollView>
 
@@ -150,7 +150,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
             <TouchableOpacity
                 style={styles.signUpBoxStyle}
                 onPress={() => {
-                    signup({ email, password, username, firstName, lastName, categoryArr })
+                    signup({ email, password, username, firstName, lastName, categoryArr, bio })
                 }}>
                 <Text style={styles.signUpTextStyle}>Complete Sign Up</Text>
             </TouchableOpacity>

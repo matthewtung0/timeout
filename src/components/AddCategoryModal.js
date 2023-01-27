@@ -11,6 +11,7 @@ const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const AddCategoryModal = ({ toggleFunction, colorArr }) => {
+    const BORDER_RADIUS = 20;
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
     const COLOR_WIDTH = 40;
@@ -60,7 +61,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
 
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
-            <View style={{ flex: 1, backgroundColor: '#F9EAD3' }}>
+            <View style={{ flex: 1, backgroundColor: '#F9EAD3', borderRadius: BORDER_RADIUS }}>
                 <View style={{ marginHorizontal: 20, marginTop: 90, }}>
                     <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>
                         Category Name</Text>
@@ -198,7 +199,10 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
             <Text style={[styles.title, { position: 'absolute' }]}>Add Category</Text>
             <View style={styles.backContainer}>

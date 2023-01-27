@@ -119,6 +119,17 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 
                 </View>
 
+                {sorted_todoItems.length == 0 ?
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={[styles.textDefault, {
+                            marginTop: 20, marginBottom: 10,
+                            color: '#67806D', fontSize: 16, textAlign: 'center',
+                        }]}>
+                            You have no tasks yet! Save your recurring tasks here for quick access.</Text>
+                    </View>
+
+                    : null}
+
                 <FlatList
                     style
                     horizontal={false}
@@ -193,6 +204,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
             <>
 
                 <AddTodoComponent
+                    BORDER_RADIUS={BORDER_RADIUS}
                     title={childTitle}
                     buttonText={buttonText}
                     item={editItem}
@@ -356,15 +368,14 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 20,
         shadowOffset: {
-            width: 0.05,
-            height: 0.05,
+            width: 0.01,
+            height: 0.02,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
     },
     plusText: {
         color: 'white',
         fontSize: 20,
-        fontWeight: 'bold',
         paddingVertical: 10,
     },
     sortButton: {

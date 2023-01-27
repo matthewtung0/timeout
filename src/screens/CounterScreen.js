@@ -64,7 +64,8 @@ const CounterScreen = () => {
 
             <Modal isVisible={addCounterModalVisible}
                 animationIn='slideInUp'
-                animationOut='slideOutUp'>
+                animationOut='slideOutUp'
+                backdropTransitionOutTiming={0}>
 
                 <View style={{
                     flex: 1,
@@ -81,7 +82,8 @@ const CounterScreen = () => {
 
             <Modal isVisible={editCounterModalVisible}
                 animationIn='slideInUp'
-                animationOut='slideOutUp'>
+                animationOut='slideOutUp'
+                backdropTransitionOutTiming={0}>
 
                 <View style={{
                     flex: 1,

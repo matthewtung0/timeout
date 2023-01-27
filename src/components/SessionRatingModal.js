@@ -277,7 +277,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             }}
                             onSlidingComplete={() => {
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prodRating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
                                 })
                             }}
                             onValueChange={setProdRatingNum}

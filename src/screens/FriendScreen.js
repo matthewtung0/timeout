@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
@@ -55,7 +55,8 @@ const FriendScreen = ({ navigation }) => {
 
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
-                animationOut='slideOutLeft'>
+                animationOut='slideOutLeft'
+                backdropTransitionOutTiming={0}>
                 <View style={{ height: height * 0.8, }}>
                     <AddFriendModal
                         toggleFunction={toggleModal}
@@ -99,63 +100,74 @@ const FriendScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
 
-                {/* MY FRIEND CARD */}
-                <View style={{
+                {/* MY FRIEND CARD - now in the modal */}
+                {/*<View style={{
                     borderWidth: 1, borderColor: '#90AB72', borderRadius: 10,
                     alignItems: 'center', marginHorizontal: 50, backgroundColor: '#CDD5A0',
                     padding: 10, marginBottom: 10,
                 }}>
                     <Text>Add me! My friend code is:</Text>
                     <Text style={{ fontSize: 30, }}>{state.friendCode}</Text>
-                </View>
+            </View>*/}
 
 
-                <Text style={{ marginLeft: 25, fontSize: 20, }}>My Friends:</Text>
+                <Text style={[styles.textDefaultBold, { marginLeft: 25, fontSize: 20, color: '#67806D', marginTop: 20, }]}>
+                    My Friends:</Text>
 
-                <View style={{ marginHorizontal: 20, marginVertical: 20 }}>
-                    {state.friends
-                        .map((item) => {
-                            return <View
-                                key={item.friend}
-                                style={[styles.categoryStyle, { height: 70, }]}>
-                                <View style={{ flexDirection: 'row', flex: 1, }}>
+                {state.friends.length == 0 ?
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={[styles.textDefault, {
+                            marginTop: 20, marginBottom: 10,
+                            color: '#67806D', fontSize: 16, textAlign: 'center', marginHorizontal: 10,
+                        }]}>
+                            No friends yet..</Text>
+                    </View>
+                    :
 
-                                    {/* AVATAR */}
-                                    <View style={{ flex: 2 }}>
-                                        <AvatarComponent
-                                            w={50}
-                                            //isSelf={false}
-                                            id={item.friend}
-                                            pfpSrc={state.base64pfp} />
+                    <View style={{ marginHorizontal: 20, marginVertical: 20 }}>
+                        {state.friends
+                            .map((item) => {
+                                return <View
+                                    key={item.friend}
+                                    style={[styles.categoryStyle, { height: 70, }]}>
+                                    <View style={{ flexDirection: 'row', flex: 1, }}>
+
+                                        {/* AVATAR */}
+                                        <View style={{ flex: 2 }}>
+                                            <AvatarComponent
+                                                w={50}
+                                                //isSelf={false}
+                                                id={item.friend} />
+                                        </View>
+
+                                        {/* NAME // FRIEND SINCE- */}
+                                        <View style={{ flex: 5, justifyContent: 'space-around' }}>
+                                            <Text style={{ fontWeight: '600', fontSize: 18, }}>{item['username']}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: '300', }}>
+                                                {"Friend since " + formatDate(item['time_created'])}
+                                            </Text>
+                                        </View>
+
+                                        {/* UNFRIEND BUTTON */}
+                                        <View style={{ flex: 2, justifyContent: 'flex-end' }}>
+                                            <TouchableOpacity
+                                                style={{
+                                                    borderWidth: 1, borderRadius: 15, alignItems: 'center',
+                                                    marginBottom: 10, borderColor: 'gray',
+                                                }}
+                                                onPress={() => {
+                                                    rejectFriendRequest(item.friend, resetInputs)
+                                                }}>
+                                                <Text style={{ padding: 3, fontSize: 12, fontWeight: '300', }}>Unfriend</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
                                     </View>
-
-                                    {/* NAME // FRIEND SINCE- */}
-                                    <View style={{ flex: 5, justifyContent: 'space-around' }}>
-                                        <Text style={{ fontWeight: '600', fontSize: 18, }}>{item['username']}</Text>
-                                        <Text style={{ fontSize: 12, fontWeight: '300', }}>
-                                            {"Friend since " + formatDate(item['time_created'])}
-                                        </Text>
-                                    </View>
-
-                                    {/* UNFRIEND BUTTON */}
-                                    <View style={{ flex: 2, justifyContent: 'flex-end' }}>
-                                        <TouchableOpacity
-                                            style={{
-                                                borderWidth: 1, borderRadius: 15, alignItems: 'center',
-                                                marginBottom: 10, borderColor: 'gray',
-                                            }}
-                                            onPress={() => {
-                                                rejectFriendRequest(item.friend, resetInputs)
-                                            }}>
-                                            <Text style={{ padding: 3, fontSize: 12, fontWeight: '300', }}>Unfriend</Text>
-                                        </TouchableOpacity>
-                                    </View>
-
+                                    {separator()}
                                 </View>
-                                {separator()}
-                            </View>
-                        })}
-                </View>
+                            })}
+                    </View>
+                }
 
             </ScrollView>
         </View>
@@ -203,13 +215,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
-        marginTop: 10,
+        marginTop: 20,
         marginBottom: 20,
         shadowOffset: {
-            width: 2,
-            height: 2,
+            width: 1,
+            height: 1,
         },
-        shadowOpacity: 0.9,
+        shadowOpacity: 0.5,
     },
     addFriendText: {
         color: 'white',

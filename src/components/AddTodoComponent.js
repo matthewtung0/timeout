@@ -16,7 +16,7 @@ const HideKeyboard = ({ children }) => (
 );
 
 // double as add new item and editing existing items
-const AddTodoComponent = ({ title, buttonText, callback, item }) => {
+const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) => {
     const { height, width } = Dimensions.get('window');
     const [isLoading, setIsLoading] = useState(false)
 
@@ -95,16 +95,15 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
     )
 
     return (
-
-
-        <View style={[styles.container, { minHeight: 300 }]}>
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <HideKeyboard>
+            <View style={[styles.container, { minHeight: 300, borderRadius: BORDER_RADIUS }]}>
                 <><Text style={styles.title}></Text>
 
                     < TextInput
                         inputContainerStyle={styles.inputStyleContainer}
                         style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
-                        placeholder='Task'
+                        placeholder='Task name'
+                        placeholderTextColor={'#90AB72'}
                         maxLength={30}
                         autoCorrect={false}
                         value={toDoItemName}
@@ -117,6 +116,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                         maxHeight={120}
                         editable
                         maxLength={150}
+                        placeholderTextColor={'#90AB72'}
                         placeholder={'Enter notes (optional)'}
                         value={notes}
                         textAlignVertical='top'
@@ -125,79 +125,80 @@ const AddTodoComponent = ({ title, buttonText, callback, item }) => {
                     />
                 </>
 
-            </TouchableWithoutFeedback>
-
-            <View style={{ minHeight: 50, }}>
-                <DropDownComponent2
-                    isInModal={true}
-                    categoryId={categoryId}
-                    catName={categoryName}
-                    colorId={colorId}
-                    setCatNameCallback={setCategoryName}
-                    setColorIdCallback={setColorId}
-                    setCategoryIdCallback={setCategoryId}
-                />
-            </View>
-
-            {/* toggle delete the item */}
-
-            {item ?
-                <View style={{
-                    flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
-                }}>
-
-                    <TouchableOpacity
-                        onPress={() => {
-                            toggleDeleteFunction();
-                            //areYouSureDelete(item.item_id, "Task deleted successfully")
-                        }}>
-                        {toggleDelete ?
-
-                            <Image
-                                source={yellowCheckmark}
-                                style={{ width: 25, height: 25, marginRight: 10, }} />
-                            :
-                            <View style={{
-                                width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
-                                borderWidth: 5
-                            }}></View>}
-                    </TouchableOpacity>
-
-                    <Text style={[styles.textDefault,
-                    { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
-                        Delete task from your history. This action will be permanent.</Text>
+                <View style={{ minHeight: 50, }}>
+                    <DropDownComponent2
+                        isInModal={true}
+                        categoryId={categoryId}
+                        catName={categoryName}
+                        colorId={colorId}
+                        setCatNameCallback={setCategoryName}
+                        setColorIdCallback={setColorId}
+                        setCategoryIdCallback={setCategoryId}
+                    />
                 </View>
 
-                : null}
+                {/* toggle delete the item */}
 
-            {/* add or edit the item */}
-            <View opacity={isLoading ? 0.3 : 1}>
-                <TouchableOpacity
-                    style={[styles.plus, { width: width / 2.5, }]}
-                    onPress={() => {
-                        if (!validateInputs()) { return }
-                        setIsLoading(true)
-
-                        if (item) {
-                            if (toggleDelete) {
-                                areYouSureDelete(item.item_id, "Task deleted successfully")
-                            } else {
-                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
-                                    resetInputs, errorReset)
-                            }
-
-                        } else {
-                            addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
-                        }
+                {item ?
+                    <View style={{
+                        flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
                     }}>
-                    <Text style={styles.plusText}>{buttonText}</Text>
-                </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleDeleteFunction();
+                                //areYouSureDelete(item.item_id, "Task deleted successfully")
+                            }}>
+                            {toggleDelete ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                            Delete task from your history. This action will be permanent.</Text>
+                    </View>
+
+                    : null}
+
+                {/* add or edit the item */}
+                <View opacity={isLoading ? 0.3 : 1}>
+                    <TouchableOpacity
+                        style={[styles.plus, { width: width / 2.5, }]}
+                        onPress={() => {
+                            if (!validateInputs()) { return }
+                            setIsLoading(true)
+
+                            if (item) {
+                                if (toggleDelete) {
+                                    areYouSureDelete(item.item_id, "Task deleted successfully")
+                                } else {
+                                    editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                        resetInputs, errorReset)
+                                }
+
+                            } else {
+                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
+                            }
+                        }}>
+                        <Text style={styles.plusText}>{buttonText}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {isLoading ?
+                    <ActivityIndicator size="large" color="white" /> : null}
+
             </View>
 
-            {isLoading ?
-                <ActivityIndicator size="large" color="white" /> : null}
+        </HideKeyboard>
 
-        </View>
 
     )
 }
@@ -221,6 +222,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         alignSelf: 'center',
         marginBottom: 20,
+        color: '#67806D',
+        fontSize: 16,
     },
     notes: {
         alignSelf: 'center',
@@ -231,6 +234,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         marginBottom: 20,
         height: 120,
+        color: '#67806D',
+        fontSize: 16,
     }, inputStyleContainer: {
         borderBottomWidth: 0,
     },

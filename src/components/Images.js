@@ -1,0 +1,1 @@
+export const defaultPfp = require('../../assets/avatar/2.png'); 

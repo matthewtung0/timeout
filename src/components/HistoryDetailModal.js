@@ -1,12 +1,11 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, TextInput, Switch, ActivityIndicator, Alert
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image,
+    Keyboard, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { startOfMonth, endOfMonth } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import { Context as SessionContext } from '../context/SessionContext';
-import { Context as UserContext } from '../context/userContext'
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
@@ -14,6 +13,7 @@ const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
+    const BORDER_RADIUS = 20;
     const { state, deleteSession, patchSession } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
     const [itemDeleted, setItemDeleted] = useState(false)
@@ -36,7 +36,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     const submitDelete = async () => {
         setIsLoading(true)
         try {
-            await deleteSession(selectedObject.activity_id, deleteCallback)
+            await deleteSession(selectedObject, deleteCallback)
         } catch (e) {
             console.log(e)
         }
@@ -48,18 +48,20 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     const patchCallback = () => {
 
         setIsLoading(false)
-        toggleFunction()
         callback(true)
         alert("Updated successfully")
+        toggleFunction()
     }
 
     const deleteCallback = () => {
 
         setIsLoading(false)
         setItemDeleted(true)
-        toggleFunction()
         callback(true)
         alert("Deleted successfully")
+        toggleFunction()
+
+
 
     }
     const timeFormat = (dt) => {
@@ -78,6 +80,8 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
 
         return month + "/" + day + "/" + yr
     }
+
+    console.log("SELECTED OBJECT ", selectedObject)
 
     const areYouSureDelete = () => {
         Alert.alert(
@@ -106,7 +110,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <View style={{ flex: 1, backgroundColor: '#83B569' }}>
+                <View style={{ flex: 1, backgroundColor: '#83B569', borderRadius: BORDER_RADIUS }}>
 
                     <View style={{ marginTop: 80, }}>
 
@@ -116,9 +120,9 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             <View style={{
                                 flex: 6,
                                 backgroundColor: 'white', borderRadius: 20, paddingHorizontal: 20,
-
+                                justifyContent: 'center',
                             }}>
-                                <Text style={[styles.textDefaultBold, { color: '#67806D', fontSize: 20, marginTop: 5, }]}>
+                                <Text style={[styles.textDefaultBold, { color: '#67806D', fontSize: 20, }]}>
                                     {selectedObject.activity_name}</Text>
                             </View>
 
@@ -129,7 +133,8 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                                     backgroundColor: 'pink', borderRadius: 20, alignSelf: 'flex-end', flex: 1,
                                     paddingHorizontal: 10, paddingVertical: 5,
                                 }}>
-                                    <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 12, }]}>{selectedObject.category_name}</Text>
+                                    <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 12, }]}>
+                                        {selectedObject.category_name}</Text>
                                 </View>
                                 <View style={{ flex: 3 }} />
                                 <View style={{ flex: 1, alignSelf: 'flex-end', marginBottom: 10, }}>
@@ -214,7 +219,10 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS
+                }} />
 
             <Text style={[styles.title, { position: 'absolute' }]}>Task Details</Text>
             <View style={styles.backContainer}>
@@ -226,7 +234,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                         name="close-outline"
                         type='ionicon'
                         size={35}
-                        color='black' />
+                        color='white' />
                     {/*<Text style={styles.backButtonText}>X</Text>*/}
                 </TouchableOpacity>
             </View>

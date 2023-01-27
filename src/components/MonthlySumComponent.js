@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions, ImageBackground } from 'react-native';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { parseISO, differenceInSeconds } from 'date-fns';
 const constants = require('../components/constants.json')
 
