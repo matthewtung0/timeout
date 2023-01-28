@@ -14,16 +14,19 @@ const MonthlySumComponent = ({ monthBatch }) => {
     let maxTime = -1
     for (var i = 0; i < monthBatch.length; i++) {
         act = monthBatch[i]
-        timeDiffSec = differenceInSeconds(parseISO(act.time_end), parseISO(act.time_start))
-        if (act.category_name in map) {
-            map[act.category_name] = map[act.category_name] + timeDiffSec
-            if (map[act.category_name] > maxTime) { maxTime = map[act.category_name] }
+        if (act.entry_type == 0) {
+            timeDiffSec = differenceInSeconds(parseISO(act.time_end), parseISO(act.time_start))
+            if (act.category_name in map) {
+                map[act.category_name] = map[act.category_name] + timeDiffSec
+                if (map[act.category_name] > maxTime) { maxTime = map[act.category_name] }
 
-        } else {
-            colorMap[act.category_name] = act.color_id
-            map[act.category_name] = timeDiffSec
-            if (timeDiffSec > maxTime) { maxTime = timeDiffSec }
+            } else {
+                colorMap[act.category_name] = act.color_id
+                map[act.category_name] = timeDiffSec
+                if (timeDiffSec > maxTime) { maxTime = timeDiffSec }
+            }
         }
+
     }
 
     //console.log(Object.entries(map))

@@ -1,7 +1,8 @@
-import React, { useState, useContext, useRef } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
-import { Text, Input, Button, Icon } from 'react-native-elements';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { Text, Icon } from 'react-native-elements';
 import { Context as CounterContext } from '../context/CounterContext';
+import { Context as SessionContext } from '../context/SessionContext'
 import Slider from '@react-native-community/slider'
 import Modal from 'react-native-modal'
 import AddCounterModal from '../components/AddCounterModal';
@@ -11,16 +12,21 @@ const constants = require('../components/constants.json')
 
 const CounterScreen = () => {
     const { height, width } = Dimensions.get('window');
-    const { state: counterState, addCounter, fetchUserCounters, addTally, resetTally } = useContext(CounterContext)
+    const { state: counterState, addCounter, setCounterTablesLocked, addTally, resetTally } = useContext(CounterContext)
+    const { setHardReset } = useContext(SessionContext)
 
     const [addBy, setAddBy] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingSubtract, setIsLoadingSubtract] = useState(false)
 
     const [addCounterModalVisible, setAddCounterModalVisible] = useState(false)
     const [editCounterModalVisible, setEditCounterModalVisible] = useState(false)
     const [selectedCounterId, setSelectedCounterId] = useState('')
     const [selectedColorId, setSelectedColorId] = useState('')
     const [selectedName, setSelectedName] = useState('')
+
+
+    const [counterInfo, setCounterInfo] = useState(counterState.userCounters)
 
     var colorArr = []
     //let colors = JSON.parse(constants.colors)
@@ -29,13 +35,34 @@ const CounterScreen = () => {
     }
 
     const addTallyValidation = async (counter_id, add_by, cur_tally) => {
-        if (isLoading) return;
+        if (isLoading || isLoadingSubtract) return;
         if ((cur_tally + add_by) < 0) {
             alert("Can't decrease any more!")
         } else {
-            setIsLoading(true)
-            await addTally(counter_id, add_by, addTallyCallback)
+            if (add_by > 0) {
+                setIsLoading(true)
+            } else {
+                setIsLoadingSubtract(true)
+            }
+            // preemptively set the cur_count for smoother UI
+            setCounterInfo(counterInfo.map(item => {
+
+                if (item.counter_id == counter_id) {
+                    return {
+                        ...item, cur_count: parseInt(item.cur_count) + parseInt(add_by),
+                        point_count: parseInt(item.point_count) + parseInt(add_by),
+                    }
+                }
+                return item;
+            }))
+            await setHardReset(true)
+            await setCounterTablesLocked(true).then(
+                await addTally(counter_id, add_by, addTallyCallback)
+            )
+
+
             setIsLoading(false)
+            setIsLoadingSubtract(false)
         }
 
     }
@@ -49,6 +76,7 @@ const CounterScreen = () => {
     const addTallyCallback = () => {
         //console.log("COUNTERS IS NOW", counterState.userCounters)
         console.log("Added!")
+        setCounterTablesLocked(false)
     }
 
     const toggleAddCounterModal = () => {
@@ -58,7 +86,6 @@ const CounterScreen = () => {
     const toggleEditCounterModal = () => {
         setEditCounterModalVisible(!editCounterModalVisible);
     };
-
     return (
         <View style={{ flex: 1, }}>
 
@@ -102,6 +129,7 @@ const CounterScreen = () => {
             </Modal>
 
             <Text style={{ marginTop: 110, alignSelf: 'center', }}>Add by {addBy}</Text>
+
             <Slider
                 style={[styles.slider, { width: width * 0.5, alignSelf: 'center', }]}
                 minimumValue={1}
@@ -118,10 +146,11 @@ const CounterScreen = () => {
                 }}
             />
 
+            <Text>COUNTERS DONE SO FAR TODAY</Text>
             {counterState.userCounters.length > 0 ?
 
                 <FlatList
-                    data={counterState.userCounters}
+                    data={counterInfo}
                     keyExtractor={(item) => item.counter_id}
                     renderItem={({ item }) => {
                         return (
@@ -137,13 +166,19 @@ const CounterScreen = () => {
                                         </TouchableOpacity>
                                     </View>
 
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                addTallyValidation(item.counter_id, -addBy, item.point_count)
-                                            }}>
-                                            <Icon name='remove-outline' type='ionicon' size={25} color='#67806D' />
-                                        </TouchableOpacity>
+                                    <View style={{ flex: 1, justifyContent: 'center', }}>
+                                        {isLoadingSubtract ?
+                                            <ActivityIndicator
+                                                style={{ justifyContent: 'center', }}
+                                                size="large" />
+                                            :
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    addTallyValidation(item.counter_id, -addBy, item.point_count)
+                                                }}>
+                                                <Icon name='remove-outline' type='ionicon' size={40} color='#67806D' />
+                                            </TouchableOpacity>
+                                        }
                                     </View>
                                     <View style={{
                                         flex: 4, alignItems: 'center', borderWidth: 1, borderRadius: 5,
@@ -158,29 +193,40 @@ const CounterScreen = () => {
                                             {
                                                 color: constants.colors[item['color_id']],
                                                 fontSize: 30, fontWeight: "700",
-                                            }]}>{item['cur_count']}</Text>
+                                            }]}>
+                                                {item['point_count']}
+                                                {/*item['cur_count']*/}
+                                            </Text>
                                             <Text style={[styles.categoryText, {
                                                 color: constants.colors[item['color_id']],
                                                 fontSize: 24, fontWeight: "600",
-                                            }]}>{item['counter_name']}</Text>
+                                            }]}>
+                                                {item['counter_name']}</Text>
                                             <Text style={[styles.categoryText,
                                             {
                                                 color: 'gray',
                                                 fontSize: 16, fontWeight: "400",
-                                            }]}>Lifetime: {item['point_count']}</Text>
+                                            }]}>Lifetime:
+                                                {item['cur_count']}
+                                            </Text>
 
                                             {/*<Text style={[styles.categoryText]}>Lifetime: {item['point_count']}</Text>*/}
 
                                         </View>
                                     </View>
 
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                addTallyValidation(item.counter_id, addBy, item.point_count)
-                                            }}>
-                                            <Icon name='add-outline' type='ionicon' size={25} color='#67806D' />
-                                        </TouchableOpacity>
+                                    <View style={{ flex: 1, justifyContent: 'center', }}>
+                                        {isLoading ?
+                                            <ActivityIndicator
+                                                style={{ justifyContent: 'center', }}
+                                                size="large" /> :
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    addTallyValidation(item.counter_id, addBy, item.point_count)
+                                                }}>
+                                                <Icon name='add-outline' type='ionicon' size={40} color='#67806D' />
+                                            </TouchableOpacity>
+                                        }
                                     </View>
 
 

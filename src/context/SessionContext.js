@@ -38,6 +38,8 @@ const sessionReducer = (state, action) => {
             return { ...state, offsetFetched: action.payload }
         case 'set_cur_offset':
             return { ...state, curOffset: action.payload }
+        case 'set_hard_reset':
+            return { ...state, needHardReset: action.payload }
         case 'fetch_reaction':
             return { ...state, userReaction: action.payload }
         case 'fetch_notification':
@@ -138,7 +140,6 @@ const sessionReducer = (state, action) => {
                 userSessions: [],
                 userReaction: [],
                 userNotifications: [],
-                daySessions: [],
                 monthSessions: [],
                 calendarDate: new Date(),
                 offsetFetched: 0,
@@ -286,7 +287,31 @@ const groupMonthlyTasks = (monthSessions) => {
 const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = null, resetAll = false) => {
     console.log(`Fetching sessions between ${startTime} and ${endTime}`)
     try {
-        const response = await timeoutApi.get('/monthSessions', { params: { startTime: startTime, endTime: endTime } })
+
+        /* TEMPORARY */
+        const results = await timeoutApi.get('/testSessionsAndCounters', { params: { startTime: startTime, endTime: endTime } })
+        console.log("RESULTS ARE : ", results.data)
+        if (resetAll) {
+            dispatch({
+                type: 'fetch_multiple_months_reset_all', payload: {
+                    batchDataForSummary: results.data.groupedDataForSummary,
+                    batchData: results.data.groupedData,
+                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
+                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
+                }
+            })
+        } else {
+            dispatch({
+                type: 'fetch_multiple_months', payload: {
+                    batchDataForSummary: results.data.groupedDataForSummary,
+                    batchData: results.data.groupedData,
+                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
+                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
+                }
+            })
+        }
+
+        /*const response = await timeoutApi.get('/monthSessions', { params: { startTime: startTime, endTime: endTime } })
         var groupedTasks = groupMonthlyTasks(response.data);
         var groupedTasksForSummary = groupMonthlyTasksForSummary(response.data);
         if (resetAll) {
@@ -307,7 +332,7 @@ const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = nu
                     batchDataEnd: format(endTime, 'yyyy-MM-dd'),
                 }
             })
-        }
+        }*/
         if (callback) { callback(response.data) }
     } catch (err) {
         console.log("Problem getting multiple month sessions", err)
@@ -400,6 +425,12 @@ const setOffsetFetched = dispatch => async (num) => {
 const setCurOffset = dispatch => async (num) => {
     dispatch({
         type: 'set_cur_offset', payload: num
+    })
+}
+const setHardReset = dispatch => async (bool_) => {
+    console.log("Setting hard reset to ", bool_)
+    dispatch({
+        type: 'set_hard_reset', payload: bool_
     })
 }
 
@@ -520,16 +551,17 @@ export const { Provider, Context } = createDataContext(
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
         resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
         fetchLikersOfActivity, fetchMultipleMonths, saveSession, setOffsetFetched, setCurOffset,
+        setHardReset,
     },
     {
         userSessions: [],
         userReaction: [],
         userNotifications: [],
-        daySessions: [],
         monthSessions: [],
         batchData: {},
         batchDataForSummary: {},
         calendarDate: new Date(),
+        needHardReset: false, // set to true if any counters updated
         offsetFetched: 0,
         curOffset: 0,
         selfOnlySessions: [],

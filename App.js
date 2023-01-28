@@ -742,8 +742,8 @@ function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
   const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
-  const { fetchUserCounters } = useContext(CounterContext)
-  const { state: userState, fetchAvatar, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
+  const { fetchUserCounters, fetchMultipleMonthsCounters } = useContext(CounterContext)
+  const { state: userState, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
@@ -789,7 +789,8 @@ function CreateMainNavigator() {
         await fetchMultipleMonths(startTime, endTime).then(
           await setOffsetFetched(3)
         )
-        await fetchUserCounters();
+        await fetchUserCounters()
+        await fetchMultipleMonthsCounters(startTime, endTime);
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);
         await fetchFriends();

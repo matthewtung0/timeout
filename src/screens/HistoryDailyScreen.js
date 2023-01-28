@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback, useRef } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import {
     View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, //Modal
 } from 'react-native';
@@ -11,8 +11,11 @@ import MonthlySumComponent from '../components/MonthlySumComponent';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
+import { Context as CounterContext } from '../context/CounterContext';
 const MARGIN_HORIZONTAL = 0
 import HistoryComponent from '../components/HistoryComponent';
+import HistoryCounterComponent from '../components/HistoryCounterComponent';
+import MonthlyCounterComponent from '../components/MonthlyCounterComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
 import enUS from 'date-fns/locale/en-US';
@@ -24,7 +27,8 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const [viewableArray, setViewableArray] = useState([0]);
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,
-        setCurOffset } = useContext(SessionContext)
+        setCurOffset, setHardReset } = useContext(SessionContext)
+    const { state: counterState, fetchMultipleMonthsCounters } = useContext(CounterContext);
 
     const [displayedMonth, setDisplayedMonth] = useState(format(state.calendarDate, 'MMMM', { locale: enUS }))
     const [displayMonthKey, setDisplayedMonthKey] = useState(format(state.calendarDate, 'M/yyyy', { locale: enUS }).toString())
@@ -141,10 +145,18 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const focusEffectFunc = async () => {
         setIsLoading(true)
-        console.log(`Focus effect with calendar date ${state.calendarDate} and offset ${state.curOffset}`)
-        var endTime = endOfMonth(state.calendarDate)
-        var startTime = startOfMonth(subMonths(startOfMonth(state.calendarDate), 3))
-        //await fetchMultipleMonths(startTime, endTime)
+        console.log(`Focus effect with calendar date ${state.calendarDate} and offset ${state.curOffset}, 
+        counter tables locked: ${counterState.counterTablesLocked}, needReset: ${state.needHardReset}`)
+
+        if (state.needHardReset && !counterState.counterTablesLocked) {
+            // if reset needed, refresh most recent month
+            var endTime = endOfMonth(new Date())
+            var startTime = startOfMonth(new Date())
+            await fetchMultipleMonths(startTime, endTime).then(
+                setHardReset(false)
+            )
+        }
+
 
         //await fetchMonthly(state.calendarDate, groupMonthlyTasks)
 
@@ -163,7 +175,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             focusEffectFunc();
             return () => {
             }
-        }, [state.calendarDate, state.curOffset]
+        }, [state.calendarDate, state.curOffset, state.needHardReset, counterState.counterTablesLocked]
             //[state.calendarDate])
         )
     )
@@ -225,20 +237,18 @@ const HistoryDailyScreen = ({ navigation }) => {
                                 fontSize: 22, alignSelf: 'auto',
                                 marginBottom: 0, color: '#67806D', marginHorizontal: 10,
                             }]}>{displayedMonth} Overview</Text>
-
                         </View>
-
                     </View>
-
                     <>
 
                         <Text style={[styles.overviewTitle, styles.textDefault,
                         {
                             fontSize: 17, alignSelf: 'auto', marginHorizontal: 10,
-                            marginTop: 2, marginBottom: 3, color: '#67806D'
+                            marginTop: 2, marginBottom: 3, color: '#67806D', marginTop: 5,
                         }]}>
                             {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' ?
-                                state.batchDataForSummary[displayMonthKey].length : 0} Tasks</Text>
+                                state.batchDataForSummary[displayMonthKey].filter(
+                                    (req) => req.entry_type == 0).length : 0} Tasks</Text>
                         <View
                             style={{
                                 borderBottomColor: 'grey',
@@ -249,7 +259,8 @@ const HistoryDailyScreen = ({ navigation }) => {
                         />
 
                         {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
-                            state.batchDataForSummary[displayMonthKey].length > 0 ?
+                            state.batchDataForSummary[displayMonthKey].filter(
+                                (req) => req.entry_type == 0).length > 0 ?
                             <MonthlySumComponent
                                 //monthBatch={state.monthSessions} 
                                 monthBatch={state.batchDataForSummary[displayMonthKey]}
@@ -262,8 +273,8 @@ const HistoryDailyScreen = ({ navigation }) => {
 
                         <Text style={[styles.overviewTitle, styles.textDefault, {
                             fontSize: 17, alignSelf: 'auto',
-                            marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D'
-                        }]}>Counters ({monthlyCountersGrouped.length}) </Text>
+                            marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
+                        }]}>Counters</Text>
                         <View
                             style={{
                                 borderBottomColor: 'grey',
@@ -272,32 +283,24 @@ const HistoryDailyScreen = ({ navigation }) => {
                             }}
                         />
 
-                        {monthlyCountersGrouped.length > 0 ?
-
-                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                {monthlyCountersGrouped
-                                    .map((item) => {
-                                        return (
-                                            <View
-                                                key={item.counter_name}
-                                                style={{ flex: 1, flexDirection: 'row', }}>
-                                                <Text style={{ flex: 1, }}>{item.counter_name}:</Text>
-                                                <Text style={{ flex: 1, }}>{item.daily_count}</Text>
-                                            </View>
-                                        )
-                                    })}
-                            </View>
+                        {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
+                            state.batchDataForSummary[displayMonthKey].filter(
+                                (req) => req.entry_type == 1).length > 0 ?
+                            <MonthlyCounterComponent
+                                monthBatch={state.batchDataForSummary[displayMonthKey]}
+                            />
                             :
                             <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                <Text>No counters for this month</Text>
+                                <Text style={{ color: '#67806D' }}>No counters for this month</Text>
                             </View>}
-
                     </>
 
                 </View>
             </>
         )
     }
+
+    console.log(new Date().getTimezoneOffset() / 60)
 
     return (
         <View style={styles.viewContainer}>
@@ -469,26 +472,41 @@ const HistoryDailyScreen = ({ navigation }) => {
                                             {/* detail items */}
                                             <View>
                                                 {item[1].map((j) => {
-                                                    return (
-                                                        <View
-                                                            key={j.activity_id}
-                                                            style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
-                                                            <TouchableOpacity
-                                                                onPress={() => {
-                                                                    setSelectedObject(j)
-                                                                    toggleModal()
-                                                                }}
-                                                                style={{}}
-                                                            >
-                                                                <HistoryComponent
+                                                    if (j.entry_type == 0) {
+                                                        return (
+                                                            <View
+                                                                key={j.activity_id}
+                                                                style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+                                                                <TouchableOpacity
+                                                                    onPress={() => {
+                                                                        setSelectedObject(j)
+                                                                        toggleModal()
+                                                                    }}
+                                                                    style={{}}
+                                                                >
+                                                                    <HistoryComponent
+                                                                        session_obj={j}
+                                                                        is_active={Math.min(...viewableArray) == index ||
+                                                                            (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index)) || 1}>
+                                                                    </HistoryComponent>
+                                                                </TouchableOpacity>
+
+                                                            </View>
+                                                        )
+                                                    } else {
+                                                        return (
+                                                            <View
+                                                                key={j.counter_id}
+                                                                style={{ marginHorizontal: MARGIN_HORIZONTAL }}>
+                                                                <HistoryCounterComponent
                                                                     session_obj={j}
                                                                     is_active={Math.min(...viewableArray) == index ||
                                                                         (viewableArray.includes(monthlyTasksGrouped.length - 1) && viewableArray.includes(index)) || 1}>
-                                                                </HistoryComponent>
-                                                            </TouchableOpacity>
+                                                                </HistoryCounterComponent>
+                                                            </View>
+                                                        )
+                                                    }
 
-                                                        </View>
-                                                    )
                                                 })
                                                 }
                                             </View>
