@@ -1,40 +1,106 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useState, useContext, useCallback } from 'react';
+import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, TextInput } from 'react-native';
 import { Text, Icon } from 'react-native-elements';
 import { Context as CounterContext } from '../context/CounterContext';
 import { Context as SessionContext } from '../context/SessionContext'
-import Slider from '@react-native-community/slider'
+import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal'
+import { startOfDay, format, compareAsc } from 'date-fns';
 import AddCounterModal from '../components/AddCounterModal';
 import EditCounterModal from '../components/EditCounterModal';
+import CounterAddCustomModal from '../components/CounterAddCustomModal';
 const constants = require('../components/constants.json')
 
 
 const CounterScreen = () => {
     const { height, width } = Dimensions.get('window');
-    const { state: counterState, addCounter, setCounterTablesLocked, addTally, resetTally } = useContext(CounterContext)
+    const { state: counterState, addCounter, setCounterTablesLocked, addTally, resetTally, fetchUserCounters } = useContext(CounterContext)
     const { setHardReset } = useContext(SessionContext)
 
-    const [addBy, setAddBy] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingSubtract, setIsLoadingSubtract] = useState(false)
+    const [isLoadingCustom, setIsLoadingCustom] = useState(false)
 
     const [addCounterModalVisible, setAddCounterModalVisible] = useState(false)
     const [editCounterModalVisible, setEditCounterModalVisible] = useState(false)
+    const [customNumberModalVisible, setCustomNumberModalVisible] = useState(false);
     const [selectedCounterId, setSelectedCounterId] = useState('')
     const [selectedColorId, setSelectedColorId] = useState('')
     const [selectedName, setSelectedName] = useState('')
+    const [selectedCurrentCount, setSelectedCurrentCount] = useState(0)
+    const [sortBy, setSortBy] = useState(0);
 
 
     const [counterInfo, setCounterInfo] = useState(counterState.userCounters)
 
     var colorArr = []
-    //let colors = JSON.parse(constants.colors)
     for (var i in constants['colors']) {
         colorArr.push([i, constants['colors'][i]])
     }
 
+    const sortedCounterInfo = counterInfo ? counterInfo.sort(function (a, b) {
+        if (sortBy == 0) {
+            return String(b.time_created).localeCompare(String(a.time_created))
+        }
+        else if (sortBy == 1) {
+            return String(a.time_created).localeCompare(String(b.time_created))
+        }
+        else if (sortBy == 2) {
+            var comp_a = String(a['activity_name'])
+            var comp_b = String(b['activity_name'])
+            return comp_a.localeCompare(comp_b)
+        } else if (sortBy == 3) {
+            var comp_a = parseInt(a['cur_count'])
+            var comp_b = parseInt(b['cur_count'])
+            return comp_b - comp_a
+            //return comp_a.localeCompare(comp_b)
+        } else if (sortBy == 4) {
+            var comp_a = parseInt(a['point_count'])
+            var comp_b = parseInt(b['point_count'])
+            var comp_a_second = parseInt(a['cur_count'])
+            var comp_b_second = parseInt(b['cur_count'])
+            if (comp_b == comp_a) {
+                return comp_b_second - comp_a_second
+            }
+            return comp_b - comp_a
+            //return comp_a.localeCompare(comp_b)
+        }
+
+        return a.time_created - b.time_created;
+    }) : []
+
+    const customIncrementCallback = async (counter_id, add_by) => {
+        if (isLoading || isLoadingSubtract) return;
+
+        await focusEffectFunc();
+        if (add_by > 0) {
+            setIsLoading(true)
+        } else {
+            setIsLoadingSubtract(true)
+        }
+        // preemptively set the cur_count for smoother UI
+        setCounterInfo(counterInfo.map(item => {
+
+            if (item.counter_id == counter_id) {
+                return {
+                    ...item, cur_count: parseInt(item.cur_count) + parseInt(add_by),
+                    point_count: parseInt(item.point_count) + parseInt(add_by),
+                }
+            }
+            return item;
+        }))
+        await setHardReset(true)
+        await setCounterTablesLocked(true).then(
+            await addTally(counter_id, add_by, addTallyCallback)
+        )
+        setIsLoading(false)
+        setIsLoadingSubtract(false)
+    }
+
     const addTallyValidation = async (counter_id, add_by, cur_tally) => {
+
+        await focusEffectFunc();
+        console.log(`Counter id ${counter_id} and cur_tally ${cur_tally} and add_by ${add_by}`)
         if (isLoading || isLoadingSubtract) return;
         if ((cur_tally + add_by) < 0) {
             alert("Can't decrease any more!")
@@ -86,6 +152,45 @@ const CounterScreen = () => {
     const toggleEditCounterModal = () => {
         setEditCounterModalVisible(!editCounterModalVisible);
     };
+
+    const toggleCustomNumberModal = () => {
+        setCustomNumberModalVisible(!customNumberModalVisible);
+    };
+
+    const focusEffectFunc = async () => {
+        console.log("Comparing . . . ")
+        var comp = compareAsc(counterState.lastUpdated, startOfDay(new Date()))
+        if (comp < 0) { // need updating
+            console.log("Refreshing counters for new day")
+            await fetchUserCounters().then(
+                (res) => {
+                    console.log("RES is ", res)
+                    setCounterInfo(res)
+                }
+            )
+        }
+    }
+    const addCounterCallback = async () => {
+        // repull the list now that we've added to it
+        await fetchUserCounters().then(
+            (res) => {
+                console.log("RES is ", res)
+                setCounterInfo(res)
+            }
+        )
+        toggleAddCounterModal();
+        alert("Counter added successfully!")
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            focusEffectFunc();
+            return () => {
+            }
+        }, []
+        )
+    )
+
     return (
         <View style={{ flex: 1, }}>
 
@@ -103,6 +208,8 @@ const CounterScreen = () => {
                         <AddCounterModal
                             toggleFunction={toggleAddCounterModal}
                             colorArr={colorArr}
+                            currentCounters={counterInfo}
+                            callback={addCounterCallback}
                         />
                     </View></View>
             </Modal>
@@ -128,114 +235,251 @@ const CounterScreen = () => {
                     </View></View>
             </Modal>
 
-            <Text style={{ marginTop: 110, alignSelf: 'center', }}>Add by {addBy}</Text>
+            <Modal isVisible={customNumberModalVisible}
+                animationIn='slideInUp'
+                animationOut='slideOutUp'
+                backdropTransitionOutTiming={0}>
 
-            <Slider
-                style={[styles.slider, { width: width * 0.5, alignSelf: 'center', }]}
-                minimumValue={1}
-                maximumValue={10}
-                minimumTrackTintColor="#90AB72"
-                maximumTrackTintColor="#F5BBAE"
-                value={1}
-                onSlidingStart={() => {
-                }}
-                onValueChange={setAddBy}
-                onSlidingComplete={() => {
-                    setAddBy(Math.round(addBy))
-                    //setProdRating(Math.round(prodRatingNum))
-                }}
-            />
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <View style={{ height: height * 0.4 }}>
+                        <CounterAddCustomModal
+                            toggleFunction={toggleCustomNumberModal}
+                            colorArr={colorArr}
+                            selectedColorId={selectedColorId}
+                            selectedCounterName={selectedName}
+                            selectedCounterId={selectedCounterId}
+                            selectedCurrentCount={selectedCurrentCount}
+                            customIncrementCallback={customIncrementCallback}
+                        />
+                    </View></View>
+            </Modal>
+            <Text style={[styles.textDefaultBold,
+            { marginLeft: 25, marginTop: 120, fontSize: 20, color: '#67806D' }]}>My Counters</Text>
 
-            <Text>COUNTERS DONE SO FAR TODAY</Text>
+            <View style={{ paddingBottom: 10, flexDirection: 'row', paddingHorizontal: 12, backgroundColor: '#83B569' }}>
+                {sortBy == 0 ?
+                    <TouchableOpacity
+                        style={[styles.sortContainer,
+                        { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, },
+                        styles.sortContainerSelected]}
+                        onPress={() => { setSortBy(0) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                        style={[styles.sortContainer,
+                        { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, }]}
+                        onPress={() => { setSortBy(0) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
+                    </TouchableOpacity>
+                }
+                {sortBy == 1 ?
+                    <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(1) }}>
+                        <Text style={[styles.textDefault, styles.sortText,]}>Oldest</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={[styles.sortContainer,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(1) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Oldest</Text>
+                    </TouchableOpacity>
+                }
+                {sortBy == 2 ?
+                    <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(2) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={[styles.sortContainer,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(2) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
+                    </TouchableOpacity>
+                }
+                {sortBy == 3 ?
+                    <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(3) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Most lifetime</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={[styles.sortContainer,
+                    { borderRightWidth: 0, }]}
+                        onPress={() => { setSortBy(3) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Most lifetime</Text>
+                    </TouchableOpacity>
+                }
+                {sortBy == 4 ?
+                    <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                    { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                        onPress={() => { setSortBy(4) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Most today</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={[styles.sortContainer,
+                    { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                        onPress={() => { setSortBy(4) }}>
+                        <Text style={[styles.textDefault, styles.sortText]}>Most today</Text>
+                    </TouchableOpacity>
+                }
+
+            </View>
+
             {counterState.userCounters.length > 0 ?
 
                 <FlatList
-                    data={counterInfo}
+                    style={{ marginTop: 25, }}
+                    //data={counterInfo}
+                    data={sortedCounterInfo}
                     keyExtractor={(item) => item.counter_id}
                     renderItem={({ item }) => {
                         return (
                             <View
-                                style={[styles.categoryStyle, { marginBottom: 10, }]}>
+                                style={[styles.categoryStyle, { marginBottom: 20, }]}>
                                 <View style={{ flexDirection: 'row', flex: 1, }}>
-                                    <View style={{ flex: 1, }}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                resetTallyValidation(item.counter_id)
-                                            }}>
-                                            <Icon name='refresh-outline' type='ionicon' size={20} color='#67806D' />
-                                        </TouchableOpacity>
-                                    </View>
 
-                                    <View style={{ flex: 1, justifyContent: 'center', }}>
-                                        {isLoadingSubtract ?
-                                            <ActivityIndicator
-                                                style={{ justifyContent: 'center', }}
-                                                size="large" />
-                                            :
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    addTallyValidation(item.counter_id, -addBy, item.point_count)
-                                                }}>
-                                                <Icon name='remove-outline' type='ionicon' size={40} color='#67806D' />
-                                            </TouchableOpacity>
-                                        }
-                                    </View>
                                     <View style={{
-                                        flex: 4, alignItems: 'center', borderWidth: 1, borderRadius: 5,
+                                        flex: 4, borderWidth: 0, borderRadius: 5, marginStart: 10,
                                         borderColor: constants.colors[item['color_id']]
                                     }}>
 
                                         <View style={{
-                                            alignItems: 'center',
-
                                         }}>
-                                            <Text style={[styles.categoryText,
-                                            {
-                                                color: constants.colors[item['color_id']],
-                                                fontSize: 30, fontWeight: "700",
+
+                                            <Text style={[styles.categoryText, styles.textDefault, {
+                                                color: 'black',//constants.colors[item['color_id']],
+                                                fontSize: 15,
                                             }]}>
-                                                {item['point_count']}
-                                                {/*item['cur_count']*/}
-                                            </Text>
-                                            <Text style={[styles.categoryText, {
-                                                color: constants.colors[item['color_id']],
-                                                fontSize: 24, fontWeight: "600",
-                                            }]}>
-                                                {item['counter_name']}</Text>
-                                            <Text style={[styles.categoryText,
-                                            {
-                                                color: 'gray',
-                                                fontSize: 16, fontWeight: "400",
-                                            }]}>Lifetime:
-                                                {item['cur_count']}
+                                                {item['activity_name']}</Text>
+                                            <Text>
+                                                <Text style={[styles.categoryText, styles.textDefaultBold,
+                                                {
+                                                    color: 'black',//constants.colors[item['color_id']],
+                                                    fontSize: 18,
+                                                }]}>
+                                                    {item['point_count']}
+
+                                                </Text><Text> today </Text>
+                                                <Text style={[styles.categoryText, styles.textDefault,
+                                                {
+                                                    color: 'gray',
+                                                    fontSize: 12,
+                                                }]}>({item['cur_count']} lifetime)
+                                                </Text>
                                             </Text>
 
-                                            {/*<Text style={[styles.categoryText]}>Lifetime: {item['point_count']}</Text>*/}
 
                                         </View>
                                     </View>
 
                                     <View style={{ flex: 1, justifyContent: 'center', }}>
-                                        {isLoading ?
+                                        {isLoading && selectedCounterId == item.counter_id ?
                                             <ActivityIndicator
                                                 style={{ justifyContent: 'center', }}
                                                 size="large" /> :
                                             <TouchableOpacity
+                                                style={{
+                                                    borderWidth: 1, alignItems: 'center', borderRadius: 10,
+                                                    backgroundColor: constants.colors[item['color_id']], height: '100%',
+                                                    paddingVertical: 5,
+                                                }}
                                                 onPress={() => {
-                                                    addTallyValidation(item.counter_id, addBy, item.point_count)
+                                                    setSelectedCounterId(item.counter_id)
+                                                    addTallyValidation(item.counter_id, 1, item['point_count'])
                                                 }}>
-                                                <Icon name='add-outline' type='ionicon' size={40} color='#67806D' />
+                                                <View style={{ height: '100%', justifyContent: 'center' }}>
+                                                    <Text style={{ color: '#67806D', fontSize: 14, }}>+1</Text>
+                                                </View>
+
                                             </TouchableOpacity>
                                         }
                                     </View>
 
+                                    <View style={{ flex: 2, justifyContent: 'center', }}>
+                                        {isLoadingCustom && selectedCounterId == item.counter_id ?
+                                            <ActivityIndicator
+                                                style={{ justifyContent: 'center', }}
+                                                size="large" /> :
+                                            <TouchableOpacity
+                                                style={{
+                                                    borderWidth: 1, alignItems: 'center', borderRadius: 10, marginHorizontal: 5,
+                                                    backgroundColor: constants.colors[item['color_id']], height: '100%'
+
+                                                }}
+                                                onPress={() => {
+                                                    setSelectedCounterId(item['counter_id'])
+                                                    setSelectedColorId(item['color_id'])
+                                                    setSelectedName(item['activity_name'])
+                                                    setSelectedCurrentCount(item['point_count'])
+                                                    toggleCustomNumberModal()
+                                                }}>
+                                                <View style={{
+                                                    flexDirection: 'row', flex: 1, alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                    <View style={{ flex: 1, alignItems: 'center' }}>
+                                                        <Text style={{ color: '#67806D', fontSize: 14, }}>custom</Text>
+                                                    </View>
+
+                                                    {/*<View style={{ flex: 3, }}>
+                                                        <TextInput
+                                                            //ref={(input) => { this.textInput = input; }}
+                                                            style={[styles.textDefaultBold, styles.codeInput,
+                                                            { paddingVertical: 5 }]}
+                                                            keyboardType={"number-pad"}
+                                                            returnKeyType="done"
+                                                            editable={true}
+                                                            //autoFocus={true}
+                                                            maxLength={2}
+                                                            inputContainerStyle={styles.inputStyleContainer}
+                                                            placeholder='custom'
+                                                            placeholderTextColor={'#67806D'}
+                                                            value={addBy}
+                                                            onChangeText={setAddBy}
+                                                        />
+                                                            </View>*/}
+                                                </View>
+
+
+                                            </TouchableOpacity>
+                                        }
+                                    </View>
+                                    <View style={{ flex: 1, justifyContent: 'center', }}>
+                                        {isLoadingSubtract && selectedCounterId == item.counter_id ?
+                                            <ActivityIndicator
+                                                style={{ justifyContent: 'center', }}
+                                                size="large" /> :
+                                            <TouchableOpacity
+                                                style={{
+                                                    borderWidth: 1, alignItems: 'center', borderRadius: 10,
+                                                    paddingVertical: 5, backgroundColor: '#C0C0C0',
+                                                    height: '100%',
+                                                }}
+                                                onPress={() => {
+                                                    setSelectedCounterId(item.counter_id)
+                                                    addTallyValidation(item.counter_id, -1, item['point_count'])
+                                                }}>
+                                                <View style={{ height: '100%', justifyContent: 'center', }}>
+                                                    <Text style={{ color: '#67806D', fontSize: 14, }}>-1</Text>
+                                                </View>
+
+                                            </TouchableOpacity>
+                                        }
+                                    </View>
 
                                     <View style={{ flex: 1, }}>
                                         <TouchableOpacity
                                             onPress={() => {
                                                 setSelectedCounterId(item.counter_id)
                                                 setSelectedColorId(item.color_id)
-                                                setSelectedName(item.counter_name)
+                                                setSelectedName(item.activity_name)
                                                 toggleEditCounterModal()
                                             }
 
@@ -245,10 +489,17 @@ const CounterScreen = () => {
                                     </View>
 
                                 </View>
-                            </View>
+
+                                <View style={{
+                                    height: 2, borderWidth: 1, marginTop: 10,
+                                    borderColor: constants.colors[item['color_id']]
+                                }}>
+
+                                </View>
+                            </View >
                         )
                     }}>
-                </FlatList>
+                </FlatList >
 
 
                 /*<View style={styles.categoryContainer}>
@@ -261,7 +512,7 @@ const CounterScreen = () => {
                                     <View style={{ flexDirection: 'row', flex: 1, }}>
 
                                         <View style={{ flex: 8, }}>
-                                            <Text style={[styles.categoryText]}>{item['counter_name']}</Text>
+                                            <Text style={[styles.categoryText]}>{item['activity_name']}</Text>
                                             <Text style={[styles.categoryText]}>{item['point_count']}</Text>
                                         </View>
 
@@ -298,11 +549,17 @@ const CounterScreen = () => {
                 }}>
                 <Text style={styles.addCounterText}>Add New Counter</Text>
             </TouchableOpacity>
-        </View>
+        </View >
     )
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     title: {
         fontSize: 20,
         marginTop: 70,
@@ -342,7 +599,17 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: 'white',
         fontSize: 18,
-    }
+    },
+    sortText: {
+        textAlign: 'center', fontSize: 12, justifyContent: 'center', color: 'white',
+    },
+    sortContainer: {
+        borderWidth: 1, flex: 1,
+        paddingVertical: 7, borderColor: 'white',
+    },
+    sortContainerSelected: {
+        backgroundColor: '#8DC867',
+    },
 
 })
 

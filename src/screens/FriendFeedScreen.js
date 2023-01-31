@@ -1,17 +1,16 @@
-import React, { useContext, useState, useCallback, useRef } from 'react';
+import React, { useContext, useState, useCallback, useRef, useMemo } from 'react';
 import {
     View, StyleSheet, Text, FlatList,
     TouchableOpacity, ActivityIndicator, Dimensions
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { Context as SessionContext } from '../context/SessionContext';
+import { Context as ReactionContext } from '../context/ReactionContext';
 import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
 import { SceneMap, TabBar } from 'react-native-tab-view';
 
 import timeoutApi from '../api/timeout';
-import AvatarComponent from '../components/AvatarComponent';
 import FriendNotificationScreen from './FriendNotificationScreen';
 import { FriendFeedComponent, MemoizedComponent } from '../components/FriendFeedComponent';
 
@@ -20,8 +19,8 @@ const SCROLL_THROTTLE_RATE = 200;
 
 const FriendFeedScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window');
-    const { state: sessionState, fetchUserReactions,
-        reactToActivity, fetchAvatars } = useContext(SessionContext)
+    //const { fetchUserReactions } = useContext(SessionContext)
+    const { state: reactionState, fetchUserReactions, fetchSessions } = useContext(ReactionContext)
     const { state: userState, setIdToView } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [refreshToken, setRefreshToken] = useState(0)
@@ -50,12 +49,12 @@ const FriendFeedScreen = ({ navigation }) => {
                 setDisableTouch(false)
                 setAtEnd(false)
             }
-        }, [refreshToken])
+        }, [])
+        //[refreshToken])
     )
-    console.log(sessionState.userReaction)
 
 
-    const fetchSessions = async (friends) => {
+    /*const fetchSessions = async (friends) => {
         // clean up friends array
         var friendsArr = []
         for (var i in friends) {
@@ -70,9 +69,7 @@ const FriendFeedScreen = ({ navigation }) => {
                 setIsOnline(false)
             }
         }
-
-
-    }
+    }*/
 
     const fetchSessionsNextBatch = async (startIndex = 0, friends) => {
         var friendsArr = []
@@ -171,6 +168,29 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const flatListRef = useRef();
 
+    const flatListItself = () => {
+        return (
+            <FlatList
+                ref={flatListRef}
+                style={styles.flatlistStyle}
+                horizontal={false}
+                onScroll={scrollEvent}
+                scrollEventThrottle={SCROLL_THROTTLE_RATE}
+                data={reactionState.userSessions}
+                ItemSeparatorComponent={renderSeparator}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.activity_id}
+                ListFooterComponent={renderFooter}
+                renderItem={({ item }) =>
+                    <FriendFeedComponent item={item} navigation={navigation} />
+                }
+            >
+            </FlatList>
+        )
+    }
+
+    const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions])
+
     const renderSeparator = () => (
         <View
             style={{
@@ -219,7 +239,7 @@ const FriendFeedScreen = ({ navigation }) => {
                             color='black' /> : null}
 
 
-                        {feed.length == 0 ?
+                        {reactionState.userSessions.length == 0 ?
                             <View style={{ alignItems: 'center' }}>
                                 <Text style={[styles.textDefault, {
                                     marginTop: 20, marginBottom: 10,
@@ -229,22 +249,7 @@ const FriendFeedScreen = ({ navigation }) => {
                             </View>
                             :
                             <View style={styles.flatListContainer}>
-                                <FlatList
-                                    ref={flatListRef}
-                                    style={styles.flatlistStyle}
-                                    horizontal={false}
-                                    onScroll={scrollEvent}
-                                    scrollEventThrottle={SCROLL_THROTTLE_RATE}
-                                    data={feed}
-                                    ItemSeparatorComponent={renderSeparator}
-                                    showsHorizontalScrollIndicator={false}
-                                    keyExtractor={(item) => item.activity_id}
-                                    ListFooterComponent={renderFooter}
-                                    renderItem={({ item }) =>
-                                        <MemoizedComponent item={item} navigation={navigation} />
-                                    }
-                                >
-                                </FlatList>
+                                {memoizedFlatList}
                             </View>
                         }
                     </>}

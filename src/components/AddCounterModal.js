@@ -8,10 +8,12 @@ import { Context as CounterContext } from '../context/CounterContext';
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 
-const AddCounterModal = ({ toggleFunction, colorArr }) => {
+const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }) => {
     const { height, width } = Dimensions.get('window');
     const [resMessage, setResMessage] = useState('')
     const INPUT_WIDTH = width * 0.8
+    const COLOR_WIDTH = 40;
+    const BORDER_RADIUS = 20;
     const [counterName, setCounterName] = useState('')
     const [chosenColor, setChosenColor] = useState('c0')
 
@@ -28,29 +30,60 @@ const AddCounterModal = ({ toggleFunction, colorArr }) => {
         setIsLoading(false)
         toggleFunction()
     }
+
     const validateInputs = () => {
+        var counterNames = currentCounters.map((item) => { return item.activity_name })
+        for (var i in counterNames) {
+            if (counterNames[i].toLowerCase() == counterName.toLowerCase()) {
+                return false
+            }
+        }
         return true;
+    }
+    const separator = () => {
+        return (
+            <View
+                style={{
+                    borderBottomColor: '#DCDBDB',
+                    //borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomWidth: 1.5,
+                    marginBottom: 10,
+                }}
+            />
+
+        )
     }
 
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
-            <View style={{ flex: 1, backgroundColor: '#F9EAD3' }}>
+            <View style={{ flex: 1, backgroundColor: '#F9EAD3', borderRadius: BORDER_RADIUS }}>
                 <View style={{ marginHorizontal: 20, marginTop: 90, }}>
-                    <Text style={styles.labelText}>Counter Name</Text>
-                    <TextInput
-                        style={[styles.inputStyle, {
-                            width: INPUT_WIDTH, height: 45,
-                            backgroundColor: constants.colors[chosenColor],
-                        }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Counter name here'
-                        autoCorrect={false}
-                        value={counterName}
-                        onChangeText={(text) => {
-                            setCounterName(text)
-                        }}
-                    />
-                    <Text style={styles.labelText}>Choose a color:</Text>
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>
+                        Counter Name</Text>
+
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={{
+                            borderRadius: 20,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.1,
+                        }}>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, {
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                placeholder='Counter'
+                                placeholderTextColor={'gray'}
+                                autoCorrect={false}
+                                value={counterName}
+                                onChangeText={setCounterName}
+                            />
+
+                        </View>
+                    </View>
                     < FlatList
                         horizontal={true}
                         data={colorArr}
@@ -68,13 +101,76 @@ const AddCounterModal = ({ toggleFunction, colorArr }) => {
                     >
                     </FlatList>
 
+
+
+
+                    {separator()}
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+
+
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={{
+                            borderRadius: 50,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.1,
+                        }}>
+
+                            <View
+                                style={[{
+                                    marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                            >
+                                < FlatList
+                                    horizontal={true}
+                                    data={colorArr}
+                                    keyExtractor={(item) => item[0]}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <>
+                                                {chosenColor == item[0] ?
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                            borderWidth: 3, borderColor: '#67806D'
+                                                        }]}
+                                                        onPress={() => { setChosenColor(item[0]) }}
+                                                    />
+
+                                                    :
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                        }]}
+                                                        onPress={() => { setChosenColor(item[0]) }}
+                                                    />
+                                                }
+                                            </>
+                                        )
+                                    }}
+                                >
+                                </FlatList>
+                            </View>
+                        </View>
+                    </View>
+
+
+
                     <View opacity={isLoading ? 0.3 : 1}>
                         <TouchableOpacity
                             style={[styles.submit, { width: width / 2.6, }]}
                             onPress={() => {
-                                if (!validateInputs()) { return }
+                                if (!validateInputs()) {
+                                    alert("Counter name already exists!")
+                                    return
+                                }
                                 setIsLoading(true)
-                                addCounter(counterName, new Date(), chosenColor, true, resetInputs)
+                                addCounter(counterName, new Date(), chosenColor, true, callback)
 
                             }}>
                             <Text style={styles.submitText}>Submit</Text>
@@ -89,7 +185,10 @@ const AddCounterModal = ({ toggleFunction, colorArr }) => {
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute', borderTopLeftRadius: BORDER_RADIUS,
+                    borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
             <Text style={[styles.title, { position: 'absolute' }]}>Add Counter</Text>
             <View style={styles.backContainer}>
@@ -113,6 +212,12 @@ const AddCounterModal = ({ toggleFunction, colorArr }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         flex: 1,
     },
@@ -123,11 +228,9 @@ const styles = StyleSheet.create({
     },
     labelText: { marginLeft: 5, color: 'gray', },
     colorSquare: {
-        width: 50,
-        height: 50,
         marginHorizontal: 5,
         marginTop: 5,
-        marginBottom: 15,
+        marginBottom: 5,
     },
     title: {
         alignSelf: 'center',
@@ -179,7 +282,7 @@ const styles = StyleSheet.create({
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
     },
     submitText: {
         color: 'white',
@@ -191,16 +294,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
     },
     inputStyle: {
-        marginTop: 5,
-        backgroundColor: 'white',
         borderRadius: 15,
-        paddingHorizontal: 10,
-        alignSelf: 'center',
-        marginBottom: 20,
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
         color: 'gray',
-        fontSize: 18,
-        fontWeight: '600',
-    }
+        fontSize: 16,
+    },
 })
 
 export default AddCounterModal;

@@ -10,7 +10,7 @@ const constants = require('../components/constants.json')
 const { height, width } = Dimensions.get('window');
 
 const DropDownComponent2 = ({ catName, colorId, categoryId,
-    setCatNameCallback, setColorIdCallback, setCategoryIdCallback, isInModal }) => {
+    setCatNameCallback, setColorIdCallback, setCategoryIdCallback, isInModal, allCategoriesOption }) => {
     const { state: categoryState } = useContext(CategoryContext)
     const [open, setOpen] = useState(false);
 
@@ -37,9 +37,17 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
             category_array = category_array.sort(function (a, b) {
                 return String(a.label).localeCompare(String(b.label))
             })
+            if (allCategoriesOption) {
+                category_array.unshift({
+                    label: 'All categories',
+                    value: 'All categories',
+                    color: 'c10',
+                })
+            }
             setItems(category_array)
         }, [categoryState.userCategories])
     )
+    console.log
 
     const Item = (props) => {
         return (
@@ -91,9 +99,9 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
             search={false}
             onChange={item => {
                 console.log("Changing to ", item)
-                setCatNameCallback(item.label)
-                setColorIdCallback(item.color)
-                setCategoryIdCallback(item.value)
+                if (setCatNameCallback) { setCatNameCallback(item.label) }
+                if (setColorIdCallback) { setColorIdCallback(item.color) }
+                if (setCategoryIdCallback) { setCategoryIdCallback(item.value) }
             }}
             itemContainerStyle={{ borderBottomWidth: 0.3, }}
             containerStyle={{

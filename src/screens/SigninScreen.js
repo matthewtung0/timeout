@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
-    View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions, Image,
+    View, StyleSheet, TouchableOpacity, Dimensions, Image,
     Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator,
 } from 'react-native';
 import { Input, Text } from 'react-native-elements';
@@ -8,8 +8,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Context as AuthContext } from '../context/AuthContext';
 
 import { Context as CategoryContext } from '../context/CategoryContext'
+import { Context as SessionContext } from '../context/SessionContext'
+import { Context as CounterContext } from '../context/CounterContext'
 import { Context as UserContext } from '../context/userContext'
 import { Easing } from 'react-native-reanimated';
+import {
+    subMonths, startOfMonth, endOfMonth
+} from 'date-fns';
 
 const img_src = require('../../assets/signin_background.png');
 const cloud = require('../../assets/cloud.png');
@@ -26,11 +31,13 @@ const HideKeyboard = ({ children }) => (
 
 const SigninScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
-    const { state, signin, signout, tryLocalSignin, clearErrorMessage } = useContext(AuthContext);
+    const { state, signin, clearErrorMessage } = useContext(AuthContext);
 
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
-    const { state: userState, fetchOutgoingRequests, fetchIncomingRequests, fetchAvatarGeneral,
+    const { fetchOutgoingRequests, fetchIncomingRequests, fetchAvatarGeneral, fetchAvatarItemsOwned,
         fetchFriends, fetchSelf } = useContext(UserContext)
+    const { fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
+    const { fetchUserCounters } = useContext(CounterContext)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -48,6 +55,9 @@ const SigninScreen = ({ navigation }) => {
 
     const signInCallback = async () => {
         console.log("SIGN IN CALLBACK??")
+        var tempDt = new Date()
+        var endTime = endOfMonth(tempDt)
+        var startTime = startOfMonth(subMonths(startOfMonth(tempDt), 3))
         await fetchSelf().then(
             (res) => {
                 console.log('fetched self');
@@ -55,17 +65,15 @@ const SigninScreen = ({ navigation }) => {
                 fetchUserCategories(res, getPrivate = true, isSelf = true);
             }
         )
-
-        //await fetchUserCategories();
-        console.log('fetched categories');
-        await fetchUserTodoItems();
-        console.log('fetched todo items');
+        await fetchMultipleMonths(startTime, endTime).then(
+            await setOffsetFetched(3)
+        )
+        await fetchUserCounters()
+        await fetchAvatarItemsOwned();
+        await fetchUserTodoItems(isSelf = true);
         await fetchFriends();
-        console.log('fetched friends');
         await fetchOutgoingRequests();
-        console.log('fetched outgoing friend requests');
         await fetchIncomingRequests();
-        console.log('fetched incoming friend requests');
         setIsLoading(false)
     }
 
@@ -219,18 +227,16 @@ const SigninScreen = ({ navigation }) => {
                         value={password}
                         onChangeText={setPassword}
                     />
-                    <TouchableOpacity onPress={() =>
-                        navigation.navigate('ForgotPassword')
-                    }
-                    >
-                        <Text style={[styles.button, styles.textDefault, { fontSize: 16, }]}>Forgot your password?</Text>
 
-                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={isLoading ? [styles.signInBoxStyle, { backgroundColor: '#FFDA95' }] : [styles.signInBoxStyle]}
                         onPress={() => {
+                            clearErrorMessage();
                             if (!isLoading) {
+                                if (email == '' || password == '') {
+                                    return;
+                                }
                                 setIsLoading(true)
                                 console.log("pressed sign in button")
                                 signin(email, password, signInCallback, signInCallbackFail)
@@ -241,6 +247,16 @@ const SigninScreen = ({ navigation }) => {
                             :
                             <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Sign In</Text>
                         }
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{}}
+                        onPress={() =>
+                            navigation.navigate('ForgotPassword')
+                        }
+                    >
+                        <Text style={[styles.button, styles.textDefault, { fontSize: 16, }]}>Forgot your password?</Text>
+
                     </TouchableOpacity>
 
                     {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
@@ -312,7 +328,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        marginBottom: 20,
     },
     signInTextStyle: {
         color: '#F6F2DF',

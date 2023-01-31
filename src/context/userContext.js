@@ -76,18 +76,115 @@ const userReducer = (state, action) => {
                 outgoingFriendReqs: [],
                 incomingFriendReqs: [],
                 friends: [],
-                user_id: '',
                 errorMessage: '',
                 firstName: '',
                 lastName: '',
                 username: '',
-                bio: '',
+                user_id: '',
                 friendCode: '',
                 points: 0,
                 responseMessage: '',
                 totalTasks: 0,
                 totalTime: 0,
                 base64pfp: '',
+                bio: '',
+                avatar_active: false,
+                avatarItemsOwned: [],
+                avatarJSON: {
+                    face: {
+                        mouth: {
+                            item: 0,
+                            color: 0,
+                            active: true,
+                        },
+                        eyes: {
+                            item: 0,
+                            color: 0,
+                            active: true,
+                        },
+                        makeup: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        eyebrows: {
+                            item: 0,
+                            color: 0,
+                            active: true,
+                        },
+                        base: {
+                            item: 0,
+                            color: -1,
+                            active: true,
+                        },
+                    },
+                    accessories: {
+                        hair: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        general: {
+                            item: 0,
+                            color: -1,
+                            active: false,
+                        },
+                        piercings: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        glasses: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        background: {
+                            item: 0,
+                            color: -1,
+                            active: true,
+                        },
+                    },
+                    clothing: {
+                        under: {
+                            item: 0,
+                            color: 0,
+                            active: true,
+                        },
+                        top: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        outer: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                    },
+                    hair: {
+                        base: {
+                            item: 0,
+                            color: 0,
+                            active: true,
+                        },
+                        front: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        back: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                        side: {
+                            item: 0,
+                            color: 0,
+                            active: false,
+                        },
+                    },
+                },
                 idToView: '', usernameToView: '',
             }
         case 'fetch_avatar':

@@ -14,13 +14,13 @@ const MonthlyCounterComponent = ({ monthBatch }) => {
         act = monthBatch[i]
         if (act.entry_type == 1) {
             total_count = parseInt(act.daily_count)
-            if (act.counter_name in map) {
-                map[act.counter_name] = map[act.counter_name] + parseInt(total_count)
-                if (map[act.counter_name] > maxCount) { maxCount = map[act.counter_name] }
+            if (act.activity_name in map) {
+                map[act.activity_name] = map[act.activity_name] + parseInt(total_count)
+                if (map[act.activity_name] > maxCount) { maxCount = map[act.activity_name] }
 
             } else {
-                colorMap[act.counter_name] = act.color_id
-                map[act.counter_name] = total_count
+                colorMap[act.activity_name] = act.color_id
+                map[act.activity_name] = total_count
                 if (total_count > maxCount) { maxCount = total_count }
             }
         }
@@ -35,7 +35,7 @@ const MonthlyCounterComponent = ({ monthBatch }) => {
     }
 
     return (
-        <View>
+        <View style={{ marginHorizontal: 20, }}>
             <>
                 {sortedRes
                     .map((item) => {
@@ -43,14 +43,22 @@ const MonthlyCounterComponent = ({ monthBatch }) => {
                             <View
                                 style={[styles.container, {}]}
                                 key={item[0]}>
-                                <View style={[styles.textContainer, {}]}>
-                                    <Text style={[styles.barLabel, styles.textDefaultBold]}>
-                                        {item[0]}</Text>
+                                <View style={{ flexDirection: 'row', width: '100%', }}>
+                                    <View style={[styles.textContainer, { flex: 1, }]}>
+                                        <Text
+                                            numberOfLines={1}
+                                            style={[styles.barLabel, styles.textDefaultBold]}>
+                                            {item[0]}</Text>
+                                    </View>
+
+                                    <View style={[styles.barContainer, { flex: 2, alignItems: 'flex-start', }]}>
+                                        <View>
+                                            <Text style={[styles.timeLabel, styles.textDefault,]}>{item[1]}</Text>
+                                        </View>
+
+                                    </View>
                                 </View>
 
-                                <View style={[styles.barContainer, {}]}>
-                                    <Text style={[styles.timeLabel, styles.textDefault]}>{item[1]}</Text>
-                                </View>
                             </View>
 
                         )

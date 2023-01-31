@@ -6,7 +6,10 @@ import enUS from 'date-fns/locale/en-US';
 const counterReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_counters':
-            return { ...state, userCounters: action.payload }
+            return {
+                ...state, userCounters: action.payload,
+                lastUpdated: new Date()
+            }
         case 'add_counter':
             return state
         case 'add_tally':
@@ -69,6 +72,12 @@ const counterReducer = (state, action) => {
             return {
                 ...state,
                 counterTablesLocked: action.payload,
+            }
+        case 'clear_context':
+            return {
+                userCounters: [],
+                batchData: {},
+                counterTablesLocked: false,
             }
         default:
             return state;
@@ -183,6 +192,8 @@ const fetchUserCounters = dispatch => async (id) => {
         var startDate = startOfDay(new Date())
         const response = await timeoutApi.get('/counter', { params: { id, startDate } })
         dispatch({ type: 'fetch_counters', payload: response.data })
+
+        return response.data
     } catch (err) {
         console.log("error fetching counters", err);
         dispatch({ type: 'add_error', payload: 'There was a problem retrieving the counters.' })
@@ -264,16 +275,25 @@ const setCounterTablesLocked = dispatch => async (bool_) => {
     return 'done'
 }
 
+const clearCounterContext = dispatch => async () => {
+    try {
+        dispatch({ type: 'clear_context' })
+    } catch (err) {
+
+    }
+}
+
 export const { Provider, Context } = createDataContext(
     counterReducer,
     {
         fetchUserCounters, addCounter, addTally, resetTally, deleteCounter,
         changeColorCounter, changeArchiveCounter, fetchMultipleMonthsCounters,
-        setCounterTablesLocked,
+        setCounterTablesLocked, clearCounterContext,
     },
     {
         userCounters: [],
         batchData: {},
         counterTablesLocked: false,
+        lastUpdated: new Date(),
     }
 );

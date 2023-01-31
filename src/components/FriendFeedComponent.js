@@ -1,27 +1,25 @@
 import React, { useContext, useState } from 'react';
 import {
-  View, StyleSheet, Text, Pressable,
-  TouchableOpacity, Dimensions
+  View, StyleSheet, Text, Pressable, TouchableOpacity, Dimensions
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import {
   differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
-  differenceInMinutes,
-  parseISO, differenceInSeconds, isThisMinute
+  differenceInMinutes, parseISO, differenceInSeconds,
 } from 'date-fns';
 import Modal from 'react-native-modal'
 import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
-import { Context as SessionContext } from '../context/SessionContext';
+import { Context as ReactionContext } from '../context/ReactionContext';
 import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
 export function FriendFeedComponent({ item, navigation }) {
   const { height, width } = Dimensions.get('window');
-  const { state: userState, setIdToView } = useContext(UserContext)
+  const { setIdToView } = useContext(UserContext)
 
   const [disableTouch, setDisableTouch] = useState(false)
-  const { state: sessionState, fetchUserReactions,
-    reactToActivity, fetchAvatars } = useContext(SessionContext)
+  const { state: reactionState,
+    reactToActivity, } = useContext(ReactionContext)
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -222,7 +220,7 @@ export function FriendFeedComponent({ item, navigation }) {
             <Pressable
               onPress={() => {
                 let is_like = true
-                if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
+                if (JSON.stringify(reactionState.userReaction).includes(item.activity_id)) {
                   is_like = false
                   setReactionCount(reactionCount - 1)
                 } else {
@@ -230,7 +228,7 @@ export function FriendFeedComponent({ item, navigation }) {
                 }
                 reactToActivity(item.activity_id, is_like, reactCallback)
               }}>
-              {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
+              {JSON.stringify(reactionState.userReaction).includes(item.activity_id) ?
                 <Icon
                   name="heart"
                   type='font-awesome'
@@ -246,4 +244,6 @@ export function FriendFeedComponent({ item, navigation }) {
     </View >
   );
 }
-export const MemoizedComponent = React.memo(FriendFeedComponent);
+
+//export default FriendFeedComponent
+//export const MemoizedComponent = React.memo(FriendFeedComponent);

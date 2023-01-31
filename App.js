@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
 
@@ -21,6 +21,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import SessionOngoingScreen from './src/screens/SessionOngoingScreen';
 import SessionEvalScreen from './src/screens/SessionEvalScreen';
 import HistoryDailyScreen from './src/screens/HistoryDailyScreen';
+import HistorySearchScreen from './src/screens/HistorySearchScreen';
 
 import SignupScreen from './src/screens/SignupScreen';
 //import SignupScreen2 from './src/screens/SignupScreen2';
@@ -53,6 +54,7 @@ import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/userContext';
 import { Provider as CategoryProvider } from './src/context/CategoryContext';
 import { Provider as CounterProvider } from './src/context/CounterContext'
+import { Provider as ReactionProvider } from './src/context/ReactionContext'
 
 import { Ionicons } from "@expo/vector-icons";
 import FriendScreen from './src/screens/FriendScreen';
@@ -62,11 +64,11 @@ import { Context as CategoryContext } from './src/context/CategoryContext';
 import { Context as CounterContext } from './src/context/CounterContext'
 import { Context as UserContext } from './src/context/userContext';
 import { Context as SessionContext } from './src/context/SessionContext'
+import { Context as ReactionContext } from './src/context/ReactionContext';
 
 import { useFonts } from 'expo-font';
 import {
-  compareAsc, eachDayOfInterval, format, subMonths, addMonths,
-  endOfDay, startOfDay, parseISO, startOfMonth, endOfMonth
+  subMonths, startOfMonth, endOfMonth
 } from 'date-fns';
 
 const drawer_bg = require('./assets/background_sidebar.png');
@@ -280,14 +282,38 @@ function CustomDrawerContent(props) {
   const { signout } = useContext(AuthContext);
 
   const { clearCategoryContext } = useContext(CategoryContext)
+  const { clearCounterContext } = useContext(CounterContext)
   const { clearUserContext, setIdToView } = useContext(UserContext)
   const { clearSessionContext } = useContext(SessionContext)
+  const { clearReactionContext } = useContext(ReactionContext)
 
   const signoutCallback = async () => {
-    await clearCategoryContext
-    await clearUserContext
-    await clearSessionContext
+    await clearCategoryContext()
+    await clearUserContext()
+    await clearSessionContext()
+    await clearReactionContext()
+    await clearCounterContext()
+
     console.log("all context cleared!")
+  }
+
+  const areYouSureSignOut = () => {
+    Alert.alert(
+      "Are you sure you want to sign out?",
+      "",
+      [
+        {
+          text: "Go back",
+          onPress: () => { },
+          style: "cancel"
+        },
+        {
+          text: "Sign out", onPress: () => {
+            signout(signoutCallback)
+          }
+        }
+      ]
+    );
   }
   return (
     <><DrawerContentScrollView
@@ -350,7 +376,7 @@ function CustomDrawerContent(props) {
           style={{}}
           label="Sign out"
           onPress={() => {
-            signout(signoutCallback)
+            areYouSureSignOut()
           }} />
       </View>
 
@@ -561,6 +587,27 @@ const verticalAnimation = {
   },
 };
 
+
+
+function CreateHistoryStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={pageOptions}>
+      <Stack.Screen
+        name="HistoryDaily"
+        component={HistoryDailyScreen}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="HistorySearch"
+        component={HistorySearchScreen}
+        options={pageOptions}
+        headerShown={false}
+      />
+    </Stack.Navigator>
+  )
+}
+
 function CreateFriendFeedStack() {
   return (
     <Stack.Navigator
@@ -597,9 +644,6 @@ function CreateFriendFeedStack() {
           options={pageOptions}
         />
       </Stack.Group>
-
-
-
 
     </Stack.Navigator>
   )
@@ -729,21 +773,22 @@ function CreateMainFlowTab() {
           tabBarIconLabel: 'people-outline',
           tabBarIconLabelActive: 'people'
         }} />
-      <Tab.Screen name="profileFlow" component={HistoryDailyScreen}
+      <Tab.Screen name="profileFlow" component={CreateHistoryStack} //component={HistoryDailyScreen}
         options={{
           tabBarLabel: 'History',
           tabBarIconLabel: 'calendar-outline',
-          tabBarIconLabelActive: 'calendar'
+          tabBarIconLabelActive: 'calendar',
         }} />
     </Tab.Navigator>
   )
 }
+
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
   const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
   const { fetchUserCounters, fetchMultipleMonthsCounters } = useContext(CounterContext)
-  const { state: userState, fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
+  const { fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
@@ -758,20 +803,7 @@ function CreateMainNavigator() {
       let res = await tryLocalSignin();
       let firstTime = new Date()
       let splashDisplayTime = 5000;
-      let asdf = null
       if (res) {
-        /*asdf = await Promise.all([
-          updateLastSignin(),
-          fetchSelf(),
-          fetchAvatarGeneral(userState.user_id, forceRetrieve = true, isSelf = true),
-          fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true),
-          fetchUserCounters(),
-          fetchAvatarItemsOwned(),
-          fetchUserTodoItems(isSelf = true),
-          fetchFriends(),
-          fetchOutgoingRequests(),
-          fetchIncomingRequests()
-        ])*/
         await updateLastSignin()
           .then((res) => fetchSelf().then(
             (res) => {
@@ -780,17 +812,13 @@ function CreateMainNavigator() {
             }
           ))
 
-        //const fetchSelfPromise = await fetchSelf()
-        //await fetchAvatarGeneral(userState.user_id, forceRetrieve = true, isSelf = true)
-        //var asdf = await fetchAvatarGeneral(user_id_temp, forceRetrieve = true, isSelf = true)
-        //await fetchUserCategories(userState.user_id, getPrivate = true, isSelf = true);
         var endTime = endOfMonth(sessionState.calendarDate)
         var startTime = startOfMonth(subMonths(startOfMonth(sessionState.calendarDate), 3))
         await fetchMultipleMonths(startTime, endTime).then(
           await setOffsetFetched(3)
         )
         await fetchUserCounters()
-        await fetchMultipleMonthsCounters(startTime, endTime);
+        //await fetchMultipleMonthsCounters(startTime, endTime);
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);
         await fetchFriends();
@@ -860,19 +888,23 @@ export default () => {
           <CategoryProvider>
 
             <SessionProvider>
+              <ReactionProvider>
 
-              <NavigationContainer>
 
-                <Stack.Navigator>
 
-                  <Stack.Screen
-                    name="MainStack"
-                    component={CreateMainNavigator}
-                    options={pageOptions} />
+                <NavigationContainer>
 
-                </Stack.Navigator>
+                  <Stack.Navigator>
 
-              </NavigationContainer>
+                    <Stack.Screen
+                      name="MainStack"
+                      component={CreateMainNavigator}
+                      options={pageOptions} />
+
+                  </Stack.Navigator>
+
+                </NavigationContainer>
+              </ReactionProvider>
             </SessionProvider>
           </CategoryProvider>
 

@@ -141,9 +141,14 @@ const sessionReducer = (state, action) => {
                 userReaction: [],
                 userNotifications: [],
                 monthSessions: [],
+                batchData: {},
+                batchDataForSummary: {},
                 calendarDate: new Date(),
+                needHardReset: false, // set to true if any counters updated
                 offsetFetched: 0,
+                curOffset: 0,
                 selfOnlySessions: [],
+
             }
         default:
             return state;

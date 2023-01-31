@@ -34,6 +34,7 @@ const roundRating = (rating) => {
 }
 
 const HistoryComponent = ({ session_obj, is_active }) => {
+    console.log(`Rendering component with name ${session_obj.activity_name}`)
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>
@@ -41,12 +42,12 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
                 <View opacity={is_active ? 1 : 0.3} style={{ flex: 4, }}>
                     <Text numberOfLines={1}
-                        style={[styles.textDefaultBold, { fontWeight: '700', color: '#013220', fontSize: 16, }]}>{session_obj.activity_name}</Text>
+                        style={[styles.textDefaultBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
                 </View>
                 <View style={{ flex: 2, }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
                         <Text numberOfLines={1}
-                            style={[styles.textDefault, { alignSelf: 'center', color: 'white', fontWeight: '700', fontSize: 11, }]}>{session_obj.category_name}</Text>
+                            style={[styles.textDefault, { alignSelf: 'center', color: 'white', fontSize: 11, }]}>{session_obj.category_name}</Text>
                     </View>
                 </View>
 
@@ -55,7 +56,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
             <View style={{ flex: 1, flexDirection: 'row', marginTop: 5, marginBottom: 10, }}>
                 <View opacity={is_active ? 1 : 0.3} style={{ flex: 5, alignItems: 'flex-start' }}>
                     <Text numberOfLines={1} style={[styles.textDefault,
-                    { fontWeight: '300', color: '#013220', fontSize: 13, }]}>
+                    { color: '#013220', fontSize: 13, }]}>
                         {timeDifference(session_obj.time_start, session_obj.time_end)} @ {timeFormat(session_obj.time_start)}</Text>
                 </View>
                 <View style={{ flex: 3, }}></View>
@@ -140,18 +141,6 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                         }
                     </View>
 
-                    {/* progress bar type option */}
-                    {/*<View style={{ marginTop: 3, }}>
-                        <View style={{
-                            height: 15, width: PRODUCTIVITY_WIDTH, borderWidth: 1,
-                            borderRadius: 3,
-                        }}></View>
-                        <View style={{
-                            position: 'absolute', height: 15,
-                            width: PRODUCTIVITY_WIDTH * session_obj.prod_rating / 100,
-                            backgroundColor: bgColorHex, borderRadius: 3,
-                        }}></View>
-                    </View>*/}
 
                 </View>
 
