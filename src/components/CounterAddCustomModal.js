@@ -9,6 +9,7 @@ const img = require('../../assets/tasks_topbar.png')
 
 const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounterName, selectedCounterId, colorArr,
     selectedCurrentCount, customIncrementCallback }) => {
+    const BORDER_RADIUS = 20;
     const { height, width } = Dimensions.get('window');
     const [resMessage, setResMessage] = useState('')
     const [counterName, setCounterName] = useState('')
@@ -45,7 +46,7 @@ const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounte
 
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
-            <View style={{ flex: 1, backgroundColor: '#F9EAD3' }}>
+            <View style={{ flex: 1, backgroundColor: '#F9EAD3', borderRadius: BORDER_RADIUS }}>
                 <View style={{ marginHorizontal: 20, marginTop: 90, alignItems: 'center', }}>
                     <View style={{ flexDirection: 'row', }}>
                         <TouchableOpacity
@@ -118,7 +119,10 @@ const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounte
             <Image
                 source={img}
                 resizeMode='stretch'
-                style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute', borderTopLeftRadius: BORDER_RADIUS,
+                    borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
             <Text style={[styles.title, { position: 'absolute' }]}>{selectedCounterName}</Text>
             <View style={styles.backContainer}>

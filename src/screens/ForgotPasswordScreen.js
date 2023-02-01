@@ -1,72 +1,199 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback, useRef } from 'react';
 import {
-    View, StyleSheet, TouchableOpacity, ImageBackground, Dimensions,
-    Image
+    View, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions, Animated, TouchableWithoutFeedback,
+    Image, Keyboard,
 } from 'react-native';
-import { Input, Button, Text } from 'react-native-elements';
+import { Input, Text } from 'react-native-elements';
+import { Easing } from 'react-native-reanimated';
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as AuthContext } from '../context/AuthContext';
 
-const img_src = require('../../assets/signin_background.png');
+const cloud = require('../../assets/cloud.png');
+const character = require('../../assets/character.png');
+const speechBubbleThin = require('../../assets/speech_bubble_thin.png');
+
+const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+);
 
 const ForgotPasswordScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
     const { state, forgot_password, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const forgotPasswordCallback = () => {
-        alert("An email has been sent to the address with a link to reset your password. If you have not received the link in 5 minutes please submit another request.")
+        setIsLoading(false)
+        alert("An email has been sent with a link to reset your password.")
         navigation.navigate('SignIn')
     }
 
-    return (
-        <View style={styles.container}>
-            {/*<NavigationEvents
-                onWillFocus={clearErrorMessage}
-    />*/}
+    const anim = useRef(new Animated.Value(0)).current;
+    const textBoxFactor = useRef(new Animated.Value(1)).current;
 
-            <View style={{ flex: 3, justifyContent: 'center', backgroundColor: '#67806D' }}>
-                <Text style={styles.title}> Enter your email to reset password:</Text>
-                <Input
-                    style={[styles.inputStyle, { marginBottom: 10, }]}
-                    inputContainerStyle={styles.inputStyleContainer}
-                    placeholder='Email'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
+    const cloudAnim = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(anim, {
+                    toValue: -width * 1,
+                    duration: 8000,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+            ])).start();
+    }
 
-                <TouchableOpacity
-                    style={styles.signUpBoxStyle}
-                    onPress={() => forgot_password(email, forgotPasswordCallback)}>
-                    <Text style={styles.signUpTextStyle}>Send Reset Link</Text>
-                </TouchableOpacity>
+    const textBoxAnim = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(textBoxFactor, {
+                    toValue: 1.05,
+                    duration: 2000,
+                    //easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(textBoxFactor, {
+                    toValue: 1,
+                    duration: 2000,
+                    //easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+            ])).start();
+    }
 
-
-                <TouchableOpacity onPress={() =>
-                    navigation.navigate('SignIn')
-                }
-                >
-                    <Text style={styles.button}>Go back to sign in page</Text>
-
-                </TouchableOpacity>
-            </View>
-
-            <View style={{ flex: 2 }}>
-                <Image
-                    style={{ width: width, height: height / 2.5, }}
-                    source={img_src}
-                    resizeMode="stretch"
-                />
-
-            </View>
-
-
-
-        </View>
+    useFocusEffect(
+        useCallback(() => {
+            cloudAnim()
+            textBoxAnim()
+            return () => {
+            }
+        }, [])
     )
 
+
+    return (
+        <HideKeyboard>
+            <View style={{ flex: 1 }}>
+                {/*<NavigationEvents
+                onWillFocus={clearErrorMessage}
+    />*/}
+                <View style={{ flex: 1, backgroundColor: '#FCC759' }}>
+
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'flex-end',
+                        //transform: [{ translateX: anim, }]
+                    }}>
+                        <Animated.View style={{
+                            flexDirection: 'row', height: '40%',
+                            transform: [{ translateX: anim, }]
+                        }}>
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                            <Image
+                                style={{ width: width, height: '100%', }}
+                                source={cloud}
+                                resizeMode="contain"
+                            />
+                        </Animated.View>
+                    </View>
+
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'flex-end', alignItems: 'flex-end', marginTop: 15, paddingRight: 20,
+                    }}>
+                        <Animated.Image
+                            style={{
+                                width: width / 4, height: height / 6,
+                                transform: [
+                                    {
+                                        scale: textBoxFactor
+                                    }
+                                ]
+                            }}
+                            source={character}
+                            resizeMode="contain"
+                        />
+                    </View>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'center', alignItems: 'center',
+                    }}>
+                        <Animated.Image
+                            style={{
+                                width: width * 0.6, height: height * (1 / 2.5) * 0.45,
+                                transform: [
+                                    {
+                                        scale: textBoxFactor
+                                    }
+                                ]
+                            }}
+                            source={speechBubbleThin}
+                            resizeMode="stretch"
+
+                        />
+                    </View>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                        justifyContent: 'center', alignItems: 'center',
+                    }}>
+                        <View style={{ width: '60%', height: '45%', padding: 10, }}>
+                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>Enter your email to get a password reset link.</Text>
+                        </View>
+
+
+                    </View>
+                </View>
+
+                <View style={{ flex: 1.5, backgroundColor: '#67806D' }}>
+                    <View style={{ marginTop: 35, }} />
+                    <Input
+                        style={[styles.inputStyle, styles.textDefault, { marginBottom: 10, }]}
+                        inputContainerStyle={styles.inputStyleContainer}
+                        placeholder='Email'
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
+
+                    <TouchableOpacity
+                        style={isLoading ? [styles.signUpBoxStyle, { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#FFDA95' }] : [styles.signUpBoxStyle, { paddingHorizontal: 20, paddingVertical: 10, }]}
+                        onPress={() => {
+                            if (isLoading) { return }
+                            setIsLoading(true)
+                            forgot_password(email, forgotPasswordCallback)
+                        }}>
+                        <Text style={[styles.signUpTextStyle, styles.textDefaultBold,]}>Send Reset Link</Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity onPress={() =>
+                        navigation.navigate('SignIn')
+                    }
+                    >
+                        <Text style={[styles.button, styles.textDefault,]}>Go back to sign in page</Text>
+
+                    </TouchableOpacity>
+
+                    {isLoading ?
+                        <ActivityIndicator style={{ marginTop: 20, }} size="large" color="white" />
+                        : null}
+                </View>
+            </View>
+        </HideKeyboard>
+    )
 }
 
 ForgotPasswordScreen.navigationOptions = () => {
@@ -76,6 +203,12 @@ ForgotPasswordScreen.navigationOptions = () => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         flex: 1,
     },
@@ -92,7 +225,8 @@ const styles = StyleSheet.create({
         marginTop: 15
     },
     button: {
-        color: 'purple',
+        color: 'orange',
+        fontSize: 16,
         justifyContent: 'center',
         marginTop: 25,
         alignSelf: 'center',
@@ -106,8 +240,6 @@ const styles = StyleSheet.create({
     },
     signUpBoxStyle: {
         backgroundColor: '#FCC859',
-        width: 150,
-        height: 40,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',

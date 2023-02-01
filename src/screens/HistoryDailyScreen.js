@@ -24,7 +24,7 @@ const HistoryDailyScreen = ({ navigation }) => {
     const MARGIN_HORIZONTAL = 10;
     const { height, width } = Dimensions.get('window');
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,
-        setCurOffset, setHardReset } = useContext(SessionContext)
+        setCurOffset, setHardReset, resetMostCurrentDate } = useContext(SessionContext)
     const { state: counterState } = useContext(CounterContext);
 
     const [displayedMonth, setDisplayedMonth] = useState(format(state.calendarDate, 'MMMM', { locale: enUS }))
@@ -102,6 +102,26 @@ const HistoryDailyScreen = ({ navigation }) => {
         return format(actual_dt, 'E');
     }
 
+    const focusEffectMonthChange = async () => {
+        // check if it is the next month
+        var comp = compareAsc(state.mostCurrentDate, startOfMonth(new Date()))
+        if (comp < 0) {
+            console.log("New month, do hard reset");
+            await resetMostCurrentDate(new Date());
+            // is the next month, need to recalibrate the view
+            var dt = new Date()
+            var endTime = endOfMonth(dt)
+            var startTime = startOfMonth(subMonths(startOfMonth(dt), 3))
+            await fetchMultipleMonths(startTime, endTime, null, true).then(
+                await resetCalendarDate(startOfMonth(dt)).then(
+                    await setOffsetFetched(3).then(
+                        await setCurOffset(0)
+                    )
+                )
+            )
+        }
+    }
+
     const focusEffectFunc = async () => {
 
         console.log(`Focus effect with calendar date ${state.calendarDate} and offset ${state.curOffset}, 
@@ -122,6 +142,14 @@ const HistoryDailyScreen = ({ navigation }) => {
         setDisplayedMonthKey(format(state.calendarDate, 'M/yyyy', { locale: enUS }).toString());
 
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            focusEffectMonthChange()
+            return () => {
+            }
+        }, [])
+    )
 
     useFocusEffect(
         useCallback(() => {
@@ -401,7 +429,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                         <TouchableOpacity
                             onPress={() => { if (!isLoading) { goToNextMonth() } }
                             }>
-                            {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) < 0 ?
+                            {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) <= 0 ?
                                 <Icon
                                     name="chevron-forward-outline"
                                     type='ionicon'

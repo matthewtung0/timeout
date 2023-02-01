@@ -78,6 +78,7 @@ const counterReducer = (state, action) => {
                 userCounters: [],
                 batchData: {},
                 counterTablesLocked: false,
+                lastUpdated: new Date(),
             }
         default:
             return state;

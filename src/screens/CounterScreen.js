@@ -1,21 +1,23 @@
 import React, { useState, useContext, useCallback } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, TextInput } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, Image, } from 'react-native';
 import { Text, Icon } from 'react-native-elements';
 import { Context as CounterContext } from '../context/CounterContext';
 import { Context as SessionContext } from '../context/SessionContext'
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal'
-import { startOfDay, format, compareAsc } from 'date-fns';
+import { startOfDay, compareAsc } from 'date-fns';
 import AddCounterModal from '../components/AddCounterModal';
 import EditCounterModal from '../components/EditCounterModal';
 import CounterAddCustomModal from '../components/CounterAddCustomModal';
 const constants = require('../components/constants.json')
-
+const img = require('../../assets/tasks_topbar.png')
+const BANNER_IMG_HEIGHT = 75;
+const BORDER_RADIUS = 20;
 
 const CounterScreen = () => {
     const { height, width } = Dimensions.get('window');
-    const { state: counterState, addCounter, setCounterTablesLocked, addTally, resetTally, fetchUserCounters } = useContext(CounterContext)
-    const { setHardReset } = useContext(SessionContext)
+    const { state: counterState, addCounter, setCounterTablesLocked, addTally, fetchUserCounters } = useContext(CounterContext)
+    const { setHardReset, } = useContext(SessionContext)
 
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingSubtract, setIsLoadingSubtract] = useState(false)
@@ -69,10 +71,23 @@ const CounterScreen = () => {
         return a.time_created - b.time_created;
     }) : []
 
+    const updateColorCallbackPart2 = (chosenColorId) => {
+        setCounterInfo(counterInfo.map(item => {
+            if (item.counter_id == selectedCounterId) {
+                return { ...item, color_id: chosenColorId }
+            }
+            return item
+        }))
+    }
+
+    const deleteCounterCallbackPart2 = (chosenCounterId) => {
+        setCounterInfo(counterInfo.filter((req) => req.counter_id != chosenCounterId))
+    }
+
+
     const customIncrementCallback = async (counter_id, add_by) => {
         if (isLoading || isLoadingSubtract) return;
 
-        await focusEffectFunc();
         if (add_by > 0) {
             setIsLoading(true)
         } else {
@@ -99,10 +114,9 @@ const CounterScreen = () => {
 
     const addTallyValidation = async (counter_id, add_by, cur_tally) => {
 
-        await focusEffectFunc();
         console.log(`Counter id ${counter_id} and cur_tally ${cur_tally} and add_by ${add_by}`)
         if (isLoading || isLoadingSubtract) return;
-        if ((cur_tally + add_by) < 0) {
+        if ((parseInt(cur_tally) + parseInt(add_by)) < 0) {
             alert("Can't decrease any more!")
         } else {
             if (add_by > 0) {
@@ -126,23 +140,17 @@ const CounterScreen = () => {
                 await addTally(counter_id, add_by, addTallyCallback)
             )
 
-
             setIsLoading(false)
             setIsLoadingSubtract(false)
         }
 
     }
 
-    const resetTallyValidation = async (counter_id) => {
-        setIsLoading(true)
-        await resetTally(counter_id);
-        setIsLoading(false);
-    }
-
-    const addTallyCallback = () => {
+    const addTallyCallback = async () => {
         //console.log("COUNTERS IS NOW", counterState.userCounters)
         console.log("Added!")
         setCounterTablesLocked(false)
+        await focusEffectFunc() // reset today's counters if it is the next day
     }
 
     const toggleAddCounterModal = () => {
@@ -157,10 +165,10 @@ const CounterScreen = () => {
         setCustomNumberModalVisible(!customNumberModalVisible);
     };
 
-    const focusEffectFunc = async () => {
+    const focusEffectFunc = async (temp = false) => {
         console.log("Comparing . . . ")
         var comp = compareAsc(counterState.lastUpdated, startOfDay(new Date()))
-        if (comp < 0) { // need updating
+        if (comp < 0 || temp) { // need updating
             console.log("Refreshing counters for new day")
             await fetchUserCounters().then(
                 (res) => {
@@ -231,6 +239,8 @@ const CounterScreen = () => {
                             selectedColorId={selectedColorId}
                             selectedCounterName={selectedName}
                             selectedCounterId={selectedCounterId}
+                            updateColorCallback2={updateColorCallbackPart2}
+                            deleteCounterCallback2={deleteCounterCallbackPart2}
                         />
                     </View></View>
             </Modal>
@@ -257,8 +267,21 @@ const CounterScreen = () => {
                         />
                     </View></View>
             </Modal>
-            <Text style={[styles.textDefaultBold,
-            { marginLeft: 25, marginTop: 120, fontSize: 20, color: '#67806D' }]}>My Counters</Text>
+
+            <View style={{ marginTop: 120, }}>
+                <Image
+                    source={img}
+                    resizeMode='stretch'
+                    style={{
+                        width: width, height: BANNER_IMG_HEIGHT,
+                        //borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                    }} />
+                <View style={{ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', }}>
+                    <Text style={[styles.textDefaultBold,
+                    { fontSize: 25, color: 'white' }]}>My Counters</Text>
+                </View>
+
+            </View>
 
             <View style={{ paddingBottom: 10, flexDirection: 'row', paddingHorizontal: 12, backgroundColor: '#83B569' }}>
                 {sortBy == 0 ?
@@ -427,24 +450,6 @@ const CounterScreen = () => {
                                                     <View style={{ flex: 1, alignItems: 'center' }}>
                                                         <Text style={{ color: '#67806D', fontSize: 14, }}>custom</Text>
                                                     </View>
-
-                                                    {/*<View style={{ flex: 3, }}>
-                                                        <TextInput
-                                                            //ref={(input) => { this.textInput = input; }}
-                                                            style={[styles.textDefaultBold, styles.codeInput,
-                                                            { paddingVertical: 5 }]}
-                                                            keyboardType={"number-pad"}
-                                                            returnKeyType="done"
-                                                            editable={true}
-                                                            //autoFocus={true}
-                                                            maxLength={2}
-                                                            inputContainerStyle={styles.inputStyleContainer}
-                                                            placeholder='custom'
-                                                            placeholderTextColor={'#67806D'}
-                                                            value={addBy}
-                                                            onChangeText={setAddBy}
-                                                        />
-                                                            </View>*/}
                                                 </View>
 
 
@@ -474,8 +479,9 @@ const CounterScreen = () => {
                                         }
                                     </View>
 
-                                    <View style={{ flex: 1, }}>
+                                    <View style={{ flex: 1, justifyContent: 'center', }}>
                                         <TouchableOpacity
+                                            style={{ height: '100%', justifyContent: 'center', }}
                                             onPress={() => {
                                                 setSelectedCounterId(item.counter_id)
                                                 setSelectedColorId(item.color_id)
@@ -484,7 +490,7 @@ const CounterScreen = () => {
                                             }
 
                                             }>
-                                            <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
+                                            <Icon name='ellipsis-horizontal' type='ionicon' size={20} color='#A7BEAD' />
                                         </TouchableOpacity>
                                     </View>
 
@@ -500,46 +506,7 @@ const CounterScreen = () => {
                         )
                     }}>
                 </FlatList >
-
-
-                /*<View style={styles.categoryContainer}>
-                    {counterState.userCounters.filter((item) => !item.archived)
-                        .map((item) => {
-                            return (
-                                <View
-                                    key={item.counter_id}
-                                    style={[styles.categoryStyle, { height: 30, }]}>
-                                    <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                        <View style={{ flex: 8, }}>
-                                            <Text style={[styles.categoryText]}>{item['activity_name']}</Text>
-                                            <Text style={[styles.categoryText]}>{item['point_count']}</Text>
-                                        </View>
-
-                                        <View style={{ flex: 1, }}>
-                                            <View style={{ backgroundColor: constants.colors[item['color_id']], height: 20, width: 20, }} />
-                                        </View>
-
-                                        <View style={{ flex: 1, }}>
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    addTally(item.counter_id, addBy, addTallyCallback)
-                                                }}>
-                                                <Icon name='add-outline' type='ionicon' size={25} color='#67806D' />
-                                            </TouchableOpacity>
-                                        </View>
-
-                                        <View style={{ flex: 1, }}>
-                                            <TouchableOpacity
-                                                onPress={() => { }}>
-                                                <Icon name='archive-outline' type='ionicon' size={20} color='#67806D' />
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </View>
-                            )
-                        })}
-                    </View>*/ : null}
+                : null}
 
             <TouchableOpacity style={[styles.addCounterButton, { width: width / 1.8 }]}
                 onPress={() => {

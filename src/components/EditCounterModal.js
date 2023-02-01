@@ -4,47 +4,58 @@ import {
     TouchableOpacity, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements'
-import { Context as CategoryContext } from '../context/CategoryContext'
+import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Context as CounterContext } from '../context/CounterContext'
+import { Context as SessionContext } from '../context/SessionContext'
 const constants = require('../components/constants.json')
-
-const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedCounterName, selectedCounterId }) => {
+const COLOR_WIDTH = 40;
+const BORDER_RADIUS = 20;
+const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedCounterName, selectedCounterId,
+    updateColorCallback2, deleteCounterCallback2
+}) => {
     const { height, width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.65
     const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
 
-    const { state: catState, changeArchiveCategory,
-        changeColorCategory, deleteCategory, changePublicCategory } = useContext(CategoryContext)
-
+    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset, setHardReset } = useContext(SessionContext)
     const { deleteCounter, changeColorCounter, changeArchiveCounter } = useContext(CounterContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
 
-
-    let colorSquare = (item) => {
-        return (
-            <TouchableOpacity
-                style={[styles.colorSquare, { backgroundColor: item[1] }]}
-                onPress={() => {
-                    setChosenColorId(item[0])
-                    /*var chosenColorId = item[0]
-                    callback(chosenColorId)
-                    toggleFunction();*/
-                }}
-            />
-        )
-    }
-
     const submitColorChange = async () => {
         setIsLoading(true)
-        await changeColorCounter(selectedCounterId, chosenColorId, colorChangeCallback)
-        //toggleFunction();
+        if (chosenColorId == selectedColorId) {
+            setIsLoading(false)
+            toggleFunction();
+            alert("Counter edited successfully")
+
+        } else {
+            await changeColorCounter(selectedCounterId, chosenColorId, updateColorCallback)
+        }
     }
 
-    const colorChangeCallback = () => {
+
+    const updateColorCallback = async () => {
+        if (selectedColorId != chosenColorId) {
+            var dt = new Date()
+            var endTime = endOfMonth(dt)
+            var startTime = startOfMonth(subMonths(startOfMonth(dt), 3))
+
+            // hard reset of the history screen needed
+            await fetchMultipleMonths(startTime, endTime, null, true).then(
+                await resetCalendarDate(startOfMonth(dt)).then(
+                    await setOffsetFetched(3).then(
+                        await setCurOffset(0)
+                    )
+                )
+            )
+            updateColorCallback2(chosenColorId);
+        }
         setIsLoading(false)
-        alert("Color changed successfully")
+        toggleFunction();
+        alert("Counter edited successfully")
+
     }
 
     const submitArchive = async (archiveBool) => {
@@ -69,8 +80,9 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
         setIsArchiving(false)
         alert("Archived successfully")
     }
-    const deleteCallback = () => {
+    const deleteCallback = async () => {
         setIsArchiving(false)
+        await deleteCounterCallback2(selectedCounterId)
         toggleFunction()
         alert("Deleted successfully")
     }
@@ -128,26 +140,65 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 }]}>
                 <Text style={styles.title}>{selectedCounterName}</Text>
             </View>
-            <Text style={[styles.modalMargin, { fontSize: 18, marginBottom: 5, }]}>Color Selection</Text>
-            < FlatList
-                style={{ paddingBottom: 3, marginLeft: 5, width: width / 2 }}
-                horizontal={true}
-                data={colorArr}
-                keyExtractor={(item) => item[0]}
-                renderItem={({ item }) => {
-                    return (
-                        <View style={item[0] === chosenColorId ? [styles.selectOutline, { backgroundColor: 'gray' }] :
-                            styles.selectOutline} >
-                            {colorSquare(item)}
-                        </View>
-                    )
-                }}
-            >
-            </FlatList>
+
+            <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+
+
+            <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                <View style={{
+                    borderRadius: 50,
+                    backgroundColor: 'white', shadowOffset: {
+                        width: 0,
+                        height: -0.2,
+                    },
+                    shadowOpacity: 0.3,
+                }}>
+
+                    <View
+                        style={[{
+                            marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                            //backgroundColor: constants.colors[chosenColor],
+                        }]}
+                    >
+                        < FlatList
+                            horizontal={true}
+                            data={colorArr}
+                            keyExtractor={(item) => item[0]}
+                            renderItem={({ item }) => {
+                                return (
+                                    <>
+                                        {chosenColorId == item[0] ?
+                                            <TouchableOpacity
+                                                style={[styles.colorSquare, {
+                                                    backgroundColor: item[1],
+                                                    width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                    borderWidth: 3, borderColor: '#67806D'
+                                                }]}
+                                                onPress={() => { setChosenColorId(item[0]) }}
+                                            />
+
+                                            :
+                                            <TouchableOpacity
+                                                style={[styles.colorSquare, {
+                                                    backgroundColor: item[1],
+                                                    width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                }]}
+                                                onPress={() => { setChosenColorId(item[0]) }}
+                                            />
+                                        }
+                                    </>
+                                )
+                            }}
+                        >
+                        </FlatList>
+                    </View>
+                </View>
+            </View>
+
             <View opacity={isLoading ? 0.3 : 1}>
                 <TouchableOpacity style={[styles.updateColorButton, { width: width / 1.8 }]}
                     onPress={submitColorChange}>
-                    <Text style={styles.addCategoryText}>Update Color</Text>
+                    <Text style={[styles.textDefaultBold, styles.addCategoryText]}>Update Color</Text>
                 </TouchableOpacity>
             </View>
 
@@ -158,7 +209,7 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                 width: width / 1.8, backgroundColor: '#F5BBAE',
             }]}
                 onPress={() => { areYouSureDelete() }}>
-                <Text style={styles.addCategoryText}>Delete Category</Text>
+                <Text style={[styles.textDefaultBold, styles.addCategoryText]}>Delete Counter</Text>
             </TouchableOpacity>
 
             <View style={styles.backContainer}>
@@ -178,12 +229,19 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         backgroundColor: '#f6F2DF',
         alignContent: 'center'
     }, colorSquare: {
-        width: 35,
-        height: 35,
+        marginHorizontal: 5,
+        marginTop: 5,
+        marginBottom: 5,
     },
     modalMargin: {
         marginHorizontal: 10,
@@ -217,7 +275,7 @@ const styles = StyleSheet.create({
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.6,
+        shadowOpacity: 0.2,
     },
     addCategoryText: {
         fontWeight: '600',
@@ -243,6 +301,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
     },
+    labelText: { marginLeft: 5, color: 'gray', },
 })
 
 export default EditCounterModal;

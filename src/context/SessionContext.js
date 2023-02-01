@@ -34,6 +34,8 @@ const sessionReducer = (state, action) => {
             }
         case 'reset_calendar_date':
             return { ...state, calendarDate: action.payload }
+        case 'reset_current_date':
+            return { ...state, mostCurrentDate: action.payload }
         case 'set_offset_fetched':
             return { ...state, offsetFetched: action.payload }
         case 'set_cur_offset':
@@ -144,6 +146,7 @@ const sessionReducer = (state, action) => {
                 batchData: {},
                 batchDataForSummary: {},
                 calendarDate: new Date(),
+                mostCurrentDate: new Date(),
                 needHardReset: false, // set to true if any counters updated
                 offsetFetched: 0,
                 curOffset: 0,
@@ -421,6 +424,12 @@ const resetCalendarDate = dispatch => async (reset_dt) => {
         type: 'reset_calendar_date', payload: reset_dt
     })
 }
+const resetMostCurrentDate = dispatch => async (reset_dt) => {
+    console.log("Resetting current date to", reset_dt)
+    dispatch({
+        type: 'reset_current_date', payload: reset_dt
+    })
+}
 
 const setOffsetFetched = dispatch => async (num) => {
     dispatch({
@@ -438,13 +447,6 @@ const setHardReset = dispatch => async (bool_) => {
         type: 'set_hard_reset', payload: bool_
     })
 }
-
-const postSession = dispatch => async () => { };
-
-const fetchFriendSession = dispatch => async () => {
-};
-
-const fetchOwnSession = dispatch => async () => { };
 
 const patchSession = dispatch => async (sessionId, notes, callback = null, errorCallback = null) => {
     try {
@@ -556,7 +558,7 @@ export const { Provider, Context } = createDataContext(
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
         resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
         fetchLikersOfActivity, fetchMultipleMonths, saveSession, setOffsetFetched, setCurOffset,
-        setHardReset,
+        setHardReset, resetMostCurrentDate
     },
     {
         userSessions: [],
@@ -566,6 +568,7 @@ export const { Provider, Context } = createDataContext(
         batchData: {},
         batchDataForSummary: {},
         calendarDate: new Date(),
+        mostCurrentDate: new Date(),
         needHardReset: false, // set to true if any counters updated
         offsetFetched: 0,
         curOffset: 0,

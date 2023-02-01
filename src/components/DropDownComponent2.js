@@ -109,7 +109,7 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
                 //width: selectedWidth,
             }}
             selectedTextStyle={
-                [styles.textDefaultBold, { color: 'white' }]
+                [styles.textDefault, { color: 'white' }]
             }
             maxHeight={height * 0.25}
             renderItem={dropdownItem}

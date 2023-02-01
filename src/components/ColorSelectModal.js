@@ -20,7 +20,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
     const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
     const [publicToggle, setPublicToggle] = useState(selectedCategoryPublic)
-    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset } = useContext(SessionContext)
+    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset, setHardReset } = useContext(SessionContext)
     const [archiveToggle, setArchiveToggle] = useState(false)
     const [deleteToggle, setDeleteToggle] = useState(false)
 
