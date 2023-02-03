@@ -412,6 +412,7 @@ const CounterScreen = () => {
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10,
                                                     backgroundColor: constants.colors[item['color_id']], height: '100%',
                                                     paddingVertical: 5,
+                                                    borderColor: '#A7BEAD'
                                                 }}
                                                 onPress={() => {
                                                     setSelectedCounterId(item.counter_id)
@@ -433,7 +434,8 @@ const CounterScreen = () => {
                                             <TouchableOpacity
                                                 style={{
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10, marginHorizontal: 5,
-                                                    backgroundColor: constants.colors[item['color_id']], height: '100%'
+                                                    backgroundColor: constants.colors[item['color_id']], height: '100%',
+                                                    borderColor: '#A7BEAD'
 
                                                 }}
                                                 onPress={() => {
@@ -465,7 +467,7 @@ const CounterScreen = () => {
                                                 style={{
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10,
                                                     paddingVertical: 5, backgroundColor: '#C0C0C0',
-                                                    height: '100%',
+                                                    height: '100%', borderColor: '#A7BEAD'
                                                 }}
                                                 onPress={() => {
                                                     setSelectedCounterId(item.counter_id)

@@ -3,8 +3,10 @@ import createDataContext from './createDataContext';
 
 const reactionReducer = (state, action) => {
     switch (action.type) {
-        case 'fetch_sessions':
+        case 'fetch_sessions_override':
             return { ...state, userSessions: action.payload }
+        case 'fetch_sessions':
+            return { ...state, userSessions: [...state.userSessions, ...action.payload] }
         case 'fetch_reaction':
             return { ...state, userReaction: action.payload }
         case 'fetch_likers':
@@ -68,16 +70,23 @@ const reactionReducer = (state, action) => {
 }
 
 
-const fetchSessions = dispatch => async (friends) => {
+const fetchSessions = dispatch => async (friends, startIndex, numToRetrieve, override = false) => {
     // clean up friends array
     var friendsArr = []
     for (var i in friends) {
         friendsArr.push(friends[i]['friend'])
     }
 
-    const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+    console.log(`Requesting with startIndex ${startIndex} and numToRetrieve ${numToRetrieve}`)
+
+    const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr, startIndex: startIndex, numToRetrieve: numToRetrieve } })
     //console.log("got this response", response.data)
-    dispatch({ type: 'fetch_sessions', payload: response.data })
+    if (override) {
+        dispatch({ type: 'fetch_sessions_override', payload: response.data })
+    } else {
+        dispatch({ type: 'fetch_sessions', payload: response.data })
+    }
+
 
     //dispatch({ type: 'fetch_self_sessions', payload: response.data })
 
@@ -90,7 +99,7 @@ const fetchSessionsNextBatch = dispatch => async (startIndex = 0, friends) => {
     for (var i in friends) {
         friendsArr.push(friends[i]['friend'])
     }
-    const response = await timeoutApi.get('/sessionFeed', { params: { startIndex, friends: friendsArr } })
+    const response = await timeoutApi.get('/sessionFeed', { params: { startIndex, friends: friendsArr, numToRetrieve: 10, } })
 
     dispatch({ type: 'fetch_sessions_batch', payload: response.data })
 

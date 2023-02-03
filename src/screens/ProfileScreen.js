@@ -1,9 +1,7 @@
-import React, { useContext, useCallback, useState } from 'react';
-import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
-import { Button, Text, Icon } from 'react-native-elements';
+import React, { useContext, useCallback, useState, useMemo, memo } from 'react';
+import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
-import { Context as CategoryContext } from '../context/CategoryContext';
-import { Context as SessionContext } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
 import {
     differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
@@ -14,22 +12,26 @@ import timeoutApi from '../api/timeout';
 import Header from '../components/Header';
 import Modal from 'react-native-modal'
 import PFPModal from '../components/PFPModal';
+import ProfileComponent from '../components/ProfileComponent';
 
 const constants = require('../components/constants.json')
 const BANNER_HEIGHT = 230;
+const BANNER_COLOR = '#fdd696';
+const NUM_TO_RETRIEVE = 50;
 
 const ProfileScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window')
     const [pfpModalVisible, setPFPModalVisible] = useState(false)
-    const { state, fetchSelf, fetchAvatarGeneral } = useContext(UserContext)
-    const { state: catState, } = useContext(CategoryContext)
-    const { state: sessionState, fetchSessionsSelf, fetchSessionsNextBatchSelf } = useContext(SessionContext)
+    const { state, fetchAvatarGeneral } = useContext(UserContext)
     const [offset, setOffset] = useState(0)
+    const [visibleOffset, setVisibleOffset] = useState(0);
+    const [atEnd, setAtEnd] = useState(false);
     const [privateVisible, setPrivateVisible] = useState(false)
     const [isMe, setIsMe] = useState(false)
-    const [profileSessions, setProfileSessions] = useState([])
+    const [profileSessions, setProfileSessions] = useState([[]])
     const [profileCategories, setProfileCategories] = useState([])
     const [pfpSrc, setPfpSrc] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [profileStats, setProfileStats] = useState({
         totalTime: { hours: 0, minutes: 0, seconds: 0 },
         totalTasks: 0,
@@ -41,7 +43,11 @@ const ProfileScreen = ({ navigation }) => {
 
     useFocusEffect(
         useCallback(() => {
+            setIsLoading(true);
             console.log("Getting feed with", state.idToView)
+            if (state.idToView == state.user_id) {
+                setIsMe(true)
+            }
             getFeed()
 
             return () => {
@@ -50,20 +56,39 @@ const ProfileScreen = ({ navigation }) => {
                     totalTime: { hours: 0, minutes: 0, seconds: 0 },
                     totalTasks: 0, last_signin: '', time_created: '', username: ''
                 })
-                setProfileSessions([])
+                setProfileSessions([[]])
                 setProfileCategories([])
+                setOffset(0)
+                setVisibleOffset(0)
+                setPfpSrc('')
                 setIsMe(false)
             }
         }, [state.idToView])
     )
+    const getFeed = async () => {
+        try {
+            setOffset(0)
 
+            // try to get the pfp only once
+            const pfpSrc_res = await fetchAvatarGeneral(state.idToView)
+            setPfpSrc(pfpSrc_res);
+
+            await fetchStatsProfile(state.idToView)
+            await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
+            await fetchInitialBatch(state.idToView);
+            setIsLoading(false);
+
+
+        } catch (err) {
+            console.log("Problem retrieving self feed", err)
+        }
+    }
     const togglePrivateVisible = () => { setPrivateVisible(!privateVisible) }
 
     const fetchStatsProfile = async (id) => {
-        console.log("Fetching stats")
         try {
             const response = await timeoutApi.get(`/stats/${id}`)
-            console.log("stats", response.data)
+            //console.log("stats", response.data)
             setProfileStats({
                 totalTime: response.data.total_time,
                 totalTasks: response.data.num_tasks,
@@ -72,13 +97,14 @@ const ProfileScreen = ({ navigation }) => {
                 time_created: response.data.time_created,
                 username: response.data.username
             })
-
-            if (response.data.username == state.username) { setIsMe(true) }
+            /*console.log(`response username is ${response.data.username} and my username is ${state.username}`)
+            if (response.data.username == state.username) {
+                setIsMe(true)
+            }*/
         } catch (err) { console.log("PROBLEM FETCHING STATS", err) }
     }
 
     const fetchCategoriesProfile = async (id, getPrivate) => {
-        console.log("trying to fetch user categories");
         try {
             const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate } })
             setProfileCategories(response.data)
@@ -89,40 +115,47 @@ const ProfileScreen = ({ navigation }) => {
 
     const fetchSessionsProfile = async (id, getPrivate) => {
         const response = await timeoutApi.get('/session', { params: { id, getPrivate } })
-        setProfileSessions(response.data)
+        setProfileSessions([response.data])
     }
 
-    const fetchAllSessions = async (id) => {
-        const response = await timeoutApi.get(`/session/${id}`)
-        setProfileSessions(response.data)
+    const fetchInitialBatch = async (id) => {
+        //const response = await timeoutApi.get(`/session/${id}`)
+        var initialNumToRetrieve = 10;
+        const response2 = await timeoutApi.get(`/sessionFeed`, { params: { startIndex: 0, friends: [id], numToRetrieve: initialNumToRetrieve, } })
+        setOffset(offset + initialNumToRetrieve)
+        setProfileSessions([response2.data])
+        setVisibleOffset(visibleOffset + initialNumToRetrieve)
     }
-
-    const getFeed = async () => {
-        try {
-            setOffset(0)
-            //await fetchSessionsProfile(state.idToView, state.idToView == state.user_id)
-            //await fetchAllSessions(state.user_id);
-
-            // try to get the pfp only once
-            const pfpSrc_res = await fetchAvatarGeneral(state.idToView)
-            //console.log("pfpSrc_res is ", pfpSrc_res)
-            setPfpSrc(pfpSrc_res);
-
-            await fetchAllSessions(state.idToView);
-            setOffset(offset + 10)
-            await fetchStatsProfile(state.idToView)
-            await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
-        } catch (err) {
-            console.log("Problem retrieving self feed", err)
-        }
-    }
+    console.log(`Offset is ${offset}`)
+    console.log(`Visible offset is ${visibleOffset}`)
 
     const getData = async () => {
+        //if (isLoading) { return; }
         console.log("Loading 10 more..");
+        if (visibleOffset < offset) {
+            // no need to retrieve, just reveal more items
+            setVisibleOffset(visibleOffset + 10);
+            return;
+        }
+
+        setIsLoading(true)
+        var numToRetrieve = NUM_TO_RETRIEVE
         try {
-            let temp2 = await fetchSessionsNextBatchSelf(offset, state.user_id)
-            setOffset(offset + 10)
+            const response2 = await timeoutApi.get(`/sessionFeed`, {
+                params: {
+                    startIndex: offset, friends: [state.idToView],
+                    numToRetrieve: numToRetrieve
+                }
+            })
+            //let temp2 = await fetchSessionsNextBatchSelf(offset, state.user_id)
+            if (response2.data.length == 0) { setAtEnd(true) } else {
+                setOffset(offset + numToRetrieve)
+                setVisibleOffset(visibleOffset + 10);
+            }
+            setProfileSessions([[...profileSessions[0], ...response2.data]])
+            setIsLoading(false);
         } catch (err) {
+            setIsLoading(false)
             console.log("Problem loading more self sessions", err)
         }
     }
@@ -165,33 +198,49 @@ const ProfileScreen = ({ navigation }) => {
     const renderFooter = () => {
         return (
             <View>
-                <TouchableOpacity style={styles.loadMore}
-                    onPress={getData}>
-                    <Text style={styles.loadMoreText}>Load More</Text>
-                </TouchableOpacity>
+                {atEnd ?
+                    <View style={styles.loadMore}>
+                        <Text>At end</Text>
+                    </View>
+                    :
+                    null
+                    /*<TouchableOpacity style={styles.loadMore}
+                        onPress={getData}>
+                        <Text style={styles.loadMoreText}>Load More</Text>
+                </TouchableOpacity>*/
+                }
             </View>
         )
     }
 
     const togglePFPModal = () => {
-        console.log("Toggling with ", state.idToView);
         setPFPModalVisible(!pfpModalVisible)
     }
+
+    const avatarComponentFunc = () => {
+        <AvatarComponent w={115} pfpSrc={pfpSrc} //isSelf={false}
+            id={state.idToView} />
+    }
+    const avatarComponentFuncSmall = () => {
+        <AvatarComponent w={48} pfpSrc={pfpSrc} //isSelf={false}
+            id={state.idToView} />
+    }
+    const memoizedAvatarComponent = useMemo(avatarComponentFunc, [state.idToView, pfpSrc])
+    const memoizedAvatarComponentSmall = useMemo(avatarComponentFuncSmall, [state.idToView, pfpSrc])
 
     const renderHeader = () => {
         return (
             <>
 
-                <View style={[styles.banner, { height: BANNER_HEIGHT }]} />
+                <View style={[styles.banner, { height: BANNER_HEIGHT, backgroundColor: BANNER_COLOR }]} />
 
                 {/* MAIN PROFILE PICTURE HERE */}
                 <TouchableOpacity
                     style={[styles.pfp, { marginLeft: (width - 120) / 1.08, marginTop: BANNER_HEIGHT - 60, }]}
                     onPress={togglePFPModal}>
                     <View>
-                        <AvatarComponent w={115} pfpSrc={pfpSrc} //isSelf={false}
+                        <AvatarComponent w={115} pfpSrc={pfpSrc}
                             id={state.idToView} />
-
                     </View>
                 </TouchableOpacity>
 
@@ -206,10 +255,9 @@ const ProfileScreen = ({ navigation }) => {
                             {profileStats.totalTime.seconds ? profileStats.totalTime.seconds + 's ' : '0s '}</Text>
                         : <Text style={styles.text}>0h 0m 0s</Text>}
                 </View>
-                <Header
-                    navigation={navigation}
-                    color={'#67806D'} />
 
+
+                {/*
                 <View
                     style={{
                         flex: 1,
@@ -237,7 +285,7 @@ const ProfileScreen = ({ navigation }) => {
                         </TouchableOpacity> : null}
 
                 </View>
-
+                    */}
 
                 <View style={{ flexDirection: 'row', flex: 1, }}>
                     <Text style={[styles.bioText, styles.textDefault]}>{profileStats.bio}</Text>
@@ -264,7 +312,6 @@ const ProfileScreen = ({ navigation }) => {
                                     :
                                     <Text style={[styles.categoryText, styles.textDefaultBold,
                                     { color: constants.colors[item['color_id']] }]}>{item['category_name']}</Text>}
-
                             </View>
                         )
 
@@ -281,15 +328,33 @@ const ProfileScreen = ({ navigation }) => {
                     }}
                 />
 
-                {/*{state.base64pfp ?
-                    <Image style={{ width: 100, height: 100, borderWidth: 1 }} source={{ uri: state.base64pfp }} />
-                    :
-                    <Text>No image yet!</Text>
-                }*/}
                 <Text style={[styles.recent, styles.textDefaultBold]}>Recent</Text>
             </>
         )
     }
+
+    const flatListItself = () => {
+        return (
+            <FlatList
+                style={{ marginBottom: 20, }}
+                //data={sessionState.selfOnlySessions}
+                data={profileSessions[0].slice(0, visibleOffset)}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.activity_id}
+                onEndReached={getData}
+                ListHeaderComponent={renderHeader}
+                ListFooterComponent={renderFooter}
+                renderItem={({ item, index }) => (
+                    <ProfileComponent item={item} index={index} pfpSrc={pfpSrc} idToView={state.idToView}
+                        privateVisible={privateVisible} />
+                )}
+            >
+            </FlatList>
+        )
+    }
+
+    const memoizedFlatList = useMemo(flatListItself, [profileSessions, privateVisible, isMe, profileStats, profileCategories,
+        pfpSrc, visibleOffset, atEnd, state.idToView])
 
     return (
         <View style={styles.outerContainer}>
@@ -313,111 +378,60 @@ const ProfileScreen = ({ navigation }) => {
                         />
                     </View></View>
             </Modal>
+            {memoizedFlatList}
 
-            {/*<DrawerProfileView
-                friends={state.friends}
-                username={state.username}
-                totalTasks={state.totalTasks}
-    totalTime={state.totalTime} />*/}
+            {isLoading ?
 
-            <FlatList
-                style={styles.flatlistStyle}
-                //data={sessionState.selfOnlySessions}
-                data={profileSessions}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.activity_id}
-                ListHeaderComponent={renderHeader}
-                ListFooterComponent={renderFooter}
-                renderItem={({ item }) => {
-                    return (
-                        <View style={styles.recentItemContainer}>
-                            <View style={styles.pfpcontainerTEMP}>
+                <View style={{
+                    position: 'absolute', flex: 1, width: '100%', height: '100%',
+                    justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
+                    opacity: 0.7,
+                }}>
 
-                                {/* SMALLER PROFILE PICS HERE */}
-                                <View style={styles.pfpTEMP}>
-                                    {/*<AvatarComponent w={48} pfpSrc={state.base64pfp} isSelf={true} />*/}
-                                    <AvatarComponent w={48} pfpSrc={pfpSrc} //isSelf={false} 
-                                        id={state.idToView} />
-                                </View>
-                            </View>
-                            <View style={styles.listItem}>
-                                <Text>
-                                    <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>{item.username}</Text>
-                                    <Text style={[styles.textDefault, { color: '#67806D' }]}> worked on </Text>
-                                    <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>{duration_min(item.time_start, item.time_end)}</Text>
-                                    <Text style={[styles.textDefault, { color: '#67806D' }]}> minutes</Text>
-                                </Text>
-                                <Text>
-                                    <Text style={[styles.textDefault, { color: '#67806D' }]}>of </Text>
-                                    {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
-                                    {privateVisible || item.public ?
-                                        <Text style={[styles.bolded, styles.textDefaultBold, { color: constants.colors[item['color_id']] }]}>{item.category_name}</Text>
-                                        :
-                                        <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>[REDACTED]</Text>
-                                    }
-                                </Text>
-                                <Text style={[styles.textDefault,
-                                { fontSize: 11, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
+                    <ActivityIndicator size="large" color="black" />
+                </View>
+                : null}
 
-                                {/*<View style={styles.likeContainer}>
-                                    <Text style={styles.likeCount}>{item.reaction_count}</Text>
-                                    <Pressable
-                                                onPress={() => {
-                                                    let is_like = true
-                                                    if (JSON.stringify(sessionState.userReaction).includes(item.activity_id)) {
-                                                        is_like = false
-                                                    }
-                                                    reactToActivity(item.activity_id, is_like, reactCallback)
-                                                }}>
-                                                {JSON.stringify(sessionState.userReaction).includes(item.activity_id) ?
-                                                    <Icon
-                                                        name="heart"
-                                                        type='font-awesome'
-                                                        color='#F5BBAE' /> :
-                                                    <Icon
-                                                        name="heart-o"
-                                                        type='font-awesome' />}
-                                                </Pressable>
-                                </View>*/}
-                            </View>
-                        </View>
-                    )
-                }}
-            >
-            </FlatList>
-            {/*<Button
-                style={styles.button}
-                title="See Todo Items (temp)"
-                onPress={() => navigation.navigate('TodoFlow')} />
 
-            <Button
-                style={styles.button}
-                title="Friends (temp)"
-                onPress={() => navigation.navigate('Friend')} />
-            <Button
-                style={styles.button}
-                title="Edit Profile (temp)"
-                onPress={() => navigation.navigate('EditProfile')} />
-            <Button
-                style={styles.button}
-                title="TESTING TEMPORARY"
-    onPress={() => navigation.navigate('FriendList')} />*/}
+            <View style={{ position: 'absolute', height: 100, backgroundColor: BANNER_COLOR, flex: 1, width: '100%' }}>
+
+            </View>
+            <Header
+                navigation={navigation}
+                color={'#67806D'} />
+
+            <View
+                style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    position: 'absolute',
+                    alignSelf: 'flex-end',
+                    marginTop: 55,
+                    paddingHorizontal: 15,
+                }}>
+                {isMe ?
+                    <TouchableOpacity
+                        style={{ marginHorizontal: 15, }}
+                        onPress={togglePrivateVisible}>
+                        {privateVisible ? <Icon name="eye-outline" type='ionicon' color='white' /> :
+                            <Icon name="eye-off-outline" type='ionicon' color='white' />}
+                    </TouchableOpacity> : null}
+                {isMe ?
+                    <TouchableOpacity
+                        onPress={() => { navigation.navigate('EditProfile') }}>
+                        <Icon
+                            name='pencil-outline'
+                            type='ionicon'
+                            size={24}
+                            color='white' />
+                    </TouchableOpacity> : null}
+
+            </View>
 
 
         </View>
     )
 }
-/*ProfileScreen.navigationOptions = ( {navigation}) => {
-    return {
-        headerRight: () => (
-            <Button
-                onPress={() => navigation}
-                title="Info"
-                color="#fff"
-            />
-        ),
-    }
-}*/
 
 const styles = StyleSheet.create({
     textDefaultBold: {
@@ -427,10 +441,10 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
     },
     outerContainer: {
+        flex: 1,
     },
     banner: {
         width: '100%',
-        backgroundColor: '#fdd696',
         marginBottom: 10,
     },
     backButton: {

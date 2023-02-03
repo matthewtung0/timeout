@@ -13,7 +13,7 @@ import AvatarComponent from '../components/AvatarComponent';
 import { Context as ReactionContext } from '../context/ReactionContext';
 import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
-export function FriendFeedComponent({ item, navigation }) {
+const FriendFeedComponent = ({ item, index, cacheChecker, navigation }) => {
   const { height, width } = Dimensions.get('window');
   const { setIdToView } = useContext(UserContext)
 
@@ -23,95 +23,6 @@ export function FriendFeedComponent({ item, navigation }) {
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
   const [modalVisible, setModalVisible] = useState(false)
 
-  const styles = StyleSheet.create({
-    textDefaultBold: {
-      fontFamily: 'Inter-Bold',
-    },
-    textDefault: {
-      fontFamily: 'Inter-Regular',
-    },
-    outerContainer: {
-      marginTop: 110, //here because header is transparent
-      flex: 1,
-      flexDirection: 'column',
-    },
-    makeshiftTabBarContainer: {
-      flex: 0.1,
-    },
-    flatListContainer: {
-      flex: 0.9,
-    },
-    makeshiftTabBar: {
-      flex: 1,
-      flexDirection: 'row',
-    },
-    flatlistStyle: {
-      margin: 5,
-      borderRadius: 5,
-      padding: 5,
-      height: '100%',
-    },
-    container: {
-      flex: 1,
-      flexDirection: 'row',
-      borderBottomWidth: 0.2,
-      borderBottomColor: 'gray',
-      height: 75,
-    },
-    pfpcontainer: {
-      flex: 0.25,
-      //backgroundColor: 'green',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    pfp: {
-      height: 50,
-      width: 50,
-      borderRadius: 100,
-    },
-    title: {
-      margin: 10,
-      fontSize: 20,
-    },
-    listItem: {
-      flex: 1,
-      margin: 5,
-      padding: 5,
-      //backgroundColor: 'red',
-    },
-    likeContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-    },
-    likeCount: {
-      marginHorizontal: 5,
-    },
-    loadMore: {
-      marginVertical: 20,
-      padding: 10,
-      backgroundColor: '#ABC57E',
-      alignItems: 'center',
-    },
-    loadMoreText: {
-      fontWeight: 'bold',
-      color: 'white',
-      fontSize: 18,
-    },
-    tabBarButton: {
-      flex: 1,
-      padding: 10,
-      height: 50,
-      backgroundColor: '#ABC57E',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    tabBarText: {
-      color: 'white',
-      fontSize: 17,
-    }
-
-  })
 
   const duration = (startTime, endTime) => {
     return differenceInSeconds(parseISO(endTime), parseISO(startTime))
@@ -125,15 +36,35 @@ export function FriendFeedComponent({ item, navigation }) {
     var diffInMinutes = differenceInMinutes(new Date(), parsedTime)
 
     if (diffInYears >= 1) {
-      return `${diffInYears} years ago`
+      if (diffInYears == 1) {
+        return `${diffInYears} year ago`
+      } else {
+        return `${diffInYears} years ago`
+      }
     } else if (diffInMonths >= 1) {
-      return `${diffInMonths} months ago`
+      if (diffInMonths == 1) {
+        return `${diffInMonths} month ago`
+      } else {
+        return `${diffInMonths} months ago`
+      }
     } else if (diffInDays >= 1) {
-      return `${diffInDays} days ago`
+      if (diffInDays == 1) {
+        return `${diffInDays} day ago`
+      } else {
+        return `${diffInDays} days ago`
+      }
     } else if (diffInHours >= 1) {
-      return `${diffInHours} hours ago`
+      if (diffInHours == 1) {
+        return `${diffInHours} hour ago`
+      } else {
+        return `${diffInHours} hours ago`
+      }
     } else if (diffInMinutes >= 1) {
-      return `${diffInMinutes} minutes ago`
+      if (diffInMinutes == 1) {
+        return `${diffInMinutes} minute ago`
+      } else {
+        return `${diffInMinutes} minutes ago`
+      }
     } else {
       return `Just now`
     }
@@ -146,8 +77,7 @@ export function FriendFeedComponent({ item, navigation }) {
     setModalVisible(!modalVisible)
   }
 
-  console.log("Rendered " + item.activity_id + " which is " + item.activity_name)
-  console.log(item.reaction_count);
+  console.log("Rendered " + index)
 
   return (
     <View style={styles.container}>
@@ -187,6 +117,8 @@ export function FriendFeedComponent({ item, navigation }) {
             <AvatarComponent w={50}
               //isSelf={item.username == userState.username}
               id={item.user_id}
+              useCache={cacheChecker[item.user_id] == false}
+            //checkForNew={friend_map_checked[item.user_id]}
             //pfpSrc={userState.base64pfp} 
             />
           </TouchableOpacity>
@@ -210,10 +142,10 @@ export function FriendFeedComponent({ item, navigation }) {
 
         </View>
         <View style={{ flex: 1 }}>
-          <View style={[styles.likeContainer, { borderWidth: 1, }]}>
+          <View style={[styles.likeContainer, { borderWidth: 0, }]}>
             <TouchableOpacity
               onPress={toggleModal}>
-              <Text style={[styles.likeCount, { borderWidth: 1, paddingHorizontal: 5, }]}>
+              <Text style={[styles.likeCount, { borderWidth: 0, paddingHorizontal: 5, }]}>
                 {item.reaction_count == null ? 0 : reactionCount}</Text>
             </TouchableOpacity>
 
@@ -245,5 +177,101 @@ export function FriendFeedComponent({ item, navigation }) {
   );
 }
 
-//export default FriendFeedComponent
-//export const MemoizedComponent = React.memo(FriendFeedComponent);
+const equal = (prevItem, nextItem) => {
+  if (prevItem.item.activity_id != nextItem.item.activity_id) {
+    return false;
+  }
+  return true;
+}
+
+const styles = StyleSheet.create({
+  textDefaultBold: {
+    fontFamily: 'Inter-Bold',
+  },
+  textDefault: {
+    fontFamily: 'Inter-Regular',
+  },
+  outerContainer: {
+    marginTop: 110, //here because header is transparent
+    flex: 1,
+    flexDirection: 'column',
+  },
+  makeshiftTabBarContainer: {
+    flex: 0.1,
+  },
+  flatListContainer: {
+    flex: 0.9,
+  },
+  makeshiftTabBar: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  flatlistStyle: {
+    margin: 5,
+    borderRadius: 5,
+    padding: 5,
+    height: '100%',
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    borderBottomWidth: 0.2,
+    borderBottomColor: 'gray',
+    height: 75,
+  },
+  pfpcontainer: {
+    flex: 0.25,
+    //backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pfp: {
+    height: 50,
+    width: 50,
+    borderRadius: 100,
+  },
+  title: {
+    margin: 10,
+    fontSize: 20,
+  },
+  listItem: {
+    flex: 1,
+    margin: 5,
+    padding: 5,
+    //backgroundColor: 'red',
+  },
+  likeContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  likeCount: {
+    marginHorizontal: 5,
+  },
+  loadMore: {
+    marginVertical: 20,
+    padding: 10,
+    backgroundColor: '#ABC57E',
+    alignItems: 'center',
+  },
+  loadMoreText: {
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 18,
+  },
+  tabBarButton: {
+    flex: 1,
+    padding: 10,
+    height: 50,
+    backgroundColor: '#ABC57E',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  tabBarText: {
+    color: 'white',
+    fontSize: 17,
+  }
+
+})
+
+export default React.memo(FriendFeedComponent, equal)

@@ -2,16 +2,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
+import { Ionicons } from "@expo/vector-icons";
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 
 import {
   createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem,
 } from '@react-navigation/drawer';
-
-import { setNavigator } from './src/navigationRef';
 
 import SessionSelectScreen from './src/screens/SessionSelectScreen';
 import CounterScreen from './src/screens/CounterScreen';
@@ -46,6 +46,7 @@ import TestSvgScreen from './src/screens/SvgTestScreen';
 
 import EditAvatarScreen from './src/screens/EditAvatarScreen';
 import ShopScreen from './src/screens/InviteScreen';
+import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen'
 
 import DrawerProfileView from './src/components/DrawerProfileView';
 
@@ -56,8 +57,10 @@ import { Provider as CategoryProvider } from './src/context/CategoryContext';
 import { Provider as CounterProvider } from './src/context/CounterContext'
 import { Provider as ReactionProvider } from './src/context/ReactionContext'
 
-import { Ionicons } from "@expo/vector-icons";
 import FriendScreen from './src/screens/FriendScreen';
+import OnboardingScreen1 from './src/screens/OnboardingScreen1';
+import OnboardingScreen2 from './src/screens/OnboardingScreen2';
+import OnboardingScreen3 from './src/screens/OnboardingScreen3';
 
 import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
@@ -159,6 +162,34 @@ function CreateCategoryStack() {
       <Stack.Screen
         name="AddCategory"
         component={AddCategoryScreen}
+      />
+
+
+    </Stack.Navigator>
+  )
+}
+
+function CreatePrivacyPolicyStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerShown: false,
+        /*headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('mainFlow')}>
+            <Ionicons
+              name='arrow-back-outline'
+              size={24}
+              color='black' />
+
+          </TouchableOpacity>
+        ),
+        headerTransparent: false,
+        headerTitle: 'My Categories',*/
+      })}>
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
       />
 
 
@@ -363,7 +394,11 @@ function CustomDrawerContent(props) {
           onPress={() => { }} />
         <DrawerItem
           label="Privacy Policy"
-          onPress={() => { }} />
+          //component={CreatePrivacyPolicyStack}
+          onPress={() => {
+            props.navigation.navigate("privacyPolicyFlow")
+          }}
+        />
         <DrawerItem
           label="Terms of Use"
           onPress={() => { }} />
@@ -457,6 +492,16 @@ function CreateDrawer() {
           headerShown: false,
         }} />
 
+      <Drawer.Screen name="privacyPolicyFlow"
+        component={CreatePrivacyPolicyStack}
+        options={{
+          drawerLabel: 'Privacy Policy',
+          title: 'Privacy Policy',
+          headerShown: false,
+          drawerItemStyle: { display: 'none', },
+        }} />
+
+
     </Drawer.Navigator>
   );
 }
@@ -495,6 +540,30 @@ function CreateLoginStack() {
         component={ForgotPasswordScreen}
         options={pageOptions}
       />
+    </Stack.Navigator>
+  )
+}
+
+function CreateOnboardingStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={pageOptions}>
+      <Stack.Screen
+        name="Onboarding1"
+        component={OnboardingScreen1}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="Onboarding2"
+        component={OnboardingScreen2}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="Onboarding3"
+        component={OnboardingScreen3}
+        options={pageOptions}
+      />
+
     </Stack.Navigator>
   )
 }
@@ -793,6 +862,7 @@ function CreateMainNavigator() {
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
     'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
+    'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf')
   });
 
   useEffect(() => {
@@ -862,16 +932,20 @@ function CreateMainNavigator() {
           component={CreateLoginStack}
           options={pageOptions} />
 
-      ) : (
+      ) : (state.showOnboarding == true ? (
         <Stack.Screen
-          name="sessionFlow"
-          component={CreateSessionStack}
-          options={pageOptions} />)}
-      {/*<Stack.Screen
-          name="drawer"
-          component={CreateDrawer}
-          options={pageOptions}
-      />*/}
+          name="onboardingFlow"
+          component={CreateOnboardingStack}
+          options={pageOptions} />)
+        :
+        (
+          <Stack.Screen
+            name="sessionFlow"
+            component={CreateSessionStack}
+            options={pageOptions} />
+        ))
+
+      }
 
     </Stack.Navigator>
 

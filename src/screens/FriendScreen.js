@@ -16,7 +16,8 @@ const FriendScreen = ({ navigation }) => {
     console.log(state.friends)
     const resetInputs = async () => {
         setFriendCode('')
-        alert('Success!')
+        await fetchFriends()
+        alert('Unfriended successfully.')
     }
     const acceptFriendCallback = async () => {
         await fetchFriends()

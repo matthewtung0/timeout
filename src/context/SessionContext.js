@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const sessionReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_sessions':
-            return { ...state, userSessions: action.payload }
+            return { ...state, userSessions: [...state.userSessions, ...action.payload] }
         case 'fetch_sessions_batch':
             return { ...state, userSessions: [...state.userSessions, ...action.payload] }
         case 'fetch_self_sessions':
@@ -180,14 +180,16 @@ const fetchSessionsNextBatchSelf = dispatch => async (startIndex = 0, id) => {
     return response.data
 }
 
-const fetchSessions = dispatch => async (friends) => {
+const fetchSessions = dispatch => async (friends, startIndex, numToRetrieve) => {
     // clean up friends array
     var friendsArr = []
     for (var i in friends) {
         friendsArr.push(friends[i]['friend'])
     }
 
-    const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
+    console.log(`Requesting with startIndex ${startIndex} and numToRetrieve ${numToRetrieve}`)
+
+    const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr, startIndex: startIndex, numToRetrieve: numToRetrieve } })
     //console.log("got this response", response.data)
     dispatch({ type: 'fetch_sessions', payload: response.data })
 

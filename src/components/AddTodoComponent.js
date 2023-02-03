@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
-import DropDownComponent from '../components/DropDownComponent';
 import DropDownComponent2 from './DropDownComponent2';
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
@@ -23,7 +22,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) 
     const [toDoItemName, setToDoItemName] = useState('')
 
     const [categoryName, setCategoryName] = useState(item ? item.category_name : 'Unsorted')
-    const [colorId, setColorId] = useState(item ? item.color_id : 'c6')
+    const [colorId, setColorId] = useState(item ? item.color_id : 'c10')
     const [categoryId, setCategoryId] = useState(item ? item.category_id : '3')
 
     const { state, addTodoItem, editTodoItem, fetchUserTodoItems, deleteTodoItem } = useContext(CategoryContext)
@@ -58,9 +57,17 @@ const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) 
             alert("Please enter a task name")
             return false
         }
+
+        // check if we already have a task with the same name
+        for (var i in state.userTodoItems) {
+            var item_name = state.userTodoItems[i].item_desc.toLowerCase()
+            if (toDoItemName.toLowerCase() == item_name) {
+                alert("You already have a task with that name!")
+                return false
+            }
+        }
         return true
     }
-    console.log("this item is", item)
 
     const areYouSureDelete = (item_id, reset_msg) => {
         Alert.alert(

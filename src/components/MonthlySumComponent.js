@@ -62,7 +62,7 @@ const MonthlySumComponent = ({ monthBatch }) => {
                                 style={styles.container}
                                 key={item[0]}>
                                 <View style={styles.textContainer}>
-                                    <Text style={[styles.barLabel, styles.textDefaultBold]}>{item[0]}</Text>
+                                    <Text style={[styles.barLabel, styles.textDefaultSemiBold]}>{item[0]}</Text>
                                 </View>
 
                                 {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
@@ -114,6 +114,8 @@ const MonthlySumComponent = ({ monthBatch }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

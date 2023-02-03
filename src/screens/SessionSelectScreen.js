@@ -9,7 +9,6 @@ import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
-import DropDownComponent from '../components/DropDownComponent';
 import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,8 +41,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [colorId, setColorId] = useState('c6')
     const [isLoading, setIsLoading] = useState(false)
 
-    const [introPosition, setIntroPosition] = useState(1)
-    const [pageOpacity, setPageOpacity] = useState(0.3)
+    const [introPosition, setIntroPosition] = useState(5)
+    const [pageOpacity, setPageOpacity] = useState(1)
     const [categoryId, setCategoryId] = useState("3");
 
     const [newCatName, setNewCatName] = useState('unsorted')
@@ -302,7 +301,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 colorId: newColorId,
                             })
                         }}>
-                        <Text style={[styles.startText, styles.textDefault]}>Start</Text>
+                        <Text style={[styles.startText, styles.textDefaultBold]}>Start</Text>
 
                     </TouchableOpacity>
 
@@ -436,10 +435,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 17,
         paddingVertical: 10,
         shadowOffset: {
-            width: 0.1,
-            height: 0.1,
+            width: 0.05,
+            height: 0.05,
         },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.1,
         color: 'gray',
         fontSize: 18,
     },
@@ -486,7 +485,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 15,
+        borderRadius: 20,
         alignSelf: 'center',
         marginBottom: 20,
         marginTop: 20,
@@ -494,7 +493,7 @@ const styles = StyleSheet.create({
             width: 0.3,
             height: 0.3,
         },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.2,
 
     },
     startText: {

@@ -10,6 +10,7 @@ import AvatarComponent from './AvatarComponent';
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
+const BORDER_RADIUS = 20;
 
 
 const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
@@ -35,11 +36,14 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
                 flex: 1,
                 justifyContent: 'center',
             }}>
-                <View style={[styles.container, { height: height * 0.6 }]}>
+                <View style={[styles.container, { height: height * 0.6, borderRadius: BORDER_RADIUS, }]}>
                     <Image
                         source={img}
                         resizeMode='stretch'
-                        style={{ maxWidth: width * 0.9, maxHeight: 75, position: 'absolute' }} />
+                        style={{
+                            maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                            borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                        }} />
 
                     <Text style={[styles.title, { position: 'absolute' }]}>People who Liked This</Text>
                     <View style={{ marginTop: 90 }}>
@@ -100,7 +104,7 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
                                 name="close-outline"
                                 type='ionicon'
                                 size={35}
-                                color='black' />
+                                color='white' />
                         </TouchableOpacity>
                     </View>
                 </View>

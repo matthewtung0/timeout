@@ -24,10 +24,10 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={[styles.categoryStyle, { flex: 1, backgroundColor: bgColorHex }]}>
-                        <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultBold]}>{item.category_name}</Text>
+                        <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultSemiBold]}>{item.category_name}</Text>
                     </View>
                     <View style={{ flex: 2.5, justifyContent: 'center' }}>
-                        <Text numberOfLines={2} style={[styles.text, styles.textDefaultBold,]}>{item.item_desc}</Text>
+                        <Text numberOfLines={2} style={[styles.text, styles.textDefaultSemiBold,]}>{item.item_desc}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -59,6 +59,9 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

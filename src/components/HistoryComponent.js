@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, Text, } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import { parseISO, differenceInSeconds, format } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 const PRODUCTIVITY_WIDTH = 100
+const iconRatingNull = require('../../assets/icon_rating-null.png')
+const iconRating = require('../../assets/icon_rating.png')
 const STAR_SIZE = 16;
+const ICON_LENGTH = 16;
 
 const timeDifference = (timeStart, timeEnd) => {
     var timeDiff = differenceInSeconds(parseISO(timeEnd), parseISO(timeStart))
@@ -42,7 +45,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
                 <View opacity={is_active ? 1 : 0.3} style={{ flex: 4, }}>
                     <Text numberOfLines={1}
-                        style={[styles.textDefaultBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
+                        style={[styles.textDefaultSemiBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
                 </View>
                 <View style={{ flex: 2, }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
@@ -66,6 +69,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
                         {roundRating(session_obj.prod_rating) >= 20 ?
+
                             <Icon
                                 style={{ marginHorizontal: 0.2, }}
                                 size={STAR_SIZE}
@@ -164,6 +168,9 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

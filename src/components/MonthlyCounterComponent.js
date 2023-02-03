@@ -47,7 +47,7 @@ const MonthlyCounterComponent = ({ monthBatch }) => {
                                     <View style={[styles.textContainer, { flex: 1, }]}>
                                         <Text
                                             numberOfLines={1}
-                                            style={[styles.barLabel, styles.textDefaultBold]}>
+                                            style={[styles.barLabel, styles.textDefaultSemiBold]}>
                                             {item[0]}</Text>
                                     </View>
 
@@ -72,6 +72,9 @@ const MonthlyCounterComponent = ({ monthBatch }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

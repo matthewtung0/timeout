@@ -223,15 +223,15 @@ const fetchSelf = dispatch => async () => {
 
 const checkAvatarLastUpdated = async (user_id, cur_avatar_dt) => {
     try {
-        console.log("Checking last updated with this user_id: ", user_id)
+        //console.log("Checking last updated with this user_id: ", user_id)
         let response = await timeoutApi.get(`/avatar12345/last_updated/${user_id}`)
         let last_updated_dt = response.data.last_updated;
-        console.log("LAST UPDATED DT IS ", last_updated_dt)
+        //console.log("LAST UPDATED DT IS ", last_updated_dt)
         var actual_date = new Date(last_updated_dt)
-        console.log(`${user_id}: Last avatar updated: ${actual_date.toISOString()}, and cur cache date: ${new Date(cur_avatar_dt).toISOString()}`)
+        //console.log(`${user_id}: Last avatar updated: ${actual_date.toISOString()}, and cur cache date: ${new Date(cur_avatar_dt).toISOString()}`)
         var comparison = compareAsc(actual_date, new Date(cur_avatar_dt))
         if (comparison < 0) { // < 0 if last updated is before we retrieve, means we are good
-            console.log("Last updated is before retrieval, no need to retrieve")
+            //console.log("Last updated is before retrieval, no need to retrieve")
             return false
         }
         console.log("DO need to retrieve")
@@ -270,11 +270,11 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, is
             }
             return base64Icon;
         } else {
-            console.log("Getting avatar from asyncstorage");
+            //console.log("Getting avatar from asyncstorage");
 
             var base64Icon_cached = await AsyncStorage.getItem(`avatar_${user_id}`);
             if (isSelf) {
-                console.log("is self from cache")
+                //console.log("is self from cache")
                 dispatch({ type: 'fetch_avatar', payload: base64Icon_cached })
             }
             return base64Icon_cached;

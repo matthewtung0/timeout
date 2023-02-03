@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
-    View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
+    View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator, Image,
     TouchableOpacity, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements'
@@ -10,6 +10,9 @@ import { Context as SessionContext } from '../context/SessionContext'
 const constants = require('../components/constants.json')
 const COLOR_WIDTH = 40;
 const BORDER_RADIUS = 20;
+const img = require('../../assets/tasks_topbar.png')
+const yellowCheckmark = require('../../assets/yellow_checkmark.png')
+
 const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedCounterName, selectedCounterId,
     updateColorCallback2, deleteCounterCallback2
 }) => {
@@ -21,6 +24,7 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset, setHardReset } = useContext(SessionContext)
     const { deleteCounter, changeColorCounter, changeArchiveCounter } = useContext(CounterContext)
     const [isLoading, setIsLoading] = useState(false)
+    const [deleteToggle, setDeleteToggle] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
 
     const submitColorChange = async () => {
@@ -29,12 +33,10 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
             setIsLoading(false)
             toggleFunction();
             alert("Counter edited successfully")
-
         } else {
             await changeColorCounter(selectedCounterId, chosenColorId, updateColorCallback)
         }
     }
-
 
     const updateColorCallback = async () => {
         if (selectedColorId != chosenColorId) {
@@ -58,28 +60,13 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
 
     }
 
-    const submitArchive = async (archiveBool) => {
-        setIsArchiving(true)
-        try {
-            await changeArchiveCounter(selectedCounterId, archiveBool, archiveCallback)
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
     const submitDelete = async () => {
         setIsArchiving(true)
         try {
             await deleteCounter(selectedCounterId, deleteCallback)
-        } catch (e) {
-            console.log(e)
-        }
+        } catch (e) { console.log(e) }
     }
 
-    const archiveCallback = () => {
-        setIsArchiving(false)
-        alert("Archived successfully")
-    }
     const deleteCallback = async () => {
         setIsArchiving(false)
         await deleteCounterCallback2(selectedCounterId)
@@ -87,33 +74,16 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
         alert("Deleted successfully")
     }
 
-    const areYouSureArchive = () => {
-        Alert.alert(
-            "Are you sure you want to archive this?",
-            "",
-            [
-                {
-                    text: "Go back", onPress: () => { }, style: "cancel"
-                },
-                {
-                    text: "Archive", onPress: () => { submitArchive(true) }
-                }
-            ]
-        );
+    const toggleDelete = () => {
+        setDeleteToggle(!deleteToggle)
     }
 
     const areYouSureDelete = () => {
         Alert.alert(
             "Are you sure you want to delete this counter?",
             "",
-            [
-                {
-                    text: "Go back", onPress: () => { }, style: "cancel"
-                },
-                {
-                    text: "Delete", onPress: () => { submitDelete() }
-                }
-            ]
+            [{ text: "Go back", onPress: () => { }, style: "cancel" },
+            { text: "Delete", onPress: () => { submitDelete() } }]
         );
     }
 
@@ -132,85 +102,147 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
     }
 
     return (
-        <View style={styles.container}>
-            <View
-                style={[styles.titleContainer, {
-                    width: INPUT_WIDTH, height: 45,
-                    backgroundColor: constants.colors[chosenColorId],
-                }]}>
-                <Text style={styles.title}>{selectedCounterName}</Text>
-            </View>
 
-            <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+        <>
+            <View style={[styles.container, { borderRadius: BORDER_RADIUS }]}>
+
+                <View style={{ marginHorizontal: 20, marginTop: 90 }}>
+
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                        marginLeft: 5, color: 'gray',
+                    }]}>Counter Name</Text>
 
 
-            <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
-                <View style={{
-                    borderRadius: 50,
-                    backgroundColor: 'white', shadowOffset: {
-                        width: 0,
-                        height: -0.2,
-                    },
-                    shadowOpacity: 0.3,
-                }}>
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={[styles.inputStyle, {
+                            borderRadius: 20,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.1,
+                        }]}>
+                            <Text style={[styles.textDefaultBold, { fontSize: 16, color: '#67806D', }]}>
+                                {selectedCounterName}</Text>
 
-                    <View
-                        style={[{
-                            marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
-                            //backgroundColor: constants.colors[chosenColor],
-                        }]}
-                    >
-                        < FlatList
-                            horizontal={true}
-                            data={colorArr}
-                            keyExtractor={(item) => item[0]}
-                            renderItem={({ item }) => {
-                                return (
-                                    <>
-                                        {chosenColorId == item[0] ?
-                                            <TouchableOpacity
-                                                style={[styles.colorSquare, {
-                                                    backgroundColor: item[1],
-                                                    width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
-                                                    borderWidth: 3, borderColor: '#67806D'
-                                                }]}
-                                                onPress={() => { setChosenColorId(item[0]) }}
-                                            />
-
-                                            :
-                                            <TouchableOpacity
-                                                style={[styles.colorSquare, {
-                                                    backgroundColor: item[1],
-                                                    width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
-                                                }]}
-                                                onPress={() => { setChosenColorId(item[0]) }}
-                                            />
-                                        }
-                                    </>
-                                )
-                            }}
-                        >
-                        </FlatList>
+                        </View>
                     </View>
+
+                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+                    <View style={{ marginVertical: 10, marginHorizontal: 10, marginBottom: 20, }}>
+                        <View style={{
+                            borderRadius: 50,
+                            backgroundColor: 'white', shadowOffset: {
+                                width: 0,
+                                height: -0.2,
+                            },
+                            shadowOpacity: 0.3,
+                        }}>
+
+                            <View
+                                style={[{
+                                    marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                                    //backgroundColor: constants.colors[chosenColor],
+                                }]}
+                            >
+                                < FlatList
+                                    horizontal={true}
+                                    data={colorArr}
+                                    keyExtractor={(item) => item[0]}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <>
+                                                {chosenColorId == item[0] ?
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                            borderWidth: 3, borderColor: '#67806D'
+                                                        }]}
+                                                        onPress={() => { setChosenColorId(item[0]) }}
+                                                    />
+
+                                                    :
+                                                    <TouchableOpacity
+                                                        style={[styles.colorSquare, {
+                                                            backgroundColor: item[1],
+                                                            width: COLOR_WIDTH, height: COLOR_WIDTH, borderRadius: COLOR_WIDTH / 2,
+                                                        }]}
+                                                        onPress={() => { setChosenColorId(item[0]) }}
+                                                    />
+                                                }
+                                            </>
+                                        )
+                                    }}
+                                >
+                                </FlatList>
+                            </View>
+                        </View>
+                    </View>
+
+                    {separator()}
+                    <Text style={[styles.textDefaultBold, {
+                        fontSize: 16, color: '#67806D',
+                    }]}>Delete Counter</Text>
+                    <View style={{ flexDirection: 'row', marginVertical: 10, marginHorizontal: 10, }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleDelete();
+                            }}>
+                            {deleteToggle ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault,
+                        { color: 'red', marginHorizontal: 5, fontSize: 12, }]}>
+                            Remove counter. Previous tallies will still show in history view and statistics.</Text>
+                    </View>
+                    <View opacity={isLoading ? 0.2 : 1}>
+                        <TouchableOpacity
+                            style={[styles.updateColorButton, {
+                                width: width / 2, backgroundColor: 'white',
+                            }]}
+                            onPress={() => {
+                                if (isLoading) { return }
+                                if (deleteToggle) {
+                                    var res = areYouSureDelete()
+                                    if (res == false) { return }
+                                }
+                                else {
+                                    submitColorChange();
+                                }
+                            }}>
+                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+
+
+                    {isLoading ? <ActivityIndicator
+                        style={{ marginBottom: 10, }}
+                        size="large"
+                        color="gray" /> : null}
                 </View>
+
             </View>
 
-            <View opacity={isLoading ? 0.3 : 1}>
-                <TouchableOpacity style={[styles.updateColorButton, { width: width / 1.8 }]}
-                    onPress={submitColorChange}>
-                    <Text style={[styles.textDefaultBold, styles.addCategoryText]}>Update Color</Text>
-                </TouchableOpacity>
-            </View>
+            <Image
+                source={img}
+                resizeMode='stretch'
+                style={{
+                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                }} />
 
-            <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
-            {separator()}
-
-            <TouchableOpacity style={[styles.updateColorButton, {
-                width: width / 1.8, backgroundColor: '#F5BBAE',
-            }]}
-                onPress={() => { areYouSureDelete() }}>
-                <Text style={[styles.textDefaultBold, styles.addCategoryText]}>Delete Counter</Text>
-            </TouchableOpacity>
+            <Text style={[styles.title, { position: 'absolute' }]}>Edit Counter</Text>
 
             <View style={styles.backContainer}>
                 <TouchableOpacity
@@ -221,10 +253,11 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                         name="close-outline"
                         type='ionicon'
                         size={35}
-                        color='black' />
+                        color='white' />
                 </TouchableOpacity>
             </View>
-        </View>
+        </>
+
     )
 }
 
@@ -284,9 +317,11 @@ const styles = StyleSheet.create({
     },
     title: {
         alignSelf: 'center',
-        fontSize: 18,
-        fontWeight: '600',
-        color: 'gray',
+        margin: 20,
+        marginBottom: 50,
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: 'white',
     },
     titleContainer: {
         marginTop: 20,
@@ -302,6 +337,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     labelText: { marginLeft: 5, color: 'gray', },
+    inputStyle: {
+        borderRadius: 15,
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        color: 'gray',
+        fontSize: 16,
+    },
 })
 
 export default EditCounterModal;

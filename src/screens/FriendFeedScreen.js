@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useContext, useState, useCallback, useMemo } from 'react';
 import {
     View, StyleSheet, Text, FlatList,
     TouchableOpacity, ActivityIndicator, Dimensions
@@ -9,26 +9,32 @@ import { Context as ReactionContext } from '../context/ReactionContext';
 import { Context as UserContext } from '../context/userContext';
 import FriendScreen from './FriendScreen'
 import { SceneMap, TabBar } from 'react-native-tab-view';
-
 import timeoutApi from '../api/timeout';
 import FriendNotificationScreen from './FriendNotificationScreen';
-import { FriendFeedComponent, MemoizedComponent } from '../components/FriendFeedComponent';
+import { compareAsc, parseISO } from 'date-fns';
+import FriendFeedComponent from '../components/FriendFeedComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const REFRESH_THRESHOLD_POSITION = -50;
 const SCROLL_THROTTLE_RATE = 200;
+const NUM_TO_RETRIEVE = 50;
 
 const FriendFeedScreen = ({ navigation }) => {
     const { width, height } = Dimensions.get('window');
     //const { fetchUserReactions } = useContext(SessionContext)
     const { state: reactionState, fetchUserReactions, fetchSessions } = useContext(ReactionContext)
-    const { state: userState, setIdToView } = useContext(UserContext)
+    const { state: userState, setIdToView, } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [refreshToken, setRefreshToken] = useState(0)
+
     const [offset, setOffset] = useState(0)
+    const [visibleOffset, setVisibleOffset] = useState(0);
+
+
     const [atEnd, setAtEnd] = useState(false)
-    const [friendsPfpMap, setFriendsPfpMap] = useState({})
-    const [feed, setFeed] = useState([])
     const [isOnline, setIsOnline] = useState(true)
+
+    const [cacheChecker, setCacheChecker] = useState({})
 
 
     const [isLoading, setIsLoading] = useState(false)
@@ -38,64 +44,72 @@ const FriendFeedScreen = ({ navigation }) => {
     useFocusEffect(
         useCallback(() => {
             setIsLoadingRefresh(true)
+            setOffset(0)
+            setVisibleOffset(0)
             console.log("REFRESHING")
-            //buildFriendsMap();
             getFeed();
 
             return () => {
-                //console.log("cleaning up")
+                console.log("cleaning up")
                 setIsLoading(false)
                 setOffset(0)
+                setVisibleOffset(0)
                 setDisableTouch(false)
+                setCacheChecker({})
                 setAtEnd(false)
             }
         }, [])
         //[refreshToken])
     )
 
-
-    /*const fetchSessions = async (friends) => {
-        // clean up friends array
-        var friendsArr = []
-        for (var i in friends) {
-            friendsArr.push(friends[i]['friend'])
+    const checkFriendsAvatarUpdate = async (user_id_list) => {
+        // gets a list of user id
+        user_id_list.push(userState.user_id)
+        let user_cache_dt_map = {}
+        for (var i in user_id_list) {
+            var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id_list[i]}`)
+            user_cache_dt_map[user_id_list[i]] = avatar_dt
+            console.log(`For user_id ${user_id_list[i]}, ${avatar_dt}`)
         }
-        if (friendsArr.length > 0) {
-            try {
-                const response = await timeoutApi.get('/sessionFeed', { params: { friends: friendsArr } })
-                //console.log("got this response", response.data)
-                setFeed(response.data)
-            } catch (err) {
-                setIsOnline(false)
+
+        let response = await timeoutApi.get(`/avatar12345/last_updated/multiple`,
+            { params: { user_id_avatar_dt_map: user_cache_dt_map } })
+        //console.log("rESPONSE IS ", response)
+
+        var last_updated_dt = response.data.map((req) => { return { ...req, last_updated: new Date(req.last_updated) } })
+        //console.log("RESPONSE IS ", last_updated_dt)
+
+        //console.log("Actual dates are ", user_cache_dt_map)
+        let avatars_need_to_update = {}
+        for (var i in user_id_list) {
+            var user_id = user_id_list[i]
+            var cache_dt = new Date(user_cache_dt_map[user_id])
+            var last_updated_Dt = last_updated_dt.filter(item => item.user_id == user_id)[0].last_updated
+            //console.log(`cache_dt is ${cache_dt} and last_udpated_dt is ${last_updated_Dt}`)
+            var comparison = compareAsc(last_updated_Dt, cache_dt)
+            if (comparison < 0) { // < 0 if last updated is before we retrieve, means we are good
+                avatars_need_to_update[user_id] = false
+            } else {
+                avatars_need_to_update[user_id] = true;
             }
         }
-    }*/
+        setCacheChecker(avatars_need_to_update)
+        console.log("Final result ", avatars_need_to_update)
 
-    const fetchSessionsNextBatch = async (startIndex = 0, friends) => {
-        var friendsArr = []
-        for (var i in friends) {
-            friendsArr.push(friends[i]['friend'])
-        }
-        const response = await timeoutApi.get('/sessionFeed', { params: { startIndex, friends: friendsArr } })
-        setFeed(prevState => [...prevState, ...response.data])
+        // return a map of user id's if we need to update
 
-        //setFeed([...feed, ...response.data])
-        return response.data
-    }
-
-    const buildFriendsMap = () => {
-        var j = {}
-        for (var i = 0; i < userState.friends.length; i++) {
-            j[userState.friends[i].friend] = 'unknown'
-        }
-        setFriendsPfpMap(j)
     }
 
     const getFeed = async () => {
         try {
-            setOffset(0)
-            let temp = await fetchSessions(userState.friends)
-            setOffset(offset + 10)
+            await checkFriendsAvatarUpdate(userState.friends.map(req => req.friend))
+            let temp = await fetchSessions(userState.friends, 0, 10, true)
+            console.log("tEMP IS ", temp.map(req => { return req.user_id }))
+
+
+            console.log(`Right now, offset is ${offset}`)
+            setOffset(10)
+            setVisibleOffset(10)
 
             await fetchUserReactions()
             setIsLoadingRefresh(false)
@@ -112,18 +126,6 @@ const FriendFeedScreen = ({ navigation }) => {
         }
     }
 
-
-    /*const fetchSessionsNextBatch = async (startIndex = 0) => {
-        const response = await timeoutApi.get('/session', { params: { startIndex } })
-        console.log(response.data)
-        return response.data 
-    }
-
-    const fetchSessions = async () => {
-        const response = await timeoutApi.get('/session')
-        return response.data
-    }*/
-
     // make buttons enabled again after api calls done
     const reactCallback = () => {
         setDisableTouch(false)
@@ -131,12 +133,18 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const getData = async () => {
         console.log("Loading 10 more..");
+        if (visibleOffset < offset) {
+            // no need to retrieve, just reveal more items
+            setVisibleOffset(visibleOffset + 10);
+            return;
+        }
         setIsLoading(true)
         try {
-            let temp2 = await fetchSessionsNextBatch(offset, userState.friends)
-            //console.log("temp2 is", temp2)
+            let temp2 = await fetchSessions(userState.friends, offset, NUM_TO_RETRIEVE)
+            //let temp2 = await fetchSessionsNextBatch(offset, userState.friends)
             if (temp2.length == 0) { setAtEnd(true) } else {
-                setOffset(offset + 10)
+                setOffset(offset + Math.min(temp2.length, NUM_TO_RETRIEVE))
+                setVisibleOffset(visibleOffset + Math.min(temp2.length, 10))
             }
 
             setIsLoading(false)
@@ -150,46 +158,46 @@ const FriendFeedScreen = ({ navigation }) => {
         return (
             <View>
                 {atEnd ?
-                    <Text style={styles.textDefault}>All caught up!</Text> :
-                    <>{isLoading ? <ActivityIndicator
-                        style={{ marginTop: 15 }}
-                        size="large" /> :
-
-                        <TouchableOpacity style={styles.loadMore}
-                            onPress={getData}>
-                            <Text style={[styles.loadMoreText, styles.textDefault]}>Load More</Text>
-                        </TouchableOpacity>
-                    }
+                    <>
+                        <Text style={styles.textDefault}>All caught up!</Text>
+                        <View style={{ height: 50 }}></View>
                     </>
+                    :
+                    <View style={{ height: 50 }}></View>
                 }
             </View>
         )
     }
 
-    const flatListRef = useRef();
+    console.log(`visible offset is ${visibleOffset} and data offset is ${offset}`)
 
     const flatListItself = () => {
         return (
             <FlatList
-                ref={flatListRef}
                 style={styles.flatlistStyle}
                 horizontal={false}
                 onScroll={scrollEvent}
+                onEndReached={getData}
                 scrollEventThrottle={SCROLL_THROTTLE_RATE}
-                data={reactionState.userSessions}
+                data={reactionState.userSessions.slice(0, visibleOffset)}
                 ItemSeparatorComponent={renderSeparator}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.activity_id}
                 ListFooterComponent={renderFooter}
-                renderItem={({ item }) =>
-                    <FriendFeedComponent item={item} navigation={navigation} />
+                renderItem={({ item, index }) =>
+                    <FriendFeedComponent
+                        item={item}
+                        index={index}
+                        cacheChecker={cacheChecker}
+                        navigation={navigation} />
                 }
             >
             </FlatList>
         )
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions])
+    const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions, visibleOffset, atEnd,
+    reactionState.userReaction, offset, cacheChecker])
 
     const renderSeparator = () => (
         <View
@@ -248,9 +256,13 @@ const FriendFeedScreen = ({ navigation }) => {
                                     Nothing in your feed yet. Tell your friends to start getting productive!</Text>
                             </View>
                             :
-                            <View style={styles.flatListContainer}>
-                                {memoizedFlatList}
-                            </View>
+                            <>
+                                <View style={styles.flatListContainer}>
+                                    {memoizedFlatList}
+                                </View>
+
+                            </>
+
                         }
                     </>}
             </View>

@@ -60,7 +60,7 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
                         backgroundColor: constants.colors[props.item.color],
                         width: 20, height: 20, marginHorizontal: 10,
                     }} />
-                    <Text style={[styles.textDefault, { color: '#67806D' }]}>{props.item.label}</Text>
+                    <Text style={[styles.textDefaultSemiBold, { color: '#67806D' }]}>{props.item.label}</Text>
                 </View>
             </TouchableOpacity >
 
@@ -81,13 +81,14 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
     }
     return (
         <Dropdown
-            style={[{
-                width: selectedWidth,
-                margin: 0,
-                alignSelf: 'center', borderRadius: 15, paddingHorizontal: 17,
-                paddingVertical: 5,
-                backgroundColor: constants.colors[colorId],
-            }]}
+            style={[
+                {
+                    width: selectedWidth,
+                    margin: 0,
+                    alignSelf: 'center', borderRadius: 15, paddingHorizontal: 17,
+                    paddingVertical: 5,
+                    backgroundColor: constants.colors[colorId],
+                }]}
             data={items}
             value={categoryId}
             placeholderStyle={{ height: 0 }}
@@ -109,7 +110,7 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
                 //width: selectedWidth,
             }}
             selectedTextStyle={
-                [styles.textDefault, { color: 'white' }]
+                [styles.textDefaultSemiBold, { color: 'white' }]
             }
             maxHeight={height * 0.25}
             renderItem={dropdownItem}
@@ -157,6 +158,9 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

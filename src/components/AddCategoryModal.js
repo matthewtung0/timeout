@@ -73,7 +73,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
                                 width: 0,
                                 height: -0.2,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                         }}>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
@@ -101,7 +101,7 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
                                 width: 0,
                                 height: -0.2,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                         }}>
 
                             <View
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
     },
     submitText: {
         color: 'white',

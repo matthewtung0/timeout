@@ -1,9 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
-    View, StyleSheet, Text, Button, TouchableOpacity, FlatList, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback
+    View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
 } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker'
 import { Icon } from 'react-native-elements'
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
@@ -290,6 +288,9 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

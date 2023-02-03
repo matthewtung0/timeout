@@ -30,6 +30,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
     const [isArchiving, setIsArchiving] = useState(false)
 
     const submitEdit = async () => {
+        setIsLoading(true)
         // handle changes to public setting and color
         await editCategory({
             categoryId: selectedCatId,
@@ -51,18 +52,13 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                     )
                 )
             )
-
             toggleFunction(true)
         } else {
+
             toggleFunction(true)
         }
         setIsLoading(false)
         alert("Category edited successfully")
-    }
-
-    const submitColorChange = async () => {
-        setIsLoading(true)
-        await changeColorCategory(selectedCatId, chosenColorId, colorChangeCallback)
     }
 
     const colorChangeCallback = async () => {
@@ -84,24 +80,10 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
         console.log("VALIDATE IS TRUE")
         return true
     }
-    const submitArchive = async (archiveBool) => {
-        if (validateDelete() === false) {
-            Alert.alert(
-                "You currently have to-do items with this category. Delete those first before archiving this category"
-            )
-            return
-        } else {
-            setIsArchiving(true)
-            try {
-                await changeArchiveCategory(selectedCatId, archiveBool, archiveCallback)
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    }
 
     const submitDelete = async () => {
         setIsArchiving(true)
+        setIsLoading(true)
         try {
             await deleteCategory(selectedCatId, deleteCallback)
         } catch (e) {
@@ -111,18 +93,16 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
 
     const archiveCallback = () => {
         setIsArchiving(false)
+        setIsLoading(false)
         alert("Archived successfully")
     }
     const deleteCallback = () => {
         setIsArchiving(false)
         toggleFunction(true)
+        setIsLoading(false);
         alert("Deleted successfully")
     }
 
-    const publicChangeCallback = () => {
-        setIsLoading(false)
-        alert("Public setting updated successfully")
-    }
 
     const areYouSureArchive = () => {
         Alert.alert(
@@ -217,7 +197,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                                 width: 0,
                                 height: -0.2,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                         }]}>
                             <Text style={[styles.textDefaultBold, { fontSize: 16, color: '#67806D', }]}>
                                 {selectedCategoryName}</Text>
@@ -236,7 +216,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                                 width: 0,
                                 height: -0.2,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                         }}>
 
                             <View
@@ -280,8 +260,6 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
 
                         </View>
                     </View>
-
-                    <Text style={{ alignSelf: 'center' }}>{isLoading ? "Updating Color.." : ""}</Text>
                     {separator()}
 
                     <Text style={[styles.textDefaultBold, {
@@ -362,41 +340,45 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                             Remove category. Previous tasks will still be included in summary view and statistics.</Text>
                     </View>
 
-                    <TouchableOpacity style={[styles.updateColorButton, {
-                        width: width / 2, backgroundColor: 'white',
-                    }]}
-                        onPress={() => {
-                            if (deleteToggle) {
-                                if (validateDelete() === false) {
-                                    Alert.alert(
-                                        "You currently have to-do items with this category. Delete those first before deleting this category"
-                                    )
-                                    return
+                    <View opacity={isLoading ? 0.2 : 1}>
+                        <TouchableOpacity style={[styles.updateColorButton, {
+                            width: width / 2, backgroundColor: 'white',
+                        }]}
+                            onPress={() => {
+                                if (deleteToggle) {
+                                    if (validateDelete() === false) {
+                                        Alert.alert(
+                                            "You currently have to-do items with this category. Delete those first before deleting this category"
+                                        )
+                                        return
+                                    }
+                                    var res = areYouSureDelete()
+                                    if (res == false) { return }
+
+                                } else if (archiveToggle) {
+                                    if (validateDelete() === false) {
+                                        Alert.alert(
+                                            "You currently have to-do items with this category. Delete those first before archiving this category"
+                                        )
+                                        return
+                                    }
+                                    var res = areYouSureArchive()
+                                    if (res == false) { return }
                                 }
-                                var res = areYouSureDelete()
-                                if (res == false) { return }
-
-                            } else if (archiveToggle) {
-                                if (validateDelete() === false) {
-                                    Alert.alert(
-                                        "You currently have to-do items with this category. Delete those first before archiving this category"
-                                    )
-                                    return
+                                else {
+                                    submitEdit();
                                 }
-                                var res = areYouSureArchive()
-                                if (res == false) { return }
-                            }
-                            else {
-                                submitEdit();
-                            }
-                        }}>
-                        <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
-                    </TouchableOpacity>
+                            }}>
+                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                </View>
 
-                <View style={{}}>
-                    <Text style={{ alignSelf: 'center' }}>{isArchiving ? "Archiving.." : ""}</Text>
+                    {isLoading ? <ActivityIndicator
+                        style={{ marginBottom: 10, }}
+                        size="large"
+                        color="gray" /> : null}
+
                 </View>
             </View>
 
@@ -473,7 +455,7 @@ const styles = StyleSheet.create({
             width: 0.05,
             height: 0.05,
         },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
     },
     addCategoryText: {
         fontWeight: '600',

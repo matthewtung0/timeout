@@ -12,7 +12,7 @@ const HistoryCounterComponent = ({ session_obj }) => {
 
                 <View style={{ flex: 4, }}>
                     <Text numberOfLines={1}
-                        style={[styles.textDefaultBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
+                        style={[styles.textDefaultSemiBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
                 </View>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <Text style={[styles.textDefaultBold, { alignSelf: 'center', color: '#013220', fontSize: 14, }]}>
@@ -38,6 +38,9 @@ const HistoryCounterComponent = ({ session_obj }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

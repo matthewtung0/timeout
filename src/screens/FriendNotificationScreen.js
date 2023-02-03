@@ -25,6 +25,15 @@ const FriendNotificationScreen = ({ navigation }) => {
     const getNotifications = async () => {
         await fetchNotifications();
     }
+
+    const rejectFriendCallback = async () => {
+        //await fetchFriends()
+        alert("Rejected successfully.");
+    }
+    const acceptFriendCallback = async () => {
+        await fetchFriends()
+        alert("Friend req successfully accepted.");
+    }
     useFocusEffect(
         useCallback(() => {
             getNotifications()
@@ -131,7 +140,7 @@ const FriendNotificationScreen = ({ navigation }) => {
                                                     <TouchableOpacity
                                                         style={{ borderWidth: 1, }}
                                                         onPress={() => {
-                                                            rejectFriendRequest(item.friend_a, resetInputs)
+                                                            rejectFriendRequest(item.friend_a, rejectFriendCallback)
                                                         }}>
                                                         <Text>Reject</Text>
                                                     </TouchableOpacity>
