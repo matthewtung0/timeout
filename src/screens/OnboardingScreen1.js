@@ -15,7 +15,7 @@ const OnboardingScreen1 = ({ navigation, route: { params } }) => {
                 </View>
 
 
-                <View style={{ flex: 1, borderWidth: 10, }}>
+                <View style={{ flex: 1, borderWidth: 0, }}>
                     <View style={{ flex: 2 }}>
 
                     </View>
@@ -36,7 +36,10 @@ const OnboardingScreen1 = ({ navigation, route: { params } }) => {
                     <View style={{ flex: 1 }}>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
-                            <TouchableOpacity style={{ marginHorizontal: 5, paddingVertical: 10, paddingHorizontal: 5, }}
+                            <TouchableOpacity style={{
+                                opacity: 0,
+                                marginHorizontal: 5, paddingVertical: 10, paddingHorizontal: 5,
+                            }}
                                 onPress={() => {
                                 }}>
                                 <Icon

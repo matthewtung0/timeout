@@ -6,6 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import DropDownComponent2 from './DropDownComponent2';
+import { call } from 'react-native-reanimated';
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const HideKeyboard = ({ children }) => (
@@ -15,7 +16,7 @@ const HideKeyboard = ({ children }) => (
 );
 
 // double as add new item and editing existing items
-const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) => {
+const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, editCallback, BORDER_RADIUS }) => {
     const { height, width } = Dimensions.get('window');
     const [isLoading, setIsLoading] = useState(false)
 
@@ -37,15 +38,48 @@ const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) 
     }
 
     const resetInputs = async (msg) => {
-        var msg = "Task added successfully"
         setToDoItemName('')
         setIsLoading(false)
-        alert(msg)
+        if (msg) {
+            alert(msg)
+        } else {
+            alert("Task added successfully")
+        }
+
 
         // repull the list now that we've added to it
         await fetchUserTodoItems();
         if (callback) { callback() }
+    }
 
+    const resetInputsEdit = async (msg) => {
+        setToDoItemName('')
+        setNotes('')
+        setCategoryName('Unsorted')
+        setCategoryId("3")
+        setColorId("c10")
+        setIsLoading(false)
+
+        await fetchUserTodoItems();
+        if (callback) { callback() }
+        if (editCallback) { editCallback() }
+
+        alert("Task edited successfully!")
+    }
+
+    const resetInputsDelete = async () => {
+        setToDoItemName('')
+        setNotes('')
+        setCategoryName('Unsorted')
+        setCategoryId("3")
+        setColorId("c10")
+        setIsLoading(false)
+        alert("Task deleted successfully!")
+
+        // repull the list now that we've edited it
+        await fetchUserTodoItems();
+        if (callback) { callback() }
+        if (deleteCallback) { deleteCallback() }
     }
 
     const toggleDeleteFunction = () => {
@@ -82,7 +116,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) 
                 {
                     text: "Delete", onPress: () => {
                         setIsLoading(true)
-                        deleteTodoItem(item_id, resetInputs(reset_msg))
+                        deleteTodoItem(item_id, resetInputsDelete)
                     }
                 }
             ]
@@ -180,18 +214,21 @@ const AddTodoComponent = ({ title, buttonText, callback, item, BORDER_RADIUS }) 
                     <TouchableOpacity
                         style={[styles.plus, { width: width / 2.5, }]}
                         onPress={() => {
-                            if (!validateInputs()) { return }
+                            if (isLoading) { return; }
                             setIsLoading(true)
-
                             if (item) {
                                 if (toggleDelete) {
                                     areYouSureDelete(item.item_id, "Task deleted successfully")
                                 } else {
                                     editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
-                                        resetInputs, errorReset)
+                                        resetInputsEdit, errorReset)
                                 }
 
                             } else {
+                                if (!validateInputs()) {
+                                    setIsLoading(false)
+                                    return
+                                }
                                 addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
                             }
                         }}>

@@ -9,7 +9,7 @@ const OnboardingScreen2 = ({ navigation, route: { params } }) => {
             <View style={{ height: '100%', width: '100%', }}>
                 <View style={{ height: '100%', width: '100%', borderWidth: 0, position: 'absolute' }}>
                     <ImageBackground
-                        source={require('../../assets/animation_02_onboarding-1.gif')}
+                        source={require('../../assets/animation_02_onboarding-2.gif')}
                         style={{ height: '100%', width: '100%', borderWidth: 0, }}>
                     </ImageBackground>
                 </View>
@@ -22,12 +22,12 @@ const OnboardingScreen2 = ({ navigation, route: { params } }) => {
 
                     <View style={{ flex: 1, alignItems: 'center', }}>
 
-                        <Text style={[styles.textDefaultBold, { fontSize: 22, marginTop: 30, }]}>Start tracking your time!</Text>
+                        <Text style={[styles.textDefaultBold, { fontSize: 22, marginTop: 30, }]}>Start counting things!</Text>
                         <Text style={[styles.textDefault, {
                             marginTop: 20, marginHorizontal: 30, fontSize: 17,
                             textAlign: 'center',
                         }]}>
-                            Add a new task or choose from your to-do list, rate how productive each session was, and earn points!
+                            Keep track of things you want to consistently do, like drinking cups of water, or doing pushups each day.
                         </Text>
                     </View>
 

@@ -1,22 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
+import { useFocusEffect } from '@react-navigation/native';
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
+import { Context as CategoryContext } from '../context/CategoryContext';
 
 const img = require('../../assets/tasks_topbar.png')
 const BANNER_IMG_HEIGHT = 75;
 const BORDER_RADIUS = 20;
 
-const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
+const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
     const [showChild, setShowChild] = useState(false)
     const { height, width } = Dimensions.get('window');
     const [childTitle, setChildTitle] = useState('Add Task')
     const [buttonText, setButtonText] = useState('Submit')
     const [editItem, setEditItem] = useState(null)
+    const { state: categoryState } = useContext(CategoryContext)
     const [sortBy, setSortBy] = useState(0); // 0 -> old to new; 1-> new to old; 2-> alphabetical; 3-> category; 
+    const [sortedTodoItems, setSortedTodoItems] = useState(categoryState.userTodoItems ?
+        categoryState.userTodoItems.sort(function (a, b) {
+            if (sortBy == 0) {
+                return String(b.time_created).localeCompare(String(a.time_created))
+            }
+            else if (sortBy == 1) {
+                return String(a.time_created).localeCompare(String(b.time_created))
+            }
+            else if (sortBy == 2) {
+                var comp_a = String(a.item_desc) + String(a.category_name)
+                var comp_b = String(b.item_desc) + String(b.category_name)
+                return comp_a.localeCompare(comp_b)
+            } else if (sortBy == 3) {
+                var comp_a = String(a.category_name) + String(a.item_desc)
+                var comp_b = String(b.category_name) + String(b.item_desc)
+                return comp_a.localeCompare(comp_b)
+            }
+
+            return a.time_created - b.time_created;
+        }) : [])
+
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("fOCUS EFFECT")
+            setSortedTodoItems(toSort(categoryState.userTodoItems, sortBy))
+            return () => {
+            }
+        }, [categoryState.userTodoItems])
+    )
 
     const editTask = (item) => {
         setEditItem(item)
@@ -29,28 +62,29 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
         { label: 'New to old', id: 1 },
         { label: 'A-Z', id: 2 },
         { label: 'Category', id: 3 },
-
     ]
 
-    const sorted_todoItems = todoItems ? todoItems.sort(function (a, b) {
-        if (sortBy == 0) {
-            return String(b.time_created).localeCompare(String(a.time_created))
-        }
-        else if (sortBy == 1) {
-            return String(a.time_created).localeCompare(String(b.time_created))
-        }
-        else if (sortBy == 2) {
-            var comp_a = String(a.item_desc) + String(a.category_name)
-            var comp_b = String(b.item_desc) + String(b.category_name)
-            return comp_a.localeCompare(comp_b)
-        } else if (sortBy == 3) {
-            var comp_a = String(a.category_name) + String(a.item_desc)
-            var comp_b = String(b.category_name) + String(b.item_desc)
-            return comp_a.localeCompare(comp_b)
-        }
+    const toSort = (todoItems, sortBy) => {
+        return todoItems ? todoItems.sort(function (a, b) {
+            if (sortBy == 0) {
+                return String(b.time_created).localeCompare(String(a.time_created))
+            }
+            else if (sortBy == 1) {
+                return String(a.time_created).localeCompare(String(b.time_created))
+            }
+            else if (sortBy == 2) {
+                var comp_a = String(a.item_desc) + String(a.category_name)
+                var comp_b = String(b.item_desc) + String(b.category_name)
+                return comp_a.localeCompare(comp_b)
+            } else if (sortBy == 3) {
+                var comp_a = String(a.category_name) + String(a.item_desc)
+                var comp_b = String(b.category_name) + String(b.item_desc)
+                return comp_a.localeCompare(comp_b)
+            }
 
-        return a.time_created - b.time_created;
-    }) : []
+            return a.time_created - b.time_created;
+        }) : []
+    }
 
     const parentView = () => {
         return (
@@ -64,60 +98,84 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                             style={[styles.sortContainer,
                             { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, },
                             styles.sortContainerSelected]}
-                            onPress={() => { setSortBy(0) }}>
+                            onPress={() => {
+                                setSortBy(0)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 0))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
                         </TouchableOpacity>
                         :
                         <TouchableOpacity
                             style={[styles.sortContainer,
                             { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, }]}
-                            onPress={() => { setSortBy(0) }}>
+                            onPress={() => {
+                                setSortBy(0)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 0))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>Newest</Text>
                         </TouchableOpacity>
                     }
                     {sortBy == 1 ?
                         <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
                         { borderRightWidth: 0, }]}
-                            onPress={() => { setSortBy(1) }}>
+                            onPress={() => {
+                                setSortBy(1)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 1))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText,]}>Oldest</Text>
                         </TouchableOpacity>
                         :
                         <TouchableOpacity style={[styles.sortContainer,
                         { borderRightWidth: 0, }]}
-                            onPress={() => { setSortBy(1) }}>
+                            onPress={() => {
+                                setSortBy(1)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 1))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>Oldest</Text>
                         </TouchableOpacity>
                     }
                     {sortBy == 2 ?
                         <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
                         { borderRightWidth: 0, }]}
-                            onPress={() => { setSortBy(2) }}>
+                            onPress={() => {
+                                setSortBy(2)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 2))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
                         </TouchableOpacity>
                         :
                         <TouchableOpacity style={[styles.sortContainer,
                         { borderRightWidth: 0, }]}
-                            onPress={() => { setSortBy(2) }}>
+                            onPress={() => {
+                                setSortBy(2)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 2))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>A-Z</Text>
                         </TouchableOpacity>
                     }
                     {sortBy == 3 ?
                         <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
                         { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
-                            onPress={() => { setSortBy(3) }}>
+                            onPress={() => {
+                                setSortBy(3)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 3))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>Category</Text>
                         </TouchableOpacity>
                         :
                         <TouchableOpacity style={[styles.sortContainer,
                         { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
-                            onPress={() => { setSortBy(3) }}>
+                            onPress={() => {
+                                setSortBy(3)
+                                setSortedTodoItems(toSort(categoryState.userTodoItems, 3))
+                            }}>
                             <Text style={[styles.textDefault, styles.sortText]}>Category</Text>
                         </TouchableOpacity>
                     }
 
                 </View>
 
-                {sorted_todoItems.length == 0 ?
+                {sortedTodoItems.length == 0 ?
                     <View style={{ alignItems: 'center' }}>
                         <Text style={[styles.textDefault, {
                             marginTop: 20, marginBottom: 10,
@@ -131,7 +189,7 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                 <FlatList
                     style
                     horizontal={false}
-                    data={sorted_todoItems}
+                    data={sortedTodoItems}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(result) => result.item_id}
                     ItemSeparatorComponent={() => {
@@ -198,6 +256,15 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
         const addTodoCallback = () => {
             setShowChild(false)
         }
+        // callback for after deleting an item, so list will update
+        const deleteCallback = () => {
+            setEditItem(null)
+            //setSortedTodoItems(toSort(categoryState.userTodoItems, sortBy))
+        }
+
+        const editCallback = () => {
+            setEditItem(null)
+        }
         return (
             <>
 
@@ -206,8 +273,9 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
                     title={childTitle}
                     buttonText={buttonText}
                     item={editItem}
-                    callback={addTodoCallback} />
-
+                    callback={addTodoCallback}
+                    deleteCallback={deleteCallback}
+                    editCallback={editCallback} />
             </>
         )
     }
@@ -215,8 +283,6 @@ const ToDoSelector = ({ todoItems, toggleFunction, show_error, callback }) => {
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
 
-
-            {/*<View style={styles.dummy} />*/}
             <View style={[styles.modal, { borderRadius: BORDER_RADIUS }]}>
 
                 {show_error && 0 ?

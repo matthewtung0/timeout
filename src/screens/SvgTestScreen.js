@@ -8,10 +8,18 @@ import Header from '../components/Header';
 import AvatarMenuComponent from '../components/AvatarMenuComponent';
 import AvatarColorMenuComponent from '../components/AvatarColorMenuComponent';
 import colorWheelIcon from '../../assets/color_wheel_icon.png';
+
 import hairIconActive from '../../assets/hair_icon_active.png';
+
 import clothesIconInactive from '../../assets/clothes_icon_inactive.png';
+import clothesIconActive from '../../assets/clothes_icon_active.png';
+
 import accessoriesIconInactive from '../../assets/accessories_icon_inactive.png';
+import accessoriesIconActive from '../../assets/accessories_icon_active.png';
+
 import backgroundIconInactive from '../../assets/background_icon_inactive.png';
+import backgroundIconActive from '../../assets/background_icon_active.png';
+
 import pointSquares from '../../assets/point_squares.png';
 
 
@@ -1008,7 +1016,7 @@ const SvgTestScreen = ({ navigation }) => {
                                 <Image
                                     style={{ height: 40, }}
                                     resizeMode="contain"
-                                    source={clothesIconInactive} />
+                                    source={activeMenu == 1 ? clothesIconActive : clothesIconInactive} />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={[activeMenu == 2 ? styles.itemSelectorNewActive :
@@ -1020,7 +1028,7 @@ const SvgTestScreen = ({ navigation }) => {
                                 <Image
                                     style={{ height: 40, }}
                                     resizeMode="contain"
-                                    source={accessoriesIconInactive} />
+                                    source={activeMenu == 2 ? accessoriesIconActive : accessoriesIconInactive} />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={[activeMenu == 3 ? styles.itemSelectorNewActive :
@@ -1032,7 +1040,7 @@ const SvgTestScreen = ({ navigation }) => {
                                 <Image
                                     style={{ height: 40, }}
                                     resizeMode="contain"
-                                    source={backgroundIconInactive} />
+                                    source={activeMenu == 3 ? backgroundIconActive : backgroundIconInactive} />
                             </View>
                         </TouchableOpacity>
                     </View>

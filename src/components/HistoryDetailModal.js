@@ -119,7 +119,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             <View style={{ flex: 2, }} />
                             <View style={{
                                 flex: 6,
-                                backgroundColor: 'white', borderRadius: 20, paddingHorizontal: 20,
+                                backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 20,
                                 justifyContent: 'center',
                             }}>
                                 <Text style={[styles.textDefaultBold, { color: '#67806D', fontSize: 20, }]}>
@@ -137,7 +137,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                                         {selectedObject.category_name}</Text>
                                 </View>
                                 <View style={{ flex: 3 }} />
-                                <View style={{ flex: 1, alignSelf: 'flex-end', marginBottom: 10, }}>
+                                <View style={{ flex: 1, alignSelf: 'flex-end', marginBottom: 15, }}>
                                     <Text style={[styles.textDefault, {
                                         color: '#C0C0C0', fontSize: 12,
                                         paddingRight: 10,
@@ -190,25 +190,32 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
                                 Delete task from your history. This action will be permanent.</Text>
                         </View>
-
-                        <TouchableOpacity style={[styles.updateColorButton, {
-                            width: width / 3, backgroundColor: 'white', marginTop: 20,
-                        }]}
-                            onPress={() => {
-                                if (itemDeleted) {
-                                    areYouSureDelete();
-                                } else {
-                                    if (notes != selectedObject.notes) {
-                                        submitPatch();
+                        <View opacity={isLoading ? 0.2 : 1}>
+                            <TouchableOpacity style={[styles.updateColorButton, {
+                                width: width / 3, backgroundColor: 'white', marginTop: 20,
+                            }]}
+                                onPress={() => {
+                                    if (isLoading) { return }
+                                    if (itemDeleted) {
+                                        areYouSureDelete();
                                     } else {
-                                        //reference.current = !reference.current
-                                        toggleFunction();
-                                    }
+                                        if (notes != selectedObject.notes) {
+                                            submitPatch();
+                                        } else {
+                                            //reference.current = !reference.current
+                                            toggleFunction();
+                                        }
 
-                                }
-                            }}>
-                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#67806D' }]}>OK</Text>
-                        </TouchableOpacity>
+                                    }
+                                }}>
+                                <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#67806D' }]}>OK</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {isLoading ?
+                            <ActivityIndicator style={{ marginTop: 10, }} size="large" color="black" />
+                            :
+                            null}
 
 
                     </View>

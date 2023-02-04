@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { parseISO, differenceInSeconds, format } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
-import { Icon } from 'react-native-elements';
+
+import Icon_rating_null from '../../assets/icon_rating-null.svg'
+import Icon_rating from '../../assets/icon_rating.svg'
+
 const constants = require('../components/constants.json')
 const PRODUCTIVITY_WIDTH = 100
 const iconRatingNull = require('../../assets/icon_rating-null.png')
@@ -70,78 +73,43 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
                         {roundRating(session_obj.prod_rating) >= 20 ?
 
-                            <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star"
-                                type='ionicon'
-                                color={bgColorHex} />
-                            : <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star-outline"
-                                type='ionicon'
-                                color={bgColorHex} />
+                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
+
+                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
                         {roundRating(session_obj.prod_rating) >= 40 ?
-                            <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star"
-                                type='ionicon'
-                                color={bgColorHex} />
-                            : <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star-outline"
-                                type='ionicon'
-                                color={bgColorHex} />
+                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
+
+                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
                         {roundRating(session_obj.prod_rating) >= 60 ?
-                            <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star"
-                                type='ionicon'
-                                color={bgColorHex} />
-                            : <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star-outline"
-                                type='ionicon'
-                                color={bgColorHex} />
+                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
+
+                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
                         {roundRating(session_obj.prod_rating) >= 80 ?
-                            <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star"
-                                type='ionicon'
-                                color={bgColorHex} />
-                            : <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star-outline"
-                                type='ionicon'
-                                color={bgColorHex} />
+                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
+
+                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
                         {roundRating(session_obj.prod_rating) >= 100 ?
-                            <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star"
-                                type='ionicon'
-                                color={bgColorHex} />
-                            : <Icon
-                                style={{ marginHorizontal: 0.2, }}
-                                size={STAR_SIZE}
-                                name="star-outline"
-                                type='ionicon'
-                                color={bgColorHex} />
+                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
+
+                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                width={STAR_SIZE} height={STAR_SIZE} />
                         }
                     </View>
 

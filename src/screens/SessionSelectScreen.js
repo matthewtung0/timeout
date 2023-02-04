@@ -196,7 +196,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                                     <ToDoSelector
                                         toggleFunction={toggleModal}
-                                        todoItems={categoryState.userTodoItems}
+                                        //todoItems={categoryState.userTodoItems}
                                         show_error={state.errorMessage}
                                         callback={fillInWithItem} />
 

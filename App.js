@@ -24,8 +24,7 @@ import HistoryDailyScreen from './src/screens/HistoryDailyScreen';
 import HistorySearchScreen from './src/screens/HistorySearchScreen';
 
 import SignupScreen from './src/screens/SignupScreen';
-//import SignupScreen2 from './src/screens/SignupScreen2';
-//import SignupScreen3 from './src/screens/SignupScreen3';
+import HelpandSupportModal from './src/components/HelpandSupportModal';
 
 import SigninScreen from './src/screens/SigninScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
@@ -61,6 +60,7 @@ import FriendScreen from './src/screens/FriendScreen';
 import OnboardingScreen1 from './src/screens/OnboardingScreen1';
 import OnboardingScreen2 from './src/screens/OnboardingScreen2';
 import OnboardingScreen3 from './src/screens/OnboardingScreen3';
+import OnboardingScreen4 from './src/screens/OnboardingScreen4';
 
 import { Context as AuthContext } from './src/context/AuthContext';
 import { Context as CategoryContext } from './src/context/CategoryContext';
@@ -327,6 +327,9 @@ function CustomDrawerContent(props) {
 
     console.log("all context cleared!")
   }
+  const helpAndSupportModalToggle = () => {
+    setModalVis(!modalVis)
+  }
 
   const areYouSureSignOut = () => {
     Alert.alert(
@@ -366,10 +369,27 @@ function CustomDrawerContent(props) {
 
           <DrawerItemList {...props} />
           <Modal
-            style={{ flex: 1, backgroundColor: 'red' }}
-            isVisible={modalVis}>
-            <Text>modal text</Text>
-            <Button title="Close" onPress={() => setModalVis(false)} />
+            style={{}}
+            isVisible={modalVis}
+            backdropTransitionOutTiming={0}>
+
+            <View style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}>
+              <View style={{
+                height: '70%',
+                borderRadius: 20,
+              }}>
+                <HelpandSupportModal
+                  toggleFunction={helpAndSupportModalToggle}>
+                </HelpandSupportModal>
+
+
+              </View>
+
+            </View>
           </Modal>
         </View>
 
@@ -391,7 +411,7 @@ function CustomDrawerContent(props) {
         />
         <DrawerItem
           label="Help and Support"
-          onPress={() => { }} />
+          onPress={() => { setModalVis(true) }} />
         <DrawerItem
           label="Privacy Policy"
           //component={CreatePrivacyPolicyStack}
@@ -520,16 +540,6 @@ function CreateLoginStack() {
         component={SignupScreen}
         options={pageOptions}
       />
-      {/*<Stack.Screen
-        name="SignUp2"
-        component={SignupScreen2}
-        options={pageOptions}
-      />
-      <Stack.Screen
-        name="SignUp3"
-        component={SignupScreen3}
-        options={pageOptions}
-  />*/}
       <Stack.Screen
         name="OnboardCategory"
         component={OnboardCategoryScreen}
@@ -561,6 +571,11 @@ function CreateOnboardingStack() {
       <Stack.Screen
         name="Onboarding3"
         component={OnboardingScreen3}
+        options={pageOptions}
+      />
+      <Stack.Screen
+        name="Onboarding4"
+        component={OnboardingScreen4}
         options={pageOptions}
       />
 
@@ -951,39 +966,26 @@ function CreateMainNavigator() {
 
   )
 }
-
 export default () => {
-
   return (
-
     <UserProvider>
       <AuthProvider>
         <CounterProvider>
           <CategoryProvider>
-
             <SessionProvider>
               <ReactionProvider>
-
-
-
                 <NavigationContainer>
-
                   <Stack.Navigator>
-
                     <Stack.Screen
                       name="MainStack"
                       component={CreateMainNavigator}
                       options={pageOptions} />
-
                   </Stack.Navigator>
-
                 </NavigationContainer>
               </ReactionProvider>
             </SessionProvider>
           </CategoryProvider>
-
         </CounterProvider>
-
       </AuthProvider>
     </UserProvider>
   )

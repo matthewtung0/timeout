@@ -91,8 +91,8 @@ const categoryReducer = (state, action) => {
                     if (item.category_id == action.payload.categoryId) {
                         return {
                             ...item, color_id: action.payload.colorId,
-                            archived: action.payload.toArchive,
-                            isPublic: action.payload.toPublic,
+                            archived: action.payload.archived,
+                            isPublic: action.payload.isPublic,
                         }
                     }
                     return item
@@ -326,7 +326,14 @@ const editCategory = dispatch => async ({ categoryId, newColorId, toPublic, toAr
     try {
         const response = await timeoutApi.patch(`/category/${categoryId}`,
             { colorId: newColorId, archived: toArchive, isPublic: toPublic })
-        dispatch({ type: 'edit_category', payload: { categoryId, colorId: newColorId, archived: toArchive, isPublic: toPublic } })
+        dispatch({
+            type: 'edit_category', payload: {
+                categoryId,
+                colorId: newColorId,
+                archived: toArchive,
+                isPublic: toPublic
+            }
+        })
         if (callback) { callback() }
     } catch (err) {
         console.log("error changing color id:", err);

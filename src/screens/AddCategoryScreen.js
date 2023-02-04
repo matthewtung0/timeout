@@ -60,7 +60,7 @@ const AddCategoryScreen = ({ navigation }) => {
             { text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) } }]
         );
     }
-    //console.log(catState.userCategories)
+
     return (
         <HideKeyboard>
             {userState.errorMessage && 0 ?
@@ -140,7 +140,7 @@ const AddCategoryScreen = ({ navigation }) => {
                         { marginLeft: 25, marginTop: 120, fontSize: 20, color: '#67806D' }]}>Active Categories</Text>
                         <View style={styles.categoryContainer}>
                             {catState.userCategories
-                                .filter((item) => (!item.archived && item.category_name !== 'Unsorted'))
+                                .filter((item) => (!item['archived'] && item.category_name !== 'Unsorted'))
                                 .sort(function (a, b) {
                                     return String(a.category_name).localeCompare(String(b.category_name))
                                 })
@@ -218,7 +218,7 @@ const AddCategoryScreen = ({ navigation }) => {
                         { marginLeft: 25, marginTop: 10, fontSize: 20, color: '#67806D' }]}>Archived Categories</Text>
 
                         <View style={styles.categoryContainer}>
-                            {catState.userCategories.filter((item) => item.archived)
+                            {catState.userCategories.filter((item) => item['archived'])
                                 .sort(function (a, b) {
                                     return String(a.category_name).localeCompare(String(b.category_name))
                                 })
@@ -226,11 +226,14 @@ const AddCategoryScreen = ({ navigation }) => {
                                     return (
                                         <View
                                             key={item.category_id}
-                                            style={{ height: 35, }}>
-                                            <View style={{ flexDirection: 'row', flex: 1, }}>
+                                            style={{ height: 40, }}>
+                                            <View style={{
+                                                flexDirection: 'row', flex: 1, marginBottom: 5,
+                                                alignItems: 'center',
+                                            }}>
 
                                                 <View style={{ flex: 8, }}>
-                                                    <Text style={[styles.categoryText, styles.textDefault,
+                                                    <Text style={[styles.textDefault,
                                                     { color: '#67806D', fontSize: 15, }]}>{item['category_name']}</Text>
                                                 </View>
 

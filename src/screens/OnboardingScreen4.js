@@ -1,15 +1,19 @@
-import React, { } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import { Context as AuthContext } from '../context/AuthContext';
 import { Icon } from 'react-native-elements'
 
 
-const OnboardingScreen3 = ({ navigation, route: { params } }) => {
+const OnboardingScreen4 = ({ navigation, route: { params } }) => {
+    const { height, width } = Dimensions.get('window');
+
+    const { setShowOnboarding } = useContext(AuthContext);
     return (
         <>
             <View style={{ height: '100%', width: '100%', }}>
                 <View style={{ height: '100%', width: '100%', borderWidth: 0, position: 'absolute' }}>
                     <ImageBackground
-                        source={require('../../assets/animation_02_onboarding-3.gif')}
+                        source={require('../../assets/animation_02_onboarding-4.gif')}
                         style={{ height: '100%', width: '100%', borderWidth: 0, }}>
                     </ImageBackground>
                 </View>
@@ -22,12 +26,13 @@ const OnboardingScreen3 = ({ navigation, route: { params } }) => {
 
                     <View style={{ flex: 1, alignItems: 'center', }}>
 
-                        <Text style={[styles.textDefaultBold, { fontSize: 22, marginTop: 30, }]}>Be productive with friends!</Text>
+                        <Text style={[styles.textDefaultBold, { fontSize: 22, marginTop: 30, }]}>
+                            Look back on past sessions!</Text>
                         <Text style={[styles.textDefault, {
                             marginTop: 20, marginHorizontal: 30, fontSize: 17,
                             textAlign: 'center',
                         }]}>
-                            Invite your friends to TimeOut and share what you've been up to! Strength in numbers or something like that.
+                            Review and search through all that you've done. Compare stats for each month.
                         </Text>
                     </View>
 
@@ -56,18 +61,20 @@ const OnboardingScreen3 = ({ navigation, route: { params } }) => {
 
                             </View>
                             <View
-                                style={[styles.subItemSelectorActive]}>
+                                style={[styles.subItemSelector]}>
 
                             </View>
                             <View
-                                style={[styles.subItemSelector]}>
+                                style={[styles.subItemSelectorActive]}>
 
                             </View>
                             <TouchableOpacity
                                 onPress={() => {
-                                    navigation.navigate('Onboarding4')
                                 }}
-                                style={{ marginHorizontal: 5, paddingVertical: 10, paddingHorizontal: 5, }}>
+                                style={{
+                                    opacity: 0,
+                                    marginHorizontal: 5, paddingVertical: 10, paddingHorizontal: 5,
+                                }}>
                                 <Icon
                                     name='caret-forward'
                                     size={20}
@@ -75,6 +82,17 @@ const OnboardingScreen3 = ({ navigation, route: { params } }) => {
                                     color='#B3B2B3' />
                             </TouchableOpacity>
                         </View>
+
+
+
+                        <TouchableOpacity
+                            onPress={() => { setShowOnboarding(false) }}
+                            style={{
+                                width: width / 2, alignSelf: 'center', borderWidth: 1, paddingVertical: 10,
+                                marginTop: 15, borderRadius: 20, backgroundColor: '#90AB72', borderColor: '#90AB72'
+                            }}>
+                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'white', fontSize: 16, }]}>Go to app</Text>
+                        </TouchableOpacity>
 
                     </View>
 
@@ -133,4 +151,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default OnboardingScreen3;
+export default OnboardingScreen4;
