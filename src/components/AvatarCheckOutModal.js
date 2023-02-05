@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { View, StyleSheet, Text, Button, Image } from 'react-native';
 const constants = require('../components/constants.json')
 import * as DIR from '../components/AvatarSelection';

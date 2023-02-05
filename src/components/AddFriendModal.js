@@ -2,7 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 import {
     View, StyleSheet, Text, Dimensions, TouchableOpacity, TextInput, Keyboard, TouchableWithoutFeedback, Image,
 } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 const addFriendPlant = require('../../assets/addFriendPlant.png');
 
@@ -11,21 +11,27 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
     const [friendCode, setFriendCode] = useState(null)
     const [friendCode2, setFriendCode2] = useState(null)
     const [friendCode3, setFriendCode3] = useState(null)
-    const { state, requestFriend, fetchOutgoingRequests } = useContext(userContext)
+    const { requestFriend, fetchOutgoingRequests } = useContext(userContext)
+    const [isLoading, setIsLoading] = useState(false)
 
     const firstRef = useRef();
     const secondRef = useRef();
     const thirdRef = useRef();
-    const [firstEditable, setFirstEditable] = useState(true)
-    const [secondEditable, setSecondEditable] = useState(false)
-    const [thirdEditable, setThirdEditable] = useState(false)
-
-    //firstRef.current.focus()
 
     const requestFriendCallback = async () => {
         await fetchOutgoingRequests()
         toggleFunction()
+        setIsLoading(false)
         alert("Friend request successfully sent.");
+    }
+    const requestFriendCallbackInvalidCode = async () => {
+        setIsLoading(false)
+        alert("Friend code does not belong to any users")
+    }
+
+    const requestFriendCallbackInvalidRequest = async () => {
+        setIsLoading(false)
+        alert("Something went wrong. Please try again later or use another friend code")
     }
 
     const HideKeyboard = ({ children }) => (
@@ -182,13 +188,17 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
 
                     </View>
 
-                    <View style={{ marginVertical: 30, }}>
+                    <View opacity={isLoading ? 0.2 : 1}
+                        style={{ marginVertical: 30, }}>
                         <TouchableOpacity
                             style={[styles.addFriend, { width: width / 2.5, height: height / 15 }]}
                             onPress={() => {
                                 var fullFC = friendCode + friendCode2 + friendCode3
                                 if (fullFC) {
-                                    requestFriend(fullFC, requestFriendCallback)
+                                    setIsLoading(true)
+                                    requestFriend(fullFC, requestFriendCallback,
+                                        requestFriendCallbackInvalidCode,
+                                        requestFriendCallbackInvalidRequest)
                                 }
 
                             }}>
@@ -200,8 +210,6 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
                                 <Text style={styles.addFriendText}>Add Friend</Text>
                             </View>
                         </TouchableOpacity>
-
-                        {state.errorMessage ? <Text>Error message here:{state.errorMessage}</Text> : null}
                     </View>
                     <View style={styles.backContainer}>
                         <TouchableOpacity
@@ -251,10 +259,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 20,
         shadowOffset: {
-            width: 2,
-            height: 2,
+            width: 1,
+            height: 1,
         },
-        shadowOpacity: 0.9,
+        shadowOpacity: 0.2,
     },
     addFriendText: {
         color: 'white',

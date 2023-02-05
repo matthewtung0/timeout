@@ -6,14 +6,14 @@ import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
 import AvatarComponent from '../components/AvatarComponent';
 
-const FriendScreen = ({ navigation }) => {
+const FriendScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
     const [friendCode, setFriendCode] = useState('')
     const { state, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
         acceptFriendRequest, rejectFriendRequest, fetchFriends } = useContext(userContext)
     const [modalVisible, setModalVisible] = useState(false)
 
-    console.log(state.friends)
+    console.log("params is ", params)
     const resetInputs = async () => {
         setFriendCode('')
         await fetchFriends()
@@ -42,7 +42,6 @@ const FriendScreen = ({ navigation }) => {
                     marginBottom: 10,
                 }}
             />
-
         )
     }
 
@@ -72,7 +71,7 @@ const FriendScreen = ({ navigation }) => {
                 <View style={styles.makeshiftTabBarContainer}>
                     <View style={styles.makeshiftTabBar}>
                         <TouchableOpacity style={[styles.tabBarButton, { backgroundColor: '#C0C0C0', }]}
-                            onPress={() => { navigation.navigate('Notifications') }}>
+                            onPress={() => { navigation.navigate('Notifications', params) }}>
                             <Text style={[styles.tabBarText, styles.textDefaultBold,
                             { color: 'grey' }]}>Me</Text>
                         </TouchableOpacity>
@@ -101,17 +100,6 @@ const FriendScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
 
-                {/* MY FRIEND CARD - now in the modal */}
-                {/*<View style={{
-                    borderWidth: 1, borderColor: '#90AB72', borderRadius: 10,
-                    alignItems: 'center', marginHorizontal: 50, backgroundColor: '#CDD5A0',
-                    padding: 10, marginBottom: 10,
-                }}>
-                    <Text>Add me! My friend code is:</Text>
-                    <Text style={{ fontSize: 30, }}>{state.friendCode}</Text>
-            </View>*/}
-
-
                 <Text style={[styles.textDefaultBold, { marginLeft: 25, fontSize: 20, color: '#67806D', marginTop: 20, }]}>
                     My Friends:</Text>
 
@@ -138,13 +126,14 @@ const FriendScreen = ({ navigation }) => {
                                             <AvatarComponent
                                                 w={50}
                                                 //isSelf={false}
-                                                id={item.friend} />
+                                                id={item.friend}
+                                                useCache={params ? params.cacheChecker[item.friend] == false : true} />
                                         </View>
 
                                         {/* NAME // FRIEND SINCE- */}
                                         <View style={{ flex: 5, justifyContent: 'space-around' }}>
-                                            <Text style={{ fontWeight: '600', fontSize: 18, }}>{item['username']}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: '300', }}>
+                                            <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}</Text>
+                                            <Text style={[styles.textDefault, { fontSize: 12, color: 'gray' }]}>
                                                 {"Friend since " + formatDate(item['time_created'])}
                                             </Text>
                                         </View>
@@ -154,12 +143,13 @@ const FriendScreen = ({ navigation }) => {
                                             <TouchableOpacity
                                                 style={{
                                                     borderWidth: 1, borderRadius: 15, alignItems: 'center',
-                                                    marginBottom: 10, borderColor: 'gray',
+                                                    marginBottom: 10, borderColor: '#67806D',
                                                 }}
                                                 onPress={() => {
                                                     rejectFriendRequest(item.friend, resetInputs)
                                                 }}>
-                                                <Text style={{ padding: 3, fontSize: 12, fontWeight: '300', }}>Unfriend</Text>
+                                                <Text style={[styles.textDefault,
+                                                { padding: 3, fontSize: 12, color: '#67806D' }]}>Unfriend</Text>
                                             </TouchableOpacity>
                                         </View>
 
@@ -222,7 +212,7 @@ const styles = StyleSheet.create({
             width: 1,
             height: 1,
         },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.2,
     },
     addFriendText: {
         color: 'white',

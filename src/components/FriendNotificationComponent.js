@@ -13,103 +13,13 @@ import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
 import { Context as SessionContext } from '../context/SessionContext';
 
-export function FriedNotificationComponent({ item }) {
+const FriendNotificationComponent = ({ item, cacheChecker, navigation }) => {
     const { state: userState, setIdToView } = useContext(UserContext)
 
     const [disableTouch, setDisableTouch] = useState(false)
     const { state: sessionState, fetchUserReactions,
         reactToActivity, fetchAvatars } = useContext(SessionContext)
     const [reactionCount, setReactionCount] = useState(item.reaction_count)
-
-    const styles = StyleSheet.create({
-        textDefaultBold: {
-            fontFamily: 'Inter-Bold',
-        },
-        textDefault: {
-            fontFamily: 'Inter-Regular',
-        },
-        outerContainer: {
-            marginTop: 110, //here because header is transparent
-            flex: 1,
-            flexDirection: 'column',
-        },
-        makeshiftTabBarContainer: {
-            flex: 0.1,
-        },
-        flatListContainer: {
-            flex: 0.9,
-        },
-        makeshiftTabBar: {
-            flex: 1,
-            flexDirection: 'row',
-        },
-        flatlistStyle: {
-            margin: 5,
-            borderRadius: 5,
-            padding: 5,
-            height: '100%',
-        },
-        container: {
-            flex: 1,
-            flexDirection: 'row',
-            borderBottomWidth: 0.2,
-            borderBottomColor: 'gray',
-            height: 75,
-        },
-        pfpcontainer: {
-            flex: 0.25,
-            //backgroundColor: 'green',
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        pfp: {
-            height: 50,
-            width: 50,
-            borderRadius: 100,
-        },
-        title: {
-            margin: 10,
-            fontSize: 20,
-        },
-        listItem: {
-            flex: 1,
-            margin: 5,
-            padding: 5,
-            //backgroundColor: 'red',
-        },
-        likeContainer: {
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-        },
-        likeCount: {
-            marginHorizontal: 5,
-        },
-        loadMore: {
-            marginVertical: 20,
-            padding: 10,
-            backgroundColor: '#ABC57E',
-            alignItems: 'center',
-        },
-        loadMoreText: {
-            fontWeight: 'bold',
-            color: 'white',
-            fontSize: 18,
-        },
-        tabBarButton: {
-            flex: 1,
-            padding: 10,
-            height: 50,
-            backgroundColor: '#ABC57E',
-            alignItems: 'center',
-            justifyContent: 'center'
-        },
-        tabBarText: {
-            color: 'white',
-            fontSize: 17,
-        }
-
-    })
 
     const duration = (startTime, endTime) => {
         return differenceInSeconds(parseISO(endTime), parseISO(startTime))
@@ -141,7 +51,7 @@ export function FriedNotificationComponent({ item }) {
         setDisableTouch(false)
     }
 
-    console.log("Rendered ", item.activity_id)
+    console.log("Rendered ", item)
 
     return (
 
@@ -157,7 +67,8 @@ export function FriedNotificationComponent({ item }) {
                         <AvatarComponent w={50}
                             //isSelf={item.username == userState.username}
                             id={item.user_id}
-                            pfpSrc={userState.base64pfp} />
+                            //pfpSrc={userState.base64pfp}
+                            useCache={cacheChecker[item.user_id] == false} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -175,7 +86,7 @@ export function FriedNotificationComponent({ item }) {
                         {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
                         <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.category_name}</Text>
                     </Text>
-                    <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_end)}</Text>
+                    <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_created)}</Text>
 
                 </View>
                 <View style={{ flex: 1 }}>
@@ -186,4 +97,100 @@ export function FriedNotificationComponent({ item }) {
         </View>
     );
 }
-export const FriendNotificationItem = React.memo(FriedNotificationComponent);
+const equal = (prevItem, nextItem) => {
+    if (prevItem.item.interaction_id != nextItem.item.interaction_id) {
+        return false;
+    }
+    return true;
+}
+
+const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
+    outerContainer: {
+        marginTop: 110, //here because header is transparent
+        flex: 1,
+        flexDirection: 'column',
+    },
+    makeshiftTabBarContainer: {
+        flex: 0.1,
+    },
+    flatListContainer: {
+        flex: 0.9,
+    },
+    makeshiftTabBar: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    flatlistStyle: {
+        margin: 5,
+        borderRadius: 5,
+        padding: 5,
+        height: '100%',
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        borderBottomWidth: 0.2,
+        borderBottomColor: 'gray',
+    },
+    pfpcontainer: {
+        flex: 0.25,
+        //backgroundColor: 'green',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pfp: {
+        height: 50,
+        width: 50,
+        borderRadius: 100,
+    },
+    title: {
+        margin: 10,
+        fontSize: 20,
+    },
+    listItem: {
+        flex: 1,
+        margin: 5,
+        padding: 5,
+        //backgroundColor: 'red',
+    },
+    likeContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    likeCount: {
+        marginHorizontal: 5,
+    },
+    loadMore: {
+        marginVertical: 20,
+        padding: 10,
+        backgroundColor: '#ABC57E',
+        alignItems: 'center',
+    },
+    loadMoreText: {
+        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 18,
+    },
+    tabBarButton: {
+        flex: 1,
+        padding: 10,
+        height: 50,
+        backgroundColor: '#ABC57E',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    tabBarText: {
+        color: 'white',
+        fontSize: 17,
+    }
+
+})
+
+export const FriendNotificationItem = React.memo(FriendNotificationComponent, equal);

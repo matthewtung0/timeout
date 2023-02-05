@@ -121,7 +121,8 @@ const ProfileScreen = ({ navigation }) => {
     const fetchInitialBatch = async (id) => {
         //const response = await timeoutApi.get(`/session/${id}`)
         var initialNumToRetrieve = 10;
-        const response2 = await timeoutApi.get(`/sessionFeed`, { params: { startIndex: 0, friends: [id], numToRetrieve: initialNumToRetrieve, } })
+        const response2 = await timeoutApi.get(`/sessionFeed`,
+            { params: { startIndex: 0, friends: [id], numToRetrieve: initialNumToRetrieve, } })
         setOffset(offset + initialNumToRetrieve)
         setProfileSessions([response2.data])
         setVisibleOffset(visibleOffset + initialNumToRetrieve)
@@ -132,6 +133,8 @@ const ProfileScreen = ({ navigation }) => {
     const getData = async () => {
         //if (isLoading) { return; }
         console.log("Loading 10 more..");
+
+        if (atEnd) { return }
         if (visibleOffset < offset) {
             // no need to retrieve, just reveal more items
             setVisibleOffset(visibleOffset + 10);
@@ -149,8 +152,8 @@ const ProfileScreen = ({ navigation }) => {
             })
             //let temp2 = await fetchSessionsNextBatchSelf(offset, state.user_id)
             if (response2.data.length == 0) { setAtEnd(true) } else {
-                setOffset(offset + numToRetrieve)
-                setVisibleOffset(visibleOffset + 10);
+                setOffset(offset + Math.min(response2.data.length, numToRetrieve))
+                setVisibleOffset(visibleOffset + Math.min(response2.data.length, 10))
             }
             setProfileSessions([[...profileSessions[0], ...response2.data]])
             setIsLoading(false);
@@ -216,17 +219,6 @@ const ProfileScreen = ({ navigation }) => {
     const togglePFPModal = () => {
         setPFPModalVisible(!pfpModalVisible)
     }
-
-    const avatarComponentFunc = () => {
-        <AvatarComponent w={115} pfpSrc={pfpSrc} //isSelf={false}
-            id={state.idToView} />
-    }
-    const avatarComponentFuncSmall = () => {
-        <AvatarComponent w={48} pfpSrc={pfpSrc} //isSelf={false}
-            id={state.idToView} />
-    }
-    const memoizedAvatarComponent = useMemo(avatarComponentFunc, [state.idToView, pfpSrc])
-    const memoizedAvatarComponentSmall = useMemo(avatarComponentFuncSmall, [state.idToView, pfpSrc])
 
     const renderHeader = () => {
         return (

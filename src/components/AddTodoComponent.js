@@ -6,7 +6,6 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import DropDownComponent2 from './DropDownComponent2';
-import { call } from 'react-native-reanimated';
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const HideKeyboard = ({ children }) => (

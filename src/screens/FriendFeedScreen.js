@@ -19,11 +19,11 @@ const REFRESH_THRESHOLD_POSITION = -50;
 const SCROLL_THROTTLE_RATE = 200;
 const NUM_TO_RETRIEVE = 50;
 
-const FriendFeedScreen = ({ navigation }) => {
+const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const { width, height } = Dimensions.get('window');
     //const { fetchUserReactions } = useContext(SessionContext)
     const { state: reactionState, fetchUserReactions, fetchSessions } = useContext(ReactionContext)
-    const { state: userState, setIdToView, } = useContext(UserContext)
+    const { state, setIdToView, } = useContext(UserContext)
     const [disableTouch, setDisableTouch] = useState(false)
     const [refreshToken, setRefreshToken] = useState(0)
 
@@ -39,7 +39,6 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingRefresh, setIsLoadingRefresh] = useState(false)
-
 
     useFocusEffect(
         useCallback(() => {
@@ -58,13 +57,13 @@ const FriendFeedScreen = ({ navigation }) => {
                 setCacheChecker({})
                 setAtEnd(false)
             }
-        }, [])
+        }, [state.friends])
         //[refreshToken])
     )
 
     const checkFriendsAvatarUpdate = async (user_id_list) => {
         // gets a list of user id
-        user_id_list.push(userState.user_id)
+        user_id_list.push(state.user_id)
         let user_cache_dt_map = {}
         for (var i in user_id_list) {
             var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id_list[i]}`)
@@ -102,8 +101,9 @@ const FriendFeedScreen = ({ navigation }) => {
 
     const getFeed = async () => {
         try {
-            await checkFriendsAvatarUpdate(userState.friends.map(req => req.friend))
-            let temp = await fetchSessions(userState.friends, 0, 10, true)
+            console.log("Current friends is ", state.friends)
+            await checkFriendsAvatarUpdate(state.friends.map(req => req.friend))
+            let temp = await fetchSessions(state.friends, 0, 10, true)
             console.log("tEMP IS ", temp.map(req => { return req.user_id }))
 
 
@@ -111,7 +111,7 @@ const FriendFeedScreen = ({ navigation }) => {
             setOffset(10)
             setVisibleOffset(10)
 
-            await fetchUserReactions()
+            //await fetchUserReactions()
             setIsLoadingRefresh(false)
         } catch (err) {
             console.log("Problem retrieving feed", err)
@@ -140,7 +140,7 @@ const FriendFeedScreen = ({ navigation }) => {
         }
         setIsLoading(true)
         try {
-            let temp2 = await fetchSessions(userState.friends, offset, NUM_TO_RETRIEVE)
+            let temp2 = await fetchSessions(state.friends, offset, NUM_TO_RETRIEVE)
             //let temp2 = await fetchSessionsNextBatch(offset, userState.friends)
             if (temp2.length == 0) { setAtEnd(true) } else {
                 setOffset(offset + Math.min(temp2.length, NUM_TO_RETRIEVE))
@@ -197,7 +197,7 @@ const FriendFeedScreen = ({ navigation }) => {
     }
 
     const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions, visibleOffset, atEnd,
-    reactionState.userReaction, offset, cacheChecker])
+    reactionState.userReaction, cacheChecker, state.friends])
 
     const renderSeparator = () => (
         <View
@@ -223,7 +223,7 @@ const FriendFeedScreen = ({ navigation }) => {
                             <View style={styles.makeshiftTabBar}>
                                 <TouchableOpacity style={[styles.tabBarButton, { backgroundColor: '#C0C0C0', }]}
                                     onPress={() => {
-                                        navigation.navigate('Notifications')
+                                        navigation.navigate('Notifications', { cacheChecker })
                                     }}>
                                     <Text style={[styles.tabBarText, styles.textDefaultBold,
                                     { color: 'grey' }]}>Me</Text>
@@ -233,7 +233,7 @@ const FriendFeedScreen = ({ navigation }) => {
                                 </View>
 
                                 <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
-                                    onPress={() => { navigation.navigate('Friend') }}>
+                                    onPress={() => { navigation.navigate('Friend', { cacheChecker }) }}>
                                     <Text style={[styles.tabBarText, styles.textDefaultBold,
                                     { color: 'grey' }]}>Friends</Text>
                                 </TouchableOpacity>

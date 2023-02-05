@@ -1,17 +1,15 @@
 import React, { useState, useContext } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, TextInput, Switch, ActivityIndicator,
+    TextInput, ActivityIndicator,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Context as CounterContext } from '../context/CounterContext';
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 
 const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }) => {
     const { height, width } = Dimensions.get('window');
     const [resMessage, setResMessage] = useState('')
-    const INPUT_WIDTH = width * 0.8
     const COLOR_WIDTH = 40;
     const BORDER_RADIUS = 20;
     const [counterName, setCounterName] = useState('')

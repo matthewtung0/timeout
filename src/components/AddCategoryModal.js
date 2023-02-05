@@ -1,12 +1,11 @@
 import React, { useState, useContext } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, TextInput, Switch, ActivityIndicator, Alert,
+    TextInput, ActivityIndicator,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext'
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 

@@ -1,13 +1,11 @@
-import React, { useContext, useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
-    View, StyleSheet, TouchableOpacity, Dimensions, ImageBackground,
-    KeyboardAvoidingView, Image, ScrollView, Keyboard, TouchableWithoutFeedback, Animated
+    View, StyleSheet, TouchableOpacity, Dimensions,
+    Image, Keyboard, TouchableWithoutFeedback, Animated
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { Input, Button, Text } from 'react-native-elements';
-import { Context as AuthContext } from '../context/AuthContext';
+import { Input, Text } from 'react-native-elements';
 import timeoutApi from '../api/timeout';
 import { Easing } from 'react-native-reanimated';
 
@@ -25,7 +23,6 @@ const HideKeyboard = ({ children }) => (
 );
 const SignupScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
-    const { state, signup, clearErrorMessage } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -74,6 +71,11 @@ const SignupScreen = ({ navigation, route: { params } }) => {
     }
 
     const checkValidations = async () => {
+
+        if (password == '' || passwordConfirm == '' || username == '') {
+            alert("Please fill in all fields")
+            return;
+        }
         if (password != passwordConfirm) {
             setPasswordMismatch(true)
             return;

@@ -10,6 +10,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import { Context as CategoryContext } from '../context/CategoryContext'
 import { Context as SessionContext } from '../context/SessionContext'
 import { Context as CounterContext } from '../context/CounterContext'
+import { Context as ReactionContext } from '../context/ReactionContext'
 import { Context as UserContext } from '../context/userContext'
 import { Easing } from 'react-native-reanimated';
 import {
@@ -32,7 +33,7 @@ const HideKeyboard = ({ children }) => (
 const SigninScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
     const { state, signin, clearErrorMessage } = useContext(AuthContext);
-
+    const { fetchUserReactions } = useContext(ReactionContext)
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
     const { fetchOutgoingRequests, fetchIncomingRequests, fetchAvatarGeneral, fetchAvatarItemsOwned,
         fetchFriends, fetchSelf } = useContext(UserContext)
@@ -69,6 +70,7 @@ const SigninScreen = ({ navigation }) => {
             await setOffsetFetched(3)
         )
         await fetchUserCounters()
+        await fetchUserReactions();
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);
         await fetchFriends();

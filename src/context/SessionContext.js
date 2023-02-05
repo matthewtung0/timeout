@@ -46,6 +46,8 @@ const sessionReducer = (state, action) => {
             return { ...state, userReaction: action.payload }
         case 'fetch_notification':
             return { ...state, userNotifications: action.payload }
+        case 'fetch_notification_add_on':
+            return { ...state, userNotifications: [...state.userNotifications, ...action.payload] }
         case 'fetch_likers':
             return { ...state }
         case 'preemptive_like':
@@ -487,8 +489,6 @@ const deleteSession = dispatch => async (sessionObj, callback = null, errorCallb
     }
 }
 
-const fetchAllSession = dispatch => async () => { };
-
 // get activities that user has reacted on
 const fetchUserReactions = dispatch => async () => {
     try {
@@ -507,6 +507,22 @@ const fetchNotifications = dispatch => async () => {
         dispatch({ type: 'fetch_notification', payload: response.data })
     } catch (err) {
         console.log("problem fetching user notifications", err);
+    }
+}
+
+const fetchNotificationsBatch = dispatch => async (startIndex, initialNumToRetrieve, isInitial = false) => {
+    try {
+        const response = await timeoutApi.get(`/notifications`,
+            { params: { startIndex: startIndex, numToRetrieve: initialNumToRetrieve, } })
+        if (isInitial) {
+            dispatch({ type: 'fetch_notification', payload: response.data })
+        } else {
+            dispatch({ type: 'fetch_notification_add_on', payload: response.data })
+        }
+        return response.data
+
+    } catch (err) {
+        console.log("problem fetching user notifications batch", err);
     }
 }
 
@@ -544,14 +560,15 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
     }
 }
 
+
+
+
 const clearSessionContext = dispatch => async () => {
     try {
         dispatch({ type: 'clear_context' })
     } catch (err) {
-
     }
 }
-
 
 export const { Provider, Context } = createDataContext(
     sessionReducer,
@@ -560,7 +577,7 @@ export const { Provider, Context } = createDataContext(
         fetchSessionsSelf, fetchSessionsNextBatchSelf, fetchAvatars,
         resetCalendarDate, deleteSession, fetchNotifications, clearSessionContext, patchSession,
         fetchLikersOfActivity, fetchMultipleMonths, saveSession, setOffsetFetched, setCurOffset,
-        setHardReset, resetMostCurrentDate
+        setHardReset, resetMostCurrentDate, fetchNotificationsBatch,
     },
     {
         userSessions: [],

@@ -328,16 +328,19 @@ const fetchAvatarItemsOwned = dispatch => async () => {
     }
 }
 
-const requestFriend = dispatch => async (codeToRequest, callback = null) => {
+const requestFriend = dispatch => async (codeToRequest, callback, callbackInvalidCode, callbackInvalidRequest) => {
     try {
         const response = await timeoutApi.post('/requestFriend', { codeToRequest })
-        if (response.status == 403) {
-            dispatch({ type: 'add_error', payload: response.data.error })
-        } else {
-            dispatch({ type: 'add_error', payload: response.data.error })
+        if (response.data.resultCode == -1) { // invalid friend code
+            if (callbackInvalidCode) { callbackInvalidCode() }
+        } else if (response.data.resultCode == -2) { //invalid request
+            if (callbackInvalidRequest) { callbackInvalidRequest() }
+        } else if (response.data.resultCode == -3) { // other error
+            if (callbackInvalidRequest) { callbackInvalidRequest() }
+        } else { // all good
+            if (callback) { callback() }
         }
 
-        if (callback) { callback() }
     } catch (err) {
         dispatch({ type: 'add_error', payload: 'Problem requesting friend!' })
     }
@@ -390,7 +393,9 @@ const fetchIncomingRequests = dispatch => async (callback = null) => {
 
 const fetchFriends = dispatch => async (callback = null) => {
     try {
+        console.log("Fetching friends")
         const response = await timeoutApi.get('/friendsList')
+        console.log("Friends results: ", response.data);
         dispatch({ type: 'fetch_friends', payload: response.data })
         if (callback) { callback() }
         console.log("Fetch friends complete")

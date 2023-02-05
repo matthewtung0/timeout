@@ -870,6 +870,7 @@ function CreateMainFlowTab() {
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
+  const { fetchUserReactions } = useContext(ReactionContext)
   const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
   const { fetchUserCounters, fetchMultipleMonthsCounters } = useContext(CounterContext)
   const { fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
@@ -903,6 +904,7 @@ function CreateMainNavigator() {
           await setOffsetFetched(3)
         )
         await fetchUserCounters()
+        await fetchUserReactions();
         //await fetchMultipleMonthsCounters(startTime, endTime);
         await fetchAvatarItemsOwned();
         await fetchUserTodoItems(isSelf = true);

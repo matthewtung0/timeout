@@ -1,36 +1,19 @@
 import React, { useState, useContext } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image, TextInput, ActivityIndicator,
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, TextInput, ActivityIndicator,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
-import { Context as CounterContext } from '../context/CounterContext';
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 
-const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounterName, selectedCounterId, colorArr,
+const CounterAddCustomModal = ({ toggleFunction, selectedCounterName, selectedCounterId,
     selectedCurrentCount, customIncrementCallback }) => {
     const BORDER_RADIUS = 20;
     const { height, width } = Dimensions.get('window');
-    const [resMessage, setResMessage] = useState('')
-    const [counterName, setCounterName] = useState('')
-    const [chosenColor, setChosenColor] = useState('c0')
-
     const [isLoading, setIsLoading] = useState(false)
-    const { addCounter, fetchUserCounters } = useContext(CounterContext)
 
     const [incrementBy, setIncrementBy] = useState(0)
     const [isAdd, setIsAdd] = useState(true)
 
-    const resetInputs = async () => {
-        setCounterName('')
-        setResMessage("Counter set successfully!")
-
-        // repull the list now that we've added to it
-        await fetchUserCounters();
-        alert("Category added successfuly!")
-        setIsLoading(false)
-        toggleFunction()
-    }
     const validateInputs = () => {
         return true;
     }
@@ -74,22 +57,34 @@ const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounte
                     <View style={{ alignItems: 'center', marginVertical: 10, }}>
                         <Text style={[styles.textDefaultBold, { fontSize: 16, color: '#67806D' }]}>by</Text>
                     </View>
-                    <TextInput
-                        style={[styles.inputStyle, {
-                            paddingVertical: 10, backgroundColor: '#F9EAD3', borderWidth: 1, borderColor: '#67806D',
-                            fontSize: 40,//backgroundColor: constants.colors[chosenColor],
-                        }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        keyboardType={"number-pad"}
-                        returnKeyType="done"
-                        editable={true}
-                        autoFocus={true}
-                        maxLength={2}
-                        placeholder='_ _'
-                        placeholderTextColor={'#A7BEAD'}
-                        value={incrementBy}
-                        onChangeText={setIncrementBy}
-                    />
+                    <View>
+                        {isLoading ?
+                            <ActivityIndicator
+                                style={[styles.inputStyle, {
+                                    paddingVertical: 10, backgroundColor: '#F9EAD3',
+                                    fontSize: 40,//backgroundColor: constants.colors[chosenColor],
+                                }]}
+                                size="large" color="gray" />
+                            :
+                            <TextInput
+                                style={[styles.inputStyle, {
+                                    paddingVertical: 10, backgroundColor: '#F9EAD3', borderWidth: 1, borderColor: '#67806D',
+                                    fontSize: 40,//backgroundColor: constants.colors[chosenColor],
+                                }]}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                keyboardType={"number-pad"}
+                                returnKeyType="done"
+                                editable={true}
+                                autoFocus={true}
+                                maxLength={2}
+                                placeholder='_ _'
+                                placeholderTextColor={'#A7BEAD'}
+                                value={incrementBy}
+                                onChangeText={setIncrementBy}
+                            />
+                        }
+                    </View>
+
 
                     <View opacity={isLoading ? 0.3 : 1}>
                         <TouchableOpacity
@@ -99,19 +94,21 @@ const CounterAddCustomModal = ({ toggleFunction, selectedColorId, selectedCounte
                                     alert("Counter cannot go below 0!")
                                     return;
                                 }
+                                setIsLoading(true)
                                 if (isAdd) {
+
                                     await customIncrementCallback(selectedCounterId, incrementBy)
                                 } else {
                                     await customIncrementCallback(selectedCounterId, -incrementBy)
                                 }
+                                alert("Added successfully")
                                 toggleFunction();
-                                alert("Added!")
+                                setIsLoading(false)
+
                             }}>
                             <Text style={styles.submitText}>Submit</Text>
                         </TouchableOpacity>
                     </View>
-                    {isLoading ?
-                        <ActivityIndicator size="large" color="gray" /> : null}
 
                 </View>
             </View>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AddTodoComponent from '../components/AddTodoComponent';
 

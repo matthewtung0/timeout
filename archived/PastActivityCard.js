@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { parseISO, differenceInSeconds } from 'date-fns';
-const constants = require('../components/constants.json')
+const constants = require('../src/components/constants.json')
 
 const PastActivityCard = ({ session }) => {
     const { height, width } = Dimensions.get('window');

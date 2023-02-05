@@ -5,28 +5,22 @@ import {
     differenceInMilliseconds, addSeconds
 } from 'date-fns';
 import uuid from 'uuid-random'
-import Svg, {
-    Circle,
-    Path,
-} from 'react-native-svg';
+import Svg from 'react-native-svg';
 import Modal from 'react-native-modal'
 
 import { Text as TextSVG } from 'react-native-svg';
-import { useFocusEffect, useLinkBuilder } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import SessionRatingModal from '../components/SessionRatingModal';
 const constants = require('../components/constants.json')
 const clock_middle = require('../../assets/clock_middle.png');
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 const bg_desk = require('../../assets/background_desk.png');
-
 const { height, width } = Dimensions.get('window');
 const picked_width = width / 2 / 0.8
 
-
-
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
-    const { height, width } = Dimensions.get('window');
+
     const { numMins, categoryId, categoryName, activityName, colorId } = params;
     let bgColorHex = constants.colors[colorId]
 
@@ -98,10 +92,13 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             setEndEarlyFlag(true)
             toggleRewardModal();
         } else {
-            navigate('SessionEval', {
+            /*navigate('SessionEval', {
                 sessionObj, sessionEndTime: getUnixTime(new Date()),
                 endEarlyFlag: false, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
-            })
+            })*/
+            setSessionEndTime(getUnixTime(new Date()))
+            setSessionStartTime(getUnixTime(startTime))
+            setEndEarlyFlag(false)
             toggleRewardModal();
         }
         //alert('Time end')
@@ -409,10 +406,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         shadowOffset: {
-            width: 0.4,
-            height: 0.4,
+            width: 0.2,
+            height: 0.2,
         },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.2,
     },
     buttonText: {
         fontWeight: 'bold',
