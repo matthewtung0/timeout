@@ -76,6 +76,7 @@ const userReducer = (state, action) => {
                 outgoingFriendReqs: [],
                 incomingFriendReqs: [],
                 friends: [],
+                cacheChecker: {},
                 errorMessage: '',
                 firstName: '',
                 lastName: '',
@@ -239,7 +240,6 @@ const checkAvatarLastUpdated = async (user_id, cur_avatar_dt) => {
     } catch (err) {
         return false
     }
-
 }
 
 const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, isSelf = false) => {
@@ -346,7 +346,7 @@ const requestFriend = dispatch => async (codeToRequest, callback, callbackInvali
     }
 }
 
-const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, callback = null) => {
+const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, callback = null, errorCallback = null) => {
     try {
         await timeoutApi.post('/acceptFriendRequest', { idToAccept })
         dispatch({ type: 'accept_friend', payload: { idToAccept, usernameToAccept } })
@@ -355,10 +355,11 @@ const acceptFriendRequest = dispatch => async (idToAccept, usernameToAccept, cal
     } catch (err) {
         console.log("ERROR accepting friend:", err);
         dispatch({ type: 'add_error', payload: 'Problem accepting friend!' })
+        if (errorCallback) { errorCallback() }
     }
 }
 
-const rejectFriendRequest = dispatch => async (idToReject, callback = null) => {
+const rejectFriendRequest = dispatch => async (idToReject, callback = null, errorCallback = null) => {
     try {
         await timeoutApi.post('/rejectFriendRequest', { idToReject })
         dispatch({ type: 'reject_friend', payload: { idToReject } })
@@ -366,6 +367,7 @@ const rejectFriendRequest = dispatch => async (idToReject, callback = null) => {
     } catch (err) {
         console.log("ERROR rejecting friend request", err);
         dispatch({ type: 'add_error', payload: 'Problem rejecting friend!' })
+        if (errorCallback) { errorCallback() }
     }
 }
 
@@ -405,6 +407,22 @@ const fetchFriends = dispatch => async (callback = null) => {
         dispatch({ type: 'add_error', payload: 'Problem getting friends!' })
     }
 };
+
+
+const fetchFriendsIfUpdate = dispatch => async (callback = null) => {
+    try {
+        const response = await timeoutApi.get('/friendsUpdate')
+        if (response.data == "no update") {
+            console.log("No update, friends remain same")
+        } else {
+            console.log("Update - friends list will be updated")
+            dispatch({ type: 'fetch_friends', payload: response.data })
+        }
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem fetching friends update:", err)
+    }
+}
 
 const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, items_cost, callback = null, callback_fail = null) => {
     try {
@@ -455,10 +473,6 @@ const purchaseItems = dispatch => async (itemArr, callback = null) => {
     }
 }
 
-const fetchEveryone = dispatch => async () => { };
-
-const postSelf = dispatch => async () => { }
-
 const editSelf = dispatch => async (firstName, lastName, username, bio, callback) => {
     try {
         const response = await timeoutApi.patch('/self_user', { firstName, lastName, username, bio })
@@ -489,10 +503,6 @@ const addPoints = dispatch => async (id, pointsToAdd, callback) => {
 const clearResponseMessage = dispatch => () => {
     dispatch({ type: 'clear_response', payload: {} })
 }
-
-const deleteSelf = dispatch => async () => { }
-
-const editFriends = dispatch => async () => { }
 
 const updateLastSignin = dispatch => async (callback = null) => {
     try {
@@ -528,6 +538,7 @@ export const { Provider, Context } = createDataContext(
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
         saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2, fetchAvatarGeneral,
+        fetchFriendsIfUpdate,
     },
     {
         outgoingFriendReqs: [],
@@ -545,6 +556,7 @@ export const { Provider, Context } = createDataContext(
         totalTime: 0,
         base64pfp: '',
         bio: '',
+        cacheChecker: {},
         avatar_active: false,
         /*avatarItems: {
             face: { mouth: 0, eyes: 0, makeup: 0, eyebrows: 0, base: 0, },

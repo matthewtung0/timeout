@@ -28,7 +28,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
         setIncomingRequestsVisible(!incomingRequestsVisible)
     }
 
-    const areYouSureUndoSend = (friend, callback) => {
+    const areYouSureUndoSend = (friend, callback, errorCallback_) => {
         Alert.alert(
             "Are you sure you want to unsend this friend request?",
             "",
@@ -37,13 +37,13 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                     text: "Go back", onPress: () => { return false }, style: "cancel"
                 },
                 {
-                    text: "Undo send", onPress: () => { rejectFriendRequest(friend, callback) }
+                    text: "Undo send", onPress: () => { rejectFriendRequest(friend, callback, errorCallback_) }
                 }
             ]
         );
     }
 
-    const areYouSureReject = (friend, callback) => {
+    const areYouSureReject = (friend, callback, errorCallback_) => {
         Alert.alert(
             "Are you sure you want to reject this friend request?",
             "",
@@ -52,7 +52,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                     text: "Go back", onPress: () => { return false }, style: "cancel"
                 },
                 {
-                    text: "Reject", onPress: () => { rejectFriendRequest(friend, callback) }
+                    text: "Reject", onPress: () => { rejectFriendRequest(friend, callback, errorCallback_) }
                 }
             ]
         );
@@ -110,6 +110,11 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
     const acceptFriendCallback = async () => {
         await fetchFriends()
         alert("Friend request successfully accepted.");
+    }
+
+    const errorCallback = async () => {
+        alert("Something went wrong - please try again later.")
+        setIsLoading(false)
     }
 
     useFocusEffect(
@@ -268,7 +273,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                                                                     alignItems: 'center', borderColor: 'gray',
                                                                 }}
                                                                 onPress={() => {
-                                                                    areYouSureUndoSend(item.friend_b, undoSendCallback);
+                                                                    areYouSureUndoSend(item.friend_b, undoSendCallback, errorCallback);
 
                                                                 }}>
                                                                 <View style={{}}>
@@ -334,7 +339,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                                                                     alignItems: 'center', marginRight: 5, borderColor: 'gray'
                                                                 }}
                                                                 onPress={() => {
-                                                                    acceptFriendRequest(item.friend_a, item.username, acceptFriendCallback)
+                                                                    acceptFriendRequest(item.friend_a, item.username, acceptFriendCallback, errorCallback)
                                                                 }}>
                                                                 <View>
                                                                     <Text style={[styles.textDefault, { color: 'gray' }]}>Accept</Text>
@@ -350,7 +355,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                                                                     alignItems: 'center', borderColor: 'gray'
                                                                 }}
                                                                 onPress={() => {
-                                                                    areYouSureReject(item.friend_a, rejectFriendCallback)
+                                                                    areYouSureReject(item.friend_a, rejectFriendCallback, errorCallback)
 
                                                                 }}>
                                                                 <View>

@@ -4,39 +4,31 @@ import {
     TouchableOpacity, ActivityIndicator, Dimensions
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
 import { Context as ReactionContext } from '../context/ReactionContext';
 import { Context as UserContext } from '../context/userContext';
-import FriendScreen from './FriendScreen'
-import { SceneMap, TabBar } from 'react-native-tab-view';
 import timeoutApi from '../api/timeout';
-import FriendNotificationScreen from './FriendNotificationScreen';
-import { compareAsc, parseISO } from 'date-fns';
+import { compareAsc } from 'date-fns';
 import FriendFeedComponent from '../components/FriendFeedComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const REFRESH_THRESHOLD_POSITION = -50;
+//const REFRESH_THRESHOLD_POSITION = -50;
 const SCROLL_THROTTLE_RATE = 200;
 const NUM_TO_RETRIEVE = 50;
 
 const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const { width, height } = Dimensions.get('window');
     //const { fetchUserReactions } = useContext(SessionContext)
-    const { state: reactionState, fetchUserReactions, fetchSessions } = useContext(ReactionContext)
-    const { state, setIdToView, } = useContext(UserContext)
-    const [disableTouch, setDisableTouch] = useState(false)
-    const [refreshToken, setRefreshToken] = useState(0)
+    const { state: reactionState, fetchSessions, reactToActivity } = useContext(ReactionContext)
+    const { state } = useContext(UserContext)
+    //const [refreshToken, setRefreshToken] = useState(0)
 
     const [offset, setOffset] = useState(0)
     const [visibleOffset, setVisibleOffset] = useState(0);
-
 
     const [atEnd, setAtEnd] = useState(false)
     const [isOnline, setIsOnline] = useState(true)
 
     const [cacheChecker, setCacheChecker] = useState({})
-
-
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingRefresh, setIsLoadingRefresh] = useState(false)
 
@@ -53,7 +45,6 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                 setIsLoading(false)
                 setOffset(0)
                 setVisibleOffset(0)
-                setDisableTouch(false)
                 setCacheChecker({})
                 setAtEnd(false)
             }
@@ -93,7 +84,15 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
             }
         }
         setCacheChecker(avatars_need_to_update)
-        console.log("Final result ", avatars_need_to_update)
+        console.log("Final cache Checker: ", avatars_need_to_update)
+
+        /*Final cache Checker:  {"1d99de7c-a072-4732-8b47-3a8419230cf5": false, 
+        "3c4b1f48-25a6-450a-a12c-6d4e67e2e27a": false, 
+        "561bbe72-4658-435e-8c3d-959718b765b2": false, 
+        "a8ae2254-95c3-4c8c-980b-a8a81dc51b49": false, 
+        "ba94c57d-0c9f-4708-9b0e-9d76585d2f14": false, 
+        "e87d16f9-1151-4a72-9233-c805502316ca": false}*/
+
 
         // return a map of user id's if we need to update
 
@@ -101,38 +100,31 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
 
     const getFeed = async () => {
         try {
-            console.log("Current friends is ", state.friends)
-            await checkFriendsAvatarUpdate(state.friends.map(req => req.friend))
+            //await checkFriendsAvatarUpdate(state.friends.map(req => req.friend))
             let temp = await fetchSessions(state.friends, 0, 10, true)
             console.log("tEMP IS ", temp.map(req => { return req.user_id }))
-
 
             console.log(`Right now, offset is ${offset}`)
             setOffset(10)
             setVisibleOffset(10)
 
-            //await fetchUserReactions()
             setIsLoadingRefresh(false)
         } catch (err) {
             console.log("Problem retrieving feed", err)
         }
     }
 
-    const scrollEvent = (e) => {
+    /*const scrollEvent = (e) => {
         var scrollPos = e.nativeEvent.contentOffset.y
 
         if (scrollPos < REFRESH_THRESHOLD_POSITION) {
             setRefreshToken(Math.random())
         }
-    }
-
-    // make buttons enabled again after api calls done
-    const reactCallback = () => {
-        setDisableTouch(false)
-    }
+    }*/
 
     const getData = async () => {
         console.log("Loading 10 more..");
+        if (atEnd) { return; }
         if (visibleOffset < offset) {
             // no need to retrieve, just reveal more items
             setVisibleOffset(visibleOffset + 10);
@@ -176,7 +168,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
             <FlatList
                 style={styles.flatlistStyle}
                 horizontal={false}
-                onScroll={scrollEvent}
+                //onScroll={scrollEvent}
                 onEndReached={getData}
                 scrollEventThrottle={SCROLL_THROTTLE_RATE}
                 data={reactionState.userSessions.slice(0, visibleOffset)}
@@ -189,7 +181,10 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                         item={item}
                         index={index}
                         cacheChecker={cacheChecker}
-                        navigation={navigation} />
+                        setCacheChecker={setCacheChecker}
+                        navigation={navigation}
+                        userReaction={reactionState.userReaction}
+                        reactToActivity_={reactToActivity} />
                 }
             >
             </FlatList>
@@ -197,7 +192,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
     }
 
     const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions, visibleOffset, atEnd,
-    reactionState.userReaction, cacheChecker, state.friends])
+    reactionState.userReaction, state.friends])
 
     const renderSeparator = () => (
         <View
@@ -269,49 +264,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
         )
     }
 
-    const firstRoute = () => {
-        return (
-            <FriendNotificationScreen />
-        )
-    }
-    const thirdRoute = () => {
-        return (
-            <FriendScreen />
-        )
-    }
-    const renderScene = SceneMap({
-        first: firstRoute,
-        second: secondRoute,
-        third: thirdRoute
-    });
-    const [index, setIndex] = useState(1);
-    const [routes] = useState([
-        { key: 'first', title: 'Me' },
-        { key: 'second', title: 'Feed' },
-        { key: 'third', title: 'Friends' },
-    ]);
-
-    const renderTabBar = props => (
-        <TabBar
-            {...props}
-            activeColor='white'
-            inactiveColor='grey'
-            indicatorStyle={{ backgroundColor: 'white' }}
-            style={{ backgroundColor: '#ABC57E' }}
-            labelStyle={{ fontWeight: 'bold', }}
-        />
-    )
-
-    return (
-        secondRoute()
-        /*<TabView
-            style={styles.outerContainer}
-            renderTabBar={renderTabBar}
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}>
-    </TabView>*/
-    )
+    return (secondRoute())
 }
 
 const styles = StyleSheet.create({

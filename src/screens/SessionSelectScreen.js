@@ -14,11 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import timeoutApi from '../api/timeout';
 
-const constants = require('../components/constants.json')
-
-const table_bg = require('../../assets/sessionselect_tablebg.png');
 const background_desk = require('../../assets/background_desk.png')
-
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 
@@ -32,8 +28,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
     const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
-    const { state, fetchSelf } = useContext(UserContext)
-    const { state: categoryState, setChosen, setActivityName, setStartTime } = useContext(CategoryContext)
+    const { state, fetchSelf, fetchFriendsIfUpdate } = useContext(UserContext)
+    const { setChosen, setActivityName } = useContext(CategoryContext)
     const [customActivity, setCustomActivity] = useState('')
 
     const [catId, setCatId] = useState(3)
@@ -41,10 +37,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [colorId, setColorId] = useState('c6')
     const [isLoading, setIsLoading] = useState(false)
 
-    const [introPosition, setIntroPosition] = useState(5)
-    const [pageOpacity, setPageOpacity] = useState(1)
     const [categoryId, setCategoryId] = useState("3");
-
     const [newCatName, setNewCatName] = useState('unsorted')
     const [newColorId, setNewColorId] = useState('c9')
 
@@ -90,12 +83,19 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         return num_stored
     }
 
+    const focusEffectFunc = async () => {
+        setIsLoading(true)
+        console.log("FOCUS EFFECT SESSION SELECT")
+        await fetchFriendsIfUpdate();
+        //checkStoredSessions()
+        AsyncStorage.removeItem('storedSessions'); // TEMP
+
+        setIsLoading(false)
+    }
+
     useFocusEffect(
         useCallback(() => {
-            console.log("FOCUS EFFECT SESSION SELECT")
-
-            AsyncStorage.removeItem('storedSessions'); // TEMP
-            //checkStoredSessions()
+            focusEffectFunc()
         }, [])
     )
     console.log("Error message: ", state.errorMessage);
@@ -157,24 +157,10 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         return true
     }
 
-    const goToSecondIntroGraphic = () => {
-        setIntroPosition(2)
-    }
-    const goToThirdIntroGraphic = () => {
-        setIntroPosition(3)
-    }
-    const goToFourthIntroGraphic = () => {
-        setIntroPosition(4)
-    }
-    const finishIntroGraphic = () => {
-        setIntroPosition(-1)
-        setPageOpacity(1)
-    }
-
     return (
         <HideKeyboard>
             <>
-                <View style={[styles.viewContainer, { opacity: pageOpacity }]}>
+                <View style={[styles.viewContainer,]}>
 
                     {/* TO-DO SELECTOR MODAL */}
                     <View>
@@ -327,74 +313,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
                 </View>
                 {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
-
-
-                {/* INTRO GRAPHIC 1 */}
-                {introPosition == 1 ?
-                    <View
-                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
-                        <TouchableOpacity
-                            style={{ flex: 1, }}
-                            onPress={goToSecondIntroGraphic}>
-                            <><View style={{ flex: 1 }}></View>
-                                <View style={{ flex: 1 }}></View>
-                                <View style={{ flex: 1 }}>
-
-                                    <Text style={{ fontSize: 20, }}>Welcome to TimeOut! We hope this app will help you be productive!</Text>
-                                </View>
-                            </>
-
-                        </TouchableOpacity>
-                    </View> : null}
-
-                {introPosition == 2 ?
-                    <View
-                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
-                        <TouchableOpacity
-                            style={{ flex: 1, }}
-                            onPress={goToThirdIntroGraphic}>
-                            <><View style={{ flex: 1 }}></View>
-
-                                <View style={{ flex: 1 }}>
-
-                                    <Text style={{ fontSize: 20, }}>SECOND BLURB</Text>
-                                </View><View style={{ flex: 1 }}></View>
-                            </>
-
-                        </TouchableOpacity>
-                    </View> : null}
-                {introPosition == 3 ?
-                    <View
-                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
-                        <TouchableOpacity
-                            style={{ flex: 1, }}
-                            onPress={goToFourthIntroGraphic}>
-                            <><View style={{ flex: 1 }}></View>
-
-                                <View style={{ flex: 1 }}>
-
-                                    <Text style={{ fontSize: 20, }}>THIRD BLURB</Text>
-                                </View><View style={{ flex: 1 }}></View>
-                            </>
-
-                        </TouchableOpacity>
-                    </View> : null}
-                {introPosition == 4 ?
-                    <View
-                        style={{ position: 'absolute', height: '100%', width: '100%', }}>
-                        <TouchableOpacity
-                            style={{ flex: 1, }}
-                            onPress={finishIntroGraphic}>
-                            <><View style={{ flex: 1 }}></View>
-
-                                <View style={{ flex: 1 }}>
-
-                                    <Text style={{ fontSize: 20, }}>FOURTH BLURB</Text>
-                                </View><View style={{ flex: 1 }}></View>
-                            </>
-
-                        </TouchableOpacity>
-                    </View> : null}
 
             </>
 

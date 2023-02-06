@@ -1,27 +1,25 @@
 import React, { useContext, useState, useCallback } from 'react';
 import {
     View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
-    TouchableOpacity, Alert, Switch, Image
+    TouchableOpacity, Image
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from 'react-native-elements'
 import { Context as SessionContext } from '../context/SessionContext';
 import AvatarComponent from './AvatarComponent';
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
-const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 const BORDER_RADIUS = 20;
 
 
-const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
+const FriendFeedReactorsModal = ({ toggleFunction, cacheChecker, activityId }) => {
     const { height, width } = Dimensions.get('window');
     const { state: sessionState, fetchLikersOfActivity } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
     const [res, setRes] = useState([])
 
     const getLikes = async () => {
-        var asdf = await fetchLikersOfActivity(activityId)
-        setRes(asdf);
+        var likers = await fetchLikersOfActivity(activityId)
+        setRes(likers);
     }
 
     useFocusEffect(
@@ -45,9 +43,8 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
                             borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
                         }} />
 
-                    <Text style={[styles.title, { position: 'absolute' }]}>People who Liked This</Text>
+                    <Text style={[styles.title, styles.textDefaultBold, { position: 'absolute' }]}>People who Liked This</Text>
                     <View style={{ marginTop: 90 }}>
-                        {/*<Text>Results: {JSON.stringify(res)}</Text>*/}
 
                         <FlatList
                             style={{}}
@@ -68,8 +65,9 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
                             renderItem={({ item }) => {
                                 return (
                                     <View style={{
-                                        borderWidth: 1, flex: 1, flexDirection: 'row',
-                                        height: 75, alignItems: 'center', marginHorizontal: 20,
+                                        borderWidth: 0, flex: 1, flexDirection: 'row',
+                                        alignItems: 'center', marginHorizontal: 20,
+                                        paddingVertical: 5,
                                     }}>
 
                                         <View style={{
@@ -79,11 +77,11 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
                                             borderRadius: 100,
                                         }}>
                                             <AvatarComponent w={50}
-                                                //isSelf={item.username == userState.username}
+                                                useCache={cacheChecker[item.user_id] == false}
                                                 id={item.user_id} />
                                         </View>
-                                        <View style={{ flex: 0.75 }}>
-                                            <Text style={[styles.textDefaultBold, { fontSize: 20, }]}>{item.username}</Text>
+                                        <View style={{ flex: 1 }}>
+                                            <Text style={[styles.textDefaultSemiBold, { fontSize: 16, }]}>{item.username}</Text>
                                         </View>
 
 
@@ -119,6 +117,15 @@ const FriendFeedReactorsModal = ({ toggleFunction, colorArr, activityId }) => {
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         backgroundColor: 'white',
         alignContent: 'center',

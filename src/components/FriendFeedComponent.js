@@ -13,19 +13,20 @@ import AvatarComponent from '../components/AvatarComponent';
 import { Context as ReactionContext } from '../context/ReactionContext';
 import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
-const FriendFeedComponent = ({ item, index, cacheChecker, navigation }) => {
+const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReaction, reactToActivity_ }) => {
   const { height, width } = Dimensions.get('window');
   const { setIdToView } = useContext(UserContext)
 
-  const [disableTouch, setDisableTouch] = useState(false)
-  const { state: reactionState,
-    reactToActivity, } = useContext(ReactionContext)
+  //const { state: reactionState, reactToActivity, } = useContext(ReactionContext)
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
   const [modalVisible, setModalVisible] = useState(false)
 
-
   const duration = (startTime, endTime) => {
-    return differenceInSeconds(parseISO(endTime), parseISO(startTime))
+    var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
+    if (diff_in_min <= 1) {
+      return `${differenceInSeconds(parseISO(endTime), parseISO(startTime))} seconds`
+    }
+    return `${diff_in_min} minutes`
   }
   const timeAgo = (endTime) => {
     var parsedTime = parseISO(endTime)
@@ -69,10 +70,11 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation }) => {
       return `Just now`
     }
   }
+
   // make buttons enabled again after api calls done
   const reactCallback = () => {
-    setDisableTouch(false)
   }
+
   const toggleModal = () => {
     setModalVisible(!modalVisible)
   }
@@ -100,6 +102,7 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation }) => {
             <FriendFeedReactorsModal
               toggleFunction={toggleModal}
               activityId={item.activity_id}
+              cacheChecker={cacheChecker}
             />
           </View>
         </View>
@@ -115,61 +118,65 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation }) => {
               navigation.navigate('Profile temp')
             }}>
             <AvatarComponent w={50}
-              //isSelf={item.username == userState.username}
               id={item.user_id}
-              useCache={cacheChecker[item.user_id] == false}
-            //checkForNew={friend_map_checked[item.user_id]}
-            //pfpSrc={userState.base64pfp} 
+            //useCache={cacheChecker[item.user_id] == false}
+            //cacheChecker={cacheChecker}
+            //setCacheChecker={setCacheChecker}
             />
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.listItem}>
-        <View style={{ flex: 1 }}>
-          <Text>
+        <View style={{ flex: 1, borderWidth: 0, }}>
+          <Text numberOfLines={2}>
             <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.username}</Text>
             <Text style={[styles.textDefault, { fontSize: 15, }]}> worked on </Text>
             <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{duration(item.time_start, item.time_end)}</Text>
-            <Text style={[styles.textDefault, { fontSize: 15, }]}> seconds</Text>
-          </Text>
-          <Text>
-            <Text style={[styles.textDefault, { fontSize: 15, }]}>of </Text>
+            <Text style={[styles.textDefault, { fontSize: 15, }]}> of </Text>
             {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
             <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.category_name}</Text>
-
           </Text>
-          <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_end)}</Text>
+
+
 
         </View>
-        <View style={{ flex: 1 }}>
-          <View style={[styles.likeContainer, { borderWidth: 0, }]}>
-            <TouchableOpacity
-              onPress={toggleModal}>
-              <Text style={[styles.likeCount, { borderWidth: 0, paddingHorizontal: 5, }]}>
-                {item.reaction_count == null ? 0 : reactionCount}</Text>
-            </TouchableOpacity>
+        <View style={{ flex: 1, borderWidth: 0, }}>
+          <View style={{ flexDirection: 'row' }}>
+            <View>
+              <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_end)}</Text>
 
-            <Pressable
-              onPress={() => {
-                let is_like = true
-                if (JSON.stringify(reactionState.userReaction).includes(item.activity_id)) {
-                  is_like = false
-                  setReactionCount(reactionCount - 1)
-                } else {
-                  setReactionCount(reactionCount + 1)
-                }
-                reactToActivity(item.activity_id, is_like, reactCallback)
-              }}>
-              {JSON.stringify(reactionState.userReaction).includes(item.activity_id) ?
-                <Icon
-                  name="heart"
-                  type='font-awesome'
-                  color='#F5BBAE' /> :
-                <Icon
-                  name="heart-o"
-                  type='font-awesome' />}
-            </Pressable>
+            </View>
+
+            <View style={[styles.likeContainer, { borderWidth: 0, }]}>
+              <TouchableOpacity
+                onPress={toggleModal}>
+                <Text style={[styles.likeCount, { borderWidth: 0, paddingHorizontal: 5, }]}>
+                  {item.reaction_count == null ? 0 : reactionCount}</Text>
+              </TouchableOpacity>
+
+              <Pressable
+                onPress={() => {
+                  let is_like = true
+                  if (JSON.stringify(userReaction).includes(item.activity_id)) {
+                    is_like = false
+                    setReactionCount(reactionCount - 1)
+                  } else {
+                    setReactionCount(reactionCount + 1)
+                  }
+                  reactToActivity_(item.activity_id, is_like, reactCallback)
+                }}>
+                {JSON.stringify(userReaction).includes(item.activity_id) ?
+                  <Icon
+                    name="heart"
+                    type='font-awesome'
+                    color='#F5BBAE' /> :
+                  <Icon
+                    name="heart-o"
+                    type='font-awesome' />}
+              </Pressable>
+            </View>
           </View>
+
         </View>
 
       </View>
@@ -217,7 +224,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 0.2,
     borderBottomColor: 'gray',
-    height: 75,
+    //height: 75,
   },
   pfpcontainer: {
     flex: 0.25,
