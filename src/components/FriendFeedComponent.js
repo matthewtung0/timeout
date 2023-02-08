@@ -10,14 +10,11 @@ import {
 import Modal from 'react-native-modal'
 import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
-import { Context as ReactionContext } from '../context/ReactionContext';
 import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
 const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReaction, reactToActivity_ }) => {
-  const { height, width } = Dimensions.get('window');
+  const { height } = Dimensions.get('window');
   const { setIdToView } = useContext(UserContext)
-
-  //const { state: reactionState, reactToActivity, } = useContext(ReactionContext)
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -119,9 +116,7 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
             }}>
             <AvatarComponent w={50}
               id={item.user_id}
-            //useCache={cacheChecker[item.user_id] == false}
-            //cacheChecker={cacheChecker}
-            //setCacheChecker={setCacheChecker}
+              isThumbnail={true}
             />
           </TouchableOpacity>
         </View>
@@ -188,6 +183,13 @@ const equal = (prevItem, nextItem) => {
   if (prevItem.item.activity_id != nextItem.item.activity_id) {
     return false;
   }
+  // activity id's are equal
+
+  if (JSON.stringify(prevItem.userReaction).includes(prevItem.item.activity_id) !=
+    JSON.stringify(nextItem.userReaction).includes(prevItem.item.activity_id)) {
+    return false;
+  }
+
   return true;
 }
 

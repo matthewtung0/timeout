@@ -68,6 +68,7 @@ const userReducer = (state, action) => {
                 ...state, avatarJSON: action.payload.avatarJSON,
                 base64pfp: action.payload.avatarBase64Data,
                 points: state.points - action.payload.items_cost,
+                base64pfpThumbnail: action.payload.avatarBase64DataThumbnail,
             }
         case 'clear_response':
             return { ...state, responseMessage: '', errorMessage: '' }
@@ -242,28 +243,35 @@ const checkAvatarLastUpdated = async (user_id, cur_avatar_dt) => {
     }
 }
 
-const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, isSelf = false) => {
+const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, isSelf = false, isThumbnail = false) => {
     try {
-        var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id}`)
+        if (isThumbnail) {
+            var avatar_dt = await AsyncStorage.getItem(`thumbnail_avatar_date_${user_id}`)
+        } else {
+            var avatar_dt = await AsyncStorage.getItem(`avatar_date_${user_id}`)
+        }
         if (!avatar_dt) {
             forceRetrieve = true
         } else if (!forceRetrieve) {
             //forceRetrieve = true
-
             // check if our version is stale
             let result = await checkAvatarLastUpdated(user_id, avatar_dt);
             result ? forceRetrieve = true : forceRetrieve = false;
         }
 
         if (forceRetrieve) {
-            console.log("Getting avatar from server and user id ", user_id)
-            const response = await timeoutApi.get(`/avatar12345/${user_id}`)
+            console.log(`Getting avatar from server and user id ${user_id} and thumbnail: ${isThumbnail}`)
+            const response = await timeoutApi.get(`/avatar12345/${user_id}`,
+                { params: { isThumbnail: isThumbnail, } })
             console.log("Got avatar from server")
             var base64Icon = `data:image/png;base64,${response.data}`
-
-            await AsyncStorage.setItem(`avatar_${user_id}`, base64Icon);
-            await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
-
+            if (isThumbnail) {
+                await AsyncStorage.setItem(`thumbnail_avatar_${user_id}`, base64Icon);
+                await AsyncStorage.setItem(`thumbnail_avatar_date_${user_id}`, String(new Date()));
+            } else {
+                await AsyncStorage.setItem(`avatar_${user_id}`, base64Icon);
+                await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
+            }
             if (isSelf) {
                 console.log("is self from server")
                 dispatch({ type: 'fetch_avatar', payload: base64Icon })
@@ -271,8 +279,11 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, is
             return base64Icon;
         } else {
             //console.log("Getting avatar from asyncstorage");
-
-            var base64Icon_cached = await AsyncStorage.getItem(`avatar_${user_id}`);
+            if (isThumbnail) {
+                var base64Icon_cached = await AsyncStorage.getItem(`thumbnail_avatar_${user_id}`);
+            } else {
+                var base64Icon_cached = await AsyncStorage.getItem(`avatar_${user_id}`);
+            }
             if (isSelf) {
                 //console.log("is self from cache")
                 dispatch({ type: 'fetch_avatar', payload: base64Icon_cached })
@@ -428,8 +439,9 @@ const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, ite
     try {
         console.log("Items to redeem", items_to_redeem)
         const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON, items_to_redeem, items_cost })
-        var avatarBase64Data = `data:image/png;base64,${response.data}`
-        dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, items_cost } })
+        var avatarBase64Data = `data:image/png;base64,${response.data.bufferString}`
+        var avatarBase64DataThumbnail = `data:image/png;base64,${response.data.thumbnailBufferString}`
+        dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, avatarBase64DataThumbnail, items_cost } })
 
         // save to cache as well
         await AsyncStorage.setItem(`avatar_${user_id}`, avatarBase64Data);
@@ -555,6 +567,7 @@ export const { Provider, Context } = createDataContext(
         totalTasks: 0,
         totalTime: 0,
         base64pfp: '',
+        base64pfpThumbnail: '',
         bio: '',
         cacheChecker: {},
         avatar_active: false,

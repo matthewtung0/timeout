@@ -114,14 +114,6 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
         }
     }
 
-    /*const scrollEvent = (e) => {
-        var scrollPos = e.nativeEvent.contentOffset.y
-
-        if (scrollPos < REFRESH_THRESHOLD_POSITION) {
-            setRefreshToken(Math.random())
-        }
-    }*/
-
     const getData = async () => {
         console.log("Loading 10 more..");
         if (atEnd) { return; }
@@ -190,6 +182,8 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
             </FlatList>
         )
     }
+
+    //console.log(reactionState.userReaction)
 
     const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions, visibleOffset, atEnd,
     reactionState.userReaction, state.friends])

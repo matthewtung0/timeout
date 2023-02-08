@@ -116,6 +116,13 @@ const SignupScreen = ({ navigation, route: { params } }) => {
             ])).start();
     }
 
+    const setBioFunc = (txt) => {
+        var num_lines = txt.split(/\r\n|\r|\n/).length
+        if (num_lines <= 4) {
+            setBio(txt)
+        }
+    }
+
     useFocusEffect(
         useCallback(() => {
             cloudAnim()
@@ -284,7 +291,9 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 placeholder='Write a quick bio (visible to everyone). This part is optional.'
                                 autoCorrect={false}
                                 value={bio}
-                                onChangeText={setBio}
+                                onChangeText={(bioText) => {
+                                    setBioFunc(bioText)
+                                }}
                             />
 
                             <TouchableOpacity

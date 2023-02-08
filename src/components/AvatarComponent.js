@@ -1,33 +1,23 @@
 import React, { useState, useCallback, useContext, useMemo } from 'react';
-import { View, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as userContext } from '../context/userContext';
 import { defaultPfp } from './Images.js'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { differenceInMinutes } from 'date-fns';
 
-const AvatarComponent = ({ w, pfpSrc, id, modalView, useCache = false, cacheChecker, setCacheChecker }) => {
-    const { width, height } = Dimensions.get('window')
+const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe = false }) => {
     const [pngData, setPngData] = useState(pfpSrc)
-    const { fetchAvatarGeneral } = useContext(userContext)
+    const { fetchAvatarGeneral, state } = useContext(userContext)
 
     const pullPfp = async (forceRetrieve = false) => {
         try {
-            console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}`)
+            console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}, for id ${id}`)
             var startTime = performance.now()
-            const base64Icon = await fetchAvatarGeneral(id, forceRetrieve)
+            const base64Icon = await fetchAvatarGeneral(id, forceRetrieve, false, isThumbnail)
             //const response = await timeoutApi.get(`/avatar12345/${id}`)
 
             //var base64Icon = `data:image/png;base64,${data}`
-
-            // we pulled the pfp - if there is a cache checker, update that
-            if (setCacheChecker && cacheChecker) {
-                var newPair = { [id]: false }
-
-                //console.log("Setting cache checker to : ", { ...cacheChecker, ...newPair })
-                setCacheChecker({ ...cacheChecker, ...newPair })
-            }
-
             setPngData(base64Icon)
             var endTime = performance.now()
             //console.log(`Call to pull pfp took ${endTime - startTime} milliseconds`)
@@ -42,16 +32,22 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, useCache = false, cacheChec
 
         // use cache if less than 1 hour old, otherwise pull avatar
         try {
-            var cache_time = await AsyncStorage.getItem(`avatar_date_${id}`)
+            if (isThumbnail === 'true') {
+                var cache_time = await AsyncStorage.getItem(`thumbnail_avatar_date_${id}`)
+            } else { var cache_time = await AsyncStorage.getItem(`avatar_date_${id}`) }
+
             if (!cache_time) { // not in cache, need to pull it anyways
                 if (!pfpSrc) { pullPfp(forceRetrieve = true) }
             }
             var now = new Date();
             var diffInMin = differenceInMinutes(now, new Date(cache_time))
             if (diffInMin >= 60) {
+                console.log(`${id} over 60 min old, so force retrieve`)
                 if (!pfpSrc) { pullPfp(forceRetrieve = true) }
             } else {
-                var base64Icon_cached = await AsyncStorage.getItem(`avatar_${id}`);
+                console.log(`${id} is less than 60 min old, so get from cache`)
+                if (isThumbnail) { var base64Icon_cached = await AsyncStorage.getItem(`thumbnail_avatar_${id}`); }
+                else { var base64Icon_cached = await AsyncStorage.getItem(`avatar_${id}`); }
                 setPngData(base64Icon_cached)
             }
         } catch (err) {
@@ -70,7 +66,15 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, useCache = false, cacheChec
 
     useFocusEffect(
         useCallback(() => {
-            focusEffectFunc()
+            if (isMe && isThumbnail) {
+                console.log("Is self, getting state thumbnail")
+                setPngData(state.base64pfp)
+            } else if (isMe) {
+                console.log("Is self, getting state regular pfp")
+                setPngData(state.base64pfp)
+            } else {
+                focusEffectFunc()
+            }
             return () => {
                 setPngData('')
             }

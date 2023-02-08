@@ -65,10 +65,8 @@ const FriendNotificationComponent = ({ item, cacheChecker, navigation }) => {
                             navigation.navigate('Profile temp')
                         }}>
                         <AvatarComponent w={50}
-                            //isSelf={item.username == userState.username}
                             id={item.user_id}
-                            //pfpSrc={userState.base64pfp}
-                            useCache={cacheChecker[item.user_id] == false} />
+                        />
                     </TouchableOpacity>
                 </View>
             </View>

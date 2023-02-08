@@ -583,13 +583,18 @@ const SvgTestScreen = ({ navigation }) => {
             setHasGlasses(state.avatarJSON.accessories.glasses.active)
 
             console.log("test focus effect")
+
+            return () => {
+                console.log("cleaning up")
+                setTotalUnowned(0)
+            }
         }, [state.avatarJSON, state.avatarItemsOwned])
     )
 
     const updateUnowned = (item_state_setter, item_state, item_id, item_owned, item_cost) => {
-        var cur_item_state = item_state
         if (!item_owned) {
-            var cost = item_cost
+            var cost = parseInt(item_cost)
+            console.log("Setting cost to be ", cost)
             item_state_setter(cost)
         } else {
             item_state_setter(0)

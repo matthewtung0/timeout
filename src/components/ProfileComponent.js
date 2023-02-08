@@ -1,4 +1,3 @@
-
 import React, { } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-elements';
@@ -9,7 +8,7 @@ import {
 } from 'date-fns';
 const constants = require('../components/constants.json')
 
-const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible }) => {
+const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe }) => {
 
     const duration = (startTime, endTime) => {
         var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
@@ -61,15 +60,18 @@ const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible }) => 
             return `Just now`
         }
     }
-    console.log(`I am rerendering: ${index}`)
+    console.log(`I am rerendering: ${index} and isMe is ${isMe}`)
     return (
         <View style={styles.recentItemContainer}>
             <View style={styles.pfpcontainerTEMP}>
 
                 {/* smaller pfp here */}
                 <View style={styles.pfpTEMP}>
-                    <AvatarComponent w={48} pfpSrc={pfpSrc}
-                        id={idToView} />
+                    <AvatarComponent w={48}
+                        //pfpSrc={pfpSrc}
+                        id={idToView}
+                        isThumbnail={true}
+                        isMe={isMe} />
                 </View>
             </View>
             <View style={styles.listItem}>

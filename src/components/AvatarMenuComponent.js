@@ -1,15 +1,11 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, Image, Dimensions, ScrollView, FlatList, TouchableOpacity } from 'react-native';
-import timeoutApi from '../api/timeout';
-import { useFocusEffect } from '@react-navigation/native';
-import { Context as userContext } from '../context/userContext';
+import React, { } from 'react';
+import { View, StyleSheet, Text, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 //import { Context as UserContext } from '../context/userContext';
-const default_img = require('../../assets/avatar/20_BACKGROUND/1_pink.png')
 const lock = require('../../assets/lock.png')
 
 const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex, updateUnownedCallback,
     unownedIndex, setUnownedCallback, noItemOption, pngOption, setHasItemCallback, thumbnailSize }) => {
-    const { width, height } = Dimensions.get('window')
+    const { width } = Dimensions.get('window')
     const ITEM_R = 103;
     const ITEM_G = 128;
     const ITEM_B = 109;
@@ -66,9 +62,19 @@ const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex
                                 } else {
                                     setIndexCallback(index)
                                 }
+                                if (typeof (item.owned) != 'undefined') {
+                                    var item_owned = item.owned;
+                                } else {
+                                    var item_owned = true;
+                                }
+                                if (typeof (item.cost) != 'undefined') {
+                                    var item_cost = item.cost;
+                                } else {
+                                    var item_cost = 0;
+                                }
 
                                 updateUnownedCallback(setUnownedCallback, unownedIndex,
-                                    item.id, item.owned, item.cost)
+                                    item.id, item_owned, item_cost)
                             }}>
                             <View>
                                 {pngOption && !noItemOption ?
@@ -91,9 +97,6 @@ const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex
                                         {item.svg}
                                     </>
                                 }
-
-
-
 
 
                                 {!item.owned ?

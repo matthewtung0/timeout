@@ -6,7 +6,6 @@ import {
 import { Input, Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { Context as AuthContext } from '../context/AuthContext';
-import Header from '../components/Header';
 const MARGIN_HORIZONTAL = 20
 
 const HideKeyboard = ({ children }) => (
@@ -51,6 +50,13 @@ const EditProfileScreen = ({ navigation }) => {
     const updateInfoCallback = () => {
         setIsLoading(false)
         alert("Information successfuly updated!")
+    }
+
+    const setBioFunc = (txt) => {
+        var num_lines = txt.split(/\r\n|\r|\n/).length
+        if (num_lines <= 4) {
+            setBio(txt)
+        }
     }
 
     // firstname, lastname, username, password
@@ -127,7 +133,9 @@ const EditProfileScreen = ({ navigation }) => {
                             placeholderTextColor={'#67806D'}
                             labelStyle={[styles.textDefault, { fontSize: 15, color: '#67806D' }]}
                             label="Bio"
-                            onChangeText={setBio}
+                            onChangeText={(bioText) => {
+                                setBioFunc(bioText)
+                            }}
                         />
                         <TouchableOpacity
                             style={styles.signInBoxStyle}

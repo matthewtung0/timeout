@@ -119,6 +119,8 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
 
     useFocusEffect(
         useCallback(() => {
+            fetchOutgoingRequests();
+            fetchIncomingRequests();
             getNotifications()
 
             return () => {

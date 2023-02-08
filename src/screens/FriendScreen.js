@@ -1,29 +1,49 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
 import AvatarComponent from '../components/AvatarComponent';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FriendScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
     const [friendCode, setFriendCode] = useState('')
-    const { state, requestFriend, fetchOutgoingRequests, fetchIncomingRequests,
-        acceptFriendRequest, rejectFriendRequest, fetchFriends } = useContext(userContext)
+    const { state, rejectFriendRequest, fetchFriends, setIdToView } = useContext(userContext)
     const [modalVisible, setModalVisible] = useState(false)
 
-    console.log("params is ", params)
+    const [visibleOffset, setVisibleOffset] = useState(0)
+    const [offset, setOffset] = useState(0)
+    const [atEnd, setAtEnd] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
+    useFocusEffect(
+        useCallback(() => {
+            setIsLoading(true)
+            setOffset(state.friends.length)
+            setVisibleOffset(2)
+
+            return () => {
+                console.log("cleaning up")
+                setIsLoading(false)
+                setOffset(state.friends.length)
+                setVisibleOffset(0)
+                setAtEnd(false)
+            }
+        }, [state.friends])
+    )
+
+    const getData = async () => {
+        console.log("Loading more..")
+        setVisibleOffset(visibleOffset + 10);
+    }
+
     const resetInputs = async () => {
         setFriendCode('')
         await fetchFriends()
         alert('Unfriended successfully.')
     }
-    const acceptFriendCallback = async () => {
-        await fetchFriends()
-        alert("Friend req successfully accepted.");
-    }
-
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
@@ -37,7 +57,6 @@ const FriendScreen = ({ navigation, route: { params } }) => {
             <View
                 style={{
                     borderBottomColor: '#DCDBDB',
-                    //borderBottomWidth: StyleSheet.hairlineWidth,
                     borderBottomWidth: 1.5,
                     marginBottom: 10,
                 }}
@@ -49,6 +68,69 @@ const FriendScreen = ({ navigation, route: { params } }) => {
         var date = new Date(dt)
         return date.toLocaleDateString("en-US")
     }
+
+
+    const flatListItself = () => {
+        return (
+            <FlatList
+                style={styles.flatlistStyle}
+                horizontal={false}
+                onEndReached={getData}
+                data={state.friends.slice(0, visibleOffset)}
+                ItemSeparatorComponent={separator}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.friend}
+                renderItem={({ item, index }) =>
+                    <View
+                        style={[styles.categoryStyle, { height: 70, }]}>
+                        <View style={{ flexDirection: 'row', flex: 1, }}>
+
+                            {/* AVATAR */}
+                            <View style={{ flex: 2 }}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setIdToView({ username: item.username, user_id: item.friend })
+                                        navigation.navigate('Profile temp')
+                                    }}>
+                                    <AvatarComponent
+                                        w={50}
+                                        id={item.friend}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* NAME // FRIEND SINCE- */}
+                            <View style={{ flex: 5, justifyContent: 'space-around' }}>
+                                <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}</Text>
+                                <Text style={[styles.textDefault, { fontSize: 12, color: 'gray' }]}>
+                                    {"Friend since " + formatDate(item['time_created'])}
+                                </Text>
+                            </View>
+
+                            {/* UNFRIEND BUTTON */}
+                            <View style={{ flex: 2, justifyContent: 'flex-end' }}>
+                                <TouchableOpacity
+                                    style={{
+                                        borderWidth: 1, borderRadius: 15, alignItems: 'center',
+                                        marginBottom: 10, borderColor: '#67806D',
+                                    }}
+                                    onPress={() => {
+                                        rejectFriendRequest(item.friend, resetInputs)
+                                    }}>
+                                    <Text style={[styles.textDefault,
+                                    { padding: 3, fontSize: 12, color: '#67806D' }]}>Unfriend</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
+                    </View>
+                }
+            >
+            </FlatList>
+        )
+    }
+
+    const memoizedFlatList = useMemo(flatListItself, [state.friends, visibleOffset, atEnd,])
 
     return (
         <View style={styles.container}>
@@ -66,7 +148,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                 </View>
 
             </Modal>
-            <ScrollView>
+            <View>
 
                 <View style={styles.makeshiftTabBarContainer}>
                     <View style={styles.makeshiftTabBar}>
@@ -87,7 +169,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
 
 
                 <TouchableOpacity
-                    style={[styles.addFriend, { width: width / 1.8, height: height / 12 }]}
+                    style={[styles.addFriend, { width: width / 1.8, height: height / 18 }]}
                     onPress={() => {
                         toggleModal()
                     }}>
@@ -96,11 +178,11 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                             name="person-add"
                             type='ionicon'
                             color='white' />
-                        <Text style={styles.addFriendText}>Add Friend</Text>
+                        <Text style={[styles.textDefaultBold, styles.addFriendText]}>Add Friend</Text>
                     </View>
                 </TouchableOpacity>
 
-                <Text style={[styles.textDefaultBold, { marginLeft: 25, fontSize: 20, color: '#67806D', marginTop: 20, }]}>
+                <Text style={[styles.textDefaultBold, { marginLeft: 25, fontSize: 20, color: '#67806D', marginTop: 0, }]}>
                     My Friends:</Text>
 
                 {state.friends.length == 0 ?
@@ -113,54 +195,12 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                     </View>
                     :
 
-                    <View style={{ marginHorizontal: 20, marginVertical: 20 }}>
-                        {state.friends
-                            .map((item) => {
-                                return <View
-                                    key={item.friend}
-                                    style={[styles.categoryStyle, { height: 70, }]}>
-                                    <View style={{ flexDirection: 'row', flex: 1, }}>
-
-                                        {/* AVATAR */}
-                                        <View style={{ flex: 2 }}>
-                                            <AvatarComponent
-                                                w={50}
-                                                //isSelf={false}
-                                                id={item.friend}
-                                                useCache={params ? params.cacheChecker[item.friend] == false : true} />
-                                        </View>
-
-                                        {/* NAME // FRIEND SINCE- */}
-                                        <View style={{ flex: 5, justifyContent: 'space-around' }}>
-                                            <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}</Text>
-                                            <Text style={[styles.textDefault, { fontSize: 12, color: 'gray' }]}>
-                                                {"Friend since " + formatDate(item['time_created'])}
-                                            </Text>
-                                        </View>
-
-                                        {/* UNFRIEND BUTTON */}
-                                        <View style={{ flex: 2, justifyContent: 'flex-end' }}>
-                                            <TouchableOpacity
-                                                style={{
-                                                    borderWidth: 1, borderRadius: 15, alignItems: 'center',
-                                                    marginBottom: 10, borderColor: '#67806D',
-                                                }}
-                                                onPress={() => {
-                                                    rejectFriendRequest(item.friend, resetInputs)
-                                                }}>
-                                                <Text style={[styles.textDefault,
-                                                { padding: 3, fontSize: 12, color: '#67806D' }]}>Unfriend</Text>
-                                            </TouchableOpacity>
-                                        </View>
-
-                                    </View>
-                                    {separator()}
-                                </View>
-                            })}
+                    <View style={{ marginHorizontal: 20, }}>
+                        {memoizedFlatList}
                     </View>
                 }
 
-            </ScrollView>
+            </View>
         </View>
     )
 }
@@ -190,7 +230,7 @@ const styles = StyleSheet.create({
     },
     flatlistStyle: {
         margin: 5,
-        borderWidth: 1,
+        borderWidth: 0,
         borderColor: 'black',
         borderRadius: 5,
         padding: 5,
@@ -206,18 +246,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
-        marginTop: 20,
+        marginTop: 10,
         marginBottom: 20,
         shadowOffset: {
-            width: 1,
-            height: 1,
+            width: 0.3,
+            height: 0.3,
         },
         shadowOpacity: 0.2,
     },
     addFriendText: {
         color: 'white',
-        fontSize: 25,
-        fontWeight: 'bold',
+        fontSize: 20,
         marginLeft: 10,
     },
     makeshiftTabBarContainer: {

@@ -1,12 +1,8 @@
-import React, { useContext, useCallback, useState, useMemo, memo } from 'react';
+import React, { useContext, useCallback, useState, useMemo, } from 'react';
 import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { useFocusEffect } from '@react-navigation/native';
-import {
-    differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
-    parseISO, differenceInSeconds, differenceInMinutes
-} from 'date-fns';
 import AvatarComponent from '../components/AvatarComponent';
 import timeoutApi from '../api/timeout';
 import Header from '../components/Header';
@@ -31,6 +27,7 @@ const ProfileScreen = ({ navigation }) => {
     const [profileSessions, setProfileSessions] = useState([[]])
     const [profileCategories, setProfileCategories] = useState([])
     const [pfpSrc, setPfpSrc] = useState('');
+    const [pfpThumbnailSrc, setPfpThumbnailSrc] = useState('')
     const [isLoading, setIsLoading] = useState(false);
     const [profileStats, setProfileStats] = useState({
         totalTime: { hours: 0, minutes: 0, seconds: 0 },
@@ -47,8 +44,9 @@ const ProfileScreen = ({ navigation }) => {
             console.log("Getting feed with", state.idToView)
             if (state.idToView == state.user_id) {
                 setIsMe(true)
+            } else {
             }
-            getFeed()
+            getFeed(state.idToView == state.user_id)
 
             return () => {
                 console.log("cleaning up")
@@ -61,17 +59,24 @@ const ProfileScreen = ({ navigation }) => {
                 setOffset(0)
                 setVisibleOffset(0)
                 setPfpSrc('')
+                setPfpThumbnailSrc('')
                 setIsMe(false)
+                setAtEnd(false)
             }
         }, [state.idToView])
     )
-    const getFeed = async () => {
+    const getFeed = async (isMe_) => {
         try {
             setOffset(0)
 
             // try to get the pfp only once
-            const pfpSrc_res = await fetchAvatarGeneral(state.idToView)
-            setPfpSrc(pfpSrc_res);
+            /*const pfpSrc_Thumbnail_res = await fetchAvatarGeneral(state.idToView,
+                forceRetrieve = false, isSelf = false, isThumbnail = true)
+
+            const pfpSrc_res = await fetchAvatarGeneral(state.idToView,
+                forceRetrieve = false, isSelf = false, isThumbnail = false)
+            setPfpThumbnailSrc(pfpSrc_Thumbnail_res);
+            setPfpSrc(pfpSrc_res)*/
 
             await fetchStatsProfile(state.idToView)
             await fetchCategoriesProfile(state.idToView, state.idToView == state.user_id)
@@ -111,11 +116,6 @@ const ProfileScreen = ({ navigation }) => {
         } catch (err) {
             console.log("error fetching categories", err);
         }
-    }
-
-    const fetchSessionsProfile = async (id, getPrivate) => {
-        const response = await timeoutApi.get('/session', { params: { id, getPrivate } })
-        setProfileSessions([response.data])
     }
 
     const fetchInitialBatch = async (id) => {
@@ -163,41 +163,6 @@ const ProfileScreen = ({ navigation }) => {
         }
     }
 
-    const duration = (startTime, endTime) => {
-        return differenceInSeconds(parseISO(endTime), parseISO(startTime))
-    }
-
-    const duration_min = (startTime, endTime) => {
-        return differenceInMinutes(parseISO(endTime), parseISO(startTime))
-    }
-
-    const daysAgo = (endTime) => {
-        return differenceInDays(new Date(), parseISO(endTime))
-    }
-
-    const timeAgo = (endTime) => {
-        var parsedTime = parseISO(endTime)
-        var diffInYears = differenceInYears(new Date(), parsedTime)
-        var diffInMonths = differenceInMonths(new Date(), parsedTime)
-        var diffInDays = differenceInDays(new Date(), parsedTime)
-        var diffInHours = differenceInHours(new Date(), parsedTime)
-        var diffInMinutes = differenceInMinutes(new Date(), parsedTime)
-
-        if (diffInYears >= 1) {
-            return `${diffInYears} years ago`
-        } else if (diffInMonths >= 1) {
-            return `${diffInMonths} months ago`
-        } else if (diffInDays >= 1) {
-            return `${diffInDays} days ago`
-        } else if (diffInHours >= 1) {
-            return `${diffInHours} hours ago`
-        } else if (diffInMinutes >= 1) {
-            return `${diffInMinutes} hours ago`
-        } else {
-            return `Just now`
-        }
-    }
-
     const renderFooter = () => {
         return (
             <View>
@@ -231,8 +196,12 @@ const ProfileScreen = ({ navigation }) => {
                     style={[styles.pfp, { marginLeft: (width - 120) / 1.08, marginTop: BANNER_HEIGHT - 60, }]}
                     onPress={togglePFPModal}>
                     <View>
-                        <AvatarComponent w={115} pfpSrc={pfpSrc}
-                            id={state.idToView} />
+                        <AvatarComponent
+                            w={115}
+                            //pfpSrc={pfpSrc}
+                            id={state.idToView}
+                            isMe={isMe}
+                        />
                     </View>
                 </TouchableOpacity>
 
@@ -337,8 +306,11 @@ const ProfileScreen = ({ navigation }) => {
                 ListHeaderComponent={renderHeader}
                 ListFooterComponent={renderFooter}
                 renderItem={({ item, index }) => (
-                    <ProfileComponent item={item} index={index} pfpSrc={pfpSrc} idToView={state.idToView}
-                        privateVisible={privateVisible} />
+                    <ProfileComponent item={item} index={index}
+                        //pfpSrc={pfpThumbnailSrc} 
+                        idToView={state.idToView}
+                        privateVisible={privateVisible}
+                        isMe={isMe} />
                 )}
             >
             </FlatList>

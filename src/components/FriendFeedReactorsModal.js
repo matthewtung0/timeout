@@ -11,7 +11,7 @@ const img = require('../../assets/tasks_topbar.png')
 const BORDER_RADIUS = 20;
 
 
-const FriendFeedReactorsModal = ({ toggleFunction, cacheChecker, activityId }) => {
+const FriendFeedReactorsModal = ({ toggleFunction, activityId }) => {
     const { height, width } = Dimensions.get('window');
     const { state: sessionState, fetchLikersOfActivity } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
@@ -77,8 +77,8 @@ const FriendFeedReactorsModal = ({ toggleFunction, cacheChecker, activityId }) =
                                             borderRadius: 100,
                                         }}>
                                             <AvatarComponent w={50}
-                                                useCache={cacheChecker[item.user_id] == false}
-                                                id={item.user_id} />
+                                                id={item.user_id}
+                                                isThumbnail={true} />
                                         </View>
                                         <View style={{ flex: 1 }}>
                                             <Text style={[styles.textDefaultSemiBold, { fontSize: 16, }]}>{item.username}</Text>

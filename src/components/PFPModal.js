@@ -5,7 +5,7 @@ import {
 import { Icon } from 'react-native-elements'
 import AvatarComponent from '../components/AvatarComponent';
 
-const PFPModal = ({ toggleFunction, colorArr, idToView }) => {
+const PFPModal = ({ toggleFunction, idToView }) => {
     const { height, width } = Dimensions.get('window');
     const BORDER_RADIUS = 25;
     const INPUT_WIDTH = width * 0.8
@@ -18,7 +18,8 @@ const PFPModal = ({ toggleFunction, colorArr, idToView }) => {
             }}>
                 <AvatarComponent w={INPUT_WIDTH}
                     modalView={true}
-                    id={idToView} />
+                    id={idToView}
+                    isThumbnail={false} />
             </View>
 
 
