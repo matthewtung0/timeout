@@ -45,7 +45,16 @@
         "json",
         "wasm",
         "svg"
+      ],
+      "assetExts": [
+        "png",
+        "ttf"
       ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "608ff4d1-617a-4afa-9fb8-15b0d81edb63"
+      }
     }
   }
 }

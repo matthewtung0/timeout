@@ -432,8 +432,8 @@ const baseColors = ['#FBE8D9', '#FFCDAA', '#C38168', '#75443D', '#3A231D']
 
 
 // ---------------------------------------- OVERLAY  --------------------------------------------
-const overlay1 = require('../../assets/avatar_500/19_BACKGROUND OVERLAY/1_darken-01.png')
-const overlay2 = require('../../assets/avatar_500/19_BACKGROUND OVERLAY/2_grid-01.png')
+const overlay1 = require('../../assets/avatar_500/19_BACKGROUND_OVERLAY/1_darken-01.png')
+const overlay2 = require('../../assets/avatar_500/19_BACKGROUND_OVERLAY/2_grid-01.png')
 const overlayTypes = [[overlay1], [overlay2]]
 
 // ---------------------------------------- BACKGROUND  --------------------------------------------

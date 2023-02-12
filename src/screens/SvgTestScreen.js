@@ -1059,7 +1059,7 @@ const SvgTestScreen = ({ navigation }) => {
                     </View>
                     <Image
                         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
-                        source={DIR.overlayTypes[1][0]} />
+                        source={DIR.overlayTypes[overlayIndex][0]} />
 
 
                     {hasHairBack ?
