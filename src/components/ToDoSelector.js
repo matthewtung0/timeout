@@ -361,6 +361,9 @@ const styles = StyleSheet.create({
     textDefault: {
         fontFamily: 'Inter-Regular',
     },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
+    },
     sortText: {
         textAlign: 'center', fontSize: 12, justifyContent: 'center', color: 'white',
     },

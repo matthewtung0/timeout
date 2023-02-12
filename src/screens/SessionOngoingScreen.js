@@ -1,5 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground } from 'react-native';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+    Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
+    AppState
+} from 'react-native';
 import {
     fromUnixTime, getUnixTime, isThisSecond, format,
     differenceInMilliseconds, addSeconds
@@ -11,6 +14,9 @@ import Modal from 'react-native-modal'
 import { Text as TextSVG } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import SessionRatingModal from '../components/SessionRatingModal';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+
 const constants = require('../components/constants.json')
 const clock_middle = require('../../assets/clock_middle.png');
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -18,6 +24,14 @@ const clock_top = require('../../assets/clock_top.png');
 const bg_desk = require('../../assets/background_desk.png');
 const { height, width } = Dimensions.get('window');
 const picked_width = width / 2 / 0.8
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
 
@@ -36,6 +50,14 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
     //let bgColorHex = constants.colors[bgColor]
     const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    const appState = useRef(AppState.currentState);
+    const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
     const fadeInAndOut = () => {
         Animated.loop(
@@ -81,6 +103,8 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
     const [endEarlyFlag, setEndEarlyFlag] = useState(false)
     const [sessionStartTime, setSessionStartTime] = useState('')
 
+    console.log("Rerendering ongoing .. ");
+
 
     const handleReset = (endEarly = false, plannedNumMinutes) => {
         clearInterval(increment.current)
@@ -92,26 +116,62 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             setEndEarlyFlag(true)
             toggleRewardModal();
         } else {
-            /*navigate('SessionEval', {
-                sessionObj, sessionEndTime: getUnixTime(new Date()),
-                endEarlyFlag: false, plannedMin: plannedNumMinutes, sessionStartTime: getUnixTime(startTime)
-            })*/
-            setSessionEndTime(getUnixTime(new Date()))
+            //setSessionEndTime(getUnixTime(new Date()))
+
+            setSessionEndTime(endTime)
             setSessionStartTime(getUnixTime(startTime))
             setEndEarlyFlag(false)
             toggleRewardModal();
         }
-        //alert('Time end')
     }
 
     const offBoardCallback = () => {
         navigate('SessionSelect')
     }
 
+    const testNotification = () => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+    }
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (appState.current.match(/inactive|background/) &&
+                nextAppState === 'active') {
+                // cancel the notification if we are active again
+                cancelPushNotification();
+
+                console.log('App has come to the foreground!');
+            } else if (appState.current.match(/active|foreground/) &&
+                nextAppState === 'inactive') {
+                // schedule a notification if app is being minimized
+                console.log(`SCHEDULING NOTIFICATION ${secLeft} seconds from now`)
+                schedulePushNotification(secLeft);
+
+
+                console.log('App has gone to the background!');
+            }
+
+            appState.current = nextAppState;
+            setAppStateVisible(appState.current);
+            console.log('AppState', appState.current);
+        });
+        return () => {
+            subscription.remove();
+        };
+    })
+
     useFocusEffect(
 
         useCallback(() => {
             setStartTime(new Date())
+            testNotification();
 
             if (isThisSecond(fromUnixTime(endTime))) {
                 handleReset(false, numMins)
@@ -124,20 +184,81 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
             return () => {
                 setEndTime(0)
+                Notifications.removeNotificationSubscription(notificationListener.current);
+                Notifications.removeNotificationSubscription(responseListener.current);
             }
         }, [])
     )
+
+    async function registerForPushNotificationsAsync() {
+        let token;
+
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+
+        if (Device.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                alert('Failed to get push token for push notification!');
+                return;
+            }
+            token = (await Notifications.getExpoPushTokenAsync()).data;
+            console.log(token);
+        } else {
+            alert('Must use physical device for Push Notifications');
+        }
+
+        return token;
+    }
+
+    async function cancelPushNotification() {
+        await Notifications.cancelAllScheduledNotificationsAsync()
+    }
+
+    async function schedulePushNotification(numSec) {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Session complete",
+                body: `Your timer is up for ${activityName}. Go to TimeOut to rate how you did.`,
+                data: { data: 'goes here' },
+            },
+            trigger: { seconds: numSec },
+        });
+    }
 
     const twoDigits = (num) => {
         return ("0" + num).slice(-2)
     }
 
     const addFiveMin = () => {
-        console.log("Setting end time")
         var newTime = getUnixTime(addSeconds(fromUnixTime(endTime), 5 * 60))
-        //setEndTime(newTime)
-        clearInterval(increment.current)
-        handleStart(newTime, plannedMin + 5)
+        // check to make sure adding 5 min does not bump the timer above 99 minutes
+        let dt = new Date();
+        var diff = differenceInMilliseconds(fromUnixTime(newTime), dt)
+        var secondsLeft = Math.floor(diff / 1000)
+        var minsLeft = Math.floor(secondsLeft / 60)
+        console.log("Mins left: ", minsLeft)
+        if (minsLeft > 99) {
+            //if (parseInt(twoDigits(Math.floor(secondsLeft / 60))) > 99) {
+            alert("Cannot add more time!")
+        } else {
+            console.log("Setting end time")
+
+            //setEndTime(newTime)
+            clearInterval(increment.current)
+            handleStart(newTime, plannedMin + 5)
+        }
     }
 
     const areYouSureEndEarly = () => {
@@ -176,8 +297,6 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                 }
             ]
         );
-    }
-    const updateTime = (a) => {
     }
 
     return (
@@ -219,11 +338,11 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
 
                 <View style={{
-                    position: 'absolute', height: '100%', width: '100%', borderWidth: 2, borderColor: 'brown',
+                    position: 'absolute', height: '100%', width: '100%', borderWidth: 0, borderColor: 'brown',
                 }}>
                     <Image
                         source={bg_desk}
-                        style={{ width: width, height: '170%', borderWidth: 1, borderColor: 'green' }}
+                        style={{ width: width, height: '170%', borderWidth: 0, borderColor: 'green' }}
                         resizeMode="contain" />
                 </View>
                 <Image
@@ -241,7 +360,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                         resizeMode='contain'>
                         <View style={[styles.clockWrappedView]}
                         >
-                            <Svg style={[styles.svgStyle, { borderWidth: 1, }]}
+                            <Svg style={[styles.svgStyle, { borderWidth: 0, }]}
                                 height="100%" width="100%" viewBox={`0 0 100 100`}>
                                 <TextSVG x={50} y={35} fontSize={8} textAnchor="middle" fill="#90AB72">time left</TextSVG>
                                 <TextSVG x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
@@ -261,23 +380,29 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
                 <Image
                     source={clock_bottom}
-                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 1, borderColor: 'yellow' }}
+                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 0, borderColor: 'yellow' }}
                     resizeMode="contain" />
 
                 <View style={[styles.gotThisContainer,
-                { position: 'absolute', height: '100%', width: '100%', flexDirection: 'row', borderWidth: 1, borderColor: 'green', }]}>
-                    <View style={{ flex: 1, borderWidth: 1, }}>
+                { position: 'absolute', height: '100%', width: '100%', flexDirection: 'row', borderWidth: 0, borderColor: 'green', }]}>
+                    <View style={{ flex: 1, borderWidth: 0, }}>
 
                     </View>
-                    <View style={{ flex: 1, borderWidth: 1, }}>
-                        <Animated.View style={{ flex: 1, borderWidth: 1, opacity: fadeAnim }}>
-                            <View style={{ backgroundColor: 'white', height: '100%', width: '100%', }}>
-                                <Text style={[styles.textDefaultBold, styles.gotThis]}>You got this!</Text>
+                    <View style={{ flex: 1, borderWidth: 0, }}>
+                        <Animated.View style={{ flex: 1, borderWidth: 0, opacity: fadeAnim }}>
+                            <View style={{
+                                backgroundColor: 'white', height: '100%', width: '100%', alignItems: 'center',
+                                justifyContent: 'center', borderRadius: 30,
+                            }}>
+                                <View>
+                                    <Text style={[styles.textDefaultBold, styles.gotThis]}>You got this!</Text>
+                                </View>
+
                             </View>
 
                         </Animated.View>
-                        <View style={{ flex: 1, borderWidth: 1, }} />
-                        <View style={{ flex: 1, borderWidth: 1, }}>
+                        <View style={{ flex: 1, borderWidth: 0, }} />
+                        <View style={{ flex: 1, borderWidth: 0, }}>
 
                         </View>
 
@@ -290,10 +415,10 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                 <View style={{
                     height: 70, marginTop: 50, borderRadius: 20,
                     backgroundColor: 'white', shadowOffset: {
-                        width: 0.2,
-                        height: 0.2,
+                        width: 0.1,
+                        height: 0.1,
                     },
-                    shadowOpacity: 0.3,
+                    shadowOpacity: 0.1,
                 }}>
                     <View style={styles.activityContainer}>
                         <View style={{ flex: 3, alignContent: 'center', marginHorizontal: 10, }}>
@@ -326,8 +451,8 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
                 </View>
             </View>
 
-            <Text>{"End time is " + format(fromUnixTime(endTime), 'M-dd-yyyy z')}</Text>
-            <Text>{"time is " + secLeft}</Text>
+            {/*<Text>{"End time is " + format(fromUnixTime(endTime), 'M-dd-yyyy z')}</Text>
+            <Text>{"time is " + secLeft}</Text>*/}
 
         </View>
     )
@@ -403,13 +528,14 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: 25,
         height: 40,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
         shadowOffset: {
-            width: 0.2,
-            height: 0.2,
+            width: 0.1,
+            height: 0.1,
         },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.1,
     },
     buttonText: {
         fontWeight: 'bold',

@@ -168,7 +168,7 @@ const ProfileScreen = ({ navigation }) => {
             <View>
                 {atEnd ?
                     <View style={styles.loadMore}>
-                        <Text>At end</Text>
+                        <Text style={[styles.textDefault, { color: 'white', fontSize: 20, }]}>All caught up!</Text>
                     </View>
                     :
                     null

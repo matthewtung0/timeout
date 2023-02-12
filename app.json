@@ -24,8 +24,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.testapp.matthew",
-      "softwareKeyboardLayoutMode": "pan"
+      "package": "com.nofussexe.timeout",
+      "softwareKeyboardLayoutMode": "pan",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

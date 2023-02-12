@@ -1,6 +1,0 @@
-{
-    "replaceAttrValues": {
-        "#fcccac": "{props.fill}",
-        "#f4b484": "{props.fillSecondary}"
-    }
-}

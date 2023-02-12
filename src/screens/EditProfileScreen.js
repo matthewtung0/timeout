@@ -46,7 +46,6 @@ const EditProfileScreen = ({ navigation }) => {
         );
     }
 
-
     const updateInfoCallback = () => {
         setIsLoading(false)
         alert("Information successfuly updated!")
@@ -78,10 +77,10 @@ const EditProfileScreen = ({ navigation }) => {
 
                     <ScrollView>
 
-                        <Text style={[styles.title, styles.textDefaultBold, { fontSize: 20, }]}>Edit User Information</Text>
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { fontSize: 20, }]}>Edit my information:</Text>
 
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -94,7 +93,7 @@ const EditProfileScreen = ({ navigation }) => {
                             onChangeText={setFirstName}
                         />
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -106,7 +105,7 @@ const EditProfileScreen = ({ navigation }) => {
                             onChangeText={setLastName}
                         />
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -119,7 +118,7 @@ const EditProfileScreen = ({ navigation }) => {
                         />
 
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16 }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -143,7 +142,7 @@ const EditProfileScreen = ({ navigation }) => {
                                 setIsLoading(true)
                                 editSelf(firstName, lastName, username, bio, updateInfoCallback)
                             }}>
-                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Update Information</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Update Information</Text>
                         </TouchableOpacity>
 
                         {isLoading ?
@@ -151,10 +150,10 @@ const EditProfileScreen = ({ navigation }) => {
 
                         {/*{state.responseMessage ? <Text>{state.responseMessage}</Text> : null}*/}
 
-                        <Text style={[styles.title, styles.textDefaultBold, { marginTop: 15, fontSize: 20 }]}>Change Password</Text>
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 15, fontSize: 20 }]}>Change password:</Text>
 
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14 }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -166,7 +165,7 @@ const EditProfileScreen = ({ navigation }) => {
                             onChangeText={setOldPassword}
                         />
                         <Input
-                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14 }]}
+                            style={[styles.inputStyle, styles.textDefault, { fontSize: 14, color: '#67806D' }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCapitalize='none'
                             autoCorrect={false}
@@ -182,16 +181,16 @@ const EditProfileScreen = ({ navigation }) => {
                             onPress={() => {
                                 changePassword(oldPassword, newPassword, resultCallback)
                             }}>
-                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Change Password</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Change Password</Text>
                         </TouchableOpacity>
 
                         {passwordMessage ? <Text>{passwordMessage}</Text> : null}
 
-                        <TouchableOpacity
+                        {/*<TouchableOpacity
                             style={[styles.signInBoxStyle, { marginTop: 15, }]}
                             onPress={areYouSure}>
                             <Text style={styles.signInTextStyle}>DELETE ACCOUNT</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
                     </ScrollView>
                 </View>
@@ -205,6 +204,9 @@ const EditProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

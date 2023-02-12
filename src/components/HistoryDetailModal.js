@@ -3,27 +3,21 @@ import {
     View, StyleSheet, Text, TouchableOpacity, Dimensions, Image,
     Keyboard, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert
 } from 'react-native';
-import { startOfMonth, endOfMonth } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import { Context as SessionContext } from '../context/SessionContext';
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
+const constants = require('../components/constants.json')
 
 const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
-    const { height, width } = Dimensions.get('window');
+    const { width } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
     const BORDER_RADIUS = 20;
-    const { state, deleteSession, patchSession } = useContext(SessionContext)
+    const { deleteSession, patchSession } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
     const [itemDeleted, setItemDeleted] = useState(false)
     const [notes, setNotes] = useState(selectedObject.notes)
 
-    const HideKeyboard = ({ children }) => (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            {children}
-        </TouchableWithoutFeedback>
-    );
     const submitPatch = async () => {
         setIsLoading(true)
         try {
@@ -81,8 +75,6 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
         return month + "/" + day + "/" + yr
     }
 
-    console.log("SELECTED OBJECT ", selectedObject)
-
     const areYouSureDelete = () => {
         Alert.alert(
             "Are you sure you want to delete this category?",
@@ -96,6 +88,13 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                 }
             ]
         );
+    }
+
+    const setNotesFunc = (txt) => {
+        var num_lines = txt.split(/\r\n|\r|\n/).length
+        if (num_lines <= 4) {
+            setNotes(txt)
+        }
     }
 
     /*useFocusEffect(
@@ -130,7 +129,8 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             <View style={{ position: 'absolute', height: 100, width: '100%', }}>
                                 <View style={{ flex: 1, }}></View>
                                 <View style={{
-                                    backgroundColor: 'pink', borderRadius: 20, alignSelf: 'flex-end', flex: 1,
+                                    backgroundColor: constants.colors[selectedObject.color_id],
+                                    borderRadius: 20, alignSelf: 'flex-end', flex: 1,
                                     paddingHorizontal: 10, paddingVertical: 5,
                                 }}>
                                     <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 12, }]}>
@@ -153,16 +153,18 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             paddingHorizontal: 20, marginTop: 20, marginHorizontal: 20,
                         }}>
                             <TextInput
-                                style={[styles.notes, { width: INPUT_WIDTH }]}
+                                style={[styles.notes, { width: INPUT_WIDTH, color: '#67806D' }]}
                                 multiline={true}
                                 numberOfLines={4}
-                                maxHeight={120}
+                                maxHeight={80}
                                 editable
                                 maxLength={150}
                                 placeholder={'Enter any notes'}
                                 value={notes}
                                 textAlignVertical='top'
-                                onChangeText={setNotes}
+                                onChangeText={(notesText) => {
+                                    setNotesFunc(notesText)
+                                }}
                             />
                         </View>
 
@@ -187,7 +189,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             </TouchableOpacity>
 
                             <Text style={[styles.textDefault,
-                            { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                            { color: 'crimson', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
                                 Delete task from your history. This action will be permanent.</Text>
                         </View>
                         <View opacity={isLoading ? 0.2 : 1}>
@@ -368,7 +370,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginHorizontal: 25,
         marginBottom: 20,
-        height: 120,
+        height: 80,
     }, inputStyleContainer: {
         borderBottomWidth: 0,
     },

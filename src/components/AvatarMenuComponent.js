@@ -1,9 +1,8 @@
 import React, { } from 'react';
 import { View, StyleSheet, Text, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
-//import { Context as UserContext } from '../context/userContext';
 const lock = require('../../assets/lock.png')
 
-const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex, updateUnownedCallback,
+const AvatarMenuComponent = ({ title, data, thumbnailData, hasItem, setIndexCallback, itemIndex, updateUnownedCallback,
     unownedIndex, setUnownedCallback, noItemOption, pngOption, setHasItemCallback, thumbnailSize }) => {
     const { width } = Dimensions.get('window')
     const ITEM_R = 103;
@@ -16,7 +15,7 @@ const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex
     return (
         <View style={{ flex: 1, }}>
             <Text style={[styles.textDefault, {
-                marginHorizontal: FLATLIST_MARGIN, marginTop: 10, marginBottom: 10,
+                marginHorizontal: FLATLIST_MARGIN, marginTop: 0, marginBottom: 10,
                 color: '#67806D',
             }]}>{title}</Text>
             <FlatList
@@ -25,7 +24,7 @@ const AvatarMenuComponent = ({ title, data, hasItem, setIndexCallback, itemIndex
                 //columnWrapperStyle={{ justifyContent: 'space-around', flex: 1, }}
                 scrollEnabled={true}
                 numColumns={5}
-                data={data}
+                data={thumbnailData ? thumbnailData : data}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => {

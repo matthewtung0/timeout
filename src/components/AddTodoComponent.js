@@ -133,6 +133,12 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
             }
         }, [])
     )
+    const setNotesFunc = (txt) => {
+        var num_lines = txt.split(/\r\n|\r|\n/).length
+        if (num_lines <= 4) {
+            setNotes(txt)
+        }
+    }
 
     return (
         <HideKeyboard>
@@ -140,7 +146,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                 <><Text style={styles.title}></Text>
 
                     < TextInput
-                        inputContainerStyle={styles.inputStyleContainer}
+                        inputContainerStyle={[styles.inputStyleContainer, styles.textDefault,]}
                         style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
                         placeholder='Task name'
                         placeholderTextColor={'#90AB72'}
@@ -150,7 +156,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                         onChangeText={setToDoItemName}
                     />
                     <TextInput
-                        style={[styles.notes, { width: INPUT_WIDTH }]}
+                        style={[styles.notes, styles.textDefault, { width: INPUT_WIDTH }]}
                         multiline={true}
                         numberOfLines={4}
                         maxHeight={120}
@@ -160,7 +166,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                         placeholder={'Enter notes (optional)'}
                         value={notes}
                         textAlignVertical='top'
-                        onChangeText={setNotes}
+                        onChangeText={(notesText) => { setNotesFunc(notesText) }}
 
                     />
                 </>
@@ -202,7 +208,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                         </TouchableOpacity>
 
                         <Text style={[styles.textDefault,
-                        { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                        { color: 'crimson', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
                             Delete task from your history. This action will be permanent.</Text>
                     </View>
 
@@ -247,6 +253,15 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
 }
 
 const styles = StyleSheet.create({
+    textDefaultBold: {
+        fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
+    },
+    textDefault: {
+        fontFamily: 'Inter-Regular',
+    },
     container: {
         flex: 1,
         backgroundColor: '#83B569'

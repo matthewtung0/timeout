@@ -227,8 +227,17 @@ const deleteCounter = dispatch => async (counterId, callback = null) => {
 
 const addTally = dispatch => async (counterId, updateAmount, callback = null) => {
     try {
-        var tally_time = startOfDay(new Date())
-        const response = await timeoutApi.post('/counter/tally', { counterId, updateAmount, tally_time })
+        var dateObject = new Date();
+        var month_ = (dateObject.getMonth() + 1).toString()
+        var year_ = dateObject.getFullYear().toString()
+        var day_ = dateObject.getDate().toString()
+        if (day_.length < 2) { day_ = "0" + day_ }
+        var dateKey = month_ + "/" + day_ + "/" + year_
+
+        //var tally_time = startOfDay(dateObject)
+        var tally_time = dateObject
+        console.log(`Adding tally wth time ${tally_time}`)
+        const response = await timeoutApi.post('/counter/tally', { counterId, updateAmount, tally_time, dateKey })
         dispatch({ type: 'add_tally', payload: { counterId, updateAmount } })
         if (callback) { callback() }
     } catch (err) {

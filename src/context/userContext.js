@@ -266,9 +266,11 @@ const fetchAvatarGeneral = dispatch => async (user_id, forceRetrieve = false, is
             console.log("Got avatar from server")
             var base64Icon = `data:image/png;base64,${response.data}`
             if (isThumbnail) {
+                console.log("Setting thumbnail to cache...")
                 await AsyncStorage.setItem(`thumbnail_avatar_${user_id}`, base64Icon);
                 await AsyncStorage.setItem(`thumbnail_avatar_date_${user_id}`, String(new Date()));
             } else {
+                console.log("Setting image to cache...")
                 await AsyncStorage.setItem(`avatar_${user_id}`, base64Icon);
                 await AsyncStorage.setItem(`avatar_date_${user_id}`, String(new Date()));
             }
@@ -439,6 +441,7 @@ const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, ite
     try {
         console.log("Items to redeem", items_to_redeem)
         const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON, items_to_redeem, items_cost })
+        console.log("Respone is ", response.data)
         var avatarBase64Data = `data:image/png;base64,${response.data.bufferString}`
         var avatarBase64DataThumbnail = `data:image/png;base64,${response.data.thumbnailBufferString}`
         dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, avatarBase64DataThumbnail, items_cost } })
@@ -450,7 +453,7 @@ const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, ite
         if (callback) { callback() }
     } catch (err) {
         console.log("Problem saving avatar:", err)
-        dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
+        //dispatch({ type: 'add_error', payload: 'Problem saving avatar!' })
         if (callback_fail) { callback_fail() }
     }
 }

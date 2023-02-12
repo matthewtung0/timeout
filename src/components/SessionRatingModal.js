@@ -1,8 +1,8 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator,
+    TouchableWithoutFeedback
 } from 'react-native';
-import Slider from '@react-native-community/slider'
 import { useFocusEffect } from '@react-navigation/native';
 import timeoutApi from '../api/timeout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,7 +11,6 @@ import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import { Context as SessionContext } from '../context/SessionContext';
 import { fromUnixTime, startOfMonth, endOfMonth, subDays } from 'date-fns';
-const constants = require('../components/constants.json')
 const sessionCompleteBanner = require('../../assets/sessionCompleteBanner.png');
 const iconRatingNull = require('../../assets/icon_rating-null.png')
 const iconRating = require('../../assets/icon_rating.png')
@@ -198,73 +197,119 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const sessionRatingView = () => {
         return (
             <View style={{
-                borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center',
+                borderWidth: 0, flex: 3, backgroundColor: 'white', alignItems: 'center',
                 zIndex: 1, elevation: 1,
                 borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
             }}>
-                <View style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
+                <View style={{ flex: 1, alignItems: 'center', borderWidth: 0, }}>
                     <Text style={[styles.textDefault, { color: '#67806D', fontSize: 18, }]}>Now be honest...</Text>
                     <Text style={[styles.textDefaultBold, { color: '#67806D', marginTop: 10, fontSize: 18, }]}>How productive were you?</Text>
                     <View style={{ flexDirection: 'row', marginTop: 20, }}>
-                        {prodRatingNum >= 20 ?
-                            <Image
-                                source={iconRating}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                            :
-                            <Image
-                                source={iconRatingNull}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                        }
-                        {prodRatingNum >= 40 ?
-                            <Image
-                                source={iconRating}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                            :
-                            <Image
-                                source={iconRatingNull}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                        }
-                        {prodRatingNum >= 60 ?
-                            <Image
-                                source={iconRating}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                            :
-                            <Image
-                                source={iconRatingNull}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                        }
-                        {prodRatingNum >= 80 ?
-                            <Image
-                                source={iconRating}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                            :
-                            <Image
-                                source={iconRatingNull}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                        }
-                        {prodRatingNum >= 100 ?
-                            <Image
-                                source={iconRating}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                            :
-                            <Image
-                                source={iconRatingNull}
-                                style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 3, }}
-                            />
-                        }
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                setProdRatingNum(20)
+                                setSessionObjFinal({
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                })
+                            }}>
+                            {prodRatingNum >= 20 ?
+                                <Image
+                                    source={iconRating}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                                :
+                                <Image
+                                    source={iconRatingNull}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                            }
+                        </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                setProdRatingNum(40)
+                                setSessionObjFinal({
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                })
+                            }}>
+                            {prodRatingNum >= 40 ?
+                                <Image
+                                    source={iconRating}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                                :
+                                <Image
+                                    source={iconRatingNull}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                            }
+                        </TouchableWithoutFeedback>
+
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                setProdRatingNum(60)
+                                setSessionObjFinal({
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                })
+                            }}>
+                            {prodRatingNum >= 60 ?
+                                <Image
+                                    source={iconRating}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                                :
+                                <Image
+                                    source={iconRatingNull}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                            }
+                        </TouchableWithoutFeedback>
+
+
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                setProdRatingNum(80)
+                                setSessionObjFinal({
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                })
+                            }}>
+                            {prodRatingNum >= 80 ?
+                                <Image
+                                    source={iconRating}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                                :
+                                <Image
+                                    source={iconRatingNull}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                            }
+                        </TouchableWithoutFeedback>
+
+
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                setProdRatingNum(100)
+                                setSessionObjFinal({
+                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                })
+                            }}>
+                            {prodRatingNum >= 100 ?
+                                <Image
+                                    source={iconRating}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                                :
+                                <Image
+                                    source={iconRatingNull}
+                                    style={{ width: ICON_LENGTH, height: ICON_LENGTH, marginHorizontal: 5, }}
+                                />
+                            }
+                        </TouchableWithoutFeedback>
+
                     </View>
 
                     <View style={{ marginTop: 20, }}>
-                        <Slider
+                        {/*<Slider
                             style={styles.slider}
                             minimumValue={0}
                             maximumValue={100}
@@ -281,19 +326,19 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                                 })
                             }}
                             onValueChange={setProdRatingNum}
-                        />
+                        />*/}
                     </View>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
+                <View style={{ flex: 1, alignItems: 'center', borderWidth: 0, }}>
                     <TouchableOpacity
                         style={{
                             backgroundColor: "#FCC759", alignItems: 'center', paddingVertical: 13,
                             borderRadius: 10, marginTop: 25, width: 150,
                             shadowOffset: {
                                 width: 0,
-                                height: 2,
+                                height: 1,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.1,
                             color: '#FCC759',
                             fontSize: 18,
                         }}
@@ -310,7 +355,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         return (
             <View
                 style={{
-                    borderWidth: 1, flex: 3, backgroundColor: 'white', alignItems: 'center',
+                    borderWidth: 0, flex: 3, backgroundColor: 'white', alignItems: 'center',
                     zIndex: 1, elevation: 1,
                     borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
                 }}>
@@ -318,14 +363,14 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                         <Text style={[styles.textDefaultBold,
                         {
-                            color: '#67806D', marginTop: 10, fontSize: 18,
+                            color: '#67806D', marginTop: 10, fontSize: 22,
                         }]}>You earned 100 </Text>
                         <Image
                             source={pointSquares}
-                            style={{ width: 18, height: 18, }}
+                            style={{ width: 22, height: 22, }}
                         />
                         <Text style={[styles.textDefaultBold,
-                        { color: '#67806D', marginTop: 10, fontSize: 18, }]}>!</Text>
+                        { color: '#67806D', marginTop: 10, fontSize: 22, }]}>!</Text>
                     </View>
                     <View style={{ flexDirection: 'row', marginTop: 50, alignItems: 'center', }}>
                         {existingItem ?
@@ -364,25 +409,26 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                                         borderWidth: 5
                                     }}></View>}
                             </TouchableOpacity>
-
-                                <Text style={[styles.textDefault, { color: '#67806D', fontSize: 15, }]}>Add this to my task list!</Text>
+                                <View>
+                                    <Text style={[styles.textDefault, { color: '#67806D', fontSize: 16, }]}>Add this to my task list!</Text>
+                                </View>
 
                             </>}
 
                     </View>
-                    <Text>toKeep: {toKeep.toString()}</Text>
-                    <Text>toAdd: {toAdd.toString()}</Text>
+                    {/*<Text>toKeep: {toKeep.toString()}</Text>
+                    <Text>toAdd: {toAdd.toString()}</Text>*/}
                 </View>
-                <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, alignItems: 'center', borderWidth: 1, }}>
+                <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, alignItems: 'center', borderWidth: 0, }}>
                     <TouchableOpacity
                         style={{
                             backgroundColor: "#CAE3B7", alignItems: 'center', paddingVertical: 13,
                             borderRadius: 10, marginTop: 25, width: 150,
                             shadowOffset: {
                                 width: 0,
-                                height: 2,
+                                height: 0.5,
                             },
-                            shadowOpacity: 0.3,
+                            shadowOpacity: 0.2,
                             color: '#CAE3B7',
                             fontSize: 18,
                         }}
@@ -393,7 +439,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             }
 
                         }}>
-                        <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 18, }]}>OK</Text>
+                        <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 18, }]}>Finish</Text>
 
                     </TouchableOpacity>
                 </View>
@@ -414,32 +460,32 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     return (
         <><View
             style={[styles.container, { width: width * 0.9, flex: 1, }]}>
-            <View style={{ borderWidth: 1, flex: 1, }}>
+            <View style={{ borderWidth: 0, flex: 1, }}>
 
             </View>
             <View style={{
-                borderWidth: 1, flex: 1, backgroundColor: 'white',
+                borderWidth: 0, flex: 1, backgroundColor: 'white',
                 borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
             }}>
 
             </View>
             {ratingViewActive ? sessionRatingView() : sessionRewardView()}
-            <View style={{ borderWidth: 1, flex: 1, }}>
+            <View style={{ borderWidth: 0, flex: 1, }}>
 
             </View>
 
             <View
-                style={{ borderWidth: 3, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
-                <View style={{ borderWidth: 1, borderColor: 'pink', flex: 1 }}>
+                style={{ borderWidth: 0, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
+                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}>
                     <Image
                         source={sessionCompleteBanner}
                         resizeMode="contain"
                         style={{ width: '100%' }} />
                 </View>
-                <View style={{ borderWidth: 1, borderColor: 'pink', flex: 1, }}>
+                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1, }}>
 
                 </View>
-                <View style={{ borderWidth: 1, borderColor: 'pink', flex: 1 }}></View>
+                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}></View>
             </View>
 
         </View>
@@ -468,7 +514,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        borderWidth: 2,
+        borderWidth: 0,
     },
     parentContainer: {
         flex: 1,

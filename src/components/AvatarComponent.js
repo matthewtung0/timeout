@@ -12,12 +12,9 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
 
     const pullPfp = async (forceRetrieve = false) => {
         try {
-            console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}, for id ${id}`)
+            //console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}, for id ${id}`)
             var startTime = performance.now()
             const base64Icon = await fetchAvatarGeneral(id, forceRetrieve, false, isThumbnail)
-            //const response = await timeoutApi.get(`/avatar12345/${id}`)
-
-            //var base64Icon = `data:image/png;base64,${data}`
             setPngData(base64Icon)
             var endTime = performance.now()
             //console.log(`Call to pull pfp took ${endTime - startTime} milliseconds`)
@@ -32,7 +29,7 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
 
         // use cache if less than 1 hour old, otherwise pull avatar
         try {
-            if (isThumbnail === 'true') {
+            if (isThumbnail) {
                 var cache_time = await AsyncStorage.getItem(`thumbnail_avatar_date_${id}`)
             } else { var cache_time = await AsyncStorage.getItem(`avatar_date_${id}`) }
 
@@ -42,10 +39,10 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
             var now = new Date();
             var diffInMin = differenceInMinutes(now, new Date(cache_time))
             if (diffInMin >= 60) {
-                console.log(`${id} over 60 min old, so force retrieve`)
+                console.log(`${id} is ${diffInMin} min old, so force retrieve`)
                 if (!pfpSrc) { pullPfp(forceRetrieve = true) }
             } else {
-                console.log(`${id} is less than 60 min old, so get from cache`)
+                console.log(`${id} is ${diffInMin} min old, so get from cache`)
                 if (isThumbnail) { var base64Icon_cached = await AsyncStorage.getItem(`thumbnail_avatar_${id}`); }
                 else { var base64Icon_cached = await AsyncStorage.getItem(`avatar_${id}`); }
                 setPngData(base64Icon_cached)

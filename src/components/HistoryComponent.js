@@ -48,7 +48,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
                 <View opacity={is_active ? 1 : 0.3} style={{ flex: 4, }}>
                     <Text numberOfLines={1}
-                        style={[styles.textDefaultSemiBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
+                        style={[styles.textDefaultMed, { color: '#013220', fontSize: 15, }]}>{session_obj.activity_name}</Text>
                 </View>
                 <View style={{ flex: 2, }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
@@ -59,11 +59,11 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', marginTop: 5, marginBottom: 10, }}>
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 5, marginBottom: 15, }}>
                 <View opacity={is_active ? 1 : 0.3} style={{ flex: 5, alignItems: 'flex-start' }}>
-                    <Text numberOfLines={1} style={[styles.textDefault,
-                    { color: '#013220', fontSize: 13, }]}>
-                        {timeDifference(session_obj.time_start, session_obj.time_end)} @ {timeFormat(session_obj.time_start)}</Text>
+                    <Text numberOfLines={1} style={[styles.textDefaultMed,
+                    { color: '#90AB72', fontSize: 14, }]}>
+                        {timeFormat(session_obj.time_start)} - {timeDifference(session_obj.time_start, session_obj.time_end)}</Text>
                 </View>
                 <View style={{ flex: 3, }}></View>
 
@@ -142,6 +142,9 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     text: {
         color: '#67806D',

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
-import * as DIR from '../components/AvatarSelection';
+import * as DIR from '../components/Avatar500Selection';
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
@@ -26,25 +26,31 @@ import pointSquares from '../../assets/point_squares.png';
 import {
     SvgTestScreen2,
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
+    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg,
     Hairfront1_svg, Hairfront2_svg, Hairfront3_svg,
     Hairside1_svg, Hairside2_svg,
     Outerwear1_svg,
     Top1_svg, Top3_svg,
     Accessories1_svg, Accessories2_svg, Accessories3_svg,
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
-    Mouth1_svg, Mouth2_svg, Mouth3_svg,
-    EyeMakeup1_svg,
+    Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
+    EyeMakeup1_svg, EyeMakeup2_svg,
     Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg,
-    Eyebrows1_svg, Eyebrows2_svg,
-    HairAccessories1_svg,
-    Hairback1_svg, Hairback2_svg,
+    Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
+    HairAccessories1_svg, HairAccessories3_svg,
+    Hairback1_svg, Hairback2_svg, Hairback3_svg, Hairback4_svg, Hairback5_svg, Hairback6_svg, Hairback7_svg, Hairback8_svg,
     Bg1_svg, Bg1_1_svg, Bg1_2_svg, Bg1_3_svg, Bg1_4_svg, Bg1_5_svg,
     Bg2_svg, Bg2_1_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
     NoItem1_svg,
 } from '../components/AvatarSelection2';
-import { color } from 'react-native-reanimated';
 
+import {
+    Piercing1_thumbnail_svg, Piercing2_thumbnail_svg, Piercing3_thumbnail_svg, Piercing4_thumbnail_svg, Piercing5_thumbnail_svg, Piercing6_thumbnail_svg, Piercing7_thumbnail_svg,
+    Mouth1_thumbnail_svg, Mouth2_thumbnail_svg, Mouth3_thumbnail_svg,
+    Eyebrows1_thumbnail_svg, Eyebrows2_thumbnail_svg,
+    EyeMakeup1_thumbnail_svg,
 
+} from '../components/AvatarThumbnailSelection';
 
 const SvgTestScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
@@ -61,6 +67,53 @@ const SvgTestScreen = ({ navigation }) => {
 
     const toggleColorMenuActive = () => {
         setColorMenuActive(!colorMenuActive);
+    }
+
+    const areYouSureGoBack = () => {
+        Alert.alert(
+            "Are you sure you want to go back? Any adjustments that are not saved will be lost.",
+            "",
+            [
+                {
+                    text: "Stay here", onPress: () => { return false }, style: "cancel"
+                },
+                {
+                    text: "Go back", onPress: () => { navigation.navigate('mainFlow') }
+                }
+            ]
+        );
+    }
+
+    const piercing_thumbnail_types = (size, c) => {
+        return [{
+            svg: <Piercing1_thumbnail_svg
+                colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <Piercing2_thumbnail_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        }, {
+            svg: <Piercing3_thumbnail_svg
+                colorFill={c} len={size} />, id: 3,
+            owned: true
+        }, {
+            svg: <Piercing4_thumbnail_svg
+                colorFill={c} len={size} />, id: 4,
+            owned: true
+        }, {
+            svg: <Piercing5_thumbnail_svg
+                colorFill={c} len={size} />, id: 5,
+            owned: true
+        }, {
+            svg: <Piercing6_thumbnail_svg
+                colorFill={c} len={size} />, id: 6,
+            owned: true
+        }, {
+            svg: <Piercing7_thumbnail_svg
+                colorFill={c} len={size} />, id: 7,
+            owned: true
+        },]
     }
 
     const piercing_types = (size, c) => {
@@ -91,6 +144,30 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Piercing7_svg
                 colorFill={c} len={size} />, id: 7,
+            owned: true
+        },]
+    }
+
+    const ear_types = (size, c) => {
+        return [{
+            svg: <Ear1_svg
+                colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <Ear2_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        }, {
+            svg: <Ear3_svg
+                colorFill={c} len={size} />, id: 3,
+            owned: true
+        }, {
+            svg: <Ear4_svg
+                colorFill={c} len={size} />, id: 4,
+            owned: true
+        }, {
+            svg: <Ear5_svg
+                colorFill={c} len={size} />, id: 5,
             owned: true
         },]
     }
@@ -233,14 +310,69 @@ const SvgTestScreen = ({ navigation }) => {
                 svg: <Mouth3_svg
                     colorFill={c} len={size} />, id: 3,
                 owned: true
+            }, {
+                svg: <Mouth4_svg
+                    colorFill={c} len={size} />, id: 4,
+                owned: true
             }
         ]
     }
-
+    const mouth_thumbnail_types = (size, c) => {
+        return [
+            {
+                svg: <Mouth1_thumbnail_svg
+                    colorFill={c} len={size} />, id: 1,
+                owned: true
+            }, {
+                svg: <Mouth2_thumbnail_svg
+                    colorFill={c} len={size} />, id: 2,
+                owned: true
+            }, {
+                svg: <Mouth3_thumbnail_svg
+                    colorFill={c} len={size} />, id: 3,
+                owned: true
+            }, {
+                svg: <Mouth4_svg
+                    colorFill={c} len={size} />, id: 4,
+                owned: true
+            }
+        ]
+    }
+    const eye_makeup_thumbnail_types = (size, c) => {
+        return [{
+            svg: <EyeMakeup1_thumbnail_svg
+                colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <EyeMakeup2_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        }]
+    }
     const eye_makeup_types = (size, c) => {
         return [{
             svg: <EyeMakeup1_svg
                 colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <EyeMakeup2_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        },]
+    }
+
+    const eyebrow_thumbnail_types = (size, c) => {
+        return [{
+            svg: <Eyebrows1_thumbnail_svg
+                colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <Eyebrows2_thumbnail_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        }, {
+            svg: <Eyebrows3_svg
+                colorFill={c} len={size} />, id: 3,
             owned: true
         },]
     }
@@ -254,13 +386,21 @@ const SvgTestScreen = ({ navigation }) => {
             svg: <Eyebrows2_svg
                 colorFill={c} len={size} />, id: 2,
             owned: true
-        },]
+        }, {
+            svg: <Eyebrows3_svg
+                colorFill={c} len={size} />, id: 3,
+            owned: true
+        }]
     }
 
     const hair_accessories_types = (size, c) => {
         return [{
             svg: <HairAccessories1_svg
                 colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <HairAccessories3_svg
+                colorFill={c} len={size} />, id: 3,
             owned: true
         }]
     }
@@ -273,6 +413,30 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Hairback2_svg
                 colorFill={c} len={size} />, id: 2,
+            owned: true
+        }, {
+            svg: <Hairback3_svg
+                colorFill={c} len={size} />, id: 3,
+            owned: true
+        }, {
+            svg: <Hairback4_svg
+                colorFill={c} len={size} />, id: 4,
+            owned: true
+        }, {
+            svg: <Hairback5_svg
+                colorFill={c} len={size} />, id: 5,
+            owned: true
+        }, {
+            svg: <Hairback6_svg
+                colorFill={c} len={size} />, id: 6,
+            owned: true
+        }, {
+            svg: <Hairback7_svg
+                colorFill={c} len={size} />, id: 7,
+            owned: true
+        }, {
+            svg: <Hairback8_svg
+                colorFill={c} len={size} />, id: 8,
             owned: true
         }]
     }
@@ -318,13 +482,15 @@ const SvgTestScreen = ({ navigation }) => {
             svg: <Bg2_svg
                 colorFill={c} len={size} />, id: 'Bg2',
             owned: true
-        }, {
-            svg: <Bg2_1_svg
-                colorFill={c} len={size} />, id: 'Bg2.1',
-            owned: true
-        }, {
+        },
+        { // switch Bg3 and Bg2_1
             svg: <Bg3_svg
                 colorFill={c} len={size} />, id: 'Bg3',
+            owned: true
+        },
+        {
+            svg: <Bg2_1_svg
+                colorFill={c} len={size} />, id: 'Bg2.1',
             owned: true
         }, {
             svg: <Bg4_svg
@@ -371,40 +537,40 @@ const SvgTestScreen = ({ navigation }) => {
     // black, white, pink, red, purple, darkblue, lightblue, darkyellow, lightyellow, green
     // used for clothes, hair accessories
     const underlayer_colors = [
-        { id: 1, hex: '#000000' },
-        { id: 2, hex: '#ffffff' },
-        { id: 3, hex: '#FFC0CB' },
-        { id: 4, hex: '#FF0000' },
-        { id: 5, hex: '#A020F0' },
-        { id: 6, hex: '#00008B' },
-        { id: 7, hex: '#ADD8E6' },
-        { id: 8, hex: '#8B8000' },
-        { id: 9, hex: '#FFFFE0' },
-        { id: 10, hex: '#00FF00' },
+        { id: 1, hex: '#323D43' },
+        { id: 2, hex: '#FDF6E3' },
+        { id: 3, hex: '#FFB6B6' },
+        { id: 4, hex: '#8C3838' },
+        { id: 5, hex: '#8983B9' },
+        { id: 6, hex: '#214A66' },
+        { id: 7, hex: '#78AED0' },
+        { id: 8, hex: '#FCC759' },
+        { id: 9, hex: '#FBE8B9' },
+        { id: 10, hex: '#5B8E80' },
     ]
     // black, brown, blonde, white, blue, green
     const hair_colors = [
-        { id: 1, hex: '#000000' },
-        { id: 2, hex: '#964B00' },
-        { id: 3, hex: '#F0E2B6' },
-        { id: 4, hex: '#FFFFFF' },
-        { id: 5, hex: '#00FFFF' },
-        { id: 6, hex: '#00FF00' },
+        { id: 1, hex: '#434A4E' },
+        { id: 2, hex: '#8E4A4A' },
+        { id: 3, hex: '#D8B482' },
+        { id: 4, hex: '#FDF6E3' },
+        { id: 5, hex: '#7D97A6' },
+        { id: 6, hex: '#5D8F81' },
     ]
     // gray, black, red, pink, green
     const mouth_colors = [
-        { id: 1, hex: '#808080' },
+        { id: 1, hex: '#6B7174' },
         { id: 2, hex: '#000000' },
-        { id: 3, hex: '#FF0000' },
-        { id: 4, hex: '#FFC0CB' },
-        { id: 5, hex: '#00FF00' },
+        { id: 3, hex: '#943939' },
+        { id: 4, hex: '#F49A8C' },
+        { id: 5, hex: '#466B61' },
     ]
     // silver, black, gold, pink
     const eye_makeup_colors = [
-        { id: 1, hex: '#C0C0C0' },
-        { id: 2, hex: '#000000' },
-        { id: 3, hex: '#FFD700' },
-        { id: 4, hex: '#FFC0CB' },
+        { id: 1, hex: '#B3B6B8' },
+        { id: 2, hex: '#6B7174' },
+        { id: 3, hex: '#FCC759' },
+        { id: 4, hex: '#F49A8C' },
     ]
 
     const piercing_colors = [
@@ -462,7 +628,9 @@ const SvgTestScreen = ({ navigation }) => {
 
     const [hairIndex, setHairIndex] = useState(state.avatarJSON.hair.base.item)
 
+    const [overlayIndex, setOverlayIndex] = useState(1)
     const [backgroundIndex, setBackgroundIndex] = useState(state.avatarJSON.accessories.background.item)
+
 
     // for optional items to toggle on/off
     const [hasOuterwear, setHasOuterwear] = useState(state.avatarJSON.clothing.outer.active)
@@ -878,7 +1046,8 @@ const SvgTestScreen = ({ navigation }) => {
         })
     }
 
-    console.log("total unowned: ", totalUnowned)
+    //console.log("total unowned: ", totalUnowned)
+    console.log("Eye index is ", eyeIndex)
 
     return (
         <>
@@ -888,6 +1057,10 @@ const SvgTestScreen = ({ navigation }) => {
                     <View style={{ position: 'absolute' }}>
                         {bg_types(AVATAR_SIZE, hair_colors[hairColorIndex].hex)[backgroundIndex].svg}
                     </View>
+                    <Image
+                        style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
+                        source={DIR.overlayTypes[1][0]} />
+
 
                     {hasHairBack ?
                         <View style={{ position: 'absolute' }}>
@@ -924,9 +1097,13 @@ const SvgTestScreen = ({ navigation }) => {
                         {underlayer_types(AVATAR_SIZE, underlayer_colors[underlayerColorIndex].hex)[underlayerIndex].svg}
                     </View>
                     {hasTop ?
-                        <View style={{ position: 'absolute' }}>
+                        <Image
+                            style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
+                            source={DIR.topTypes[topIndex][topColorIndex]} />
+                        /*<View style={{ position: 'absolute' }}>
                             {top_types(AVATAR_SIZE, underlayer_colors[topColorIndex].hex)[topIndex].svg}
-                        </View> : null}
+                        </View>*/
+                        : null}
 
                     {hasAccessories ?
                         <View style={{ position: 'absolute' }}>
@@ -952,6 +1129,10 @@ const SvgTestScreen = ({ navigation }) => {
                         <View style={{ position: 'absolute' }}>
                             {hair_front_types(AVATAR_SIZE, hair_colors[hairColorIndex].hex)[hairFrontIndex].svg}
                         </View> : null}
+
+                    <View style={{ position: 'absolute' }}>
+                        {ear_types(AVATAR_SIZE, mouth_colors[0].hex)[baseIndex].svg}
+                    </View>
 
                     {hasPiercings ?
                         <View style={{ position: 'absolute' }}>
@@ -1055,8 +1236,8 @@ const SvgTestScreen = ({ navigation }) => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
-                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
                                             if (eyePickerVisible) {
                                                 setEyePickerVisible(false)
@@ -1074,7 +1255,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1120,10 +1301,10 @@ const SvgTestScreen = ({ navigation }) => {
                                                 setEyebrowPickerVisible(true)
                                             }
                                         }}
-                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1139,7 +1320,6 @@ const SvgTestScreen = ({ navigation }) => {
                                         {!colorMenuActive ?
                                             <AvatarMenuComponent
                                                 title={"Skin tone"}
-                                                //data={DIR.baseTypes}
                                                 data={base_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
                                                 noItemOption={false}
                                                 //pngOption={true}
@@ -1191,6 +1371,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         <AvatarMenuComponent
                                             title={"Mouth"}
                                             data={mouth_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                            thumbnailData={mouth_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
                                             noItemOption={false}
                                             pngOption={false}
                                             thumbnailSize={THUMBNAIL_SIZE}
@@ -1220,6 +1401,8 @@ const SvgTestScreen = ({ navigation }) => {
                                         {!colorMenuActive ?
                                             <AvatarMenuComponent
                                                 title={"Eye Makeup"}
+                                                thumbnailData={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    eye_makeup_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
                                                 data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
                                                     eye_makeup_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
                                                 noItemOption={true}
@@ -1252,6 +1435,7 @@ const SvgTestScreen = ({ navigation }) => {
                                             <AvatarMenuComponent
                                                 title={"Eyebrows"}
                                                 data={eyebrow_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                                thumbnailData={eyebrow_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
                                                 noItemOption={false}
                                                 pngOption={false}
                                                 thumbnailSize={THUMBNAIL_SIZE}
@@ -1283,8 +1467,8 @@ const SvgTestScreen = ({ navigation }) => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
-                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
                                             if (accessoriesPickerVisible) {
                                                 setAccessoriesPickerVisible(false)
@@ -1302,7 +1486,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1348,10 +1532,10 @@ const SvgTestScreen = ({ navigation }) => {
                                                 setAccessoriesPickerVisible(true)
                                             }
                                         }}
-                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1429,6 +1613,9 @@ const SvgTestScreen = ({ navigation }) => {
                                             title={"Piercings"}
                                             data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
                                                 piercing_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            thumbnailData={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                piercing_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)
+                                            )}
                                             noItemOption={true}
                                             hasItem={hasPiercings}
                                             setHasItemCallback={setHasPiercings}
@@ -1485,8 +1672,8 @@ const SvgTestScreen = ({ navigation }) => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
-                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
                                             if (topPickerVisible) {
                                                 setTopPickerVisible(false)
@@ -1498,7 +1685,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1528,10 +1715,10 @@ const SvgTestScreen = ({ navigation }) => {
                                                 setOuterwearlayerPickerVisible(true)
                                             }
                                         }}
-                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1576,10 +1763,11 @@ const SvgTestScreen = ({ navigation }) => {
                                         {!colorMenuActive ?
                                             <AvatarMenuComponent
                                                 title={"Tops"}
+                                                //data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(top_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
                                                 data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                    top_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                    DIR.topTypes)}
                                                 noItemOption={true}
-                                                pngOption={false}
+                                                pngOption={true}
                                                 thumbnailSize={THUMBNAIL_SIZE}
                                                 hasItem={hasTop}
                                                 setHasItemCallback={setHasTop}
@@ -1640,8 +1828,8 @@ const SvgTestScreen = ({ navigation }) => {
 
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
-                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 1, }}
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
                                             if (hairFrontPickerVisible) {
                                                 setHairFrontPickerVisible(false)
@@ -1656,7 +1844,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1694,10 +1882,10 @@ const SvgTestScreen = ({ navigation }) => {
                                                 setHairSidePickerVisible(true)
                                             }
                                         }}
-                                        style={{ marginHorizontal: 5, borderWidth: 1, }}>
+                                        style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={20}
+                                            size={26}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1831,7 +2019,7 @@ const SvgTestScreen = ({ navigation }) => {
 
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', borderWidth: 2, }}>
+            <View style={{ flex: 1, flexDirection: 'row', borderWidth: 0.5, borderColor: 'gray', }}>
                 <View style={{ flex: 1 }}></View>
                 <View style={{ flex: 2, }}
                     opacity={isLoading ? 0.3 : 1}>
@@ -1848,8 +2036,8 @@ const SvgTestScreen = ({ navigation }) => {
 
                         }}>
                         {totalUnowned > 0 ?
-                            <Text style={[styles.textDefault, { textAlign: 'center', }]}>Redeem and Save Avatar</Text> :
-                            <Text style={[styles.textDefault, { textAlign: 'center', }]}>Save Avatar</Text>}
+                            <Text style={[styles.textDefault, { textAlign: 'center', fontSize: 14, color: 'white', }]}>Redeem and Save Avatar</Text> :
+                            <Text style={[styles.textDefault, { textAlign: 'center', fontSize: 14, color: 'white' }]}>Save Avatar</Text>}
                     </TouchableOpacity>
                 </View>
                 <View style={{ flex: 1 }}></View>
@@ -1858,9 +2046,15 @@ const SvgTestScreen = ({ navigation }) => {
             {isLoading ?
                 <ActivityIndicator size="large" color="gray" /> : null}
 
-            <Header
-                navigation={navigation}
-                header={'#67806D'} />
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => { areYouSureGoBack() }}>
+                <Icon
+                    name='arrow-back-outline'
+                    type='ionicon'
+                    size={35}
+                    color={'#67806D'} />
+            </TouchableOpacity>
             <TouchableOpacity
                 style={{ position: 'absolute', marginTop: height - 100, }}
                 onPress={toggleColorMenuActive}>
@@ -1870,7 +2064,6 @@ const SvgTestScreen = ({ navigation }) => {
                 />
             </TouchableOpacity>
         </>
-
     )
 }
 
@@ -1915,7 +2108,13 @@ const styles = StyleSheet.create({
     subItemSelectorActive: {
         width: 15, height: 15, borderRadius: 7.5, borderWidth: 1, marginHorizontal: 5,
         borderColor: '#B3B2B3', backgroundColor: '#B3B2B3'
-    }
+    },
+    backButton: {
+        position: 'absolute',
+        width: 50, height: 50,
+        marginTop: 50,
+        marginLeft: 5,
+    },
 })
 
 export default SvgTestScreen;

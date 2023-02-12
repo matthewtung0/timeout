@@ -254,8 +254,15 @@ const groupMonthlyTasksForSummary = (monthSessions) => {
     var overallMap = {}
     for (var i = 0; i < monthSessions.length; i++) {
         var session = monthSessions[i]
-        var monthKey = byMonthKey(session.time_start)
-
+        if (session.entry_type == 1) {
+            var actual_parts = session.date_key.split('/')
+            var yr = actual_parts[2]
+            var month = actual_parts[0]
+            var day = actual_parts[1]
+            var monthKey = month + "/" + yr
+        } else {
+            var monthKey = byMonthKey(session.time_start)
+        }
         if (monthKey in overallMap) {
             overallMap[monthKey].push(session)
         } else {
@@ -270,8 +277,18 @@ const groupMonthlyTasks = (monthSessions) => {
     var overallMap = {}
     for (var i = 0; i < monthSessions.length; i++) {
         var session = monthSessions[i]
-        var dayKey = byDayKey(session.time_start)
-        var monthKey = byMonthKey(session.time_start)
+        if (session.entry_type == 1) { // if counter type
+            var dayKey = session.date_key
+
+            var actual_parts = session.date_key.split('/')
+            var yr = actual_parts[2]
+            var month = actual_parts[0]
+            var day = actual_parts[1]
+            var monthKey = month + "/" + yr
+        } else { // if activity type
+            var dayKey = byDayKey(session.time_start)
+            var monthKey = byMonthKey(session.time_start)
+        }
 
         if (monthKey in overallMap) {
             if (dayKey in overallMap[monthKey]) {
@@ -284,15 +301,34 @@ const groupMonthlyTasks = (monthSessions) => {
             overallMap[monthKey][dayKey] = [session]
         }
     }
+    var intermediateMap = {}
     for (const [key, value] of Object.entries(overallMap)) {
-        Object.entries(value).sort((a, b) => { return a })
+        intermediateMap[key] = {}
+        for (var i in Object.entries(value)) {
+            // sort this: Object.entries(value)[i][1]
+            Object.entries(value)[i][1].sort((a, b) => {
+                if (a.entry_type == 1 && b.entry_type == 1) { // do alphabetical
+                    if (a.activity_name <= b.activity_name) {
+                        return -1
+                    } return 1
+                }
+                else if (a.entry_type == 1) {
+                    return -1
+                }
+                return 1
+            })
+        }
+        var dayKeyArray = Object.keys(overallMap[key]).sort().reverse()
+        for (var key_ in dayKeyArray) {
+            intermediateMap[key][dayKeyArray[key_]] = overallMap[key][dayKeyArray[key_]]
+        }
     }
-
     // map to existing format that works
     var finalMap = {}
-    for (var K in overallMap) {
-        finalMap[K] = Object.keys(overallMap[K]).map((key) => [key, overallMap[K][key]])
+    for (var K in intermediateMap) {
+        finalMap[K] = Object.keys(intermediateMap[K]).map((key) => [key, intermediateMap[K][key]])
     }
+    //console.log("fINAL MAP ", finalMap)
     return finalMap
 }
 
@@ -303,11 +339,17 @@ const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = nu
         /* TEMPORARY */
         const results = await timeoutApi.get('/testSessionsAndCounters', { params: { startTime: startTime, endTime: endTime } })
         console.log("RESULTS ARE : ", results.data)
+
+        // need to do the mapping client-side due to time zone issues
+        let groupedData = groupMonthlyTasks(results.data)
+        let groupedDataForSummary = groupMonthlyTasksForSummary(results.data);
         if (resetAll) {
             dispatch({
                 type: 'fetch_multiple_months_reset_all', payload: {
-                    batchDataForSummary: results.data.groupedDataForSummary,
-                    batchData: results.data.groupedData,
+                    //batchDataForSummary: results.data.groupedDataForSummary,
+                    //batchData: results.data.groupedData,
+                    batchDataForSummary: groupedDataForSummary,
+                    batchData: groupedData,
                     batchDataStart: format(startTime, 'yyyy-MM-dd'),
                     batchDataEnd: format(endTime, 'yyyy-MM-dd'),
                 }
@@ -315,39 +357,20 @@ const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = nu
         } else {
             dispatch({
                 type: 'fetch_multiple_months', payload: {
-                    batchDataForSummary: results.data.groupedDataForSummary,
-                    batchData: results.data.groupedData,
+                    //batchDataForSummary: results.data.groupedDataForSummary,
+                    //batchData: results.data.groupedData,
+                    batchDataForSummary: groupedDataForSummary,
+                    batchData: groupedData,
                     batchDataStart: format(startTime, 'yyyy-MM-dd'),
                     batchDataEnd: format(endTime, 'yyyy-MM-dd'),
                 }
             })
         }
 
-        /*const response = await timeoutApi.get('/monthSessions', { params: { startTime: startTime, endTime: endTime } })
-        var groupedTasks = groupMonthlyTasks(response.data);
-        var groupedTasksForSummary = groupMonthlyTasksForSummary(response.data);
-        if (resetAll) {
-            dispatch({
-                type: 'fetch_multiple_months_reset_all', payload: {
-                    batchDataForSummary: groupedTasksForSummary,
-                    batchData: groupedTasks,
-                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
-                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
-                }
-            })
-        } else {
-            dispatch({
-                type: 'fetch_multiple_months', payload: {
-                    batchDataForSummary: groupedTasksForSummary,
-                    batchData: groupedTasks,
-                    batchDataStart: format(startTime, 'yyyy-MM-dd'),
-                    batchDataEnd: format(endTime, 'yyyy-MM-dd'),
-                }
-            })
-        }*/
         if (callback) { callback(response.data) }
     } catch (err) {
         console.log("Problem getting multiple month sessions", err)
+        console.log(err.stack)
     }
 }
 
@@ -468,11 +491,6 @@ const patchSession = dispatch => async (sessionId, notes, callback = null, error
 
 const deleteSession = dispatch => async (sessionObj, callback = null, errorCallback = null) => {
     var dt = sessionObj.time_start
-
-    // get month and day key to zero in on item to delete from batchData
-
-    var monthKey = byMonthKey(dt)
-    var dayKey = byDayKey(dt)
 
     console.log("Deleting session with id ", sessionObj.activity_id)
 

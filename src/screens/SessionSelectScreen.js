@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
-    Keyboard, TouchableWithoutFeedback, ActivityIndicator
+    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Button,
 } from 'react-native';
 import { Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
@@ -27,14 +27,9 @@ const HideKeyboard = ({ children }) => (
 const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
-    const [selectedButton, setSelectedButton] = useState({ buttonName: 'unsorted', buttonId: 3 });
     const { state, fetchSelf, fetchFriendsIfUpdate } = useContext(UserContext)
     const { setChosen, setActivityName } = useContext(CategoryContext)
     const [customActivity, setCustomActivity] = useState('')
-
-    const [catId, setCatId] = useState(3)
-    const [catName, setCatName] = useState('unsorted')
-    const [colorId, setColorId] = useState('c6')
     const [isLoading, setIsLoading] = useState(false)
 
     const [categoryId, setCategoryId] = useState("3");
@@ -42,6 +37,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [newColorId, setNewColorId] = useState('c9')
 
     const [modalVisible, setModalVisible] = useState(false)
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
 
     const updateTime = (a) => {
         setTime(a);
@@ -64,8 +62,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                 // after save session, fetch self to update stats, and then update the points
                 await fetchSelf()
 
-
-
                 // add points
                 await addPoints(state.user_id, 100000)
 
@@ -78,18 +74,29 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
             num_stored = storedSessions.length
         }
-        console.log("nUMBER STORED SESSIONS ", String(num_stored))
-        console.log(JSON.stringify(storedSessions))
+        console.log("# stored sessions:", String(num_stored))
+        //console.log(JSON.stringify(storedSessions))
         return num_stored
     }
 
     const focusEffectFunc = async () => {
         setIsLoading(true)
-        console.log("FOCUS EFFECT SESSION SELECT")
         await fetchFriendsIfUpdate();
-        //checkStoredSessions()
-        AsyncStorage.removeItem('storedSessions'); // TEMP
+        checkStoredSessions()
+        //AsyncStorage.removeItem('storedSessions'); // TEMP
 
+        /*AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-east-1:e7cd068c-97f2-48f2-a12b-8abf24e576e4' }, {region:'us-east-1'});
+        AWS.config.credentials.getPromise();
+
+        //register the device with the push service
+        Notifications.registerRemoteNotifications();
+        //setup the onRegistration listener (lambda for clarity)
+        Notifications.events().registerRemoteNotificationsRegistered((token) => onRegistration(token))
+
+        const sns = new AWS.SNS();
+        sns.createPlatformEndpoint({ARN, Token}, callback);
+*/
         setIsLoading(false)
     }
 
@@ -98,28 +105,14 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
             focusEffectFunc()
         }, [])
     )
-    console.log("Error message: ", state.errorMessage);
+    //console.log("Error message: ", state.errorMessage);
 
     const clearInputs = () => {
-        setSelectedButton({ buttonName: 'unsorted', buttonId: 3 })
-        setCatId(3)
-        setCatName('unsorted')
-
         setCategoryId("3")
-
         setTime(0)
         updateTime(0)
         setNewColorId('c9')
         setCustomActivity('')
-    }
-
-    // callback from manually selecting category button
-    const updateButton = (button) => {
-        setCatId(button.buttonId)
-        setCatName(button.buttonName)
-        setSelectedButton(button);
-        setChosen(button)
-        setColorId(button.buttonColor)
     }
 
     const circularRef = useRef()
@@ -132,9 +125,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const fillInWithItem = (returned_info) => {
         const { item_desc, cat_id, item_id, cat_name, color_id } = returned_info
         setCustomActivity(item_desc)
-        setCatId(cat_id)
-        setCatName(cat_name)
-        setColorId(color_id)
 
         // for context uses, might delete later
         setActivityName(item_desc)
@@ -264,8 +254,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         />
                     </View>
 
-
-
                     <TouchableOpacity
                         style={[styles.start, { width: width / 2.2, height: height / 12 }]}
                         onPress={() => {
@@ -290,6 +278,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         <Text style={[styles.startText, styles.textDefaultBold]}>Start</Text>
 
                     </TouchableOpacity>
+
+
 
                     {state.errorMessage ?
                         <View style={{ height: height * 0.2, backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>

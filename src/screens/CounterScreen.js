@@ -166,7 +166,6 @@ const CounterScreen = () => {
     };
 
     const focusEffectFunc = async (temp = false) => {
-        console.log("Comparing . . . ")
         var comp = compareAsc(counterState.lastUpdated, startOfDay(new Date()))
         if (comp < 0 || temp) { // need updating
             console.log("Refreshing counters for new day")

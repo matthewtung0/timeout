@@ -27,7 +27,7 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
                         <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultSemiBold]}>{item.category_name}</Text>
                     </View>
                     <View style={{ flex: 2.5, justifyContent: 'center' }}>
-                        <Text numberOfLines={2} style={[styles.text, styles.textDefaultSemiBold,]}>{item.item_desc}</Text>
+                        <Text numberOfLines={2} style={[styles.text, styles.textDefaultMed,]}>{item.item_desc}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -65,6 +65,9 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     text: {
         color: '#67806D',

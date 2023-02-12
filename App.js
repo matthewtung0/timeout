@@ -877,6 +877,7 @@ function CreateMainNavigator() {
     fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+    'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
     'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf')
   });

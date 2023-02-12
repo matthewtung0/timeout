@@ -12,10 +12,10 @@ const HistoryCounterComponent = ({ session_obj }) => {
 
                 <View style={{ flex: 4, }}>
                     <Text numberOfLines={1}
-                        style={[styles.textDefaultSemiBold, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
+                        style={[styles.textDefaultMed, { color: '#013220', fontSize: 14, }]}>{session_obj.activity_name}</Text>
                 </View>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text style={[styles.textDefaultBold, { alignSelf: 'center', color: '#013220', fontSize: 14, }]}>
+                    <Text style={[styles.textDefaultMed, { alignSelf: 'center', color: '#013220', fontSize: 14, }]}>
                         {session_obj.daily_count} </Text>
                     <Text style={[styles.textDefault, { alignSelf: 'center', color: '#013220', fontSize: 12, }]}>
                         times</Text>
@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     },
     textDefaultSemiBold: {
         fontFamily: 'Inter-SemiBold',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

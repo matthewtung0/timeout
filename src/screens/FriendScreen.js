@@ -95,6 +95,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                                     <AvatarComponent
                                         w={50}
                                         id={item.friend}
+                                        isThumbnail={true}
                                     />
                                 </TouchableOpacity>
                             </View>

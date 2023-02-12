@@ -62,7 +62,8 @@ const MonthlySumComponent = ({ monthBatch }) => {
                                 style={styles.container}
                                 key={item[0]}>
                                 <View style={styles.textContainer}>
-                                    <Text style={[styles.barLabel, styles.textDefaultSemiBold]}>{item[0]}</Text>
+                                    <Text numberOfLines={2}
+                                        style={[styles.barLabel, styles.textDefaultSemiBold]}>{item[0]}</Text>
                                 </View>
 
                                 {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
@@ -80,34 +81,6 @@ const MonthlySumComponent = ({ monthBatch }) => {
                     })}
             </>
         </View>
-
-        /*<View>
-            <FlatList
-                horizontal={false}
-                data={sortedRes}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(arr) => arr[0]} //key
-                renderItem={({ item }) => {
-                    return (
-                        <View style={styles.container}>
-                            <View style={styles.textContainer}>
-                                <Text style={styles.barLabel}>{item[0]}</Text>
-                            </View>
-
-                            {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
-                                <View style={styles.barContainer}>
-                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabel}>{item[1]}s</Text>
-                                </View> :
-                                <View style={styles.barContainerRelative}>
-                                    <View style={[styles.bar, { backgroundColor: getColor(item[0]), width: BAR_MAX_WIDTH * getBarPct(item[1]) }]} />
-                                    <Text style={styles.timeLabelRelative}>{item[1]}s</Text>
-                                </View>}
-                        </View>)
-                }}
-            >
-            </FlatList>
-        </View>*/
     )
 }
 

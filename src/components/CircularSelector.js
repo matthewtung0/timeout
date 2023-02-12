@@ -1,10 +1,6 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Animated, View, StyleSheet, PanResponder, Dimensions, ImageBackground } from 'react-native';
-import Svg, {
-    Circle,
-    Path,
-} from 'react-native-svg';
-import { Text } from 'react-native-svg';
+import Svg, { Circle, Path, Text } from 'react-native-svg';
 
 const img_timer = require('../../assets/clock_middle.png');
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -299,6 +295,26 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     */}
                     </Svg>
 
+                    {/*<View style={{ position: 'absolute', borderWidth: 2, width: '100%', height: '100%', flex: 1, flexDirection: 'row', }}>
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+                            <Text>{formattedTens}</Text>
+                        </View>
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+                            <Text></Text>
+                        </View>
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+                            <Text></Text>
+                        </View>
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+                            <Text></Text>
+                        </View>
+                        <View style={{ flex: 1, borderWidth: 1, }}>
+                            <Text></Text>
+                        </View>
+
+</View>*/}
+
+
                 </Animated.View>
 
             </ImageBackground>
@@ -320,7 +336,7 @@ const styles = StyleSheet.create({
     wrappedView: {
         aspectRatio: 1,
         borderWidth: 0.3,
-        borderColor: 'yellow',
+        borderColor: 'black',
         width: picked_width,
     },
     svgStyle: {

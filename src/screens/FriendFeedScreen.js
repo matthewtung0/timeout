@@ -143,8 +143,9 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
             <View>
                 {atEnd ?
                     <>
-                        <Text style={styles.textDefault}>All caught up!</Text>
-                        <View style={{ height: 50 }}></View>
+                        <View style={styles.loadMore}>
+                            <Text style={[styles.textDefault, { color: 'white', fontSize: 20, }]}>All caught up!</Text>
+                        </View>
                     </>
                     :
                     <View style={{ height: 50 }}></View>

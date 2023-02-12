@@ -17,11 +17,26 @@ const HelpandSupportModal = ({ toggleFunction, selectedObject, callback }) => {
             <View style={{ flex: 1, backgroundColor: 'white', borderRadius: BORDER_RADIUS, alignItems: 'center' }}>
                 <View style={{ height: 85 }} />
                 <Text style={[styles.textDefault, {
-                    textAlign: 'center', marginHorizontal: 20, fontSize: 16,
-                    marginTop: 20,
-                }]}>Thank you for using TimeOut!
-                    If you have any questions or comments, you can contact us at nofuss.exe@gmail.com.
-                    We're always on the lookout for ways to improve the app and your experience.</Text>
+                    marginHorizontal: 20, fontSize: 16,
+                    marginTop: 20, color: '#67806D',
+                }]}><Text>Thank you for using TimeOut!
+                    If you have any questions or comments, you can contact us at:</Text>
+                </Text>
+                <Text style={[styles.textDefault, {
+                    marginHorizontal: 20, fontSize: 16,
+                    marginTop: 20, color: '#67806D',
+                }]}>
+                    <Text>nofuss.exe@gmail.com</Text>
+                </Text>
+                <Text style={[styles.textDefault, {
+                    marginHorizontal: 20, fontSize: 16,
+                    marginTop: 20, color: '#67806D',
+                }]}>
+                    <Text>We're always on the lookout for ways to improve the app.</Text>
+                </Text>
+
+
+
             </View>
 
             <Image

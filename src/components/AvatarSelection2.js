@@ -11,6 +11,12 @@ import Piercing5 from '../../assets/avatar_svg/2_piercings/piercing_5.svg'
 import Piercing6 from '../../assets/avatar_svg/2_piercings/piercing_6.svg'
 import Piercing7 from '../../assets/avatar_svg/2_piercings/piercing_7.svg'
 
+/* 3_ear */
+import Ear1 from '../../assets/avatar_svg/3_ear/ear_1.svg'
+import Ear2 from '../../assets/avatar_svg/3_ear/ear_2.svg'
+import Ear3 from '../../assets/avatar_svg/3_ear/ear_3.svg'
+import Ear4 from '../../assets/avatar_svg/3_ear/ear_4.svg'
+import Ear5 from '../../assets/avatar_svg/3_ear/ear_5.svg'
 
 /* 4_hair_front */
 import Hairfront1 from '../../assets/avatar_svg/4_hair_front/1_bangs-part_1.svg'
@@ -47,13 +53,16 @@ import Underlayer9 from '../../assets/avatar_svg/10_underlayer/9_turtle-long_1.s
 import Mouth1 from '../../assets/avatar_svg/11_mouth/1_pressed_1.svg'
 import Mouth2 from '../../assets/avatar_svg/11_mouth/2_lipstick_1.svg'
 import Mouth3 from '../../assets/avatar_svg/11_mouth/3_lipstick-smile_1.svg'
+import Mouth4 from '../../assets/avatar_svg/11_mouth/4_open_smile.svg'
 
 /* 13 eye makeup*/
 import EyeMakeup1 from '../../assets/avatar_svg/13_eye_makeup/eye_makeup_1.svg'
+import EyeMakeup2 from '../../assets/avatar_svg/13_eye_makeup/eye_makeup_2.svg'
 
 /* 15 eyebrows*/
 import Eyebrows1 from '../../assets/avatar_svg/15_eyebrows/1_neutral-thick_1.svg'
 import Eyebrows2 from '../../assets/avatar_svg/15_eyebrows/2_neutral-thin_1.svg'
+import Eyebrows3 from '../../assets/avatar_svg/15_eyebrows/3_shaved.svg'
 
 /* 16 base */
 import Base1 from '../../assets/avatar_svg/16_base/base_1.svg'
@@ -65,10 +74,17 @@ import Base5 from '../../assets/avatar_svg/16_base/base_5.svg'
 
 /* 17 hair accessories*/
 import HairAccessories1 from '../../assets/avatar_svg/17_hair_accessories/1_ponytail-ribbon_1.svg'
+import HairAccessories3 from '../../assets/avatar_svg/17_hair_accessories/3_cat-ears.svg'
 
 /* 18 hair back */
 import Hairback1 from '../../assets/avatar_svg/18_hair_back/2_ponytail-fluffy_1.svg'
 import Hairback2 from '../../assets/avatar_svg/18_hair_back/3_down-fluffy_1.svg'
+import Hairback3 from '../../assets/avatar_svg/18_hair_back/4_pigtails.svg'
+import Hairback4 from '../../assets/avatar_svg/18_hair_back/bun-side.svg'
+import Hairback5 from '../../assets/avatar_svg/18_hair_back/ponytail-high-long.svg'
+import Hairback6 from '../../assets/avatar_svg/18_hair_back/ponytail-high-short.svg'
+import Hairback7 from '../../assets/avatar_svg/18_hair_back/braid-back.svg'
+import Hairback8 from '../../assets/avatar_svg/18_hair_back/ponytail-short.svg'
 
 /* 20 background */
 import Bg1 from '../../assets/avatar_svg/20_background/bg_1.svg'
@@ -92,6 +108,7 @@ import Bg9 from '../../assets/avatar_svg/20_background/bg_9.svg'
 import Bg10 from '../../assets/avatar_svg/20_background/bg_10.svg'
 
 import NoItem_svg from '../../assets/avatar_svg/no_item.svg'
+import tinycolor from 'tinycolor2';
 
 const SvgTestScreen2 = () => {
 
@@ -121,6 +138,22 @@ const Piercing7_svg = ({ colorFill, len }) => {
     return (<Piercing7 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
+/* ===================================== 3_ear ================================== */
+const Ear1_svg = ({ colorFill, len }) => {
+    return (<Ear1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Ear2_svg = ({ colorFill, len }) => {
+    return (<Ear2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Ear3_svg = ({ colorFill, len }) => {
+    return (<Ear3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Ear4_svg = ({ colorFill, len }) => {
+    return (<Ear4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Ear5_svg = ({ colorFill, len }) => {
+    return (<Ear5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
 
 /* =========================== 4_hair_front ============================= */
 const Hairfront1_svg = ({ colorFill, len }) => {
@@ -157,7 +190,6 @@ const Accessories2_svg = ({ colorFill, len }) => {
 const Accessories3_svg = ({ colorFill, len }) => {
     return (<Accessories3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
-
 
 
 /* =========================== 9_top ============================= */
@@ -204,10 +236,16 @@ const Mouth2_svg = ({ colorFill, len }) => {
 const Mouth3_svg = ({ colorFill, len }) => {
     return (<Mouth3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
+const Mouth4_svg = ({ colorFill, len }) => {
+    return (<Mouth4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
 
 /* =========================== 13_eye_makeup ============================= */
 const EyeMakeup1_svg = ({ colorFill, len }) => {
     return (<EyeMakeup1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const EyeMakeup2_svg = ({ colorFill, len }) => {
+    return (<EyeMakeup2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 15_eyebrows ============================= */
@@ -216,6 +254,9 @@ const Eyebrows1_svg = ({ colorFill, len }) => {
 }
 const Eyebrows2_svg = ({ colorFill, len }) => {
     return (<Eyebrows2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Eyebrows3_svg = ({ colorFill, len }) => {
+    return (<Eyebrows3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
 /* =========================== 16_base ============================= */
@@ -243,6 +284,9 @@ const Base5_svg = ({ colorFill, len }) => {
 const HairAccessories1_svg = ({ colorFill, len }) => {
     return (<HairAccessories1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
+const HairAccessories3_svg = ({ colorFill, len }) => {
+    return (<HairAccessories3 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
 
 /* =========================== 18_hair_back ============================= */
 const Hairback1_svg = ({ colorFill, len }) => {
@@ -251,7 +295,52 @@ const Hairback1_svg = ({ colorFill, len }) => {
 const Hairback2_svg = ({ colorFill, len }) => {
     return (<Hairback2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
-
+const Hairback3_svg = ({ colorFill, len }) => {
+    console.log(tinycolor(colorFill).darken(10).toString())
+    return (<Hairback3 style={[styles.svgDefault,
+    {
+        color:
+            tinycolor(colorFill).darken(10).toString()
+    }]}
+        fill={colorFill}
+        width={len} height={len} />)
+}
+const Hairback4_svg = ({ colorFill, len }) => {
+    console.log(tinycolor(colorFill).darken(10).toString())
+    return (<Hairback4 style={[styles.svgDefault,
+    {
+        color:
+            tinycolor(colorFill).darken(10).toString()
+    }]}
+        fill={colorFill}
+        width={len} height={len} />)
+}
+const Hairback5_svg = ({ colorFill, len }) => {
+    console.log(tinycolor(colorFill).darken(10).toString())
+    return (<Hairback5 style={[styles.svgDefault,
+    {
+        color:
+            tinycolor(colorFill).darken(10).toString()
+    }]}
+        fill={colorFill}
+        width={len} height={len} />)
+}
+const Hairback6_svg = ({ colorFill, len }) => {
+    console.log(tinycolor(colorFill).darken(10).toString())
+    return (<Hairback6 style={[styles.svgDefault,
+    {
+        color:
+            tinycolor(colorFill).darken(10).toString()
+    }]}
+        fill={colorFill}
+        width={len} height={len} />)
+}
+const Hairback7_svg = ({ colorFill, len }) => {
+    return (<Hairback7 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Hairback8_svg = ({ colorFill, len }) => {
+    return (<Hairback8 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
 
 /* =========================== 20_background ============================= */
 
@@ -322,18 +411,19 @@ const styles = StyleSheet.create({
 module.exports = {
     SvgTestScreen2,
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
+    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg,
     Hairfront1_svg, Hairfront2_svg, Hairfront3_svg,
     Hairside1_svg, Hairside2_svg,
     Outerwear1_svg,
     Top1_svg, Top3_svg,
     Accessories1_svg, Accessories2_svg, Accessories3_svg,
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
-    Mouth1_svg, Mouth2_svg, Mouth3_svg,
-    EyeMakeup1_svg,
+    Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
+    EyeMakeup1_svg, EyeMakeup2_svg,
     Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg,
-    Eyebrows1_svg, Eyebrows2_svg,
-    HairAccessories1_svg,
-    Hairback1_svg, Hairback2_svg,
+    Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
+    HairAccessories1_svg, HairAccessories3_svg,
+    Hairback1_svg, Hairback2_svg, Hairback3_svg, Hairback4_svg, Hairback5_svg, Hairback6_svg, Hairback7_svg, Hairback8_svg,
     Bg1_svg, Bg1_1_svg, Bg1_2_svg, Bg1_3_svg, Bg1_4_svg, Bg1_5_svg,
     Bg2_svg, Bg2_1_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
     NoItem1_svg

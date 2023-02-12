@@ -1,7 +1,7 @@
-import React, { useContext, useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, TextInput, FlatList, Dimensions, ActivityIndicator,
-    TouchableWithoutFeedback, Keyboard
+    TouchableWithoutFeedback, Keyboard, Alert
 } from 'react-native';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
@@ -35,6 +35,11 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
 
     console.log(searchTerm)
     const searchSessions = async () => {
+        if (searchCatId == 'All categories' && searchTerm == '') {
+            // do not let search return all - may be too many
+            alert("Please enter some search terms or categories.")
+            return;
+        }
         try {
             setIsLoading(true)
 
@@ -212,7 +217,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
         <HideKeyboard>
             <View style={styles.container}>
                 <View style={{ marginHorizontal: 20, }}>
-                    <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>
+                    <Text style={[styles.textDefaultSemiBold, { color: '#67806D' }]}>
                         Search by keyword:</Text>
 
                     <TextInput
@@ -230,7 +235,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
                         onChangeText={setSearchTerm}
                     />
 
-                    <Text style={[styles.textDefaultBold, { marginVertical: 10, color: '#67806D', }]}>
+                    <Text style={[styles.textDefaultSemiBold, { marginVertical: 10, color: '#67806D', }]}>
                         Search by specific category:</Text>
 
                     <DropDownComponent2
@@ -287,6 +292,9 @@ HistorySearchScreen.navigationOptions = () => { return { headerShown: false, }; 
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
