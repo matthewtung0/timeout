@@ -43,7 +43,7 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 
 import TestSvgScreen from './src/screens/SvgTestScreen';
 
-import EditAvatarScreen from './src/screens/EditAvatarScreen';
+//import EditAvatarScreen from './src/screens/EditAvatarScreen';
 import ShopScreen from './src/screens/InviteScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen'
 
@@ -275,10 +275,10 @@ function CreateProfileStack() {
         name="Profile"
         component={ProfileScreen}
       />
-      <Stack.Screen
+      {/*<Stack.Screen
         name="EditAvatar"
         component={EditAvatarScreen}
-      />
+    />*/}
       <Stack.Screen
         name="Shop"
         component={ShopScreen}

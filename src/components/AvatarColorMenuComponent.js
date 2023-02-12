@@ -1,10 +1,5 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, Image, Dimensions, ScrollView, FlatList, TouchableOpacity } from 'react-native';
-import timeoutApi from '../api/timeout';
-import { useFocusEffect } from '@react-navigation/native';
-import { Context as userContext } from '../context/userContext';
-//import { Context as UserContext } from '../context/userContext';
-const default_img = require('../../assets/avatar/20_BACKGROUND/1_pink.png')
+import React, { } from 'react';
+import { View, StyleSheet, Text, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 const lock = require('../../assets/lock.png')
 
 const AvatarColorMenuComponent = ({ title, data, setIndexCallback, colorIndex, usesPng

@@ -1,1 +1,1 @@
-export const defaultPfp = require('../../assets/avatar/2.png'); 
+export const defaultPfp = require('../../assets/avatar_500/2.png'); 
