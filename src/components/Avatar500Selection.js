@@ -46,8 +46,8 @@ const eyesWide3 = require('../../assets/avatar_500/12_eyes/1_wide_3_blue.png')
 const eyesWide4 = require('../../assets/avatar_500/12_eyes/1_wide_4_green.png')
 const eyesWide5 = require('../../assets/avatar_500/12_eyes/1_wide_5_gold.png')
 const eyesWide6 = require('../../assets/avatar_500/12_eyes/1_wide_6_red.png')
-const eyesWide7 = require('../../assets/avatar_500/12_eyes/1_wide_7_allwhite.png')
-const eyesWide8 = require('../../assets/avatar_500/12_eyes/1_wide_8_allblack.png')
+const eyesWide7 = require('../../assets/avatar_500/12_eyes/1_wide_7_teal.png')
+const eyesWide8 = require('../../assets/avatar_500/12_eyes/1_wide_8_gray.png')
 const eyesWide = [eyesWide1, eyesWide2, eyesWide3, eyesWide4, eyesWide5, eyesWide6, eyesWide7, eyesWide8,]
 
 const eyesNeutral1 = require('../../assets/avatar_500/12_eyes/2_neutral_1_brown.png')
@@ -56,8 +56,8 @@ const eyesNeutral3 = require('../../assets/avatar_500/12_eyes/2_neutral_3_blue.p
 const eyesNeutral4 = require('../../assets/avatar_500/12_eyes/2_neutral_4_green.png')
 const eyesNeutral5 = require('../../assets/avatar_500/12_eyes/2_neutral_5_gold.png')
 const eyesNeutral6 = require('../../assets/avatar_500/12_eyes/2_neutral_6_red.png')
-const eyesNeutral7 = require('../../assets/avatar_500/12_eyes/2_neutral_7_allwhite.png')
-const eyesNeutral8 = require('../../assets/avatar_500/12_eyes/2_neutral_8_allblack.png')
+const eyesNeutral7 = require('../../assets/avatar_500/12_eyes/2_neutral_7_teal.png')
+const eyesNeutral8 = require('../../assets/avatar_500/12_eyes/2_neutral_8_gray.png')
 const eyesNeutral = [eyesNeutral1, eyesNeutral2, eyesNeutral3, eyesNeutral4, eyesNeutral5,
     eyesNeutral6, eyesNeutral7, eyesNeutral8,]
 
@@ -66,7 +66,7 @@ const eyesRobot = [robot_closed, robot_closed, robot_closed, robot_closed, robot
     robot_closed, robot_closed, robot_closed,]
 
 const eyeTypes = [eyesWide, eyesNeutral, eyesRobot]
-const eyeColors = ['brown', 'black', 'blue', 'green', 'gold', 'red', 'light-grey', 'grey']
+const eyeColors = ['brown', 'black', 'blue', 'green', 'gold', 'red', 'teal', 'gray']
 
 // ---------------------------------------- GLASSES ----------------------------------------------
 const glasses1 = require('../../assets/avatar_500/1_glasses/1_round_1_black-01.png')

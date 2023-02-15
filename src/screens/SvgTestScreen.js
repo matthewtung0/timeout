@@ -38,6 +38,7 @@ import {
     Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
     Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
     Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
+    Eyes1_svg, Eyes2_svg,
     HairAccessories1_svg, HairAccessories3_svg,
     Hairback1_svg, Hairback2_svg, Hairback3_svg, Hairback4_svg, Hairback5_svg, Hairback6_svg, Hairback7_svg, Hairback8_svg, Hairback9_svg, Hairback10_svg, Hairback11_svg, Hairback12_svg, Hairback13_svg,
     Bg1_svg, Bg1_1_svg, Bg1_2_svg, Bg1_3_svg, Bg1_4_svg, Bg1_5_svg,
@@ -494,6 +495,18 @@ const SvgTestScreen = ({ navigation }) => {
         }]
     }
 
+    const eye_types = (size, c) => {
+        return [{
+            svg: <Eyes1_svg
+                colorFill={c} len={size} />, id: 1,
+            owned: true
+        }, {
+            svg: <Eyes2_svg
+                colorFill={c} len={size} />, id: 2,
+            owned: true
+        }]
+    }
+
     const hair_accessories_types = (size, c) => {
         return [{
             svg: <HairAccessories1_svg
@@ -692,6 +705,17 @@ const SvgTestScreen = ({ navigation }) => {
         { id: 2, hex: '#6B7174' },
         { id: 3, hex: '#FCC759' },
         { id: 4, hex: '#F49A8C' },
+    ]
+
+    const eye_colors = [
+        { id: 1, hex: '#96582A' },
+        { id: 2, hex: '#000000' },
+        { id: 3, hex: '#3C93BA' },
+        { id: 4, hex: '#89C47A' },
+        { id: 5, hex: '#CE8F4A' },
+        { id: 6, hex: '#E55E5E' },
+        { id: 7, hex: '#007F73' },
+        { id: 8, hex: '#898783' },
     ]
 
     const piercing_colors = [
@@ -1206,9 +1230,13 @@ const SvgTestScreen = ({ navigation }) => {
                             {eye_makeup_types(AVATAR_SIZE, mouth_colors[eyeMakeupColorIndex].hex)[eyeMakeupIndex].svg}
                         </View> : null}
 
-                    <Image
+                    <View style={{ position: 'absolute' }}>
+                        {eye_types(AVATAR_SIZE, eye_colors[eyeColorIndex].hex)[eyeIndex].svg}
+                    </View>
+
+                    {/*<Image
                         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
-                        source={DIR.eyeTypes[eyeIndex][eyeColorIndex]} />
+                    source={DIR.eyeTypes[eyeIndex][eyeColorIndex]} />*/}
 
 
                     <View style={{ position: 'absolute' }}>
@@ -1463,9 +1491,10 @@ const SvgTestScreen = ({ navigation }) => {
                                         {!colorMenuActive ?
                                             <AvatarMenuComponent
                                                 title={"Eyes"}
-                                                data={DIR.eyeTypes}
+                                                //data={DIR.eyeTypes}
+                                                data={eye_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
                                                 noItemOption={false}
-                                                pngOption={true}
+                                                pngOption={false}
                                                 thumbnailSize={THUMBNAIL_SIZE}
                                                 //hasItem={}
                                                 //setHasItemCallback={}
@@ -1478,8 +1507,8 @@ const SvgTestScreen = ({ navigation }) => {
                                             :
                                             <AvatarColorMenuComponent
                                                 title={"Eye Colors"}
-                                                usesPng={true}
-                                                data={DIR.eyeColors}
+                                                usesPng={false}
+                                                data={eye_colors}
                                                 setIndexCallback={setEyeColorIndex}
                                                 colorIndex={eyeColorIndex}
                                             />

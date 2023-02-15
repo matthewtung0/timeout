@@ -70,6 +70,10 @@ import Mouth2 from '../../assets/avatar_svg/11_mouth/2_lipstick_1.svg'
 import Mouth3 from '../../assets/avatar_svg/11_mouth/3_lipstick-smile_1.svg'
 import Mouth4 from '../../assets/avatar_svg/11_mouth/4_open_smile.svg'
 
+/* 12 eyes */
+import Eyes1 from '../../assets/avatar_svg/12_eyes/1_neutral.svg'
+import Eyes2 from '../../assets/avatar_svg/12_eyes/2_wide.svg'
+
 /* 13 eye makeup*/
 import EyeMakeup1 from '../../assets/avatar_svg/13_eye_makeup/eye_makeup_1.svg'
 import EyeMakeup2 from '../../assets/avatar_svg/13_eye_makeup/eye_makeup_2.svg'
@@ -336,6 +340,15 @@ const Mouth4_svg = ({ colorFill, len }) => {
     return (<Mouth4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
 
+/* =========================== 12_eyes ============================= */
+const Eyes1_svg = ({ colorFill, len }) => {
+    return (<Eyes1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+const Eyes2_svg = ({ colorFill, len }) => {
+    return (<Eyes2 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
+}
+
+
 /* =========================== 13_eye_makeup ============================= */
 const EyeMakeup1_svg = ({ colorFill, len }) => {
     return (<EyeMakeup1 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
@@ -579,6 +592,7 @@ module.exports = {
     Accessories1_svg, Accessories2_svg, Accessories3_svg,
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
+    Eyes1_svg, Eyes2_svg,
     EyeMakeup1_svg, EyeMakeup2_svg,
     Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
     Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
