@@ -178,7 +178,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
 
 
                 <TouchableOpacity
-                    style={[styles.addFriend, { width: width / 1.8, height: height / 18 }]}
+                    style={[styles.addFriend, { width: width / 1.8, height: height / 18, backgroundColor: '#83B569', }]}
                     onPress={() => {
                         toggleModal()
                     }}>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     addFriend: {
-        backgroundColor: '#ABC57E',
+
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 15,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
             width: 0.3,
             height: 0.3,
         },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.4,
     },
     addFriendText: {
         color: 'white',

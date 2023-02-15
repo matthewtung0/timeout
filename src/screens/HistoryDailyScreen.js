@@ -35,7 +35,6 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedObject, setSelectedObject] = useState({})
-    const [searchField, setSearchField] = useState('');
 
     // number of months prior to current month that is currently fetched from server
 
@@ -53,8 +52,6 @@ const HistoryDailyScreen = ({ navigation }) => {
         }
         setIsLoading(true)
         await resetCalendarDate(dt)
-        //await fetchMonthly(dt)
-        //await fetchMonthlyCounters(dt)
 
         setDisplayedMonth(longMonth(dt))
         setDisplayedMonthKey(format(dt, 'M/yyyy', { locale: enUS }).toString())
@@ -166,13 +163,9 @@ const HistoryDailyScreen = ({ navigation }) => {
 
     const modalCallback = async (item_deleted = false) => {
         if (item_deleted) {
-            //console.log("CALLING MODAL CALLBACK")
-
             var endTime = endOfMonth(state.calendarDate)
             var startTime = startOfMonth(state.calendarDate)
             await fetchMultipleMonths(startTime, endTime)
-
-            //fetchMonthly(state.calendarDate, groupMonthlyTasks)
         }
     }
 
@@ -180,89 +173,73 @@ const HistoryDailyScreen = ({ navigation }) => {
         return (
             <>
                 {/* ======= SUMMARY CONTAINER ======== */}
-                {searchField != '' ?
-                    null :
-                    <View style={{
-                        backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, paddingVertical: 10,
-                        borderTopWidth: 0,
-                        borderWidth: 3, borderColor: '#8CC768', marginBottom: 20,
-                    }}>
-                        <View style={{ flex: 1, flexDirection: 'row', }}>
-                            <View>
-                                {/*<Text style={[styles.overviewTitle, styles.textDefaultBold,
-                            {
-                                fontSize: 22, alignSelf: 'auto',
-                                marginBottom: 0, color: '#67806D', marginHorizontal: 10,
-                            }]}>{displayedMonth} Overview</Text>*/}
-                            </View>
-                        </View>
-                        <>
 
-                            <Text style={[styles.overviewTitle, styles.textDefaultBold,
-                            {
-                                fontSize: 17, alignSelf: 'auto', marginHorizontal: 10,
-                                marginTop: 2, marginBottom: 10, color: '#67806D', marginTop: 5,
-                            }]}>
-                                {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' ?
-                                    state.batchDataForSummary[displayMonthKey].filter(
-                                        (req) => req.entry_type == 0).length : 0} Tasks</Text>
+                <View style={{
+                    backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, paddingVertical: 10,
+                    borderTopWidth: 0,
+                    borderWidth: 3, borderColor: '#8CC768', marginBottom: 20, marginHorizontal: 5,
+                }}>
+                    <>
 
-                            {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
+                        <Text style={[styles.overviewTitle, styles.textDefaultBold,
+                        {
+                            fontSize: 17, alignSelf: 'auto', marginHorizontal: 10,
+                            marginTop: 2, marginBottom: 10, color: '#67806D', marginTop: 5,
+                        }]}>
+                            {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' ?
                                 state.batchDataForSummary[displayMonthKey].filter(
-                                    (req) => req.entry_type == 0).length > 0 ?
-                                <MonthlySumComponent
-                                    //monthBatch={state.monthSessions} 
-                                    monthBatch={state.batchDataForSummary[displayMonthKey]}
-                                />
-                                :
-                                <View style={{ marginHorizontal: 10, marginTop: 5, }}>
-                                    <Text style={{ color: '#67806D' }}>No tasks for this month</Text>
-                                </View>
-                            }
-                            <View
-                                style={{
-                                    borderBottomColor: 'grey',
-                                    borderBottomWidth: 0.8,
-                                    marginTop: 15,
-                                    marginHorizontal: MARGIN_HORIZONTAL
-                                }}
+                                    (req) => req.entry_type == 0).length : 0} Tasks</Text>
+
+                        {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
+                            state.batchDataForSummary[displayMonthKey].filter(
+                                (req) => req.entry_type == 0).length > 0 ?
+                            <MonthlySumComponent
+                                //monthBatch={state.monthSessions} 
+                                monthBatch={state.batchDataForSummary[displayMonthKey]}
                             />
-                            {/*<Text style={[styles.overviewTitle, styles.textDefaultBold, {
+                            :
+                            <View style={{ marginHorizontal: 10, marginTop: 5, }}>
+                                <Text style={{ color: '#67806D' }}>No tasks for this month</Text>
+                            </View>
+                        }
+                        <View
+                            style={{
+                                borderBottomColor: 'grey',
+                                borderBottomWidth: 0.8,
+                                marginTop: 15,
+                                marginHorizontal: MARGIN_HORIZONTAL
+                            }}
+                        />
+                        {/*<Text style={[styles.overviewTitle, styles.textDefaultBold, {
                                 fontSize: 17, alignSelf: 'auto',
                                 marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
                             }]}>{typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' ?
                                 state.batchDataForSummary[displayMonthKey].filter(
                                 (req) => req.entry_type == 1).length : 0} Counters</Text>*/}
-                            <Text style={[styles.overviewTitle, styles.textDefaultBold, {
-                                fontSize: 17, alignSelf: 'auto',
-                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
-                            }]}>Counters</Text>
+                        <Text style={[styles.overviewTitle, styles.textDefaultBold, {
+                            fontSize: 17, alignSelf: 'auto',
+                            marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
+                        }]}>Counters</Text>
 
 
-                            {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
-                                state.batchDataForSummary[displayMonthKey].filter(
-                                    (req) => req.entry_type == 1).length > 0 ?
-                                <MonthlyCounterComponent
-                                    monthBatch={state.batchDataForSummary[displayMonthKey]}
-                                />
-                                :
-                                <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
-                                    <Text style={{ color: '#67806D' }}>No counters for this month</Text>
-                                </View>}
-                        </>
+                        {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
+                            state.batchDataForSummary[displayMonthKey].filter(
+                                (req) => req.entry_type == 1).length > 0 ?
+                            <MonthlyCounterComponent
+                                monthBatch={state.batchDataForSummary[displayMonthKey]}
+                            />
+                            :
+                            <View style={{ marginHorizontal: MARGIN_HORIZONTAL, marginTop: 5, }}>
+                                <Text style={{ color: '#67806D' }}>No counters for this month</Text>
+                            </View>}
+                    </>
 
-                    </View>
-
-                }
+                </View>
             </>
         )
     }
 
     const flatListItem = (item) => {
-        if (item[1].filter(req => req.activity_name.toLowerCase().includes(
-            searchField.toLowerCase())).length == 0) {
-            return null
-        }
         return (
             <View
                 style={{ flex: 1, flexDirection: 'row', }}>
@@ -302,7 +279,6 @@ const HistoryDailyScreen = ({ navigation }) => {
                     {/* detail items */}
                     <View>
                         {item[1]
-                            .filter(req => (req.activity_name.toLowerCase().includes(searchField.toLowerCase())))
                             .map((j) => {
                                 if (j.entry_type == 0) {
                                     return (
@@ -374,13 +350,11 @@ const HistoryDailyScreen = ({ navigation }) => {
         )
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], searchField])
+    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey]])
 
     return (
         <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 110 : 100 }]}>
             <Modal
-                //ref={modalVis}
-                //transparent={true}
                 isVisible={modalVisible}
                 //animationType="fade"
                 animationIn='slideInLeft'
@@ -414,7 +388,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             >
                 <View style={{
                     flex: 0.7, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15,
-                    backgroundColor: '#8CC768', marginHorizontal: MARGIN_HORIZONTAL,
+                    backgroundColor: '#8CC768', marginHorizontal: MARGIN_HORIZONTAL + 5, paddingVertical: 5,
                 }}>
                     <View style={{ flex: 1, }}>
                         <TouchableOpacity
@@ -431,7 +405,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                         flex: 3,
                         alignItems: 'center', justifyContent: 'center', alignContent: 'center',
                     }}>
-                        <Text style={[styles.overviewTitle, styles.textDefaultBold, { fontSize: 20, }]}>{displayedMonth} {displayedYear}</Text>
+                        <Text style={[styles.overviewTitle, styles.textDefaultSemiBold, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
                     </View>
 
                     <View style={{ flex: 1, }}>
@@ -513,6 +487,8 @@ HistoryDailyScreen.navigationOptions = () => { return { headerShown: false, }; }
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

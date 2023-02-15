@@ -29,8 +29,8 @@ const picked_width = width / 2 / 0.8
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
     }),
 });
 
@@ -54,6 +54,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
+    const [onEnd, setOnEnd] = useState(false)
     const notificationListener = useRef();
     const responseListener = useRef();
 
@@ -87,6 +88,10 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
     }
 
     const handleStart = (_endTime, plannedNumMinutes) => {
+        if (onEnd) {
+            clearInterval(increment.current)
+            return;
+        }
         setPlannedMin(plannedNumMinutes)
         setEndTime(_endTime)
         increment.current = setInterval(() => {
@@ -108,7 +113,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
     const handleReset = (endEarly = false, plannedNumMinutes) => {
         clearInterval(increment.current)
-
+        setOnEnd(true)
         if (endEarly) {
             let now_dt = getUnixTime(new Date())
             setSessionEndTime(getUnixTime(new Date()))
@@ -173,7 +178,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                         style: 'destructive',
                         // If the user confirmed, then we dispatch the action we blocked earlier
                         // This will continue the action that had triggered the removal of the screen
-                        onPress: () => navigation.navigtae('SessionSelect'),
+                        onPress: () => navigation.navigate('SessionSelect'),
                     },
                 ]
             );*/
@@ -181,17 +186,18 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
         const subscription = AppState.addEventListener('change', nextAppState => {
             if (appState.current.match(/inactive|background/) &&
-                nextAppState === 'active') {
+                (nextAppState === 'active' || nextAppState === 'foreground')) {
                 // cancel the notification if we are active again
                 cancelPushNotification();
 
                 console.log('App has come to the foreground!');
             } else if (appState.current.match(/active|foreground/) &&
-                nextAppState === 'inactive') {
+                (nextAppState === 'inactive' || nextAppState === 'background')) {
                 // schedule a notification if app is being minimized
-                console.log(`SCHEDULING NOTIFICATION ${secLeft} seconds from now`)
-                schedulePushNotification(secLeft);
-
+                if (!onEnd) {
+                    console.log(`SCHEDULING NOTIFICATION ${secLeft} seconds from now`)
+                    schedulePushNotification(secLeft);
+                }
 
                 console.log('App has gone to the background!');
             }
@@ -209,7 +215,13 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
     useFocusEffect(
 
         useCallback(() => {
-            setStartTime(new Date())
+            //setStartTime(new Date())
+            console.log(`Now: ${getUnixTime(new Date())}`)
+            console.log(`End time: ${endTime}`)
+            if (getUnixTime(new Date()) > endTime) { // session already done, we have come from a notif
+                console.log("we are done")
+                return;
+            }
             testNotification();
 
             if (isThisSecond(fromUnixTime(endTime))) {
@@ -222,6 +234,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
             fadeInAndOut()
 
             return () => {
+                console.log("Cleaning up..?")
                 setEndTime(0)
                 Notifications.removeNotificationSubscription(notificationListener.current);
                 Notifications.removeNotificationSubscription(responseListener.current);
@@ -402,16 +415,33 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                             <Svg style={[styles.svgStyle, { borderWidth: 0, }]}
                                 height="100%" width="100%" viewBox={`0 0 100 100`}>
                                 <TextSVG x={50} y={35} fontSize={8} textAnchor="middle" fill="#90AB72">time left</TextSVG>
-                                <TextSVG x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                                >{twoDigits(Math.floor(secLeft / 60))[0]}</TextSVG>
-                                <TextSVG x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                                >{twoDigits(Math.floor(secLeft / 60))[1]}</TextSVG>
-                                <TextSVG x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                                >:</TextSVG>
-                                <TextSVG x={62} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                                >{twoDigits(secLeft % 60)[0]}</TextSVG>
-                                <TextSVG x={77} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                                >{twoDigits(secLeft % 60)[1]}</TextSVG>
+
+                                {onEnd ? <>
+                                    <TextSVG x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                    >{0}</TextSVG>
+                                    <TextSVG x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                    >{0}</TextSVG>
+                                    <TextSVG x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                    >:</TextSVG>
+                                    <TextSVG x={62} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                    >{0}</TextSVG>
+                                    <TextSVG x={77} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                    >{0}</TextSVG>
+                                </> :
+                                    <>
+                                        <TextSVG x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                        >{twoDigits(Math.floor(secLeft / 60))[0]}</TextSVG>
+                                        <TextSVG x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                        >{twoDigits(Math.floor(secLeft / 60))[1]}</TextSVG>
+                                        <TextSVG x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                        >:</TextSVG>
+                                        <TextSVG x={62} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                        >{twoDigits(secLeft % 60)[0]}</TextSVG>
+                                        <TextSVG x={77} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                                        >{twoDigits(secLeft % 60)[1]}</TextSVG>
+                                    </>
+
+                                }
                             </Svg>
                         </View>
                     </ImageBackground>

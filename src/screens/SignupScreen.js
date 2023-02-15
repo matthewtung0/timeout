@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions,
-    Image, Keyboard, TouchableWithoutFeedback, Animated
+    Image, Keyboard, TouchableWithoutFeedback, Animated, TextInput
 } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -28,8 +28,8 @@ const SignupScreen = ({ navigation, route: { params } }) => {
     const [lastName, setLastName] = useState('');
     const [isEmailTaken, setIsEmailTaken] = useState(0)
     var message0 = "Nice to meet you!\nI'm Poot!";
-    var message1 = "I can't wait to get productive!\nI hope this app will help.";
-    var message2 = "Just a few more steps!\nYou're almost there, I promise.";
+    var message1 = "I can't wait to get productive!\nWe hope this app will help.";
+    var message2 = "Choose a username below.\nThis is what your friends will see on your profile.";
     const [activeMenu, setActiveMenu] = useState(params.defaultMenuNum)
     const [activeDialogue, setActiveDialogue] = useState(params.defaultMenuNum == 2 ? message2 : message0)
 
@@ -278,17 +278,18 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                     {activeMenu == 1 ?
                         <View style={styles.inner}>
 
-
-                            <Input
-                                style={[styles.inputStyleBio, styles.textDefault, { fontSize: 16, }]}
+                            <TextInput
+                                style={[styles.inputStyleBio, styles.textDefault, { fontSize: 16, paddingTop: 15, }]}
                                 multiline={true}
                                 numberOfLines={4}
-                                maxHeight={120}
                                 editable
                                 maxLength={150}
                                 //containerStyle={styles.nameInputStyleContainer}
                                 inputContainerStyle={styles.inputStyleContainer}
+                                textAlignVertical={"top"}
+                                textAlign={"left"}
                                 placeholder='Write a quick bio (visible to everyone). This part is optional.'
+                                placeholderTextColor={'gray'}
                                 autoCorrect={false}
                                 value={bio}
                                 onChangeText={(bioText) => {
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         paddingHorizontal: 17,
         marginBottom: 20,
-        height: 110,
+        height: 130,
     },
     inputContainer: {
         flex: 1,

@@ -1,13 +1,12 @@
 import React, { useContext, useState, useRef } from 'react';
 import {
     View, StyleSheet, Text, Dimensions, TouchableOpacity, TextInput, Keyboard, TouchableWithoutFeedback, Image,
-    Platform,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 const addFriendPlant = require('../../assets/addFriendPlant.png');
 
-const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
+const AddFriendModal = ({ toggleFunction, myFriendCode }) => {
     const { height, width } = Dimensions.get('window');
     const [friendCode, setFriendCode] = useState(null)
     const [friendCode2, setFriendCode2] = useState(null)
@@ -193,7 +192,7 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
                     <View opacity={isLoading ? 0.2 : 1}
                         style={{ marginVertical: 30, }}>
                         <TouchableOpacity
-                            style={[styles.addFriend, { width: width / 2.5, height: height / 15 }]}
+                            style={[styles.addFriend, { width: width / 2.5, height: height / 15, backgroundColor: '#83B569' }]}
                             onPress={() => {
                                 var fullFC = friendCode + friendCode2 + friendCode3
                                 if (fullFC) {
@@ -254,7 +253,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     addFriend: {
-        backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 15,

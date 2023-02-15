@@ -151,9 +151,9 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                     <View style={{ flex: 1.3, }} />
                     <View style={{ flex: 0.8 }}>
                         <Text style={[styles.textDefaultSemiBold,
-                        { marginLeft: 25, fontSize: 16, color: '#67806D' }]}>Selected some categories to track.</Text>
+                        { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>Select some categories to track.</Text>
                         <Text style={[styles.textDefaultSemiBold,
-                        { marginLeft: 25, fontSize: 16, color: '#67806D' }]}>You can edit them later!</Text>
+                        { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>You can edit them later in the app.</Text>
                     </View>
 
 
@@ -327,16 +327,6 @@ const styles = StyleSheet.create({
     },
     textDefaultSemiBold: {
         fontFamily: 'Inter-SemiBold',
-    },
-    title: {
-        margin: 30,
-        fontSize: 40,
-        marginTop: 70,
-    },
-    colorSquare: {
-        width: 30,
-        height: 30,
-        backgroundColor: 'green',
     },
     signUpBoxStyle: {
         backgroundColor: '#FCC859',

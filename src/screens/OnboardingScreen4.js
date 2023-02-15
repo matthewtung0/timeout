@@ -43,7 +43,7 @@ const OnboardingScreen4 = ({ navigation, route: { params } }) => {
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 10, }}>
                             <TouchableOpacity style={{ marginHorizontal: 5, paddingVertical: 10, paddingHorizontal: 5, }}
                                 onPress={() => {
-                                    navigation.navigate('Onboarding2')
+                                    navigation.navigate('Onboarding3')
                                 }}>
                                 <Icon
                                     name='caret-back'
