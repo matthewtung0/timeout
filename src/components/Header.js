@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 
@@ -7,7 +7,7 @@ const constants = require('../components/constants.json')
 const Header = ({ navigation, color }) => {
     return (
         <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { marginTop: Platform.OS === 'ios' ? 50 : 30 }]}
             onPress={() => { navigation.navigate('mainFlow') }}>
             <Icon
                 name='arrow-back-outline'
@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         width: 50, height: 50,
-        marginTop: 50,
         marginLeft: 5,
     },
 })

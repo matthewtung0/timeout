@@ -15,7 +15,6 @@ const default_categories = [
     },
 ]
 
-
 const categoryReducer = (state, action) => {
     switch (action.type) {
         case 'fetch_categories':
@@ -319,10 +318,10 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
 }
 
 const editCategory = dispatch => async ({ categoryId, newColorId, toPublic, toArchive, callback = null, errorCallback = null }) => {
-    console.log("Category id ", categoryId)
+    /*console.log("Category id ", categoryId)
     console.log("newColorId ", newColorId)
     console.log("toPublic ", toPublic)
-    console.log("toArchive ", toArchive)
+    console.log("toArchive ", toArchive)*/
     try {
         const response = await timeoutApi.patch(`/category/${categoryId}`,
             { colorId: newColorId, archived: toArchive, isPublic: toPublic })

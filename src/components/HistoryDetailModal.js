@@ -10,18 +10,19 @@ const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 const constants = require('../components/constants.json')
 
 const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
-    const { width } = Dimensions.get('window');
+    const { width, height } = Dimensions.get('window');
     const INPUT_WIDTH = width * 0.8
     const BORDER_RADIUS = 20;
     const { deleteSession, patchSession } = useContext(SessionContext)
     const [isLoading, setIsLoading] = useState(false)
     const [itemDeleted, setItemDeleted] = useState(false)
+    const [isPrivate, setIsPrivate] = useState(selectedObject.is_private);
     const [notes, setNotes] = useState(selectedObject.notes)
 
     const submitPatch = async () => {
         setIsLoading(true)
         try {
-            await patchSession(selectedObject.activity_id, notes, patchCallback)
+            await patchSession(selectedObject.activity_id, notes, isPrivate, patchCallback)
         } catch (e) {
             console.log(e)
         }
@@ -37,6 +38,9 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
     }
     const toggleDelete = () => {
         setItemDeleted(!itemDeleted)
+    }
+    const togglePrivate = () => {
+        setIsPrivate(!isPrivate)
     }
 
     const patchCallback = () => {
@@ -77,7 +81,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
 
     const areYouSureDelete = () => {
         Alert.alert(
-            "Are you sure you want to delete this category?",
+            "Are you sure you want to delete this task?",
             "",
             [
                 {
@@ -111,38 +115,45 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={{ flex: 1, backgroundColor: '#83B569', borderRadius: BORDER_RADIUS }}>
 
-                    <View style={{ marginTop: 80, }}>
+                    <View style={{ marginTop: height * 0.1, }}>
 
                         {/* ACTIVITY NAME CONTAINER */}
-                        <View style={{ height: 90, marginHorizontal: 20, }}>
+                        <View style={{ height: height * 0.13, marginHorizontal: 20, }}>
                             <View style={{ flex: 2, }} />
                             <View style={{
-                                flex: 6,
-                                backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 20,
-                                justifyContent: 'center',
+                                flex: 8,
+                                backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 15,
+                                //justifyContent: 'center',
                             }}>
-                                <Text style={[styles.textDefaultBold, { color: '#67806D', fontSize: 20, }]}>
+                                <Text
+                                    numberOfLines={2}
+                                    style={[styles.textDefaultSemiBold, {
+                                        color: '#67806D', fontSize: 18, marginBottom: 5,
+                                        marginTop: 10,
+                                    }]}>
                                     {selectedObject.activity_name}</Text>
+
+                                <Text style={[styles.textDefault, {
+                                    color: '#B3B2B3', fontSize: 12,
+                                }]}>{date_Subtitle(selectedObject.time_start)} {timeFormat(selectedObject.time_start)}</Text>
+
                             </View>
 
                             {/* category label absolute position layer */}
-                            <View style={{ position: 'absolute', height: 100, width: '100%', }}>
-                                <View style={{ flex: 1, }}></View>
+                            <View style={{ position: 'absolute', height: height * 0.15, width: '100%', }}>
+                                <View style={{ flex: 0.1, }}></View>
                                 <View style={{
                                     backgroundColor: constants.colors[selectedObject.color_id],
                                     borderRadius: 20, alignSelf: 'flex-end', flex: 1,
                                     paddingHorizontal: 10, paddingVertical: 5,
+                                    justifyContent: 'center',
                                 }}>
-                                    <Text style={[styles.textDefaultBold, { color: 'white', fontSize: 12, }]}>
-                                        {selectedObject.category_name}</Text>
+                                    <View style={{ height: '100%', }}><Text style={[styles.textDefaultSemiBold, { color: 'white', fontSize: 12, }]}>
+                                        {selectedObject.category_name}</Text></View>
+
+
                                 </View>
-                                <View style={{ flex: 3 }} />
-                                <View style={{ flex: 1, alignSelf: 'flex-end', marginBottom: 15, }}>
-                                    <Text style={[styles.textDefault, {
-                                        color: '#C0C0C0', fontSize: 12,
-                                        paddingRight: 10,
-                                    }]}>{date_Subtitle(selectedObject.time_start)} {timeFormat(selectedObject.time_start)}</Text>
-                                </View>
+                                <View style={{ flex: 6 }} />
                             </View>
                         </View>
 
@@ -156,7 +167,6 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                                 style={[styles.notes, { width: INPUT_WIDTH, color: '#67806D' }]}
                                 multiline={true}
                                 numberOfLines={4}
-                                maxHeight={80}
                                 editable
                                 maxLength={150}
                                 placeholder={'Enter any notes'}
@@ -167,6 +177,33 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                                 }}
                             />
                         </View>
+
+
+
+
+                        <View style={{
+                            flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
+                        }}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    togglePrivate()
+                                }}>
+                                {!isPrivate ?
+                                    <Image
+                                        source={yellowCheckmark}
+                                        style={{ width: 25, height: 25, marginRight: 10, }} />
+                                    :
+                                    <View style={{
+                                        width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                        borderWidth: 5
+                                    }}></View>}
+                            </TouchableOpacity>
+
+                            <Text style={[styles.textDefault,
+                            { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                                Task is public - task name will be visible on your friend feed.</Text>
+                        </View>
+
 
                         <View style={{
                             flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
@@ -201,7 +238,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                                     if (itemDeleted) {
                                         areYouSureDelete();
                                     } else {
-                                        if (notes != selectedObject.notes) {
+                                        if (notes != selectedObject.notes || isPrivate != selectedObject.is_private) {
                                             submitPatch();
                                         } else {
                                             //reference.current = !reference.current
@@ -257,6 +294,8 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

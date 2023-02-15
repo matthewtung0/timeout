@@ -1,5 +1,6 @@
+//import 'react-native-gesture-handler';
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
 import { Ionicons } from "@expo/vector-icons";
@@ -410,9 +411,11 @@ function CustomDrawerContent(props) {
           }}
         />
         <DrawerItem
+          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           label="Help and Support"
           onPress={() => { setModalVis(true) }} />
         <DrawerItem
+          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           label="Privacy Policy"
           //component={CreatePrivacyPolicyStack}
           onPress={() => {
@@ -420,6 +423,7 @@ function CustomDrawerContent(props) {
           }}
         />
         <DrawerItem
+          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           label="Terms of Use"
           onPress={() => { }} />
 
@@ -427,7 +431,7 @@ function CustomDrawerContent(props) {
       <View style={{ flex: 1, }} />
       <View style={{ flex: 1, }}>
         <DrawerItem
-          labelStyle={{ color: 'pink', }}
+          labelStyle={{ color: 'crimson', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           style={{}}
           label="Sign out"
           onPress={() => {
@@ -478,7 +482,8 @@ function CreateDrawer() {
       <Drawer.Screen name="categoryFlow"
         component={CreateCategoryStack}
         options={{
-          drawerLabel: 'My Categories',
+          drawerLabelStyle: { color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, },
+          drawerLabel: 'Categories',
           title: 'My Categories',
           headerShown: false,
         }} />
@@ -499,18 +504,19 @@ function CreateDrawer() {
       <Drawer.Screen name="testFlow"
         component={CreateTestSvgStack}
         options={{
+          drawerLabelStyle: { color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, },
           drawerLabel: 'Customize Avatar',
           title: 'Customize Avatar',
           headerShown: false,
         }} />
 
-      <Drawer.Screen name="inviteFlow"
+      {/*<Drawer.Screen name="inviteFlow"
         component={CreateInvitationStack}
         options={{
           drawerLabel: 'Invite a Friend',
           title: 'Invite a Friend',
           headerShown: false,
-        }} />
+        }} />*/}
 
       <Drawer.Screen name="privacyPolicyFlow"
         component={CreatePrivacyPolicyStack}
@@ -810,7 +816,10 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
             testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{ flex: 1, backgroundColor: '#67806D', alignItems: 'center', paddingBottom: 30, paddingTop: 10, }}
+            style={{
+              flex: 1, backgroundColor: '#67806D', alignItems: 'center',
+              paddingBottom: Platform.OS === 'ios' ? 30 : 10, paddingTop: 10,
+            }}
           >
 
             <Ionicons

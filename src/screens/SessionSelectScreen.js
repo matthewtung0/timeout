@@ -17,6 +17,7 @@ import timeoutApi from '../api/timeout';
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
+const PADDING_TOP = 55;
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -34,12 +35,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
     const [categoryId, setCategoryId] = useState("3");
     const [newCatName, setNewCatName] = useState('unsorted')
-    const [newColorId, setNewColorId] = useState('c9')
+    const [newColorId, setNewColorId] = useState('c10')
 
     const [modalVisible, setModalVisible] = useState(false)
-
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const [notification, setNotification] = useState(false);
 
     const updateTime = (a) => {
         setTime(a);
@@ -111,7 +109,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         setCategoryId("3")
         setTime(0)
         updateTime(0)
-        setNewColorId('c9')
+        setNewColorId('c10')
         setCustomActivity('')
     }
 
@@ -150,7 +148,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     return (
         <HideKeyboard>
             <>
-                <View style={[styles.viewContainer,]}>
+                <View
+                    style={[styles.viewContainer, { paddingTop: PADDING_TOP, }]}
+                >
 
                     {/* TO-DO SELECTOR MODAL */}
                     <View>
@@ -181,8 +181,31 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         </Modal>
                     </View>
 
-                    <View>
-                        <View style={{ position: 'absolute', flex: 1, width: '100%', height: '100%', }}>
+                    <View
+                        onLayout={({ nativeEvent }) => {
+                            /*newRef?.current?.measure((x, y, pageX, pageY, width, height) => {
+                                console.log('Component width is: ' + width)
+                                console.log('Component height is: ' + height)
+                                console.log('Component x is: ' + x)
+                                console.log('Component y is: ' + y)
+                                console.log('Component pageX is: ' + pageX)
+                                console.log('Component pageY is: ' + pageY)
+                            })
+            
+                            newRef?.current?.measureInWindow((fx, fy, width, height, px, py) => {
+                                console.log('Component width is: ' + width)
+                                console.log('Component height is: ' + height)
+                                console.log('X offset to frame: ' + fx)
+                                console.log('Y offset to frame: ' + fy)
+                                console.log('X offset to page: ' + px)
+                                console.log('Y offset to page: ' + py)
+                            })*/
+                            console.log(nativeEvent.layout)
+
+                        }}
+                        style={{ borderColor: 'pink', borderWidth: 0, }}
+                    >
+                        <View style={{ position: 'absolute', flex: 1, borderWidth: 0, width: '100%', height: '100%', }}>
                             <View style={{ flex: 1, }}>
 
                             </View>
@@ -195,24 +218,33 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             </View>
 
                         </View>
+
                         <Image
                             source={clock_top}
                             style={{
                                 //width: 235, 
                                 width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0.3, borderColor: 'yellow',
+                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0.1, borderColor: 'yellow',
                                 marginTop: 30,
                             }}
                             resizeMode="contain" />
-                        <CircularSelector
-                            minSet={0}
-                            updateCallback={updateTime}
-                            ref={circularRef} />
+                        <View
+                            onLayout={({ nativeEvent }) => {
+                                console.log("INSIDE", nativeEvent.layout)
+
+                            }}
+                        >
+                            <CircularSelector
+                                minSet={0}
+                                updateCallback={updateTime}
+                                ref={circularRef} />
+                        </View>
+
                         <Image
                             source={clock_bottom}
                             style={{
                                 width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.085, alignSelf: "center", borderWidth: 0.3, borderColor: 'yellow'
+                                height: (width / 2 / 0.80) * 0.085, alignSelf: "center", borderWidth: 0.1, borderColor: 'yellow'
                             }}
                             resizeMode="contain" />
                         {/* some space for desk */}
@@ -225,7 +257,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         paddingTop: 15, backgroundColor: '#F8E9D2'
                     }}>
                         <TextInput
-                            style={[styles.input, { width: width * 0.8, marginBottom: 20, height: 45 }]}
+                            style={[styles.input, styles.textDefault,
+                            { width: width * 0.8, marginBottom: 20, height: 45, color: '#67806D' }]}
                             placeholder="Task"
                             placeholderTextColor={'#DCDBDB'}
                             rightIconContainerStyle={styles.rightIconInput}
@@ -306,7 +339,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
             </>
 
-        </HideKeyboard>
+        </HideKeyboard >
     )
 }
 
@@ -329,11 +362,11 @@ const styles = StyleSheet.create({
     }, container: {
         flex: 1,
         margin: 10,
-        borderWidth: 1,
+        borderWidth: 0,
         borderColor: 'green'
     },
     viewContainer: {
-        marginTop: 55,
+        //marginTop: 55,
         flex: 1
     },
     input: {
@@ -342,13 +375,10 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         paddingHorizontal: 17,
         paddingVertical: 10,
-        shadowOffset: {
-            width: 0.05,
-            height: 0.05,
-        },
-        shadowOpacity: 0.1,
+        //shadowOffset: { width: 0.05, height: 0.05, },
+        //shadowOpacity: 0.05,
         color: 'gray',
-        fontSize: 18,
+        fontSize: 17,
     },
     inputContainer: {
         flex: 1,

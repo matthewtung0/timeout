@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import {
     View, StyleSheet, Text, Dimensions, TouchableOpacity, TextInput, Keyboard, TouchableWithoutFeedback, Image,
+    Platform,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
@@ -52,6 +53,7 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
 
     return (
         <View style={{ flex: 1, }}>
+            <View style={{ flex: 1, justifyContent: 'flex-end', }}></View>
             <View style={{ flex: 1, justifyContent: 'flex-end', }}>
                 <View style={{ flexDirection: 'row', height: "100%", }}>
                     <Image
@@ -229,7 +231,7 @@ const AddFriendModal = ({ toggleFunction, myFriendCode, callback }) => {
 
 
             <View style={{ flex: 1, justifyContent: 'flex-end', }}></View>
-        </View>
+        </View >
     )
 
 }
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
     },
     container: {
-        flex: 2,
+        flex: 3,
         backgroundColor: 'white',
         borderRadius: 20,
     },

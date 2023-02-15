@@ -106,7 +106,7 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
       </Modal>
 
 
-      <View style={styles.pfpcontainer}>
+      <View style={[styles.pfpcontainer, { paddingTop: 15, }]}>
         <View style={styles.pfp}>
           {/* friend thumbnails */}
           <TouchableOpacity
@@ -123,29 +123,48 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
       </View>
       <View style={styles.listItem}>
         <View style={{ flex: 1, borderWidth: 0, }}>
-          <Text numberOfLines={2}>
-            <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.username}</Text>
-            <Text style={[styles.textDefault, { fontSize: 15, }]}> worked on </Text>
-            <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{duration(item.time_start, item.time_end)}</Text>
-            <Text style={[styles.textDefault, { fontSize: 15, }]}> of </Text>
-            {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
-            <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.category_name}</Text>
+          <Text numberOfLines={2} style={{}}>
+            <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: "#67806D" }]}>{item.username}</Text>
+            <Text style={[styles.textDefault, { fontSize: 13, }]}> worked on </Text>
+            {item.is_private ?
+              <>
+                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+              </>
+              :
+              <>
+                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.activity_name}</Text>
+                <Text style={[styles.textDefault, { fontSize: 13, }]}> in category </Text>
+                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+              </>
+            }
           </Text>
+          <View style={{ flexDirection: 'row', marginTop: 4, }}>
+            <View style={{ borderWidth: 0 }}>
+              <Icon
+                name="time-outline"
+                type='ionicon'
+                size={18}
+                color='#67806D' />
+            </View>
+            <View style={{ borderWidth: 0, }}>
+              <Text style={[styles.textDefaultMed, { fontSize: 14, color: "#67806D" }]}> {duration(item.time_start, item.time_end)}</Text>
 
-
+            </View>
+          </View>
 
         </View>
-        <View style={{ flex: 1, borderWidth: 0, }}>
+        <View style={{ borderWidth: 0, }}>
           <View style={{ flexDirection: 'row' }}>
             <View>
-              <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_end)}</Text>
+              <Text style={[styles.textDefault, { fontSize: 13, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
 
             </View>
 
             <View style={[styles.likeContainer, { borderWidth: 0, }]}>
               <TouchableOpacity
                 onPress={toggleModal}>
-                <Text style={[styles.likeCount, { borderWidth: 0, paddingHorizontal: 5, }]}>
+                <Text style={[styles.likeCount, styles.textDefault,
+                { borderWidth: 0, paddingHorizontal: 5, color: "#67806D" }]}>
                   {item.reaction_count == null ? 0 : reactionCount}</Text>
               </TouchableOpacity>
 
@@ -167,7 +186,8 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
                     color='#F5BBAE' /> :
                   <Icon
                     name="heart-o"
-                    type='font-awesome' />}
+                    type='font-awesome'
+                    color='#F5BBAE' />}
               </Pressable>
             </View>
           </View>
@@ -196,6 +216,11 @@ const equal = (prevItem, nextItem) => {
 const styles = StyleSheet.create({
   textDefaultBold: {
     fontFamily: 'Inter-Bold',
+  },
+  textDefaultMed: {
+    fontFamily: 'Inter-Medium',
+  }, textDefaultSemiBold: {
+    fontFamily: 'Inter-SemiBold',
   },
   textDefault: {
     fontFamily: 'Inter-Regular',
@@ -230,8 +255,7 @@ const styles = StyleSheet.create({
   },
   pfpcontainer: {
     flex: 0.25,
-    //backgroundColor: 'green',
-    justifyContent: 'center',
+    //justifyContent: 'center',
     alignItems: 'center',
   },
   pfp: {

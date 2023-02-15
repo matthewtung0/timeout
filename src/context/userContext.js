@@ -408,9 +408,8 @@ const fetchIncomingRequests = dispatch => async (callback = null) => {
 
 const fetchFriends = dispatch => async (callback = null) => {
     try {
-        console.log("Fetching friends")
         const response = await timeoutApi.get('/friendsList')
-        console.log("Friends results: ", response.data);
+        //console.log("Friends results: ", response.data);
         dispatch({ type: 'fetch_friends', payload: response.data })
         if (callback) { callback() }
         console.log("Fetch friends complete")

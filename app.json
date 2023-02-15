@@ -4,7 +4,7 @@
     "slug": "timeout",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/App_Icon_v3.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

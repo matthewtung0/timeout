@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList, Platform } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
@@ -22,7 +22,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
         useCallback(() => {
             setIsLoading(true)
             setOffset(state.friends.length)
-            setVisibleOffset(2)
+            setVisibleOffset(10)
 
             return () => {
                 console.log("cleaning up")
@@ -103,7 +103,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                             {/* NAME // FRIEND SINCE- */}
                             <View style={{ flex: 5, justifyContent: 'space-around' }}>
                                 <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}</Text>
-                                <Text style={[styles.textDefault, { fontSize: 12, color: 'gray' }]}>
+                                <Text style={[styles.textDefault, { fontSize: 14, color: 'gray' }]}>
                                     {"Friend since " + formatDate(item['time_created'])}
                                 </Text>
                             </View>
@@ -134,7 +134,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
     const memoizedFlatList = useMemo(flatListItself, [state.friends, visibleOffset, atEnd,])
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { marginTop: Platform.OS === 'ios' ? 100 : 80 }]}>
 
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
@@ -151,20 +151,28 @@ const FriendScreen = ({ navigation, route: { params } }) => {
             </Modal>
             <View>
 
-                <View style={styles.makeshiftTabBarContainer}>
-                    <View style={styles.makeshiftTabBar}>
-                        <TouchableOpacity style={[styles.tabBarButton, { backgroundColor: '#C0C0C0', }]}
-                            onPress={() => { navigation.navigate('Notifications', params) }}>
-                            <Text style={[styles.tabBarText, styles.textDefaultBold,
-                            { color: 'grey' }]}>Me</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
-                            onPress={() => { navigation.navigate('FriendFeed') }}>
-                            <Text style={[styles.tabBarText, styles.textDefaultBold, { color: 'grey' }]}>Feed</Text>
-                        </TouchableOpacity>
-                        <View style={styles.tabBarButton}>
-                            <Text style={[styles.tabBarText, styles.textDefaultBold,]}>Friends</Text>
-                        </View>
+                <View style={{ marginHorizontal: 20, flexDirection: 'row', paddingBottom: 10, }}>
+                    <TouchableOpacity style={[styles.tabBarButton, {
+                        backgroundColor: '#83B569', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
+                        borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                    }]}
+                        onPress={() => { navigation.navigate('Notifications', params) }}>
+                        <Text style={[styles.tabBarText, styles.textDefault,
+                        {}]}>Me</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.tabBarButton, {
+                        backgroundColor: '#83B569',
+                        borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                    }]}
+                        onPress={() => { navigation.navigate('FriendFeed') }}>
+                        <Text style={[styles.tabBarText, styles.textDefault, {}]}>Feed</Text>
+                    </TouchableOpacity>
+                    <View style={[styles.tabBarButton, {
+                        backgroundColor: '#8DC867',
+                        borderTopRightRadius: 15, borderBottomRightRadius: 15,
+                        borderWidth: 1, borderColor: '#8DC867', borderLeftWidth: 0, paddingVertical: 5,
+                    }]}>
+                        <Text style={[styles.tabBarText, styles.textDefault,]}>Friends</Text>
                     </View>
                 </View>
 
@@ -214,7 +222,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
     },
     container: {
-        marginTop: 110,
         flex: 1,
     },
     title: {
@@ -269,15 +276,15 @@ const styles = StyleSheet.create({
     },
     tabBarButton: {
         flex: 1,
-        padding: 10,
-        height: 50,
+
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center'
     },
     tabBarText: {
-        color: 'white',
-        fontSize: 17,
+        //color: 'white',
+        //fontSize: 17,
+        textAlign: 'center', fontSize: 17, justifyContent: 'center', color: 'white',
     },
     categoryContainer: {
         marginVertical: 20,

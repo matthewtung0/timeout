@@ -4,6 +4,8 @@ import { Icon } from 'react-native-elements'
 
 
 const OnboardingScreen3 = ({ navigation, route: { params } }) => {
+    const { width, height } = Dimensions.get('window');
+    var touchX = 0
     return (
         <>
             <View style={{ height: '100%', width: '100%', }}>
@@ -15,7 +17,16 @@ const OnboardingScreen3 = ({ navigation, route: { params } }) => {
                 </View>
 
 
-                <View style={{ flex: 1, borderWidth: 0, }}>
+                <View
+                    onTouchStart={e => {
+                        touchX = e.nativeEvent.pageX
+                    }}
+                    onTouchEnd={e => {
+                        if (touchX - e.nativeEvent.pageX > (width / 5)) {
+                            navigation.navigate('Onboarding4')
+                        }
+                    }}
+                    style={{ flex: 1, borderWidth: 0, }}>
                     <View style={{ flex: 2 }}>
 
                     </View>

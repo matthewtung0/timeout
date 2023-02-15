@@ -20,21 +20,21 @@ const ICON_LENGTH = 30;
 const BORDER_RADIUS = 20;
 
 
-
 const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTime, endEarlyFlag,
     plannedMin, sessionStartTime, offBoardCallback }) => {
     const { height, width } = Dimensions.get('window');
-    const [prodRatingNum, setProdRatingNum] = useState(50)
+    const [prodRatingNum, setProdRatingNum] = useState(0)
     const [ratingViewActive, setRatingViewActive] = useState(true)
+    const [isPrivate, setIsPrivate] = useState(false);
     const [sessionObjFinal, setSessionObjFinal] = useState({
         ...sessionObj,
         //sessionEndTime: sessionEndTime,
         end_early: endEarlyFlag,
         plannedMin: plannedMin,
-        prod_rating: 50, // 50 if user doesn't pick productivity
+        prod_rating: -1, // 0 if user doesn't pick productivity
         time_start: fromUnixTime(sessionStartTime),
         time_end: fromUnixTime(sessionEndTime),
-
+        is_private: false,
         //startRange: startOfDay(fromUnixTime(sessionStartTime)),
         //endRange: endOfDay(fromUnixTime(sessionStartTime)),
         //yesterdayStartRange: subDays(startOfDay(fromUnixTime(sessionStartTime)), 1),
@@ -57,6 +57,11 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
     const toggleRemoveTodo = () => {
         setToKeep(previousState => !previousState);
+    }
+    const toggleIsPrivate = () => {
+        var toChange = !isPrivate
+        setIsPrivate(toChange);
+        setSessionObjFinal({ ...sessionObjFinal, is_private: toChange })
     }
     const toggleAddTodo = () => {
         setToAdd(previousState => !previousState);
@@ -102,9 +107,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             console.log("Problem adding points")
             offBoard();
         }
-
-
-
     }
 
     const saveSession_TEMPDISABLE = async () => {
@@ -193,7 +195,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         }
     }
 
-
     const sessionRatingView = () => {
         return (
             <View style={{
@@ -209,7 +210,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             onPress={() => {
                                 setProdRatingNum(20)
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(20),
                                 })
                             }}>
                             {prodRatingNum >= 20 ?
@@ -228,7 +229,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             onPress={() => {
                                 setProdRatingNum(40)
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(40),
                                 })
                             }}>
                             {prodRatingNum >= 40 ?
@@ -248,7 +249,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             onPress={() => {
                                 setProdRatingNum(60)
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(60),
                                 })
                             }}>
                             {prodRatingNum >= 60 ?
@@ -269,7 +270,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             onPress={() => {
                                 setProdRatingNum(80)
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(80),
                                 })
                             }}>
                             {prodRatingNum >= 80 ?
@@ -290,7 +291,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             onPress={() => {
                                 setProdRatingNum(100)
                                 setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
+                                    ...sessionObjFinal, prod_rating: Math.round(100),
                                 })
                             }}>
                             {prodRatingNum >= 100 ?
@@ -309,24 +310,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     </View>
 
                     <View style={{ marginTop: 20, }}>
-                        {/*<Slider
-                            style={styles.slider}
-                            minimumValue={0}
-                            maximumValue={100}
-                            minimumTrackTintColor="#CAE3B7"
-                            maximumTrackTintColor="#C4C4C4"
-                            value={50}
-                            step={20}
-                            thumbTintColor="#A7BEAD"
-                            onSlidingStart={() => {
-                            }}
-                            onSlidingComplete={() => {
-                                setSessionObjFinal({
-                                    ...sessionObjFinal, prod_rating: Math.round(prodRatingNum),
-                                })
-                            }}
-                            onValueChange={setProdRatingNum}
-                        />*/}
                     </View>
                 </View>
                 <View style={{ flex: 1, alignItems: 'center', borderWidth: 0, }}>
@@ -359,7 +342,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     zIndex: 1, elevation: 1,
                     borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
                 }}>
-                <View style={{ flex: 1, alignItems: 'center', }}>
+                <View style={{ alignItems: 'center', }}>
                     <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                         <Text style={[styles.textDefaultBold,
                         {
@@ -372,7 +355,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         <Text style={[styles.textDefaultBold,
                         { color: '#67806D', marginTop: 10, fontSize: 22, }]}>!</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', marginTop: 50, alignItems: 'center', }}>
+                    <View style={{ flexDirection: 'row', marginTop: 25, alignItems: 'center', marginHorizontal: 50, }}>
                         {existingItem ?
                             <><TouchableOpacity
                                 onPress={() => {
@@ -418,8 +401,34 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     </View>
                     {/*<Text>toKeep: {toKeep.toString()}</Text>
                     <Text>toAdd: {toAdd.toString()}</Text>*/}
+
+
+                    <View style={{
+                        flexDirection: 'row', alignItems: 'center', marginHorizontal: 50,
+                        marginTop: 15
+                    }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                toggleIsPrivate()
+                            }}>
+                            {!isPrivate ?
+
+                                <Image
+                                    source={yellowCheckmark}
+                                    style={{ width: 25, height: 25, marginRight: 10, }} />
+                                :
+                                <View style={{
+                                    width: 23, height: 25, marginRight: 12, borderRadius: 5, borderColor: '#FCC759',
+                                    borderWidth: 5
+                                }}></View>}
+                        </TouchableOpacity>
+
+                        <Text style={[styles.textDefault, { color: '#67806D', fontSize: 15, }]}>Item is public (friends can see your category and activity name).</Text>
+
+                    </View>
+
                 </View>
-                <View opacity={isLoading ? 0.3 : 1} style={{ flex: 1, alignItems: 'center', borderWidth: 0, }}>
+                <View opacity={isLoading ? 0.3 : 1} style={{ alignItems: 'center', borderWidth: 0, }}>
                     <TouchableOpacity
                         style={{
                             backgroundColor: "#CAE3B7", alignItems: 'center', paddingVertical: 13,
@@ -443,6 +452,11 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
                     </TouchableOpacity>
                 </View>
+                {isPrivate ?
+                    <View style={{ alignItems: 'center', marginHorizontal: 50, }}>
+                        <Text style={{ textAlign: 'center', }}>Item is private. You can always change this later in your history.</Text>
+                    </View>
+                    : null}
 
 
 

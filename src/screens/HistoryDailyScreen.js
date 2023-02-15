@@ -1,6 +1,6 @@
 import React, { useContext, useState, useCallback, useMemo } from 'react';
 import {
-    View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, TextInput, //Modal
+    View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, Platform,
 } from 'react-native';
 import {
     startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format,
@@ -21,7 +21,7 @@ const constants = require('../components/constants.json')
 const HistoryDailyScreen = ({ navigation }) => {
 
     console.log("History daily screen rerender")
-    const MARGIN_HORIZONTAL = 10;
+    const MARGIN_HORIZONTAL = 9;
     const { height, width } = Dimensions.get('window');
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,
         setCurOffset, setHardReset, resetMostCurrentDate } = useContext(SessionContext)
@@ -227,12 +227,16 @@ const HistoryDailyScreen = ({ navigation }) => {
                                     marginHorizontal: MARGIN_HORIZONTAL
                                 }}
                             />
-                            <Text style={[styles.overviewTitle, styles.textDefaultBold, {
+                            {/*<Text style={[styles.overviewTitle, styles.textDefaultBold, {
                                 fontSize: 17, alignSelf: 'auto',
                                 marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
                             }]}>{typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' ?
                                 state.batchDataForSummary[displayMonthKey].filter(
-                                    (req) => req.entry_type == 1).length : 0} Counters</Text>
+                                (req) => req.entry_type == 1).length : 0} Counters</Text>*/}
+                            <Text style={[styles.overviewTitle, styles.textDefaultBold, {
+                                fontSize: 17, alignSelf: 'auto',
+                                marginHorizontal: MARGIN_HORIZONTAL, marginBottom: 3, color: '#67806D', marginTop: 10,
+                            }]}>Counters</Text>
 
 
                             {typeof (state.batchDataForSummary[displayMonthKey]) !== 'undefined' &&
@@ -304,7 +308,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                                     return (
                                         <View
                                             key={j.activity_id}
-                                            style={{ marginRight: MARGIN_HORIZONTAL, paddingLeft: MARGIN_HORIZONTAL * 2, }}>
+                                            style={{ marginRight: MARGIN_HORIZONTAL, paddingLeft: MARGIN_HORIZONTAL, }}>
                                             <TouchableOpacity
                                                 onPress={() => {
                                                     setSelectedObject(j)
@@ -345,6 +349,10 @@ const HistoryDailyScreen = ({ navigation }) => {
         )
     }
 
+    const renderFooter = () => {
+        return (<View style={{ height: 50 }}></View>)
+    }
+
     const flatListItself = () => {
         return (
             <FlatList
@@ -357,6 +365,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                 data={state.batchData[displayMonthKey]}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item[0]}
+                ListFooterComponent={renderFooter}
                 renderItem={({ item }) =>
                     flatListItem(item)
                 }
@@ -368,7 +377,7 @@ const HistoryDailyScreen = ({ navigation }) => {
     const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], searchField])
 
     return (
-        <><View style={styles.viewContainer}>
+        <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 110 : 100 }]}>
             <Modal
                 //ref={modalVis}
                 //transparent={true}
@@ -385,7 +394,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                     justifyContent: 'center'
                 }}>
                     <View style={{
-                        height: height * 0.6
+                        height: height * 0.7
                     }}>
 
                         <HistoryDailyModal
@@ -483,7 +492,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         </View >
             <View
 
-                style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: height / 10 }}>
+                style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: height / 11 }}>
                 <TouchableOpacity
                     style={{
                         borderWidth: 1, borderRadius: 10,
@@ -527,7 +536,6 @@ const styles = StyleSheet.create({
     },
     viewContainer: {
         flex: 1,
-        marginTop: 110,
         backgroundColor: 'white',
     },
     overviewTitle: {

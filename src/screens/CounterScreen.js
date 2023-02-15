@@ -1,5 +1,5 @@
 import React, { useState, useContext, useCallback } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, Image, } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, Image, Platform } from 'react-native';
 import { Text, Icon } from 'react-native-elements';
 import { Context as CounterContext } from '../context/CounterContext';
 import { Context as SessionContext } from '../context/SessionContext'
@@ -267,7 +267,7 @@ const CounterScreen = () => {
                     </View></View>
             </Modal>
 
-            <View style={{ marginTop: 120, }}>
+            <View style={{ marginTop: Platform.OS === 'ios' ? 100 : 80 }}>
                 <Image
                     source={img}
                     resizeMode='stretch'
@@ -509,13 +509,20 @@ const CounterScreen = () => {
                 </FlatList >
                 : null}
 
-            <TouchableOpacity style={[styles.addCounterButton, { width: width / 1.8 }]}
+            <TouchableOpacity style={[styles.addCounterButton, {
+                width: width / 1.8, justifyContent: 'center',
+            }]}
                 onPress={() => {
                     toggleAddCounterModal();
 
                     //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
                 }}>
-                <Text style={styles.addCounterText}>Add New Counter</Text>
+                <View style={{ height: '100%', justifyContent: 'center', }}>
+                    <Text style={[styles.textDefault, styles.addCounterText, {}]}>
+                        Add New Counter</Text>
+                </View>
+
+
             </TouchableOpacity>
         </View >
     )
@@ -554,7 +561,6 @@ const styles = StyleSheet.create({
         marginBottom: 1,
     },
     addCounterButton: {
-        padding: 10,
         margin: 10,
         height: 40,
         backgroundColor: '#ABC57E',

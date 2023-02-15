@@ -138,7 +138,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
             <View>
                 {atEnd ?
                     <View style={styles.loadMore}>
-                        <Text>At end</Text>
+                        <Text style={[styles.textDefault, { color: '#67806D', fontSize: 20, }]}>All caught up!</Text>
                     </View>
                     :
                     null
@@ -180,13 +180,13 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
         <View
             style={{
                 backgroundColor: '#C0C0C0',
-                height: 0.5,
+                height: 1.5,
                 marginVertical: 5,
             }}
         />
     );
     return (
-        <View style={styles.outerContainer}>
+        <View style={[styles.outerContainer, { marginTop: Platform.OS === 'ios' ? 100 : 80 }]}>
 
             {!isOnline ?
                 <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', }}>
@@ -207,22 +207,30 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                         : null}
                     <View style={{ flex: 1, }}>
 
-                        <View style={styles.makeshiftTabBarContainer}>
-                            <View style={styles.makeshiftTabBar}>
-                                <View style={styles.tabBarButton}>
-                                    <Text style={[styles.tabBarText, styles.textDefaultBold,]}>Me</Text>
-                                </View>
-                                <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
-                                    onPress={() => { navigation.navigate('FriendFeed') }}>
-                                    <Text style={[styles.tabBarText, styles.textDefaultBold, { color: 'grey' }]}>Feed</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={[styles.tabBarButton, , { backgroundColor: '#C0C0C0', }]}
-                                    onPress={() => { navigation.navigate('Friend', params) }}>
-                                    <Text style={[styles.tabBarText, styles.textDefaultBold,
-                                    { color: 'grey' }]}>Friends</Text>
-                                </TouchableOpacity>
+                        <View style={{ marginHorizontal: 20, flexDirection: 'row', paddingBottom: 10, }}>
+                            <View style={[styles.tabBarButton, {
+                                backgroundColor: '#8DC867', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
+                                borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                            }]}>
+                                <Text style={[styles.tabBarText, styles.textDefault,]}>Me</Text>
                             </View>
+                            <TouchableOpacity style={[styles.tabBarButton, , {
+                                backgroundColor: '#83B569',
+                                borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                            }]}
+                                onPress={() => { navigation.navigate('FriendFeed') }}>
+                                <Text style={[styles.tabBarText, styles.textDefault, {}]}>Feed</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={[styles.tabBarButton, , {
+                                backgroundColor: '#83B569',
+                                borderTopRightRadius: 15, borderBottomRightRadius: 15,
+                                borderWidth: 1, borderColor: '#8DC867', borderLeftWidth: 0, paddingVertical: 5,
+                            }]}
+                                onPress={() => { navigation.navigate('Friend', params) }}>
+                                <Text style={[styles.tabBarText, styles.textDefault,
+                                {}]}>Friends</Text>
+                            </TouchableOpacity>
                         </View>
 
                         <View style={[styles.bodyContainer, { flex: 1, }]}>
@@ -405,7 +413,6 @@ const styles = StyleSheet.create({
         fontSize: 20, marginBottom: 10,
     },
     outerContainer: {
-        marginTop: 110, //here because header is transparent
         flex: 1,
         flexDirection: 'column',
     },
@@ -459,7 +466,7 @@ const styles = StyleSheet.create({
     loadMore: {
         marginVertical: 20,
         padding: 10,
-        backgroundColor: '#ABC57E',
+        //backgroundColor: '#ABC57E',
         alignItems: 'center',
     },
     loadMoreText: {
@@ -469,15 +476,12 @@ const styles = StyleSheet.create({
     },
     tabBarButton: {
         flex: 1,
-        padding: 10,
-        height: 50,
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center'
     },
     tabBarText: {
-        color: 'white',
-        fontSize: 17,
+        textAlign: 'center', fontSize: 17, justifyContent: 'center', color: 'white',
     },
     bodyContainer: {
         marginHorizontal: 20,

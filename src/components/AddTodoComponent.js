@@ -187,7 +187,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
 
                 {item ?
                     <View style={{
-                        flexDirection: 'row', marginTop: 15, marginHorizontal: 20,
+                        flexDirection: 'row', marginTop: 15, marginHorizontal: 20, alignItems: 'center',
                     }}>
 
                         <TouchableOpacity
@@ -209,7 +209,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
 
                         <Text style={[styles.textDefault,
                         { color: 'crimson', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
-                            Delete task from your history. This action will be permanent.</Text>
+                            Delete task from your to-do list. You can add it again later if you change your mind.</Text>
                     </View>
 
                     : null}

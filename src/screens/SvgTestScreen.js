@@ -26,8 +26,8 @@ import pointSquares from '../../assets/point_squares.png';
 import {
     SvgTestScreen2,
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
-    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg,
-    Hairfront1_svg, Hairfront2_svg, Hairfront3_svg,
+    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
+    Hairfront1_svg, Hairfront2_svg, Hairfront3_svg, Hairfront4_svg, Hairfront5_svg, Hairfront6_svg,
     Hairside1_svg, Hairside2_svg,
     Outerwear1_svg,
     Top1_svg, Top3_svg,
@@ -35,10 +35,11 @@ import {
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
     EyeMakeup1_svg, EyeMakeup2_svg,
-    Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg,
+    Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
+    Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
     Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
     HairAccessories1_svg, HairAccessories3_svg,
-    Hairback1_svg, Hairback2_svg, Hairback3_svg, Hairback4_svg, Hairback5_svg, Hairback6_svg, Hairback7_svg, Hairback8_svg,
+    Hairback1_svg, Hairback2_svg, Hairback3_svg, Hairback4_svg, Hairback5_svg, Hairback6_svg, Hairback7_svg, Hairback8_svg, Hairback9_svg, Hairback10_svg, Hairback11_svg, Hairback12_svg, Hairback13_svg,
     Bg1_svg, Bg1_1_svg, Bg1_2_svg, Bg1_3_svg, Bg1_4_svg, Bg1_5_svg,
     Bg2_svg, Bg2_1_svg, Bg3_svg, Bg4_svg, Bg5_svg, Bg6_svg, Bg7_svg, Bg8_svg, Bg9_svg, Bg10_svg,
     NoItem1_svg,
@@ -169,7 +170,51 @@ const SvgTestScreen = ({ navigation }) => {
             svg: <Ear5_svg
                 colorFill={c} len={size} />, id: 5,
             owned: true
-        },]
+        }, {
+            svg: <Ear6_svg
+                colorFill={c} len={size} />, id: 6,
+            owned: true
+        }, {
+            svg: <Ear7_svg
+                colorFill={c} len={size} />, id: 7,
+            owned: true
+        }, {
+            svg: <Ear8_svg
+                colorFill={c} len={size} />, id: 8,
+            owned: true
+        }, {
+            svg: <Ear9_svg
+                colorFill={c} len={size} />, id: 9,
+            owned: true
+        }, {
+            svg: <Ear10_svg
+                colorFill={c} len={size} />, id: 10,
+            owned: true
+        }, {
+            svg: <Ear11_svg
+                colorFill={c} len={size} />, id: 11,
+            owned: true
+        }, {
+            svg: <Ear12_svg
+                colorFill={c} len={size} />, id: 12,
+            owned: true
+        }, {
+            svg: <Ear13_svg
+                colorFill={c} len={size} />, id: 13,
+            owned: true
+        }, {
+            svg: <Ear14_svg
+                colorFill={c} len={size} />, id: 14,
+            owned: true
+        }, {
+            svg: <Ear15_svg
+                colorFill={c} len={size} />, id: 15,
+            owned: true
+        }, {
+            svg: <Ear16_svg
+                colorFill={c} len={size} />, id: 16,
+            owned: true
+        }]
     }
 
     const hair_front_types = (size, c) => {
@@ -186,6 +231,18 @@ const SvgTestScreen = ({ navigation }) => {
         {
             svg: <Hairfront3_svg
                 colorFill={c} len={size} />, id: 3,
+            owned: true
+        }, {
+            svg: <Hairfront4_svg
+                colorFill={c} len={size} />, id: 4,
+            owned: true
+        }, {
+            svg: <Hairfront5_svg
+                colorFill={c} len={size} />, id: 5,
+            owned: true
+        }, {
+            svg: <Hairfront6_svg
+                colorFill={c} len={size} />, id: 6,
             owned: true
         },
         ]
@@ -212,7 +269,51 @@ const SvgTestScreen = ({ navigation }) => {
             svg: <Base5_svg
                 colorFill={c} len={size} />, id: 5,
             owned: true
-        },]
+        }, {
+            svg: <Base6_svg
+                colorFill={c} len={size} />, id: 6,
+            owned: true
+        }, {
+            svg: <Base7_svg
+                colorFill={c} len={size} />, id: 7,
+            owned: true
+        }, {
+            svg: <Base8_svg
+                colorFill={c} len={size} />, id: 8,
+            owned: true
+        }, {
+            svg: <Base9_svg
+                colorFill={c} len={size} />, id: 9,
+            owned: true
+        }, {
+            svg: <Base10_svg
+                colorFill={c} len={size} />, id: 10,
+            owned: true
+        }, {
+            svg: <Base11_svg
+                colorFill={c} len={size} />, id: 11,
+            owned: true
+        }, {
+            svg: <Base12_svg
+                colorFill={c} len={size} />, id: 12,
+            owned: true
+        }, {
+            svg: <Base13_svg
+                colorFill={c} len={size} />, id: 13,
+            owned: true
+        }, {
+            svg: <Base14_svg
+                colorFill={c} len={size} />, id: 14,
+            owned: true
+        }, {
+            svg: <Base15_svg
+                colorFill={c} len={size} />, id: 15,
+            owned: true
+        }, {
+            svg: <Base16_svg
+                colorFill={c} len={size} />, id: 16,
+            owned: true
+        }]
     }
 
     const underlayer_types = (size, c) => {
@@ -437,6 +538,26 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Hairback8_svg
                 colorFill={c} len={size} />, id: 8,
+            owned: true
+        }, {
+            svg: <Hairback9_svg
+                colorFill={c} len={size} />, id: 9,
+            owned: true
+        }, {
+            svg: <Hairback10_svg
+                colorFill={c} len={size} />, id: 10,
+            owned: true
+        }, {
+            svg: <Hairback11_svg
+                colorFill={c} len={size} />, id: 11,
+            owned: true
+        }, {
+            svg: <Hairback12_svg
+                colorFill={c} len={size} />, id: 12,
+            owned: true
+        }, {
+            svg: <Hairback13_svg
+                colorFill={c} len={size} />, id: 13,
             owned: true
         }]
     }
@@ -1075,7 +1196,7 @@ const SvgTestScreen = ({ navigation }) => {
                     </View>
                     {/*<Image
                         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, position: 'absolute', }}
-                        source={DIR.baseTypes[baseIndex][0]} />*/}
+                    source={DIR.baseTypes[baseIndex][0]} />*/}
 
                     <View style={{ position: 'absolute' }}>
                         {eyebrow_types(AVATAR_SIZE, mouth_colors[eyebrowColorIndex].hex)[eyebrowIndex].svg}
@@ -1321,6 +1442,7 @@ const SvgTestScreen = ({ navigation }) => {
                                             <AvatarMenuComponent
                                                 title={"Skin tone"}
                                                 data={base_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                                //data={DIR.baseTypes}
                                                 noItemOption={false}
                                                 //pngOption={true}
                                                 pngOption={false}

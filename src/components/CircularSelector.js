@@ -144,12 +144,19 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     let goRightCheck = false;
     let goLeftCheck = false;
     let prev_theta = -1;
+    let topBoundary_ = 55 + (width / 2 / 0.80) * 0.22 + 30
+
+    var disabled = false;
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: (event, gestureState) => {
+                //console.log(`grant locationX: ${event.nativeEvent.locationX} and grant locationY: ${event.nativeEvent.locationY}`)
+                //this.locationPageOffset = event.nativeEvent.pageX - event.nativeEvent.locationY;
+                //console.log(`locaitonPageOffset: ${this.locationPageOffset}`)
                 isCurrentTouched = true;
+                //disabled = false;
             },
             onPanResponderRelease: (event, gestureState) => {
                 isCurrentTouched = false;
@@ -157,9 +164,47 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                 lockAtZeroMin = false;
             },
             onPanResponderMove: (event, gestureState) => {
-                let x_set = event.nativeEvent.locationX.toFixed(2)
-                let y_set = event.nativeEvent.locationY.toFixed(2)
-                let x_vel = gestureState.vx
+                //if (disabled) { return; }
+                //var rightBoundary = width / 2 + picked_width / 2
+                var leftBoundary = width / 2 - picked_width / 2
+                var topBoundary = topBoundary_//0
+                //var bottomBoundary = topBoundary_ + picked_width;
+
+                //let x_set_old = event.nativeEvent.locationX.toFixed(2)
+                //let y_set_old = event.nativeEvent.locationY.toFixed(2)
+
+                let moveX = gestureState.moveX
+                let moveY = gestureState.moveY
+                //console.log(`old x_set: ${x_set_old}, old y_set: ${y_set_old}`)
+
+
+                var x_set = moveX - leftBoundary;
+                var y_set = moveY - topBoundary;
+                //console.log(`x_set: ${x_set}, y_set: ${y_set}`)
+
+                /*leftBoundary: ${leftBoundary}, rightBoundary: ${rightBoundary}
+                topBoundary: ${topBoundary}, bottomBoundary: ${bottomBoundary}`)*/
+                /*leftBoundary: 0, rightBoundary: 334.2857142857143
+                topBoundary: 0, bottomBoundary: 257.1428571428571
+                */
+
+                /*if (moveX >= rightBoundary) {
+                    x_set = rightBoundary - 1
+                } if (moveX <= leftBoundary) {
+                    x_set = leftBoundary + 1
+                } if (moveY <= topBoundary) {
+                    y_set = topBoundary + 1
+                } if (moveY >= bottomBoundary) {
+                    y_set = bottomBoundary - 1
+                }*/
+
+                /*if (moveX >= rightBoundary || moveX <= (leftBoundary)
+                    || moveY <= topBoundary || moveY >= (bottomBoundary)) {
+                    return;
+                }*/
+
+                //let x_vel = gestureState.vx
+
                 let current_Quadrant = currentQuadrant(x_set, y_set)
 
                 let r = getRadius(x_set, y_set)
@@ -256,14 +301,21 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     ).current;
 
     return (
-        <View style={styles.container}>
+        <View
+            style={[styles.container, { borderWidth: 0, }]}
+            onLayout={({ nativeEvent }) => {
+                console.log(nativeEvent.layout)
+            }}
+        >
             <ImageBackground
                 source={img_timer}
                 style={[styles.image]}
                 resizeMode='contain'>
 
-                <Animated.View style={[styles.wrappedView]}
+                <Animated.View
+                    style={[styles.wrappedView]}
                     {...panResponder.panHandlers}
+
                 >
                     <Svg style={styles.svgStyle}
                         height="100%" width="100%" viewBox={`0 0 100 100`}>
@@ -317,8 +369,10 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
 
                 </Animated.View>
 
+
+
             </ImageBackground>
-        </View>
+        </View >
     )
 })
 
@@ -335,8 +389,9 @@ const styles = StyleSheet.create({
     },
     wrappedView: {
         aspectRatio: 1,
-        borderWidth: 0.3,
+        borderWidth: 0,
         borderColor: 'black',
+        //backgroundColor: 'green',
         width: picked_width,
     },
     svgStyle: {

@@ -55,7 +55,11 @@ const FriendListScreen = () => {
     }
 
     const duration = (startTime, endTime) => {
-        return differenceInSeconds(parseISO(endTime), parseISO(startTime))
+        var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
+        if (diff_in_min <= 1) {
+            return `${differenceInSeconds(parseISO(endTime), parseISO(startTime))} seconds`
+        }
+        return `${diff_in_min} minutes`
     }
     const daysAgo = (endTime) => {
         return differenceInDays(new Date(), parseISO(endTime))

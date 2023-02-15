@@ -81,13 +81,13 @@ const sessionReducer = (state, action) => {
             return {
                 ...state, userSessions: state.userSessions.map(item => {
                     if (item.activity_id == action.payload.sessionId) {
-                        return { ...item, notes: action.payload.notes }
+                        return { ...item, notes: action.payload.notes, is_private: action.payload.isPrivate }
                     }
                     return item;
                 }),
                 monthSessions: state.monthSessions.map(item => {
                     if (item.activity_id == action.payload.sessionId) {
-                        return { ...item, notes: action.payload.notes }
+                        return { ...item, notes: action.payload.notes, is_private: action.payload.isPrivate }
                     }
                     return item;
                 }),
@@ -338,7 +338,7 @@ const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = nu
 
         /* TEMPORARY */
         const results = await timeoutApi.get('/testSessionsAndCounters', { params: { startTime: startTime, endTime: endTime } })
-        console.log("RESULTS ARE : ", results.data)
+        //console.log("RESULTS ARE : ", results.data)
 
         // need to do the mapping client-side due to time zone issues
         let groupedData = groupMonthlyTasks(results.data)
@@ -475,11 +475,10 @@ const setHardReset = dispatch => async (bool_) => {
     })
 }
 
-const patchSession = dispatch => async (sessionId, notes, callback = null, errorCallback = null) => {
+const patchSession = dispatch => async (sessionId, notes, isPrivate, callback = null, errorCallback = null) => {
     try {
-        console.log("Sending over notes:", notes)
-        const response = await timeoutApi.patch(`/session/${sessionId}`, { sessionId, notes })
-        dispatch({ type: 'patch_session', payload: { sessionId, notes } })
+        const response = await timeoutApi.patch(`/session/${sessionId}`, { sessionId, notes, isPrivate })
+        dispatch({ type: 'patch_session', payload: { sessionId, notes, isPrivate } })
         if (callback) { callback() }
     } catch (err) {
         console.log("error patching session:", err);
@@ -577,8 +576,6 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
         console.log(err)
     }
 }
-
-
 
 
 const clearSessionContext = dispatch => async () => {

@@ -1,28 +1,28 @@
-import React, { useContext, useState, useCallback, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-    View, SafeAreaView, StyleSheet, Text, FlatList, Pressable,
-    TouchableOpacity, ActivityIndicator, Dimensions
+    View, StyleSheet, Text,
+    TouchableOpacity,
 } from 'react-native';
-import { Icon } from 'react-native-elements';
 import {
     differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
     differenceInMinutes,
-    parseISO, differenceInSeconds, isThisMinute
+    parseISO, differenceInSeconds,
 } from 'date-fns';
 import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
-import { Context as SessionContext } from '../context/SessionContext';
 
-const FriendNotificationComponent = ({ item, cacheChecker, navigation }) => {
+const FriendNotificationComponent = ({ item, navigation }) => {
     const { state: userState, setIdToView } = useContext(UserContext)
 
     const [disableTouch, setDisableTouch] = useState(false)
-    const { state: sessionState, fetchUserReactions,
-        reactToActivity, fetchAvatars } = useContext(SessionContext)
     const [reactionCount, setReactionCount] = useState(item.reaction_count)
 
     const duration = (startTime, endTime) => {
-        return differenceInSeconds(parseISO(endTime), parseISO(startTime))
+        var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
+        if (diff_in_min <= 1) {
+            return `${differenceInSeconds(parseISO(endTime), parseISO(startTime))} seconds`
+        }
+        return `${diff_in_min} minutes`
     }
     const timeAgo = (endTime) => {
         var parsedTime = parseISO(endTime)
@@ -73,18 +73,16 @@ const FriendNotificationComponent = ({ item, cacheChecker, navigation }) => {
             <View style={styles.listItem}>
                 <View style={{ flex: 1 }}>
                     <Text>
-                        <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.username}</Text>
-                        <Text style={[styles.textDefault, { fontSize: 15, }]}> liked your activity </Text>
-
+                        <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: '#67806D', }]}>{item.username}</Text>
+                        <Text style={[styles.textDefault, { fontSize: 13, }]}> liked your activity </Text>
+                        <Text style={[styles.textDefaultBold, { fontSize: 15, color: '#67806D', }]}>{item.activity_name}</Text>
+                        <Text style={[styles.textDefault, { fontSize: 13, }]}> for </Text>
+                        <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: '#67806D', }]}>{duration(item.time_start, item.time_end)}</Text>
                     </Text>
-                    <Text>
-                        <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>of {duration(item.time_start, item.time_end)}</Text>
-                        <Text style={[styles.textDefault, { fontSize: 15, }]}> seconds </Text>
-                        <Text style={[styles.textDefault, { fontSize: 15, }]}>of </Text>
-                        {/*[styles.bolded, { color: constants.colors[item.color_id] }]*/}
+                    {/*<Text>
                         <Text style={[styles.textDefaultBold, { fontSize: 15, }]}>{item.category_name}</Text>
-                    </Text>
-                    <Text style={[styles.textDefault, { fontSize: 10, color: '#949494', marginTop: 8, }]}> {timeAgo(item.time_created)}</Text>
+                    </Text>*/}
+                    <Text style={[styles.textDefault, { fontSize: 13, color: '#949494', marginTop: 4, }]}> {timeAgo(item.time_created)}</Text>
 
                 </View>
                 <View style={{ flex: 1 }}>
@@ -108,6 +106,10 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     outerContainer: {
         marginTop: 110, //here because header is transparent

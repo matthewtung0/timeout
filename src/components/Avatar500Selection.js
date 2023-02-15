@@ -6,14 +6,38 @@ const base2 = require('../../assets/avatar_500/16_base/2.png');
 const base3 = require('../../assets/avatar_500/16_base/3.png');
 const base4 = require('../../assets/avatar_500/16_base/4.png');
 const base5 = require('../../assets/avatar_500/16_base/5.png');
-const baseTypes = [[base1], [base2], [base3], [base4], [base5]]
+const base6 = require('../../assets/avatar_500/16_base/BASE_6.png');
+const base7 = require('../../assets/avatar_500/16_base/BASE_7.png');
+const base8 = require('../../assets/avatar_500/16_base/BASE_8.png');
+const base9 = require('../../assets/avatar_500/16_base/BASE_9.png');
+const base10 = require('../../assets/avatar_500/16_base/BASE_10.png');
+const base11 = require('../../assets/avatar_500/16_base/BASE_11.png');
+const base12 = require('../../assets/avatar_500/16_base/BASE_12.png');
+const base13 = require('../../assets/avatar_500/16_base/BASE_13.png');
+const base14 = require('../../assets/avatar_500/16_base/BASE_14.png');
+const base15 = require('../../assets/avatar_500/16_base/BASE_15.png');
+const base16 = require('../../assets/avatar_500/16_base/BASE_16.png');
+const baseTypes = [[base1], [base2], [base3], [base4], [base5], [base6], [base7], [base8], [base9],
+[base10], [base11], [base12], [base13], [base14], [base15], [base16]]
 
 const ear1 = require('../../assets/avatar_500/3_ear/1.png')
 const ear2 = require('../../assets/avatar_500/3_ear/2.png')
 const ear3 = require('../../assets/avatar_500/3_ear/3.png')
 const ear4 = require('../../assets/avatar_500/3_ear/4.png')
 const ear5 = require('../../assets/avatar_500/3_ear/5.png')
-const earTypes = [ear1, ear2, ear3, ear4, ear5]
+const ear6 = require('../../assets/avatar_500/3_ear/BASE-ear_6.png')
+const ear7 = require('../../assets/avatar_500/3_ear/BASE-ear_7.png')
+const ear8 = require('../../assets/avatar_500/3_ear/BASE-ear_8.png')
+const ear9 = require('../../assets/avatar_500/3_ear/BASE-ear_9.png')
+const ear10 = require('../../assets/avatar_500/3_ear/BASE-ear_10.png')
+const ear11 = require('../../assets/avatar_500/3_ear/BASE-ear_11.png')
+const ear12 = require('../../assets/avatar_500/3_ear/BASE-ear_12.png')
+const ear13 = require('../../assets/avatar_500/3_ear/BASE-ear_13.png')
+const ear14 = require('../../assets/avatar_500/3_ear/BASE-ear_14.png')
+const ear15 = require('../../assets/avatar_500/3_ear/BASE-ear_15.png')
+const ear16 = require('../../assets/avatar_500/3_ear/BASE-ear_16.png')
+const earTypes = [ear1, ear2, ear3, ear4, ear5, ear6, ear7, ear8, ear9, ear10, ear11,
+    ear12, ear13, ear14, ear15, ear16,]
 
 // ---------------------------------------- Eyes ----------------------------------------------
 const eyesWide1 = require('../../assets/avatar_500/12_eyes/1_wide_1_brown.png')
@@ -44,15 +68,14 @@ const eyesRobot = [robot_closed, robot_closed, robot_closed, robot_closed, robot
 const eyeTypes = [eyesWide, eyesNeutral, eyesRobot]
 const eyeColors = ['brown', 'black', 'blue', 'green', 'gold', 'red', 'light-grey', 'grey']
 
-
 // ---------------------------------------- GLASSES ----------------------------------------------
 const glasses1 = require('../../assets/avatar_500/1_glasses/1_round_1_black-01.png')
 const glasses2 = require('../../assets/avatar_500/1_glasses/2_rectangle-clear_1_black-01.png')
-const glasses3 = require('../../assets/avatar_500/1_glasses/2_rectangle-shade-1_black.png')
+const glasses3 = require('../../assets/avatar_500/1_glasses/3_rectangle-shade-1_black.png')
 
-const glasses4 = require('../../assets/avatar_500/1_glasses/00_rectangle-glasses-PINK.png')
-const glasses5 = require('../../assets/avatar_500/1_glasses/00_round-glasses-BLACK.png')
-const glasses6 = require('../../assets/avatar_500/1_glasses/00_round-glasses-PINK.png')
+const glasses4 = require('../../assets/avatar_500/1_glasses/4_rectangle-glasses-PINK.png')
+const glasses5 = require('../../assets/avatar_500/1_glasses/5_round-glasses-BLACK.png')
+const glasses6 = require('../../assets/avatar_500/1_glasses/6_round-glasses-PINK.png')
 //const glassesTypes = [[unknown], [glasses1], [glasses2], [glasses3]]
 const glassesTypes = [[glasses1], [glasses2], [glasses3], [glasses4], [glasses5], [glasses6]]
 
@@ -123,8 +146,37 @@ const frontMidpart5 = require('../../assets/avatar_500/4_hair_front/3_midpart_5_
 const frontMidpart6 = require('../../assets/avatar_500/4_hair_front/3_midpart_6_green.png')
 const frontMidpart = [frontMidpart1, frontMidpart2, frontMidpart3, frontMidpart4, frontMidpart5, frontMidpart6]
 
-const hairFrontTypes = [[unknown], frontBangsPart, frontBangsFull, frontMidpart]
+const braidBack1_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_1_black.png')
+const braidBack2_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_2_brown.png')
+const braidBack3_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_3_blonde.png')
+const braidBack4_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_4_white.png')
+const braidBack5_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_5_blue.png')
+const braidBack6_hairFront = require('../../assets/avatar_500/4_hair_front/04_braid-back_6_green.png')
+const braidBack_hairFront = [braidBack1_hairFront, braidBack2_hairFront, braidBack3_hairFront,
+    braidBack4_hairFront, braidBack5_hairFront, braidBack6_hairFront,]
+
+const bangsWavyFull1 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_1_black.png')
+const bangsWavyFull2 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_2_brown.png')
+const bangsWavyFull3 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_3_blonde.png')
+const bangsWavyFull4 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_4_white.png')
+const bangsWavyFull5 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_5_blue.png')
+const bangsWavyFull6 = require('../../assets/avatar_500/4_hair_front/5_bangs-wavy-full_6_green.png')
+const bangsWavyFull = [bangsWavyFull1, bangsWavyFull2, bangsWavyFull3, bangsWavyFull4, bangsWavyFull5, bangsWavyFull6,]
+
+const bangsWavyLight1 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_1_black.png')
+const bangsWavyLight2 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_2_brown.png')
+const bangsWavyLight3 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_3_blonde.png')
+const bangsWavyLight4 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_4_white.png')
+const bangsWavyLight5 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_5_blue.png')
+const bangsWavyLight6 = require('../../assets/avatar_500/4_hair_front/6_bangs-wavy-light_6_green.png')
+const bangsWavyLight = [bangsWavyLight1, bangsWavyLight2, bangsWavyLight3, bangsWavyLight4, bangsWavyLight5, bangsWavyLight6,]
+
+
+const hairFrontTypes = [[unknown], frontBangsPart, frontBangsFull, frontMidpart,
+    braidBack_hairFront, bangsWavyFull, bangsWavyLight]
 const hairFrontColors = ['black', 'brown', 'yellow', 'white', 'blue', 'green']
+
+
 
 // ---------------------------------------- HAIR SIDE ----------------------------------------------
 const sideburn1 = require('../../assets/avatar_500/5_hair_side/1_sideburn_1_black-01.png')
@@ -162,7 +214,15 @@ const buzzcut5 = require('../../assets/avatar_500/6_hair/2_buzzcut_5_blue-01.png
 const buzzcut6 = require('../../assets/avatar_500/6_hair/2_buzzcut_6_green-01.png')
 const buzzcut = [buzzcut1, buzzcut2, buzzcut3, buzzcut4, buzzcut5, buzzcut6]
 
-const hairTypes = [sidesweep, buzzcut]
+const buzzcutCurly1 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_1_black.png')
+const buzzcutCurly2 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_2_brown.png')
+const buzzcutCurly3 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_3_blonde.png')
+const buzzcutCurly4 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_4_white.png')
+const buzzcutCurly5 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_5_blue.png')
+const buzzcutCurly6 = require('../../assets/avatar_500/6_hair/3_buzzcut-curly_6_green.png')
+const buzzcutCurly = [buzzcutCurly1, buzzcutCurly2, buzzcutCurly3, buzzcutCurly4, buzzcutCurly5, buzzcutCurly6,]
+
+const hairTypes = [sidesweep, buzzcut, buzzcutCurly]
 
 // ---------------------------------------- HAIR BACK  --------------------------------------------
 const ponytail1 = require('../../assets/avatar_500/18_hair_back/2_ponytail-fluffy_1_black.png')
@@ -181,14 +241,147 @@ const down5 = require('../../assets/avatar_500/18_hair_back/3_down-fluffy_5_blue
 const down6 = require('../../assets/avatar_500/18_hair_back/3_down-fluffy_6_green.png')
 const down = [down1, down2, down3, down4, down5, down6]
 
-const backHairTypes = [[unknown], ponytail, down]
+//pigtails
+const pigtails1 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_1_black.png')
+const pigtails2 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_2_brown.png')
+const pigtails3 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_3_blonde.png')
+const pigtails4 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_4_white.png')
+const pigtails5 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_5_blue.png')
+const pigtails6 = require('../../assets/avatar_500/18_hair_back/4_pigtails-high_6_green.png')
+const pigtails = [pigtails1, pigtails2, pigtails3, pigtails4, pigtails5, pigtails6]
+
+
+//ponytail-short
+const ponytailShort1 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_1_black.png')
+const ponytailShort2 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_2_brown.png')
+const ponytailShort3 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_3_blonde.png')
+const ponytailShort4 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_4_white.png')
+const ponytailShort5 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_5_blue.png')
+const ponytailShort6 = require('../../assets/avatar_500/18_hair_back/4_ponytail-short_6_green.png')
+const ponytailShort = [ponytailShort1, ponytailShort2, ponytailShort3, ponytailShort4, ponytailShort5, ponytailShort6]
+
+//ponytail-high-short
+const ponytailHighShort1 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_1_black.png')
+const ponytailHighShort2 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_2_brown.png')
+const ponytailHighShort3 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_3_blonde.png')
+const ponytailHighShort4 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_4_white.png')
+const ponytailHighShort5 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_5_blue.png')
+const ponytailHighShort6 = require('../../assets/avatar_500/18_hair_back/5_ponytail-high-short_6_green.png')
+const ponytailHighShort = [ponytailHighShort1, ponytailHighShort2, ponytailHighShort3, ponytailHighShort4, ponytailHighShort5, ponytailHighShort6]
+
+//ponytail-high-long
+const ponytailHighLong1 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_1_black.png')
+const ponytailHighLong2 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_2_brown.png')
+const ponytailHighLong3 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_3_blonde.png')
+const ponytailHighLong4 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_4_white.png')
+const ponytailHighLong5 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_5_blue.png')
+const ponytailHighLong6 = require('../../assets/avatar_500/18_hair_back/6_ponytail-high-long_6_green.png')
+const ponytailHighLong = [ponytailHighLong1, ponytailHighLong2, ponytailHighLong3, ponytailHighLong4, ponytailHighLong5, ponytailHighLong6]
+
+//ponytail-curly
+const ponytailCurly1 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_1_black.png')
+const ponytailCurly2 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_2_brown.png')
+const ponytailCurly3 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_3_blonde.png')
+const ponytailCurly4 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_4_white.png')
+const ponytailCurly5 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_5_blue.png')
+const ponytailCurly6 = require('../../assets/avatar_500/18_hair_back/7_ponytail-curly_6_green.png')
+const ponytailCurly = [ponytailCurly1, ponytailCurly2, ponytailCurly3, ponytailCurly4, ponytailCurly5, ponytailCurly6]
+
+//bun-side
+const bunSide1 = require('../../assets/avatar_500/18_hair_back/8_bun-side_1_black.png')
+const bunSide2 = require('../../assets/avatar_500/18_hair_back/8_bun-side_2_brown.png')
+const bunSide3 = require('../../assets/avatar_500/18_hair_back/8_bun-side_3_blonde.png')
+const bunSide4 = require('../../assets/avatar_500/18_hair_back/8_bun-side_4_white.png')
+const bunSide5 = require('../../assets/avatar_500/18_hair_back/8_bun-side_5_blue.png')
+const bunSide6 = require('../../assets/avatar_500/18_hair_back/8_bun-side_6_green.png')
+const bunSide = [bunSide1, bunSide2, bunSide3, bunSide4, bunSide5, bunSide6]
+
+//bun-afro
+const bunAfro1 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_1_black.png')
+const bunAfro2 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_2_brown.png')
+const bunAfro3 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_3_blonde.png')
+const bunAfro4 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_4_white.png')
+const bunAfro5 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_5_blue.png')
+const bunAfro6 = require('../../assets/avatar_500/18_hair_back/9_bun-afro_6_green.png')
+const bunAfro = [bunAfro1, bunAfro2, bunAfro3, bunAfro4, bunAfro5, bunAfro6]
+
+//braid-back
+const braidBack1 = require('../../assets/avatar_500/18_hair_back/10_braid-back_1_black.png')
+const braidBack2 = require('../../assets/avatar_500/18_hair_back/10_braid-back_2_brown.png')
+const braidBack3 = require('../../assets/avatar_500/18_hair_back/10_braid-back_3_blonde.png')
+const braidBack4 = require('../../assets/avatar_500/18_hair_back/10_braid-back_4_white.png')
+const braidBack5 = require('../../assets/avatar_500/18_hair_back/10_braid-back_5_blue.png')
+const braidBack6 = require('../../assets/avatar_500/18_hair_back/10_braid-back_6_green.png')
+const braidBack = [braidBack1, braidBack2, braidBack3, braidBack4, braidBack5, braidBack6]
+
+//afro-up
+const afroUp1 = require('../../assets/avatar_500/18_hair_back/11_afro-up_1_black.png')
+const afroUp2 = require('../../assets/avatar_500/18_hair_back/11_afro-up_2_brown.png')
+const afroUp3 = require('../../assets/avatar_500/18_hair_back/11_afro-up_3_blonde.png')
+const afroUp4 = require('../../assets/avatar_500/18_hair_back/11_afro-up_4_white.png')
+const afroUp5 = require('../../assets/avatar_500/18_hair_back/11_afro-up_5_blue.png')
+const afroUp6 = require('../../assets/avatar_500/18_hair_back/11_afro-up_6_green.png')
+const afroUp = [afroUp1, afroUp2, afroUp3, afroUp4, afroUp5, afroUp6]
+
+//afro-down
+const afroDown1 = require('../../assets/avatar_500/18_hair_back/12_afro-down_1_black.png')
+const afroDown2 = require('../../assets/avatar_500/18_hair_back/12_afro-down_2_brown.png')
+const afroDown3 = require('../../assets/avatar_500/18_hair_back/12_afro-down_3_blonde.png')
+const afroDown4 = require('../../assets/avatar_500/18_hair_back/12_afro-down_4_white.png')
+const afroDown5 = require('../../assets/avatar_500/18_hair_back/12_afro-down_5_blue.png')
+const afroDown6 = require('../../assets/avatar_500/18_hair_back/12_afro-down_6_green.png')
+const afroDown = [afroDown1, afroDown2, afroDown3, afroDown4, afroDown5, afroDown6]
+
+//afro-asymmetric
+const afroAsymmetric1 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_1_black.png')
+const afroAsymmetric2 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_2_brown.png')
+const afroAsymmetric3 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_3_blonde.png')
+const afroAsymmetric4 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_4_white.png')
+const afroAsymmetric5 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_5_blue.png')
+const afroAsymmetric6 = require('../../assets/avatar_500/18_hair_back/13_afro-asymmetric_6_green.png')
+const afroAsymmetric = [afroAsymmetric1, afroAsymmetric2, afroAsymmetric3, afroAsymmetric4, afroAsymmetric5, afroAsymmetric6]
+
+
+const backHairTypes = [[unknown], ponytail, down, pigtails, bunSide, ponytailHighLong, ponytailHighShort, braidBack,
+    ponytailShort, afroAsymmetric, afroDown, afroUp, bunAfro, ponytailCurly,]
+
 
 // -------------------------------------- EYE MAKEUP  --------------------------------------
 const makeup1 = require('../../assets/avatar_500/13_eye_makeup/1_silver.png')
 const makeup2 = require('../../assets/avatar_500/13_eye_makeup/2_black.png')
 const makeup3 = require('../../assets/avatar_500/13_eye_makeup/3_gold.png')
 const makeup4 = require('../../assets/avatar_500/13_eye_makeup/4_pink.png')
-const makeupTypes = [[unknown], [makeup1], [makeup2], [makeup3], [makeup4]]
+
+const eyeShadow1 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_1_black.png')
+const eyeShadow2 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_2_silver.png')
+const eyeShadow3 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_3_light-teal.png')
+const eyeShadow4 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_4_teal.png')
+const eyeShadow5 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_5_pink.png')
+const eyeShadow6 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_6_gold.png')
+const eyeShadowTypes = [eyeShadow1, eyeShadow2, eyeShadow3, eyeShadow4, eyeShadow5, eyeShadow6]
+
+const cyberpunkLines1 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_1_black.png')
+const cyberpunkLines2 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_2_silver.png')
+const cyberpunkLines3 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_3_light-teal.png')
+const cyberpunkLines4 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_4_teal.png')
+const cyberpunkLines5 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_5_pink.png')
+const cyberpunkLines6 = require('../../assets/avatar_500/13_eye_makeup/2_cyberpunk-line_6_gold.png')
+const cyberpunkLineTypes = [cyberpunkLines1, cyberpunkLines2, cyberpunkLines3, cyberpunkLines4, cyberpunkLines5, cyberpunkLines6]
+
+const cyberpunkLinesMakeup1 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_1_black.png')
+const cyberpunkLinesMakeup2 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_2_silver.png')
+const cyberpunkLinesMakeup3 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_3_light-teal.png')
+const cyberpunkLinesMakeup4 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_4_teal.png')
+const cyberpunkLinesMakeup5 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_5_pink.png')
+const cyberpunkLinesMakeup6 = require('../../assets/avatar_500/13_eye_makeup/3_cyberpunk-lines-makeup_6_gold.png')
+const cyberpunkLinesMakeupTypes = [cyberpunkLinesMakeup1, cyberpunkLinesMakeup2, cyberpunkLinesMakeup3, cyberpunkLinesMakeup4, cyberpunkLinesMakeup5, cyberpunkLinesMakeup6]
+
+
+const makeupTypes = [[unknown], eyeShadowTypes, cyberpunkLineTypes, cyberpunkLinesMakeupTypes]
+const makeupColors = ['black', 'silver', 'light-teal', 'teal', 'pink', 'gold']
+
+
+
 
 // -------------------------------------- EYEBROWS  -----------------------------------------
 const browThick1 = require('../../assets/avatar_500/15_eyebrows/1_neutral-thick_1_black-01.png')
@@ -206,7 +399,16 @@ const browThin4 = require('../../assets/avatar_500/15_eyebrows/2_neutral-thin_4_
 const browThin5 = require('../../assets/avatar_500/15_eyebrows/2_neutral-thin_5_blue-01.png')
 const browThin6 = require('../../assets/avatar_500/15_eyebrows/2_neutral-thin_6_green-01.png')
 const browThin = [browThin1, browThin2, browThin3, browThin4, browThin5, browThin6]
-const browTypes = [browThick, browThin]
+
+const shavedNeutral1 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_1_black.png')
+const shavedNeutral2 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_2_brown.png')
+const shavedNeutral3 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_3_blonde.png')
+const shavedNeutral4 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_4_white.png')
+const shavedNeutral5 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_5_blue.png')
+const shavedNeutral6 = require('../../assets/avatar_500/15_eyebrows/3_shaved-neutral_6_green.png')
+const shavedNeutral = [shavedNeutral1, shavedNeutral2, shavedNeutral3, shavedNeutral4, shavedNeutral5, shavedNeutral6,]
+
+const browTypes = [browThick, browThin, shavedNeutral]
 //browColors use hairFrontColors
 
 // -------------------------------------- MOUTH  --------------------------------------------
@@ -231,8 +433,15 @@ const lipstickSmile4 = require('../../assets/avatar_500/11_mouth/3_lipstick-smil
 const lipstickSmile5 = require('../../assets/avatar_500/11_mouth/3_lipstick-smile_5_green-01.png')
 const lipstickSmile = [lipstickSmile1, lipstickSmile2, lipstickSmile3, lipstickSmile4, lipstickSmile5]
 
+const openSmile1 = require('../../assets/avatar_500/11_mouth/4_open-smile_1_gray.png')
+const openSmile2 = require('../../assets/avatar_500/11_mouth/4_open-smile_2_black.png')
+const openSmile3 = require('../../assets/avatar_500/11_mouth/4_open-smile_3_red.png')
+const openSmile4 = require('../../assets/avatar_500/11_mouth/4_open-smile_4_pink.png')
+const openSmile5 = require('../../assets/avatar_500/11_mouth/4_open-smile_5_green.png')
+const openSmile = [openSmile1, openSmile2, openSmile3, openSmile4, openSmile5,]
+
 const mouthColors = ['gray', 'black', 'red', 'pink', 'green']
-const mouthTypes = [pressed, lipstick, lipstickSmile]
+const mouthTypes = [pressed, lipstick, lipstickSmile, openSmile]
 
 // ---------------------------------------- OUTERWEAR --------------------------------------------
 const bomber1 = require('../../assets/avatar_500/7_outerwear/1_bomber_1_black.png')
@@ -401,7 +610,7 @@ const turtleLong10 = require('../../assets/avatar_500/10_underlayer/9_turtle-lon
 const turtleLong = [turtleLong1, turtleLong2, turtleLong3, turtleLong4, turtleLong5,
     turtleLong6, turtleLong7, turtleLong8, turtleLong9, turtleLong10]
 
-const underlayerTypes = [uspag, tank, turtleSleeveless, widecut, vneck, tshirt, turtleShort, mesh, turtleLong]
+const underlayerTypes = [uspag, tank, turtleSleeveless, widecut, vneck, tshirt, turtleShort, turtleLong]
 //underlayercolors use outerwearColors
 
 // ---------------------------------------- ACCESSORIES ----------------------------------------------
@@ -424,7 +633,16 @@ const ponytailRibbon10 = require('../../assets/avatar_500/17_hair_accessories/1_
 const ponytailRibbon = [ponytailRibbon1, ponytailRibbon2, ponytailRibbon3, ponytailRibbon4, ponytailRibbon5,
     ponytailRibbon6, ponytailRibbon7, ponytailRibbon8, ponytailRibbon9, ponytailRibbon10]
 
-const hairAccessoryTypes = [[unknown], ponytailRibbon]
+// barrette_heart
+const barretteHeart1 = require('../../assets/avatar_500/17_hair_accessories/2_barrette-heart.png')
+const barretteHearts = [barretteHeart1, barretteHeart1, barretteHeart1, barretteHeart1, barretteHeart1,
+    barretteHeart1, barretteHeart1, barretteHeart1, barretteHeart1, barretteHeart1,]
+
+// TODO: cat-ears
+const catEars1 = require('../../assets/avatar_500/17_hair_accessories/3_cat-ear-white.png')
+const catEars = [catEars1, catEars1, catEars1, catEars1, catEars1, catEars1, catEars1, catEars1, catEars1, catEars1,]
+
+const hairAccessoryTypes = [[unknown], ponytailRibbon, barretteHearts, catEars]
 // same color as outerwearColors
 
 // ---------------------------------------- BASE ----------------------------------------------
@@ -461,5 +679,5 @@ export {
     baseTypes, earTypes, eyeTypes, glassesTypes, piercingsTypes, hairFrontTypes, hairSideTypes, hairTypes,
     backHairTypes, makeupTypes, browTypes, mouthTypes, outerwearTypes, topTypes, underlayerTypes, accessoryTypes,
     hairAccessoryTypes, baseColors, overlayTypes, bgTypes,
-    eyeColors, piercingsColors, hairFrontColors, mouthColors, outerwearColors
+    eyeColors, piercingsColors, makeupColors, hairFrontColors, mouthColors, outerwearColors
 }

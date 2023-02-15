@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useState, useMemo, } from 'react';
-import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Dimensions, FlatList, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Text, Icon } from 'react-native-elements';
 import { Context as UserContext } from '../context/userContext';
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,14 +11,14 @@ import PFPModal from '../components/PFPModal';
 import ProfileComponent from '../components/ProfileComponent';
 
 const constants = require('../components/constants.json')
-const BANNER_HEIGHT = 230;
+const { width, height } = Dimensions.get('window')
+const BANNER_HEIGHT = height * 0.25;
 const BANNER_COLOR = '#fdd696';
 const NUM_TO_RETRIEVE = 50;
 
 const ProfileScreen = ({ navigation }) => {
-    const { width, height } = Dimensions.get('window')
     const [pfpModalVisible, setPFPModalVisible] = useState(false)
-    const { state, fetchAvatarGeneral } = useContext(UserContext)
+    const { state } = useContext(UserContext)
     const [offset, setOffset] = useState(0)
     const [visibleOffset, setVisibleOffset] = useState(0);
     const [atEnd, setAtEnd] = useState(false);
@@ -168,7 +168,7 @@ const ProfileScreen = ({ navigation }) => {
             <View>
                 {atEnd ?
                     <View style={styles.loadMore}>
-                        <Text style={[styles.textDefault, { color: 'white', fontSize: 20, }]}>All caught up!</Text>
+                        <Text style={[styles.textDefault, { color: '#67806D', fontSize: 20, }]}>All caught up!</Text>
                     </View>
                     :
                     null
@@ -269,9 +269,9 @@ const ProfileScreen = ({ navigation }) => {
                                 style={[styles.categoryStyle, { backgroundColor: constants.colors[item['color_id']] }]}>
 
                                 {(privateVisible || item['public']) ?
-                                    <Text style={[styles.categoryText, styles.textDefaultBold]}>{item['category_name']}</Text>
+                                    <Text style={[styles.categoryText, styles.textDefaultMed]}>{item['category_name']}</Text>
                                     :
-                                    <Text style={[styles.categoryText, styles.textDefaultBold,
+                                    <Text style={[styles.categoryText, styles.textDefaultMed,
                                     { color: constants.colors[item['color_id']] }]}>{item['category_name']}</Text>}
                             </View>
                         )
@@ -357,7 +357,10 @@ const ProfileScreen = ({ navigation }) => {
                 : null}
 
 
-            <View style={{ position: 'absolute', height: 100, backgroundColor: BANNER_COLOR, flex: 1, width: '100%' }}>
+            <View style={{
+                position: 'absolute', height: Platform.OS === 'ios' ? 100 : 80,
+                backgroundColor: BANNER_COLOR, flex: 1, width: '100%'
+            }}>
 
             </View>
             <Header
@@ -370,7 +373,7 @@ const ProfileScreen = ({ navigation }) => {
                     flexDirection: 'row',
                     position: 'absolute',
                     alignSelf: 'flex-end',
-                    marginTop: 55,
+                    marginTop: Platform.OS === 'ios' ? 55 : 40,
                     paddingHorizontal: 15,
                 }}>
                 {isMe ?
@@ -403,6 +406,9 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     outerContainer: {
         flex: 1,
@@ -472,7 +478,8 @@ const styles = StyleSheet.create({
     },
     categoryStyle: {
         borderRadius: 50,
-        padding: 7,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         margin: 4,
         alignSelf: 'center',
         alignItems: 'center',
@@ -491,7 +498,7 @@ const styles = StyleSheet.create({
     loadMore: {
         marginVertical: 20,
         padding: 10,
-        backgroundColor: '#ABC57E',
+        //backgroundColor: '#ABC57E',
         alignItems: 'center',
     },
     loadMoreText: {

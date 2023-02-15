@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, ScrollView,
-    Keyboard, TouchableWithoutFeedback, Image, Dimensions, Alert
+    Keyboard, TouchableWithoutFeedback, Image, Dimensions, Alert, Platform
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -11,7 +11,7 @@ import Modal from 'react-native-modal'
 import AddCategoryModal from '../components/AddCategoryModal';
 import Header from '../components/Header';
 const constants = require('../components/constants.json')
-const img = require('../../assets/tasks_topbar.png')
+//const img = require('../../assets/tasks_topbar.png')
 const bg_bottom = require('../../assets/background_sidebar.png')
 
 const HideKeyboard = ({ children }) => (
@@ -137,7 +137,10 @@ const AddCategoryScreen = ({ navigation }) => {
                         </Modal>
 
                         <Text style={[styles.textDefaultBold,
-                        { marginLeft: 25, marginTop: 120, fontSize: 20, color: '#67806D' }]}>Active Categories</Text>
+                        {
+                            marginLeft: 25, marginTop: Platform.OS === 'ios' ? 100 : 80,
+                            fontSize: 20, color: '#67806D'
+                        }]}>Active Categories</Text>
                         <View style={styles.categoryContainer}>
                             {catState.userCategories
                                 .filter((item) => (!item['archived'] && item.category_name !== 'Unsorted'))

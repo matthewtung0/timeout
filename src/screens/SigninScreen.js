@@ -55,7 +55,6 @@ const SigninScreen = ({ navigation }) => {
     }
 
     const signInCallback = async () => {
-        console.log("SIGN IN CALLBACK??")
         var tempDt = new Date()
         var endTime = endOfMonth(tempDt)
         var startTime = startOfMonth(subMonths(startOfMonth(tempDt), 3))
@@ -138,21 +137,21 @@ const SigninScreen = ({ navigation }) => {
                         //transform: [{ translateX: anim, }]
                     }}>
                         <Animated.View style={{
-                            flexDirection: 'row', height: '40%',
+                            flexDirection: 'row', height: '30%',
                             transform: [{ translateX: anim, }]
                         }}>
                             <Image
-                                style={{ width: width, height: '100%', }}
+                                style={{ width: width, height: '130%', }}
                                 source={cloud}
                                 resizeMode="contain"
                             />
                             <Image
-                                style={{ width: width, height: '100%', }}
+                                style={{ width: width, height: '130%', }}
                                 source={cloud}
                                 resizeMode="contain"
                             />
                             <Image
-                                style={{ width: width, height: '100%', }}
+                                style={{ width: width, height: '130%', }}
                                 source={cloud}
                                 resizeMode="contain"
                             />

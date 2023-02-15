@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
-    AppState
+    AppState, BackHandler
 } from 'react-native';
 import {
-    fromUnixTime, getUnixTime, isThisSecond, format,
+    fromUnixTime, getUnixTime, isThisSecond,
     differenceInMilliseconds, addSeconds
 } from 'date-fns';
 import uuid from 'uuid-random'
@@ -16,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import SessionRatingModal from '../components/SessionRatingModal';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import * as NavigationBar from "expo-navigation-bar";
 
 const constants = require('../components/constants.json')
 const clock_middle = require('../../assets/clock_middle.png');
@@ -33,7 +34,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
-const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) => {
+const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
     const { numMins, categoryId, categoryName, activityName, colorId } = params;
     let bgColorHex = constants.colors[colorId]
@@ -80,7 +81,6 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
         chosenCategory: categoryName,
         cat_id: categoryId,
         activity_name: activityName,
-        prodRating: '',
     })
     const toggleRewardModal = () => {
         setRewardModalVisible(!rewardModalVisible)
@@ -126,7 +126,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
     }
 
     const offBoardCallback = () => {
-        navigate('SessionSelect')
+        navigation.navigate('SessionSelect')
     }
 
     const testNotification = () => {
@@ -140,7 +140,45 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
 
     }
 
+    const backAction = () => {
+        Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+            {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+            },
+            { text: 'YES', onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+    };
+
     useEffect(() => {
+        /*const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction,
+        );*/
+        NavigationBar.setVisibilityAsync("hidden");
+        navigation.addListener('beforeRemove', (e) => {
+
+            // Prevent default behavior of leaving the screen
+            e.preventDefault();
+
+            /*Alert.alert(
+                'Discard changes?',
+                'You have unsaved changes. Are you sure to discard them and leave the screen?',
+                [
+                    { text: "Don't leave", style: 'cancel', onPress: () => { } },
+                    {
+                        text: 'Discard',
+                        style: 'destructive',
+                        // If the user confirmed, then we dispatch the action we blocked earlier
+                        // This will continue the action that had triggered the removal of the screen
+                        onPress: () => navigation.navigtae('SessionSelect'),
+                    },
+                ]
+            );*/
+        })
+
         const subscription = AppState.addEventListener('change', nextAppState => {
             if (appState.current.match(/inactive|background/) &&
                 nextAppState === 'active') {
@@ -163,6 +201,7 @@ const SessionOngoingScreen = ({ navigation: { navigate }, route: { params } }) =
             console.log('AppState', appState.current);
         });
         return () => {
+            //backHandler.remove();
             subscription.remove();
         };
     })

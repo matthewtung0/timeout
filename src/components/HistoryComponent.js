@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { parseISO, differenceInSeconds, format } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
+import { Icon } from 'react-native-elements'
 
 import Icon_rating_null from '../../assets/icon_rating-null.svg'
 import Icon_rating from '../../assets/icon_rating.svg'
@@ -45,12 +46,22 @@ const HistoryComponent = ({ session_obj, is_active }) => {
     return (
         <>
             <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, }}>
+                {session_obj.is_private ?
 
-                <View opacity={is_active ? 1 : 0.3} style={{ flex: 4, }}>
+                    <View style={{ flex: 0.5, }}>
+                        <Icon
+                            name="lock-closed-outline"
+                            type='ionicon'
+                            size={15}
+                            color='green' />
+                    </View> : null}
+
+
+                <View opacity={is_active ? 1 : 0.3} style={{ flex: 5, }}>
                     <Text numberOfLines={1}
                         style={[styles.textDefaultMed, { color: '#013220', fontSize: 15, }]}>{session_obj.activity_name}</Text>
                 </View>
-                <View style={{ flex: 2, }}>
+                <View style={{ flex: 3, }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
                         <Text numberOfLines={1}
                             style={[styles.textDefault, { alignSelf: 'center', color: 'white', fontSize: 11, }]}>{session_obj.category_name}</Text>
@@ -71,7 +82,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                     {/* 5 STARS */}
                     <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                        {roundRating(session_obj.prod_rating) >= 20 ?
+                        {session_obj.prod_rating >= 20 ?
 
                             <Icon_rating style={styles.svgDefault} fill={bgColorHex}
                                 width={STAR_SIZE} height={STAR_SIZE} />
@@ -80,7 +91,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                                 width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 40 ?
+                        {session_obj.prod_rating >= 40 ?
                             <Icon_rating style={styles.svgDefault} fill={bgColorHex}
                                 width={STAR_SIZE} height={STAR_SIZE} />
 
@@ -88,7 +99,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                                 width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 60 ?
+                        {session_obj.prod_rating >= 60 ?
                             <Icon_rating style={styles.svgDefault} fill={bgColorHex}
                                 width={STAR_SIZE} height={STAR_SIZE} />
 
@@ -96,7 +107,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                                 width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 80 ?
+                        {session_obj.prod_rating >= 80 ?
                             <Icon_rating style={styles.svgDefault} fill={bgColorHex}
                                 width={STAR_SIZE} height={STAR_SIZE} />
 
@@ -104,7 +115,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                                 width={STAR_SIZE} height={STAR_SIZE} />
                         }
 
-                        {roundRating(session_obj.prod_rating) >= 100 ?
+                        {session_obj.prod_rating >= 100 ?
                             <Icon_rating style={styles.svgDefault} fill={bgColorHex}
                                 width={STAR_SIZE} height={STAR_SIZE} />
 

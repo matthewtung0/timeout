@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, TextInput, FlatList, Dimensions, ActivityIndicator,
-    TouchableWithoutFeedback, Keyboard, Alert
+    TouchableWithoutFeedback, Keyboard, Alert, Platform
 } from 'react-native';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
@@ -20,7 +20,6 @@ const HideKeyboard = ({ children }) => (
 const HistorySearchScreen = ({ navigation, route: { params } }) => {
     //const { } = params;
     const { height, width } = Dimensions.get('window');
-    const [contactList, setContactList] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
     const [searchCatId, setSearchCatId] = useState('All categories')
     const [searchCatName, setSearchCatName] = useState('All categories')
@@ -215,7 +214,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
     const memoizedFlatList = useMemo(flatListItself, [batchData])
     return (
         <HideKeyboard>
-            <View style={styles.container}>
+            <View style={[styles.container, { paddingTop: Platform.OS === 'ios' ? 120 : 120 }]}>
                 <View style={{ marginHorizontal: 20, }}>
                     <Text style={[styles.textDefaultSemiBold, { color: '#67806D' }]}>
                         Search by keyword:</Text>
@@ -273,7 +272,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
                     }
                 </View>
                 <TouchableOpacity
-                    style={styles.backButton}
+                    style={[styles.backButton, { marginTop: Platform.OS === 'ios' ? 80 : 80 }]}
                     onPress={() => { navigation.navigate('HistoryDaily') }}>
                     <Icon
                         name='arrow-back-outline'
@@ -301,12 +300,10 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingTop: 120,
     },
     backButton: {
         position: 'absolute',
         width: 50, height: 50,
-        marginTop: 80,
         marginLeft: 5,
     },
 
