@@ -97,17 +97,20 @@ const signin = (dispatch) => async (email, password, callback = null, callbackFa
     }
 };
 
-const changePassword = (dispatch) => async (oldPassword, newPassword, callback) => {
+const changePassword = (dispatch) => async (oldPassword, newPassword, callback = null, errorCallback = null) => {
     try {
         console.log("passing old pw", oldPassword);
         console.log("passing new pw", newPassword);
         const response = await timeoutApi.patch('/changePasswordApp', { oldPassword, newPassword });
         //await AsyncStorage.setItem('token', response.data.token);
         //console.log("password change successful. new token is " + response.data.token);
-        callback();
+        if (callback) { callback(); }
+
     } catch (err) {
         console.log(err)
-        dispatch({ type: 'add_error', payload: 'Problem changing password' })
+        alert("Something went wrong. Please check your password or try again later.")
+        if (errorCallback) { errorCallback() }
+        //dispatch({ type: 'add_error', payload: 'Problem changing password' })
     }
 }
 

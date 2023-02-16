@@ -7,12 +7,13 @@ import { Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
+import { Context as SessionContext } from '../context/SessionContext';
 import Modal from 'react-native-modal'
 import ToDoSelector from '../components/ToDoSelector';
 import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import timeoutApi from '../api/timeout';
+import { fromUnixTime, startOfMonth, endOfMonth } from 'date-fns';
 
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -28,8 +29,9 @@ const HideKeyboard = ({ children }) => (
 const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const { height, width } = Dimensions.get('window');
     const [time, setTime] = useState(0);
-    const { state, fetchSelf, fetchFriendsIfUpdate } = useContext(UserContext)
+    const { state, fetchSelf, fetchFriendsIfUpdate, addPoints } = useContext(UserContext)
     const { setChosen, setActivityName } = useContext(CategoryContext)
+    const { saveSession, fetchMultipleMonths } = useContext(SessionContext)
     const [customActivity, setCustomActivity] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -43,30 +45,59 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         setTime(a);
     }
 
+    const saveSessionErrorCallback = async () => {
+        console.log("Session save unsuccessful for now")
+        //failed saving sessions, keep in storage to try again later
+        setIsLoading(false)
+    }
+
+    const saveSession_callback = async () => {
+        console.log("Session save successful!")
+        var measureTime = new Date();
+        var endTime = endOfMonth(measureTime)
+        var startTime = startOfMonth(measureTime)
+        await AsyncStorage.removeItem('storedSessions');
+
+        try {
+            await fetchMultipleMonths(startTime, endTime)
+        } catch (err) {
+            console.log("Problem fetching months")
+            setIsLoading(false)
+            return
+        }
+
+        try {
+            await addPoints(state.user_id, 100)
+        } catch (err) {
+            setIsLoading(false)
+            console.log("Problem adding points")
+        }
+        setIsLoading(false)
+    }
+
     const checkStoredSessions = async () => {
         var storedSessions = await AsyncStorage.getItem('storedSessions')
+
         var num_stored = 0
         if (storedSessions) {
             setIsLoading(true)
 
             storedSessions = JSON.parse(storedSessions)
-
             // attempt to submit these sessions now
             try {
-                const response = await timeoutApi.post('/save_session', storedSessions)
-                console.log("Session save successful!")
+                await saveSession(storedSessions, saveSession_callback, saveSessionErrorCallback, true)
+                //const response = await timeoutApi.post('/save_session', storedSessions)
 
-                await AsyncStorage.removeItem('storedSessions');
+
                 // after save session, fetch self to update stats, and then update the points
-                await fetchSelf()
+                //await fetchSelf()
 
-                // add points
-                await addPoints(state.user_id, 100000)
 
-                alert(String(storedSessions.length) + " stored sessions now updated!")
-                setIsLoading(false)
+                alert(String(storedSessions.length) + " stored sessions now updated")
             } catch (err) {
-                console.log("Can't upload stored sessions", err)
+                //alert("Error uploading stored sessions")
+                setIsLoading(false)
+                console.log("Error uploading stored sessions", err)
             }
 
 
@@ -103,7 +134,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
             focusEffectFunc()
         }, [])
     )
-    //console.log("Error message: ", state.errorMessage);
 
     const clearInputs = () => {
         setCategoryId("3")
@@ -307,12 +337,10 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                     </TouchableOpacity>
 
-
-
-                    {state.errorMessage ?
-                        <View style={{ height: height * 0.2, backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
-                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 18 }]}>
-                                No internet connection - will attempt to be save any sessions once connection is restored.
+                    {state.errorMessage && 0 ?
+                        <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
+                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
+                                No internet connection - will attempt to save any tasks done once connection is restored.
                             </Text>
                         </View>
 

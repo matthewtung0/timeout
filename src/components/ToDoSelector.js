@@ -225,13 +225,9 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                                 style={[styles.plus, { width: width / 2.2, }]}
                                 onPress={() => {
 
-                                    if (show_error) {
-                                        alert("Currently unable to add todo items. Please check your internet connection")
-                                    } else {
-                                        setChildTitle('Add Task')
-                                        setButtonText('Submit')
-                                        setShowChild(true)
-                                    }
+                                    setChildTitle('Add Task')
+                                    setButtonText('Submit')
+                                    setShowChild(true)
                                 }}>
                                 <View style={{
                                     flex: 1,
@@ -267,7 +263,6 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
         }
         return (
             <>
-
                 <AddTodoComponent
                     BORDER_RADIUS={BORDER_RADIUS}
                     title={childTitle}

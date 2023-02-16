@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList, Platform, Alert } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
@@ -69,6 +69,21 @@ const FriendScreen = ({ navigation, route: { params } }) => {
         return date.toLocaleDateString("en-US")
     }
 
+    const areYouSureUnfriend = (friend, callback) => {
+        Alert.alert(
+            "Are you sure you want to unfriend?",
+            "",
+            [
+                {
+                    text: "Go back", onPress: () => { return false }, style: "cancel"
+                },
+                {
+                    text: "Unfriend", onPress: () => { rejectFriendRequest(friend, callback) }
+                }
+            ]
+        );
+    }
+
 
     const flatListItself = () => {
         return (
@@ -116,7 +131,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                                         marginBottom: 10, borderColor: '#67806D',
                                     }}
                                     onPress={() => {
-                                        rejectFriendRequest(item.friend, resetInputs)
+                                        areYouSureUnfriend(item.friend, resetInputs)
                                     }}>
                                     <Text style={[styles.textDefault,
                                     { padding: 3, fontSize: 12, color: '#67806D' }]}>Unfriend</Text>

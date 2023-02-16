@@ -110,7 +110,7 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
                 //width: selectedWidth,
             }}
             selectedTextStyle={
-                [styles.textDefaultSemiBold, { color: '#67806D' }]
+                [styles.textDefaultSemiBold, { color: 'white' }]
             }
             maxHeight={height * 0.25}
             renderItem={dropdownItem}

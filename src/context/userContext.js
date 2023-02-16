@@ -485,15 +485,16 @@ const purchaseItems = dispatch => async (itemArr, callback = null) => {
     }
 }
 
-const editSelf = dispatch => async (firstName, lastName, username, bio, callback) => {
+const editSelf = dispatch => async (firstName, lastName, username, bio, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.patch('/self_user', { firstName, lastName, username, bio })
         dispatch({ type: 'edit_self', payload: { firstName, lastName, username, bio } })
-        callback()
-
+        if (callback) { callback() }
     } catch (err) {
         console.log("Problem editing self user info:", err)
-        dispatch({ type: 'add_error', payload: 'Problem updating info!' })
+        alert("Something went wrong. Please try again later.")
+        if (errorCallback) { errorCallback() }
+        //dispatch({ type: 'add_error', payload: 'Problem updating info!' })
     }
 }
 

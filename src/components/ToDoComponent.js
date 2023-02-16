@@ -35,12 +35,7 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
             <View style={styles.editContainer}>
                 <TouchableOpacity
                     onPress={() => {
-                        if (show_error) {
-                            alert("Currently unable to edit todo items. Please check your internet connection")
-                        } else {
-                            editTask(item)
-                        }
-
+                        editTask(item)
                     }}>
                     <Icon
                         name="ellipsis-horizontal"

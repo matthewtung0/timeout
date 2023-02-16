@@ -31,6 +31,7 @@ const AddCategoryScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false)
     const [induceRender, setInduceRender] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
 
     var colorArr = []
     //let colors = JSON.parse(constants.colors)
@@ -51,13 +52,20 @@ const AddCategoryScreen = ({ navigation }) => {
     const unarchiveCallback = () => {
         alert("Category unarchived")
     }
+    const errorReset = () => {
+        setIsLoading(false)
+    }
 
     const areYouSureUnarchive = (category_id) => {
         Alert.alert(
             "Unarchive this category?",
             "",
             [{ text: "Go back", onPress: () => { }, style: "cancel" },
-            { text: "Unarchive", onPress: () => { changeArchiveCategory(category_id, false, unarchiveCallback) } }]
+            {
+                text: "Unarchive", onPress: () => {
+                    changeArchiveCategory(category_id, false, unarchiveCallback, errorReset)
+                }
+            }]
         );
     }
 
@@ -175,16 +183,11 @@ const AddCategoryScreen = ({ navigation }) => {
                                                 <View style={{ flex: 1, }}>
                                                     <TouchableOpacity
                                                         onPress={() => {
-                                                            if (userState.errorMessage) {
-                                                                alert("Currently unable to edit category. Please check your internet connection")
-                                                            } else {
-                                                                setSelectedCatId(item.category_id)
-                                                                setSelectedColorId(item.color_id)
-                                                                setSelectedName(item.category_name)
-                                                                setSelectedCategoryPublic(item.public)
-                                                                toggleModal()
-                                                            }
-
+                                                            setSelectedCatId(item.category_id)
+                                                            setSelectedColorId(item.color_id)
+                                                            setSelectedName(item.category_name)
+                                                            setSelectedCategoryPublic(item.public)
+                                                            toggleModal()
                                                         }}>
                                                         <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
                                                     </TouchableOpacity>
@@ -207,11 +210,7 @@ const AddCategoryScreen = ({ navigation }) => {
 
                         <TouchableOpacity style={[styles.addCategoryButton, { width: width / 1.8 }]}
                             onPress={() => {
-                                if (userState.errorMessage) {
-                                    alert("Currently unable to add new category. Please check your internet connection")
-                                } else {
-                                    toggleAddCategoryModal();
-                                }
+                                toggleAddCategoryModal();
                                 //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
                             }}>
                             <Text style={styles.addCategoryText}>Add Category</Text>
@@ -252,11 +251,7 @@ const AddCategoryScreen = ({ navigation }) => {
                                                         onPress={() => {
                                                             try {
                                                                 // UNARCHIVE THIS CATEGORY
-                                                                if (userState.errorMessage) {
-                                                                    alert("Currently unable to edit category. Please check your internet connection")
-                                                                } else {
-                                                                    areYouSureUnarchive(item.category_id)
-                                                                }
+                                                                areYouSureUnarchive(item.category_id)
 
                                                             } catch (e) {
                                                                 console.log(e)

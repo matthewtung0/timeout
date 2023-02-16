@@ -181,6 +181,10 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
                         <TouchableOpacity
                             style={[styles.submit, { width: width / 2.6, }]}
                             onPress={() => {
+                                if (categoryName == '') {
+                                    alert("Please enter a category name")
+                                    return;
+                                }
                                 if (!validateInputs()) { return }
                                 setIsLoading(true)
                                 addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs, errorReset)

@@ -31,6 +31,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const [cacheChecker, setCacheChecker] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingRefresh, setIsLoadingRefresh] = useState(false)
+    const [blankMessage, setBlankMessage] = useState('Nothing in your feed yet. Tell your friends to start getting productive!')
 
     useFocusEffect(
         useCallback(() => {
@@ -46,23 +47,27 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                 setOffset(0)
                 setVisibleOffset(0)
                 setCacheChecker({})
+                setBlankMessage('Nothing in your feed yet. Tell your friends to start getting productive!')
                 setAtEnd(false)
             }
         }, [state.friends])
-        //[refreshToken])
     )
 
     const getFeed = async () => {
         try {
             let temp = await fetchSessions(state.friends, 0, 10, true)
-            console.log("tEMP IS ", temp.map(req => { return req.user_id }))
+            console.log(temp)
 
             console.log(`Right now, offset is ${offset}`)
             setOffset(10)
             setVisibleOffset(10)
 
+            setBlankMessage('Nothing in your feed yet. Tell your friends to start getting productive!')
+
             setIsLoadingRefresh(false)
         } catch (err) {
+            setIsLoadingRefresh(false)
+            setBlankMessage("Problem retrieving friend feed. Please try again later")
             console.log("Problem retrieving feed", err)
         }
     }
@@ -200,7 +205,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                                 marginTop: 20, marginBottom: 10,
                                 color: '#67806D', fontSize: 16, textAlign: 'center', marginHorizontal: 10,
                             }]}>
-                                Nothing in your feed yet. Tell your friends to start getting productive!</Text>
+                                {blankMessage}</Text>
                         </View>
                         :
                         memoizedFlatList

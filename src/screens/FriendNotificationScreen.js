@@ -58,10 +58,14 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
         );
     }
 
+    const notificationErrorCallback = () => {
+        setIsLoading(false);
+    }
+
     const getNotifications = async () => {
         setIsLoading(true)
         var initialBatchSize = 10
-        await fetchNotificationsBatch(0, initialBatchSize, true);
+        await fetchNotificationsBatch(0, initialBatchSize, true, callback = null, notificationErrorCallback);
         setVisibleOffset(initialBatchSize)
         setOffset(initialBatchSize);
         setIsLoading(false)
@@ -131,7 +135,6 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
             }
         }, [])
     )
-    console.log("CACHE CHECKER IS ", params)
 
     const renderFooter = () => {
         return (

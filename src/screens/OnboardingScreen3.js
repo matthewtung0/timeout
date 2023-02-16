@@ -38,7 +38,7 @@ const OnboardingScreen3 = ({ navigation, route: { params } }) => {
                             marginTop: 20, marginHorizontal: 30, fontSize: 17,
                             textAlign: 'center',
                         }]}>
-                            Invite your friends to TimeOut and share what you've been up to! Strength in numbers or something like that.
+                            Invite your friends to Time Out and share what you've been up to!
                         </Text>
                     </View>
 

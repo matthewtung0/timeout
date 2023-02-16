@@ -109,6 +109,10 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         }
     }
 
+    const saveSessionErrorCallback = () => {
+        offBoard();
+    }
+
     const saveSession_TEMPDISABLE = async () => {
 
         try {
@@ -173,8 +177,8 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
     const offBoard = () => {
         setIsLoading(false)
-        offBoardCallback();
         toggleFunction()
+        offBoardCallback();
     }
 
     const checkTodoMatch = () => {
@@ -444,7 +448,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         onPress={() => {
                             if (!isLoading) {
                                 setIsLoading(true)
-                                saveSession(sessionObjFinal, saveSession_callback)
+                                saveSession(sessionObjFinal, saveSession_callback, saveSessionErrorCallback, false)
                             }
 
                         }}>

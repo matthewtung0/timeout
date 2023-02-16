@@ -5,11 +5,11 @@ import { Context as userContext } from '../context/userContext';
 import { defaultPfp } from './Images.js'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { differenceInMinutes } from 'date-fns';
+const constants = require('../components/constants.json')
 
 const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe = false }) => {
     const [pngData, setPngData] = useState(pfpSrc)
     const { fetchAvatarGeneral, state } = useContext(userContext)
-
     const pullPfp = async (forceRetrieve = false) => {
         try {
             //console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}, for id ${id}`)
@@ -20,6 +20,7 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
             //console.log(`Call to pull pfp took ${endTime - startTime} milliseconds`)
         } catch (err) {
             console.log(err)
+            setPngData(constants.defaultBase64)
         }
     }
 

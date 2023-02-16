@@ -374,10 +374,16 @@ const fetchMultipleMonths = dispatch => async (startTime, endTime, callback = nu
     }
 }
 
-const saveSession = dispatch => async (sessionObjFinal, callback = null, errorCallback = null) => {
-
+const saveSession = dispatch => async (sessionObjFinal, callback = null, errorCallback = null, fromCache) => {
     try {
-        const response = await timeoutApi.post('/save_session', [sessionObjFinal])
+        if (Array.isArray(sessionObjFinal)) {
+            var toSend = sessionObjFinal
+            console.log("SENDING ", toSend)
+        } else {
+            var toSend = [sessionObjFinal]
+            console.log("SENDING ", toSend)
+        }
+        const response = await timeoutApi.post('/save_session', toSend)
         console.log("Session save successful!")
         console.log("Response is ", response.data);
 
@@ -406,18 +412,18 @@ const saveSession = dispatch => async (sessionObjFinal, callback = null, errorCa
         console.log("Problem adding session", err)
 
         // save session to asyncStorage to enter later
-        /*var storedSessions = await AsyncStorage.getItem('storedSessions')
-        if (storedSessions) {
-            var temp = JSON.parse(storedSessions)
-            temp.push(sessionObjFinal)
-            storedSessions = JSON.stringify(temp)
-        } else {
-            storedSessions = JSON.stringify([sessionObjFinal])
+        if (!fromCache) {
+            var storedSessions = await AsyncStorage.getItem('storedSessions')
+            if (storedSessions) {
+                var temp = JSON.parse(storedSessions)
+                temp.push(sessionObjFinal)
+                storedSessions = JSON.stringify(temp)
+            } else {
+                storedSessions = JSON.stringify([sessionObjFinal])
+            }
+            await AsyncStorage.setItem('storedSessions', storedSessions);
+            alert("Sorry, we ran into a problem - your session will be saved when internet connection is stored")
         }
-        await AsyncStorage.setItem('storedSessions', storedSessions);*/
-
-        alert("Sorry, we ran into a problem - your session will be saved when internet connection is stored")
-
         if (errorCallback) { errorCallback() };
     }
 }
@@ -527,7 +533,7 @@ const fetchNotifications = dispatch => async () => {
     }
 }
 
-const fetchNotificationsBatch = dispatch => async (startIndex, initialNumToRetrieve, isInitial = false) => {
+const fetchNotificationsBatch = dispatch => async (startIndex, initialNumToRetrieve, isInitial = false, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.get(`/notifications`,
             { params: { startIndex: startIndex, numToRetrieve: initialNumToRetrieve, } })
@@ -540,6 +546,7 @@ const fetchNotificationsBatch = dispatch => async (startIndex, initialNumToRetri
 
     } catch (err) {
         console.log("problem fetching user notifications batch", err);
+        if (errorCallback) { errorCallback() }
     }
 }
 

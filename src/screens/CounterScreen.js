@@ -329,26 +329,26 @@ const CounterScreen = () => {
                     <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
                     { borderRightWidth: 0, }]}
                         onPress={() => { setSortBy(3) }}>
-                        <Text style={[styles.textDefault, styles.sortText]}>Most lifetime</Text>
+                        <Text style={[styles.textDefault, styles.sortText]}>Lifetime</Text>
                     </TouchableOpacity>
                     :
                     <TouchableOpacity style={[styles.sortContainer,
                     { borderRightWidth: 0, }]}
                         onPress={() => { setSortBy(3) }}>
-                        <Text style={[styles.textDefault, styles.sortText]}>Most lifetime</Text>
+                        <Text style={[styles.textDefault, styles.sortText]}>Lifetime</Text>
                     </TouchableOpacity>
                 }
                 {sortBy == 4 ?
                     <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
                     { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
                         onPress={() => { setSortBy(4) }}>
-                        <Text style={[styles.textDefault, styles.sortText]}>Most today</Text>
+                        <Text style={[styles.textDefault, styles.sortText]}>Today</Text>
                     </TouchableOpacity>
                     :
                     <TouchableOpacity style={[styles.sortContainer,
                     { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
                         onPress={() => { setSortBy(4) }}>
-                        <Text style={[styles.textDefault, styles.sortText]}>Most today</Text>
+                        <Text style={[styles.textDefault, styles.sortText]}>Today</Text>
                     </TouchableOpacity>
                 }
 
@@ -357,18 +357,18 @@ const CounterScreen = () => {
             {counterState.userCounters.length > 0 ?
 
                 <FlatList
-                    style={{ marginTop: 25, }}
+                    style={{ marginTop: 25, marginHorizontal: 20, borderWidth: 0, }}
                     //data={counterInfo}
                     data={sortedCounterInfo}
                     keyExtractor={(item) => item.counter_id}
                     renderItem={({ item }) => {
                         return (
                             <View
-                                style={[styles.categoryStyle, { marginBottom: 20, }]}>
+                                style={[{ marginBottom: 20, }]}>
                                 <View style={{ flexDirection: 'row', flex: 1, }}>
 
                                     <View style={{
-                                        flex: 4, borderWidth: 0, borderRadius: 5, marginStart: 10,
+                                        flex: 4, borderWidth: 0, borderRadius: 5, marginStart: 5,
                                         borderColor: constants.colors[item['color_id']]
                                     }}>
 
@@ -418,7 +418,8 @@ const CounterScreen = () => {
                                                     addTallyValidation(item.counter_id, 1, item['point_count'])
                                                 }}>
                                                 <View style={{ height: '100%', justifyContent: 'center' }}>
-                                                    <Text style={{ color: '#67806D', fontSize: 14, }}>+1</Text>
+                                                    <Text style={[styles.textDefaultBold,
+                                                    { color: '#67806D', fontSize: 14, }]}>+1</Text>
                                                 </View>
 
                                             </TouchableOpacity>
@@ -449,7 +450,7 @@ const CounterScreen = () => {
                                                     justifyContent: 'center',
                                                 }}>
                                                     <View style={{ flex: 1, alignItems: 'center' }}>
-                                                        <Text style={{ color: '#67806D', fontSize: 14, }}>custom</Text>
+                                                        <Text style={[styles.textDefault, { color: '#67806D', fontSize: 13, }]}>custom</Text>
                                                     </View>
                                                 </View>
 
@@ -465,7 +466,8 @@ const CounterScreen = () => {
                                             <TouchableOpacity
                                                 style={{
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10,
-                                                    paddingVertical: 5, backgroundColor: '#C0C0C0',
+                                                    paddingVertical: 5,
+                                                    backgroundColor: constants.colors[item['color_id']],
                                                     height: '100%', borderColor: '#A7BEAD'
                                                 }}
                                                 onPress={() => {
@@ -473,7 +475,8 @@ const CounterScreen = () => {
                                                     addTallyValidation(item.counter_id, -1, item['point_count'])
                                                 }}>
                                                 <View style={{ height: '100%', justifyContent: 'center', }}>
-                                                    <Text style={{ color: '#67806D', fontSize: 14, }}>-1</Text>
+                                                    <Text style={[styles.textDefaultBold,
+                                                    { color: '#67806D', fontSize: 14, }]}>-1</Text>
                                                 </View>
 
                                             </TouchableOpacity>
@@ -499,7 +502,8 @@ const CounterScreen = () => {
 
                                 <View style={{
                                     height: 2, borderWidth: 1, marginTop: 10,
-                                    borderColor: constants.colors[item['color_id']]
+                                    //borderColor: constants.colors[item['color_id']]
+                                    borderColor: '#DCDBDB',
                                 }}>
 
                                 </View>

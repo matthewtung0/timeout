@@ -56,6 +56,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
             setIsLoading(false)
 
         } catch (err) {
+            alert("Something went wrong. Please try again later")
             setIsLoading(false)
             console.log("Problem getting multiple month sessions", err)
         }

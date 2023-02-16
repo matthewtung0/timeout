@@ -102,7 +102,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
         return true
     }
 
-    const areYouSureDelete = (item_id, reset_msg) => {
+    const areYouSureDelete = (item_id, reset_msg, errorReset) => {
         Alert.alert(
             "Are you sure you want to delete this task?",
             "",
@@ -115,7 +115,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                 {
                     text: "Delete", onPress: () => {
                         setIsLoading(true)
-                        deleteTodoItem(item_id, resetInputsDelete)
+                        deleteTodoItem(item_id, resetInputsDelete, errorReset)
                     }
                 }
             ]
@@ -223,7 +223,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                             setIsLoading(true)
                             if (item) {
                                 if (toggleDelete) {
-                                    areYouSureDelete(item.item_id, "Task deleted successfully")
+                                    areYouSureDelete(item.item_id, "Task deleted successfully", errorReset)
                                 } else {
                                     editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
                                         resetInputsEdit, errorReset)

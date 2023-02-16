@@ -15,7 +15,7 @@ const HideKeyboard = ({ children }) => (
 );
 
 const EditProfileScreen = ({ navigation }) => {
-    const { state, fetchSelf, editSelf, clearResponseMessage } = useContext(UserContext)
+    const { state, editSelf, } = useContext(UserContext)
     const { changePassword } = useContext(AuthContext)
     const [firstName, setFirstName] = useState(state.firstName)
     const [lastName, setLastName] = useState(state.lastName)
@@ -31,6 +31,10 @@ const EditProfileScreen = ({ navigation }) => {
         setPasswordMessage('Password change successful!')
         setOldPassword('')
         setNewPassword('')
+    }
+
+    const errorReset = () => {
+        setIsLoading(false)
     }
 
     const areYouSure = () => {
@@ -140,7 +144,7 @@ const EditProfileScreen = ({ navigation }) => {
                             style={styles.signInBoxStyle}
                             onPress={() => {
                                 setIsLoading(true)
-                                editSelf(firstName, lastName, username, bio, updateInfoCallback)
+                                editSelf(firstName, lastName, username, bio, updateInfoCallback, errorReset)
                             }}>
                             <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Update Information</Text>
                         </TouchableOpacity>
@@ -179,7 +183,8 @@ const EditProfileScreen = ({ navigation }) => {
                         <TouchableOpacity
                             style={styles.signInBoxStyle}
                             onPress={() => {
-                                changePassword(oldPassword, newPassword, resultCallback)
+                                if (oldPassword == '' || newPassword == '') { return }
+                                changePassword(oldPassword, newPassword, resultCallback, errorReset)
                             }}>
                             <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Change Password</Text>
                         </TouchableOpacity>

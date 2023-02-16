@@ -231,12 +231,12 @@ const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDo
     } catch (err) {
         console.log("error editing todo item:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem editing the todo item.' })
-        alert("There was a problem editing the task. Please check your internet connection")
+        alert("There was a problem editing the task. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }
 
-const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
+const deleteTodoItem = dispatch => async (toDoId, callback = null, errorCallback = null) => {
     try {
         const response = await timeoutApi.delete('/todoItem', { params: { toDoId } })
         dispatch({ type: 'delete_todo_item', payload: { toDoId } })
@@ -244,6 +244,8 @@ const deleteTodoItem = dispatch => async (toDoId, callback = null) => {
     } catch (err) {
         console.log("error deleting todo item:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem deleting the todo item.' })
+        alert("There was a problem deleting the task. Please try again later.")
+        if (errorCallback) { errorCallback() }
     }
 }
 
@@ -257,7 +259,7 @@ const addCategory = dispatch => async (categoryName, timeSubmitted, chosenColor,
     } catch (err) {
         console.log("error adding category:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the category.' })
-        alert("There was a problem adding new category. Please check your internet connection")
+        alert("There was a problem adding new category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }
@@ -270,7 +272,7 @@ const deleteCategory = dispatch => async (categoryId, callback = null, errorCall
     } catch (err) {
         console.log("error deleting category:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem deleting the category.' })
-        alert("There was a problem deleting category. Please check your internet connection")
+        alert("There was a problem deleting category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }
@@ -283,7 +285,7 @@ const changePublicCategory = dispatch => async (categoryId, toPublic, callback =
     } catch (err) {
         console.log("error changing public status:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem toggling the public status.' })
-        alert("There was a problem updating category. Please check your internet connection")
+        alert("There was a problem updating category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 
@@ -298,7 +300,7 @@ const changeArchiveCategory = dispatch => async (categoryId, toArchive, callback
     } catch (err) {
         console.log("error changing archive status:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem toggling the archive status.' })
-        alert("There was a problem updating category. Please check your internet connection")
+        alert("There was a problem updating category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }
@@ -312,7 +314,7 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
     } catch (err) {
         console.log("error changing color id:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
-        alert("There was a problem updating category. Please check your internet connection")
+        alert("There was a problem updating category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }
@@ -337,7 +339,7 @@ const editCategory = dispatch => async ({ categoryId, newColorId, toPublic, toAr
     } catch (err) {
         console.log("error changing color id:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem changing the color.' })
-        alert("There was a problem updating category. Please check your internet connection")
+        alert("There was a problem updating category. Please try again later.")
         if (errorCallback) { errorCallback() }
     }
 }

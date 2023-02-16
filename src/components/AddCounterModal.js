@@ -74,6 +74,7 @@ const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='Counter'
+                                maxLength={30}
                                 placeholderTextColor={'gray'}
                                 autoCorrect={false}
                                 value={counterName}
@@ -167,6 +168,10 @@ const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }
                                     alert("Counter name already exists!")
                                     return
                                 }
+                                if (counterName == '') {
+                                    alert("Please enter a counter name")
+                                    return
+                                }
                                 setIsLoading(true)
                                 addCounter(counterName, new Date(), chosenColor, true, callback)
 
@@ -222,7 +227,6 @@ const styles = StyleSheet.create({
     parentContainer: {
         flex: 1,
         justifyContent: 'space-around',
-        backgroundColor: '#F9EAD3'
     },
     labelText: { marginLeft: 5, color: 'gray', },
     colorSquare: {

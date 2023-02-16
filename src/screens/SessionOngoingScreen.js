@@ -1,12 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
-    AppState, BackHandler
+    AppState, BackHandler, Platform
 } from 'react-native';
-import {
-    fromUnixTime, getUnixTime, isThisSecond,
-    differenceInMilliseconds, addSeconds
-} from 'date-fns';
+import { fromUnixTime, getUnixTime, isThisSecond, differenceInMilliseconds, addSeconds } from 'date-fns';
 import uuid from 'uuid-random'
 import Svg from 'react-native-svg';
 import Modal from 'react-native-modal'
@@ -108,7 +105,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
     const [endEarlyFlag, setEndEarlyFlag] = useState(false)
     const [sessionStartTime, setSessionStartTime] = useState('')
 
-    console.log("Rerendering ongoing .. ");
+    //console.log("Rerendering ongoing .. ");
 
 
     const handleReset = (endEarly = false, plannedNumMinutes) => {
@@ -162,7 +159,8 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
             'hardwareBackPress',
             backAction,
         );*/
-        NavigationBar.setVisibilityAsync("hidden");
+        if (Platform.OS === 'android') { NavigationBar.setVisibilityAsync("hidden"); }
+
         navigation.addListener('beforeRemove', (e) => {
 
             // Prevent default behavior of leaving the screen
@@ -192,7 +190,10 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
                 console.log('App has come to the foreground!');
             } else if (appState.current.match(/active|foreground/) &&
-                (nextAppState === 'inactive' || nextAppState === 'background')) {
+                (nextAppState === 'background')) {
+                //|| nextAppState === 'inactive'
+
+
                 // schedule a notification if app is being minimized
                 if (!onEnd) {
                     console.log(`SCHEDULING NOTIFICATION ${secLeft} seconds from now`)
@@ -282,11 +283,11 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Session complete",
-                body: `Your timer is up for ${activityName}. Go to TimeOut to rate how you did.`,
+                body: `Your timer is up for ${activityName}. Go to Time Out to rate how you did.`,
                 data: { data: 'goes here' },
             },
             trigger: { seconds: numSec },
-        });
+        })
     }
 
     const twoDigits = (num) => {

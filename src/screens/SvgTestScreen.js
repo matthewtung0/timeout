@@ -8,7 +8,11 @@ import AvatarMenuComponent from '../components/AvatarMenuComponent';
 import AvatarColorMenuComponent from '../components/AvatarColorMenuComponent';
 import colorWheelIcon from '../../assets/color_wheel_icon.png';
 
-import hairIconActive from '../../assets/hair_icon_active.png';
+import hairIconActive from '../../assets/item_hair.png';
+import hairIconInactive from '../../assets/item_hair-null.png';
+import faceIconActive from '../../assets/item_face.png';
+import faceIconInactive from '../../assets/item_face-null.png';
+
 
 import clothesIconInactive from '../../assets/clothes_icon_inactive.png';
 import clothesIconActive from '../../assets/clothes_icon_active.png';
@@ -644,17 +648,17 @@ const SvgTestScreen = ({ navigation }) => {
             svg: <Bg8_svg
                 colorFill={c} len={size} />, id: 'Bg8',
             owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg8').length > 0,
-            cost: 100,
+            cost: 1000,
         }, {
             svg: <Bg9_svg
                 colorFill={c} len={size} />, id: 'Bg9',
             owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg9').length > 0,
-            cost: 100,
+            cost: 1000,
         }, {
             svg: <Bg10_svg
                 colorFill={c} len={size} />, id: 'Bg10',
             owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg10').length > 0,
-            cost: 100,
+            cost: 1000,
         },]
     }
 
@@ -1326,7 +1330,7 @@ const SvgTestScreen = ({ navigation }) => {
                                 <Image
                                     style={{ height: 40, }}
                                     resizeMode="contain"
-                                    source={hairIconActive} />
+                                    source={activeMenu == 0 ? faceIconActive : faceIconInactive} />
                             </View>
 
                         </TouchableOpacity>
@@ -1339,7 +1343,7 @@ const SvgTestScreen = ({ navigation }) => {
                                 <Image
                                     style={{ height: 40, }}
                                     resizeMode="contain"
-                                    source={hairIconActive} />
+                                    source={activeMenu == 0.5 ? hairIconActive : hairIconInactive} />
                             </View>
 
                         </TouchableOpacity>

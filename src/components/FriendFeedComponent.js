@@ -134,7 +134,11 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
               <>
                 <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.activity_name}</Text>
                 <Text style={[styles.textDefault, { fontSize: 13, }]}> in category </Text>
-                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+                {item.public ?
+                  <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+                  :
+                  <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>[REDACTED]</Text>
+                }
               </>
             }
           </Text>

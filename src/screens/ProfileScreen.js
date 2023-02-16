@@ -41,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
     useFocusEffect(
         useCallback(() => {
             setIsLoading(true);
-            console.log("Getting feed with", state.idToView)
+            console.log(`Getting feed with ${state.idToView}`)
             if (state.idToView == state.user_id) {
                 setIsMe(true)
             } else {
@@ -86,6 +86,7 @@ const ProfileScreen = ({ navigation }) => {
 
         } catch (err) {
             console.log("Problem retrieving self feed", err)
+            setIsLoading(false)
         }
     }
     const togglePrivateVisible = () => { setPrivateVisible(!privateVisible) }
@@ -106,7 +107,17 @@ const ProfileScreen = ({ navigation }) => {
             if (response.data.username == state.username) {
                 setIsMe(true)
             }*/
-        } catch (err) { console.log("PROBLEM FETCHING STATS", err) }
+        } catch (err) {
+            setProfileStats({
+                totalTime: { hours: 0, minutes: 0, seconds: 0 },
+                totalTasks: 0,
+                last_signin: '',
+                bio: '',
+                time_created: '',
+                username: ''
+            })
+            console.log("PROBLEM FETCHING STATS", err)
+        }
     }
 
     const fetchCategoriesProfile = async (id, getPrivate) => {
@@ -114,19 +125,28 @@ const ProfileScreen = ({ navigation }) => {
             const response = await timeoutApi.get(`/category/${id}`, { params: { getPrivate } })
             setProfileCategories(response.data)
         } catch (err) {
+            setProfileCategories([])
             console.log("error fetching categories", err);
         }
     }
 
     const fetchInitialBatch = async (id) => {
         //const response = await timeoutApi.get(`/session/${id}`)
-        var initialNumToRetrieve = 10;
-        const response2 = await timeoutApi.get(`/sessionFeed`,
-            { params: { startIndex: 0, friends: [id], numToRetrieve: initialNumToRetrieve, } })
-        setOffset(offset + initialNumToRetrieve)
-        setProfileSessions([response2.data])
-        setVisibleOffset(visibleOffset + initialNumToRetrieve)
+        try {
+            var initialNumToRetrieve = 10;
+            const response2 = await timeoutApi.get(`/sessionFeed`,
+                { params: { startIndex: 0, friends: [id], numToRetrieve: initialNumToRetrieve, } })
+            setOffset(offset + initialNumToRetrieve)
+            setProfileSessions([response2.data])
+            setVisibleOffset(visibleOffset + initialNumToRetrieve)
+        } catch (err) {
+            console.log("Problem fetching initial batch")
+            setProfileSessions([[]])
+        }
+
     }
+
+
     console.log(`Offset is ${offset}`)
     console.log(`Visible offset is ${visibleOffset}`)
 
@@ -172,10 +192,6 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                     :
                     null
-                    /*<TouchableOpacity style={styles.loadMore}
-                        onPress={getData}>
-                        <Text style={styles.loadMoreText}>Load More</Text>
-                </TouchableOpacity>*/
                 }
             </View>
         )

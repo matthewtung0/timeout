@@ -61,7 +61,7 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                     <Text numberOfLines={1}
                         style={[styles.textDefaultMed, { color: '#013220', fontSize: 15, }]}>{session_obj.activity_name}</Text>
                 </View>
-                <View style={{ flex: 3, }}>
+                <View style={{ flex: 2.5, }}>
                     <View style={[styles.categoryStyle, { backgroundColor: bgColorHex, justifyContent: 'center', }]}>
                         <Text numberOfLines={1}
                             style={[styles.textDefault, { alignSelf: 'center', color: 'white', fontSize: 11, }]}>{session_obj.category_name}</Text>
@@ -123,13 +123,8 @@ const HistoryComponent = ({ session_obj, is_active }) => {
                                 width={STAR_SIZE} height={STAR_SIZE} />
                         }
                     </View>
-
-
                 </View>
-
             </View>
-
-
             <View
                 style={{
                     borderBottomColor: 'grey',

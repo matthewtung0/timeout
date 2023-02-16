@@ -7,7 +7,6 @@ import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as SessionContext } from '../context/SessionContext';
-const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
@@ -17,24 +16,25 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
     const INPUT_WIDTH = width * 0.65
     const BORDER_RADIUS = 20;
     const COLOR_WIDTH = 40;
-    const [editItem, setEditItem] = useState(null)
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
     const [publicToggle, setPublicToggle] = useState(selectedCategoryPublic)
-    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset, setHardReset } = useContext(SessionContext)
+    const { fetchMultipleMonths, resetCalendarDate, setOffsetFetched, setCurOffset } = useContext(SessionContext)
     const [archiveToggle, setArchiveToggle] = useState(false)
     const [deleteToggle, setDeleteToggle] = useState(false)
 
-    const { state: catState, changeArchiveCategory,
-        changeColorCategory, deleteCategory, changePublicCategory, editCategory } = useContext(CategoryContext)
+    const { state: catState, deleteCategory, editCategory } = useContext(CategoryContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
-
+    const errorReset = () => {
+        setIsLoading(false)
+    }
     const submitEdit = async () => {
         setIsLoading(true)
         // handle changes to public setting and color
         await editCategory({
             categoryId: selectedCatId,
-            newColorId: chosenColorId, toPublic: publicToggle, toArchive: archiveToggle, callback: editCallback
+            newColorId: chosenColorId, toPublic: publicToggle, toArchive: archiveToggle, callback: editCallback,
+            errorCallback: errorReset,
         })
     }
 
@@ -85,7 +85,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
         setIsArchiving(true)
         setIsLoading(true)
         try {
-            await deleteCategory(selectedCatId, deleteCallback)
+            await deleteCategory(selectedCatId, deleteCallback, errorReset)
         } catch (e) {
             console.log(e)
         }

@@ -10,21 +10,22 @@
         "c7": "#D7B4D5",
         "c8": "#F1BDD7",
         "c9": "#898E8C",
-        "c10": "#C0C0C0"
+        "c10": "#C0C0C0",
+        "c11": "#B3D8F2",
+        "c12": "#568FC1",
+        "c13": "#FCF297"
     },
     "defaultCategories": {
         "d0": "Work",
         "d1": "Study",
-        "d2": "Sleep",
-        "d3": "Project",
-        "d4": "Exercise",
-        "d5": "Chores",
-        "d6": "Meditation",
-        "d7": "Games",
-        "d8": "Social",
-        "d9": "Stream",
-        "d10": "Art",
-        "d11": "Self-care"
+        "d2": "Project",
+        "d3": "Exercise",
+        "d4": "Chores",
+        "d5": "Meditation",
+        "d6": "Games",
+        "d7": "Social",
+        "d8": "Art",
+        "d9": "Self-care"
     },
     "avatarItemsFree": {
         "face": {
