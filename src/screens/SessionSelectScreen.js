@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
-    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Button,
+    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform,
 } from 'react-native';
 import { Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
@@ -182,27 +182,26 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
                     <View
-                        onLayout={({ nativeEvent }) => {
-                            /*newRef?.current?.measure((x, y, pageX, pageY, width, height) => {
-                                console.log('Component width is: ' + width)
-                                console.log('Component height is: ' + height)
-                                console.log('Component x is: ' + x)
-                                console.log('Component y is: ' + y)
-                                console.log('Component pageX is: ' + pageX)
-                                console.log('Component pageY is: ' + pageY)
-                            })
-            
-                            newRef?.current?.measureInWindow((fx, fy, width, height, px, py) => {
-                                console.log('Component width is: ' + width)
-                                console.log('Component height is: ' + height)
-                                console.log('X offset to frame: ' + fx)
-                                console.log('Y offset to frame: ' + fy)
-                                console.log('X offset to page: ' + px)
-                                console.log('Y offset to page: ' + py)
-                            })*/
-                            console.log(nativeEvent.layout)
-
-                        }}
+                        //onLayout={({ nativeEvent }) => {
+                        /*newRef?.current?.measure((x, y, pageX, pageY, width, height) => {
+                            console.log('Component width is: ' + width)
+                            console.log('Component height is: ' + height)
+                            console.log('Component x is: ' + x)
+                            console.log('Component y is: ' + y)
+                            console.log('Component pageX is: ' + pageX)
+                            console.log('Component pageY is: ' + pageY)
+                        })
+        
+                        newRef?.current?.measureInWindow((fx, fy, width, height, px, py) => {
+                            console.log('Component width is: ' + width)
+                            console.log('Component height is: ' + height)
+                            console.log('X offset to frame: ' + fx)
+                            console.log('Y offset to frame: ' + fy)
+                            console.log('X offset to page: ' + px)
+                            console.log('Y offset to page: ' + py)
+                        })*/
+                        //console.log(nativeEvent.layout)
+                        //}}
                         style={{ borderColor: 'pink', borderWidth: 0, }}
                     >
                         <View style={{ position: 'absolute', flex: 1, borderWidth: 0, width: '100%', height: '100%', }}>
@@ -229,10 +228,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             }}
                             resizeMode="contain" />
                         <View
-                            onLayout={({ nativeEvent }) => {
-                                console.log("INSIDE", nativeEvent.layout)
-
-                            }}
                         >
                             <CircularSelector
                                 minSet={0}

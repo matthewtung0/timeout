@@ -15,8 +15,8 @@ const AvatarMenuComponent = ({ title, data, thumbnailData, hasItem, setIndexCall
     return (
         <View style={{ flex: 1, }}>
             <Text style={[styles.textDefault, {
-                marginHorizontal: FLATLIST_MARGIN, marginTop: 0, marginBottom: 10,
-                color: '#67806D',
+                marginHorizontal: FLATLIST_MARGIN, marginTop: 0, marginBottom: 5,
+                color: '#67806D', fontSize: 16,
             }]}>{title}</Text>
             <FlatList
                 style={{ marginHorizontal: FLATLIST_MARGIN, }}
@@ -98,7 +98,7 @@ const AvatarMenuComponent = ({ title, data, thumbnailData, hasItem, setIndexCall
                                 }
 
 
-                                {!item.owned ?
+                                {!item.owned && !pngOption ?
                                     <View style={{
                                         position: 'absolute', width: '100%', height: '100%',
                                         justifyContent: 'center',

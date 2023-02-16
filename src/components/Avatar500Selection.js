@@ -347,11 +347,6 @@ const backHairTypes = [[unknown], ponytail, down, pigtails, bunSide, ponytailHig
 
 
 // -------------------------------------- EYE MAKEUP  --------------------------------------
-const makeup1 = require('../../assets/avatar_500/13_eye_makeup/1_silver.png')
-const makeup2 = require('../../assets/avatar_500/13_eye_makeup/2_black.png')
-const makeup3 = require('../../assets/avatar_500/13_eye_makeup/3_gold.png')
-const makeup4 = require('../../assets/avatar_500/13_eye_makeup/4_pink.png')
-
 const eyeShadow1 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_1_black.png')
 const eyeShadow2 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_2_silver.png')
 const eyeShadow3 = require('../../assets/avatar_500/13_eye_makeup/1_eyeshadow_3_light-teal.png')
@@ -379,7 +374,6 @@ const cyberpunkLinesMakeupTypes = [cyberpunkLinesMakeup1, cyberpunkLinesMakeup2,
 
 const makeupTypes = [[unknown], eyeShadowTypes, cyberpunkLineTypes, cyberpunkLinesMakeupTypes]
 const makeupColors = ['black', 'silver', 'light-teal', 'teal', 'pink', 'gold']
-
 
 
 
@@ -661,6 +655,7 @@ const bg3 = require('../../assets/avatar_500/20_BACKGROUND/3_yellow.png')
 const bg4 = require('../../assets/avatar_500/20_BACKGROUND/4_green.png')
 const bg5 = require('../../assets/avatar_500/20_BACKGROUND/5_blue.png')
 const bg6 = require('../../assets/avatar_500/20_BACKGROUND/6_purple.png')
+const bg6_1 = require('../../assets/avatar_500/20_BACKGROUND/6_transgender.png')
 const bg7 = require('../../assets/avatar_500/20_BACKGROUND/7_genderfluid.png')
 const bg8 = require('../../assets/avatar_500/20_BACKGROUND/7_lgbtq.png')
 const bg9 = require('../../assets/avatar_500/20_BACKGROUND/8_lesbian.png')
@@ -671,7 +666,7 @@ const bg13 = require('../../assets/avatar_500/20_BACKGROUND/10_genderqueer.png')
 const bg14 = require('../../assets/avatar_500/20_BACKGROUND/10_pansexual.png')
 const bg15 = require('../../assets/avatar_500/20_BACKGROUND/11_asexual.png')
 
-const bgTypes = [[bg1], [bg2], [bg3], [bg4], [bg5], [bg6], [bg7], [bg8],
+const bgTypes = [[bg1], [bg2], [bg3], [bg4], [bg5], [bg6], [bg6_1], [bg7], [bg8],
 [bg9], [bg10], [bg11], [bg12], [bg13], [bg14], [bg15],]
 
 

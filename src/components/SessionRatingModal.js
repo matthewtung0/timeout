@@ -102,7 +102,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         }
 
         try {
-            await addPoints(userState.user_id, 100000, offBoard())
+            await addPoints(userState.user_id, 100, offBoard())
         } catch (err) {
             console.log("Problem adding points")
             offBoard();

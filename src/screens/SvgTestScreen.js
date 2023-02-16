@@ -4,7 +4,6 @@ import * as DIR from '../components/Avatar500Selection';
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
-import Header from '../components/Header';
 import AvatarMenuComponent from '../components/AvatarMenuComponent';
 import AvatarColorMenuComponent from '../components/AvatarColorMenuComponent';
 import colorWheelIcon from '../../assets/color_wheel_icon.png';
@@ -24,7 +23,6 @@ import pointSquares from '../../assets/point_squares.png';
 
 
 import {
-    SvgTestScreen2,
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
     Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
     Hairfront1_svg, Hairfront2_svg, Hairfront3_svg, Hairfront4_svg, Hairfront5_svg, Hairfront6_svg,
@@ -734,7 +732,7 @@ const SvgTestScreen = ({ navigation }) => {
     const [eyePickerVisible, setEyePickerVisible] = useState(false)
     const [eyeMakeupPickerVisible, setEyeMakeupPickerVisible] = useState(false)
     const [eyebrowPickerVisible, setEyebrowPickerVisible] = useState(false)
-    const [backgroundPickerVisible, setBackgroundPickerVisible] = useState(false)
+    const [backgroundPickerVisible, setBackgroundPickerVisible] = useState(true)
     const [hairPickerVisible, setHairPickerVisible] = useState(true)
     const [skinPickerVisible, setSkinPickerVisible] = useState(true)
     const [piercingPickerVisible, setPiercingPickerVisible] = useState(false)
@@ -924,7 +922,6 @@ const SvgTestScreen = ({ navigation }) => {
             await fetchAvatarItemsOwned();
         }
         setTotalUnowned(0);
-        console.log("AVATAR SUCCESSFULLY SAVED")
         alert("Avatar successfully saved!")
         setIsLoading(false)
     }
@@ -1191,9 +1188,6 @@ const SvgTestScreen = ({ navigation }) => {
         })
     }
 
-    //console.log("total unowned: ", totalUnowned)
-    console.log("Eye index is ", eyeIndex)
-
     return (
         <>
             <View style={{ marginTop: 80, }}>
@@ -1320,17 +1314,24 @@ const SvgTestScreen = ({ navigation }) => {
                 {colorMenuActive ?
                     <View>
                         <View style={{ flex: 1, backgroundColor: '#CAE3B7', }} />
-                        {/*<TouchableOpacity
-                            style={{
-                                backgroundColor: '#A7BEAD', width: 40, height: 40, borderRadius: 25,
-                                justifyContent: 'center', alignItems: 'center',
-                            }}
-                        onPress={() => { toggleColorMenuActive() }}><Text>X</Text></TouchableOpacity>*/}
                     </View>
                     :
                     <View style={{ flex: 0.2, flexDirection: 'row', justifyContent: 'space-around' }}>
                         <TouchableOpacity style={[activeMenu == 0 ? styles.itemSelectorNewActive :
-                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(0) }}>
+                            styles.itemSelectorNew, { width: width / 5 }]} onPress={() => { setActiveMenu(0) }}>
+                            <View style={{
+                                paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <Image
+                                    style={{ height: 40, }}
+                                    resizeMode="contain"
+                                    source={hairIconActive} />
+                            </View>
+
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[activeMenu == 0.5 ? styles.itemSelectorNewActive :
+                            styles.itemSelectorNew, { width: width / 5 }]} onPress={() => { setActiveMenu(0.5) }}>
                             <View style={{
                                 paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
                                 alignContent: 'center'
@@ -1343,7 +1344,7 @@ const SvgTestScreen = ({ navigation }) => {
 
                         </TouchableOpacity>
                         <TouchableOpacity style={[activeMenu == 1 ? styles.itemSelectorNewActive :
-                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(1) }}>
+                            styles.itemSelectorNew, { width: width / 5 }]} onPress={() => { setActiveMenu(1) }}>
                             <View style={{
                                 paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
                                 alignContent: 'center'
@@ -1355,7 +1356,7 @@ const SvgTestScreen = ({ navigation }) => {
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={[activeMenu == 2 ? styles.itemSelectorNewActive :
-                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(2) }}>
+                            styles.itemSelectorNew, { width: width / 5 }]} onPress={() => { setActiveMenu(2) }}>
                             <View style={{
                                 paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
                                 alignContent: 'center'
@@ -1367,7 +1368,7 @@ const SvgTestScreen = ({ navigation }) => {
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={[activeMenu == 3 ? styles.itemSelectorNewActive :
-                            styles.itemSelectorNew, { width: width / 4 }]} onPress={() => { setActiveMenu(3) }}>
+                            styles.itemSelectorNew, { width: width / 5 }]} onPress={() => { setActiveMenu(3) }}>
                             <View style={{
                                 paddingVertical: 0, justifyContent: 'center', alignItems: 'center',
                                 alignContent: 'center'
@@ -1404,7 +1405,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1453,7 +1454,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1614,216 +1615,208 @@ const SvgTestScreen = ({ navigation }) => {
                     </View>
                     : null}
 
-                {activeMenu == 1 ?
+                {activeMenu == 0.5 ?
                     <View style={{ flex: 1 }}>
+
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
                                     <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
-                                            if (accessoriesPickerVisible) {
-                                                setAccessoriesPickerVisible(false)
-                                                setHairAccessoriesPickerVisible(true)
-                                            } else if (piercingPickerVisible) {
-                                                setPiercingPickerVisible(false)
-                                                setAccessoriesPickerVisible(true)
-                                            } else if (glassesPickerVisible) {
-                                                setGlassesPickerVisible(false)
-                                                setPiercingPickerVisible(true)
-                                            } else if (backgroundPickerVisible) {
-                                                setBackgroundPickerVisible(false)
-                                                setGlassesPickerVisible(true)
+                                            if (hairFrontPickerVisible) {
+                                                setHairFrontPickerVisible(false)
+                                                setHairPickerVisible(true)
+                                            } else if (hairBackPickerVisible) {
+                                                setHairBackPickerVisible(false)
+                                                setHairFrontPickerVisible(true)
+                                            } else if (hairSidePickerVisible) {
+                                                setHairSidePickerVisible(false)
+                                                setHairBackPickerVisible(true)
                                             }
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
 
                                     <View
-                                        style={hairAccessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                        style={hairPickerVisible ? [styles.subItemSelectorActive] :
                                             styles.subItemSelector}>
 
                                     </View>
                                     <View
-                                        style={accessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                        style={hairFrontPickerVisible ? [styles.subItemSelectorActive] :
                                             styles.subItemSelector}>
 
                                     </View>
                                     <View
-                                        style={piercingPickerVisible ? [styles.subItemSelectorActive] :
+                                        style={hairBackPickerVisible ? [styles.subItemSelectorActive] :
                                             styles.subItemSelector}>
 
                                     </View>
                                     <View
-                                        style={glassesPickerVisible ? [styles.subItemSelectorActive] :
-                                            styles.subItemSelector}>
-
-                                    </View>
-                                    <View
-                                        style={backgroundPickerVisible ? [styles.subItemSelectorActive] :
+                                        style={hairSidePickerVisible ? [styles.subItemSelectorActive] :
                                             styles.subItemSelector}>
 
                                     </View>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            if (glassesPickerVisible) {
-                                                setGlassesPickerVisible(false)
-                                                setBackgroundPickerVisible(true)
-                                            } else if (piercingPickerVisible) {
-                                                setPiercingPickerVisible(false)
-                                                setGlassesPickerVisible(true)
-                                            } else if (accessoriesPickerVisible) {
-                                                setAccessoriesPickerVisible(false)
-                                                setPiercingPickerVisible(true)
-                                            } else if (hairAccessoriesPickerVisible) {
-                                                setHairAccessoriesPickerVisible(false)
-                                                setAccessoriesPickerVisible(true)
+                                            if (hairPickerVisible) {
+                                                setHairPickerVisible(false)
+                                                setHairFrontPickerVisible(true)
+                                            } else if (hairFrontPickerVisible) {
+                                                setHairFrontPickerVisible(false)
+                                                setHairBackPickerVisible(true)
+                                            } else if (hairBackPickerVisible) {
+                                                setHairBackPickerVisible(false)
+                                                setHairSidePickerVisible(true)
                                             }
                                         }}
                                         style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
-
                                 </View>
                                 : null}
 
                             <View style={{ flex: 1, }}>
-                                {/* hair accessories */}
-                                {hairAccessoriesPickerVisible ? <>
-                                    {!colorMenuActive ?
-                                        <AvatarMenuComponent
-                                            title={"Hair Accessories"}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                hair_accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            noItemOption={true}
-                                            hasItem={hasHairAccessories}
-                                            setHasItemCallback={setHasHairAccessories}
-                                            setIndexCallback={setHairAccessoriesIndex}
-                                            itemIndex={hairAccessoriesIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedHairAccessories}
-                                            setUnownedCallback={setUnownedHairAccessories}
-                                        />
-                                        :
-                                        <AvatarColorMenuComponent
-                                            title={"Hair Accessory Colors"}
-                                            usesPng={false}
-                                            data={underlayer_colors}
-                                            setIndexCallback={setHairAccessoriesColorIndex}
-                                            colorIndex={hairAccessoriesColorIndex}
-                                        />
-                                    }
 
-
-                                </> : null}
-
-                                {/* accessories */}
-                                {accessoriesPickerVisible ?
+                                {/* hair base */}
+                                {hairPickerVisible ?
                                     <>
-                                        <AvatarMenuComponent
-                                            title={"General Accessories"}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            noItemOption={true}
-                                            hasItem={hasAccessories}
-                                            setHasItemCallback={setHasAccessories}
-                                            setIndexCallback={setAccessoriesIndex}
-                                            itemIndex={accessoriesIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedGenAccessories}
-                                            setUnownedCallback={setUnownedGenAccessories}
-                                        />
-                                    </>
-                                    : null}
-                                {/* background */}
-                                {backgroundPickerVisible ?
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair base"}
+                                                data={DIR.hairTypes}
+                                                noItemOption={false}
+                                                pngOption={true}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                //hasItem={}
+                                                //setHasItemCallback={}
+                                                setIndexCallback={setHairIndex}
+                                                itemIndex={hairIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairBase}
+                                                setUnownedCallback={setUnownedHairBase}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
+                                                data={hair_colors}
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
+
+
+                                    </> : null}
+
+                                {/* hair front */}
+                                {hairFrontPickerVisible ?
                                     <>
-                                        <AvatarMenuComponent
-                                            title={"Background"}
-                                            data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
-                                            //hasItemCallback={}
-                                            setIndexCallback={setBackgroundIndex}
-                                            itemIndex={backgroundIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedBackground}
-                                            setUnownedCallback={setUnownedBackground}
-                                        />
-                                    </>
-                                    : null}
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair front"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_front_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairFront}
+                                                setHasItemCallback={setHasHairFront}
+                                                setIndexCallback={setHairFrontIndex}
+                                                itemIndex={hairFrontIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairFront}
+                                                setUnownedCallback={setUnownedHairFront}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
+                                                data={hair_colors}
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
+                                    </> : null}
 
-                                {piercingPickerVisible ? <>
-                                    {!colorMenuActive ?
-                                        <AvatarMenuComponent
-                                            title={"Piercings"}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                piercing_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            thumbnailData={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                piercing_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)
-                                            )}
-                                            noItemOption={true}
-                                            hasItem={hasPiercings}
-                                            setHasItemCallback={setHasPiercings}
-                                            setIndexCallback={setPiercingIndex}
-                                            itemIndex={piercingIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedPiercings}
-                                            setUnownedCallback={setUnownedPiercings}
-                                        />
-                                        :
-                                        <AvatarColorMenuComponent
-                                            title={"Piercing Colors"}
-                                            usesPng={false}
-                                            data={piercing_colors}
-                                            setIndexCallback={setPiercingColorIndex}
-                                            colorIndex={piercingColorIndex}
-                                        />
-                                    }
-                                </> : null}
+                                {/* hair back */}
+                                {hairBackPickerVisible ?
+                                    <>
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair back"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_back_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairBack}
+                                                setHasItemCallback={setHasHairBack}
+                                                setIndexCallback={setHairBackIndex}
+                                                itemIndex={hairBackIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairBack}
+                                                setUnownedCallback={setUnownedHairBack}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
+                                                data={hair_colors}
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
+                                    </> : null}
 
-                                {glassesPickerVisible ? <>
-                                    {!colorMenuActive ?
-                                        <AvatarMenuComponent
-                                            title={"Glasses"}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                DIR.glassesTypes)}
-                                            noItemOption={true}
-                                            pngOption={true}
-                                            thumbnailSize={THUMBNAIL_SIZE}
-                                            hasItem={hasGlasses}
-                                            setHasItemCallback={setHasGlasses}
-                                            setIndexCallback={setGlassesIndex}
-                                            itemIndex={glassesIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedGlasses}
-                                            setUnownedCallback={setUnownedGlasses}
-                                        />
-                                        :
-                                        <AvatarColorMenuComponent
-                                            title={"Glasses Colors"}
-                                            usesPng={false}
-                                            data={piercing_colors}
-                                            setIndexCallback={setGlassesColorIndex}
-                                            colorIndex={glassesColorIndex}
-                                        />
-                                    }
-                                </> : null}
+                                {/* hair side */}
+                                {hairSidePickerVisible ?
+                                    <>
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Hair side"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    hair_side_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                pngOption={false}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                hasItem={hasHairSide}
+                                                setHasItemCallback={setHasHairSide}
+                                                setIndexCallback={setHairSideIndex}
+                                                itemIndex={hairSideIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedHairSide}
+                                                setUnownedCallback={setUnownedHairSide}
+                                            />
+                                            :
+                                            <AvatarColorMenuComponent
+                                                title={"Hair colors"}
+                                                usesPng={false}
+                                                data={hair_colors}
+                                                setIndexCallback={setHairColorIndex}
+                                                colorIndex={hairColorIndex}
+                                            />
+                                        }
+                                    </> : null}
                             </View>
+
                         </View>
                     </View>
                     : null}
 
-                {activeMenu == 2 ?
+                {activeMenu == 1 ?
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'column', flex: 1, }}>
                             {!colorMenuActive ?
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, }}>
                                     <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
                                             if (topPickerVisible) {
@@ -1836,7 +1829,7 @@ const SvgTestScreen = ({ navigation }) => {
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -1869,17 +1862,15 @@ const SvgTestScreen = ({ navigation }) => {
                                         style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
-
                                 </View>
                                 : null}
 
                             <View style={{ flex: 1, }}>
                                 {/* underlayer */}
-
                                 {underlayerPickerVisible ?
                                     <>
                                         {!colorMenuActive ?
@@ -1968,6 +1959,190 @@ const SvgTestScreen = ({ navigation }) => {
                                             />
                                         }
                                     </> : null}
+
+
+
+                            </View>
+                        </View>
+                    </View>
+                    : null}
+
+                {activeMenu == 2 ?
+                    <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'column', flex: 1, }}>
+                            {!colorMenuActive ?
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
+                                    <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
+                                        onPress={() => {
+                                            if (accessoriesPickerVisible) {
+                                                setAccessoriesPickerVisible(false)
+                                                setHairAccessoriesPickerVisible(true)
+                                            } else if (piercingPickerVisible) {
+                                                setPiercingPickerVisible(false)
+                                                setAccessoriesPickerVisible(true)
+                                            } else if (glassesPickerVisible) {
+                                                setGlassesPickerVisible(false)
+                                                setPiercingPickerVisible(true)
+                                            }
+                                        }}>
+                                        <Icon
+                                            name='caret-back'
+                                            size={28}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
+
+                                    <View
+                                        style={hairAccessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={accessoriesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={piercingPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <View
+                                        style={glassesPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            if (piercingPickerVisible) {
+                                                setPiercingPickerVisible(false)
+                                                setGlassesPickerVisible(true)
+                                            } else if (accessoriesPickerVisible) {
+                                                setAccessoriesPickerVisible(false)
+                                                setPiercingPickerVisible(true)
+                                            } else if (hairAccessoriesPickerVisible) {
+                                                setHairAccessoriesPickerVisible(false)
+                                                setAccessoriesPickerVisible(true)
+                                            }
+                                        }}
+                                        style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
+                                        <Icon
+                                            name='caret-forward'
+                                            size={28}
+                                            type='ionicon'
+                                            color='#B3B2B3' />
+                                    </TouchableOpacity>
+
+                                </View>
+                                : null}
+
+                            <View style={{ flex: 1, }}>
+                                {/* hair accessories */}
+                                {hairAccessoriesPickerVisible ? <>
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Hair Accessories"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                hair_accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            noItemOption={true}
+                                            hasItem={hasHairAccessories}
+                                            setHasItemCallback={setHasHairAccessories}
+                                            setIndexCallback={setHairAccessoriesIndex}
+                                            itemIndex={hairAccessoriesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedHairAccessories}
+                                            setUnownedCallback={setUnownedHairAccessories}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Hair Accessory Colors"}
+                                            usesPng={false}
+                                            data={underlayer_colors}
+                                            setIndexCallback={setHairAccessoriesColorIndex}
+                                            colorIndex={hairAccessoriesColorIndex}
+                                        />
+                                    }
+
+
+                                </> : null}
+
+                                {/* accessories */}
+                                {accessoriesPickerVisible ?
+                                    <>
+                                        <AvatarMenuComponent
+                                            title={"General Accessories"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            noItemOption={true}
+                                            hasItem={hasAccessories}
+                                            setHasItemCallback={setHasAccessories}
+                                            setIndexCallback={setAccessoriesIndex}
+                                            itemIndex={accessoriesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedGenAccessories}
+                                            setUnownedCallback={setUnownedGenAccessories}
+                                        />
+                                    </>
+                                    : null}
+
+                                {/* piercings */}
+                                {piercingPickerVisible ? <>
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Piercings"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                piercing_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                            thumbnailData={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                piercing_thumbnail_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)
+                                            )}
+                                            noItemOption={true}
+                                            hasItem={hasPiercings}
+                                            setHasItemCallback={setHasPiercings}
+                                            setIndexCallback={setPiercingIndex}
+                                            itemIndex={piercingIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedPiercings}
+                                            setUnownedCallback={setUnownedPiercings}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Piercing Colors"}
+                                            usesPng={false}
+                                            data={piercing_colors}
+                                            setIndexCallback={setPiercingColorIndex}
+                                            colorIndex={piercingColorIndex}
+                                        />
+                                    }
+                                </> : null}
+
+                                {/* glasses */}
+                                {glassesPickerVisible ? <>
+                                    {!colorMenuActive ?
+                                        <AvatarMenuComponent
+                                            title={"Glasses"}
+                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                DIR.glassesTypes)}
+                                            noItemOption={true}
+                                            pngOption={true}
+                                            thumbnailSize={THUMBNAIL_SIZE}
+                                            hasItem={hasGlasses}
+                                            setHasItemCallback={setHasGlasses}
+                                            setIndexCallback={setGlassesIndex}
+                                            itemIndex={glassesIndex}
+                                            updateUnownedCallback={updateUnowned}
+                                            unownedIndex={unownedGlasses}
+                                            setUnownedCallback={setUnownedGlasses}
+                                        />
+                                        :
+                                        <AvatarColorMenuComponent
+                                            title={"Glasses Colors"}
+                                            usesPng={false}
+                                            data={piercing_colors}
+                                            setIndexCallback={setGlassesColorIndex}
+                                            colorIndex={glassesColorIndex}
+                                        />
+                                    }
+                                </> : null}
                             </View>
                         </View>
 
@@ -1982,61 +2157,26 @@ const SvgTestScreen = ({ navigation }) => {
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
                                     <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
-                                            if (hairFrontPickerVisible) {
-                                                setHairFrontPickerVisible(false)
-                                                setHairPickerVisible(true)
-                                            } else if (hairBackPickerVisible) {
-                                                setHairBackPickerVisible(false)
-                                                setHairFrontPickerVisible(true)
-                                            } else if (hairSidePickerVisible) {
-                                                setHairSidePickerVisible(false)
-                                                setHairBackPickerVisible(true)
-                                            }
                                         }}>
                                         <Icon
                                             name='caret-back'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
 
                                     <View
-                                        style={hairPickerVisible ? [styles.subItemSelectorActive] :
-                                            styles.subItemSelector}>
-
-                                    </View>
-                                    <View
-                                        style={hairFrontPickerVisible ? [styles.subItemSelectorActive] :
-                                            styles.subItemSelector}>
-
-                                    </View>
-                                    <View
-                                        style={hairBackPickerVisible ? [styles.subItemSelectorActive] :
-                                            styles.subItemSelector}>
-
-                                    </View>
-                                    <View
-                                        style={hairSidePickerVisible ? [styles.subItemSelectorActive] :
+                                        style={backgroundPickerVisible ? [styles.subItemSelectorActive] :
                                             styles.subItemSelector}>
 
                                     </View>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            if (hairPickerVisible) {
-                                                setHairPickerVisible(false)
-                                                setHairFrontPickerVisible(true)
-                                            } else if (hairFrontPickerVisible) {
-                                                setHairFrontPickerVisible(false)
-                                                setHairBackPickerVisible(true)
-                                            } else if (hairBackPickerVisible) {
-                                                setHairBackPickerVisible(false)
-                                                setHairSidePickerVisible(true)
-                                            }
                                         }}
                                         style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
                                             name='caret-forward'
-                                            size={26}
+                                            size={28}
                                             type='ionicon'
                                             color='#B3B2B3' />
                                     </TouchableOpacity>
@@ -2044,124 +2184,24 @@ const SvgTestScreen = ({ navigation }) => {
                                 : null}
 
                             <View style={{ flex: 1, }}>
+                                {/* background */}
+                                {backgroundPickerVisible ?
+                                    <>
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Background"}
+                                                data={bg_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR)}
+                                                //hasItemCallback={}
+                                                setIndexCallback={setBackgroundIndex}
+                                                itemIndex={backgroundIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedBackground}
+                                                setUnownedCallback={setUnownedBackground}
+                                            />
+                                            : null}
+                                    </>
+                                    : null}
 
-                                {/* hair base */}
-                                {hairPickerVisible ?
-                                    <>
-                                        {!colorMenuActive ?
-                                            <AvatarMenuComponent
-                                                title={"Hair base"}
-                                                data={DIR.hairTypes}
-                                                noItemOption={false}
-                                                pngOption={true}
-                                                thumbnailSize={THUMBNAIL_SIZE}
-                                                //hasItem={}
-                                                //setHasItemCallback={}
-                                                setIndexCallback={setHairIndex}
-                                                itemIndex={hairIndex}
-                                                updateUnownedCallback={updateUnowned}
-                                                unownedIndex={unownedHairBase}
-                                                setUnownedCallback={setUnownedHairBase}
-                                            />
-                                            :
-                                            <AvatarColorMenuComponent
-                                                title={"Hair base colors"}
-                                                usesPng={false}
-                                                data={hair_colors}
-                                                setIndexCallback={setHairColorIndex}
-                                                colorIndex={hairColorIndex}
-                                            />
-                                        }
-
-
-                                    </> : null}
-                                {/* hair front */}
-                                {hairFrontPickerVisible ?
-                                    <>
-                                        {!colorMenuActive ?
-                                            <AvatarMenuComponent
-                                                title={"Hair front"}
-                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                    hair_front_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                                noItemOption={true}
-                                                pngOption={false}
-                                                thumbnailSize={THUMBNAIL_SIZE}
-                                                hasItem={hasHairFront}
-                                                setHasItemCallback={setHasHairFront}
-                                                setIndexCallback={setHairFrontIndex}
-                                                itemIndex={hairFrontIndex}
-                                                updateUnownedCallback={updateUnowned}
-                                                unownedIndex={unownedHairFront}
-                                                setUnownedCallback={setUnownedHairFront}
-                                            />
-                                            :
-                                            <AvatarColorMenuComponent
-                                                title={"Hair colors"}
-                                                usesPng={false}
-                                                data={hair_colors}
-                                                setIndexCallback={setHairColorIndex}
-                                                colorIndex={hairColorIndex}
-                                            />
-                                        }
-                                    </> : null}
-                                {/* hair back */}
-                                {hairBackPickerVisible ?
-                                    <>
-                                        {!colorMenuActive ?
-                                            <AvatarMenuComponent
-                                                title={"Hair back"}
-                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                    hair_back_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                                noItemOption={true}
-                                                pngOption={false}
-                                                thumbnailSize={THUMBNAIL_SIZE}
-                                                hasItem={hasHairBack}
-                                                setHasItemCallback={setHasHairBack}
-                                                setIndexCallback={setHairBackIndex}
-                                                itemIndex={hairBackIndex}
-                                                updateUnownedCallback={updateUnowned}
-                                                unownedIndex={unownedHairBack}
-                                                setUnownedCallback={setUnownedHairBack}
-                                            />
-                                            :
-                                            <AvatarColorMenuComponent
-                                                title={"Hair colors"}
-                                                usesPng={false}
-                                                data={hair_colors}
-                                                setIndexCallback={setHairColorIndex}
-                                                colorIndex={hairColorIndex}
-                                            />
-                                        }
-                                    </> : null}
-                                {/* hair side */}
-                                {hairSidePickerVisible ?
-                                    <>
-                                        {!colorMenuActive ?
-                                            <AvatarMenuComponent
-                                                title={"Hair side"}
-                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                    hair_side_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                                noItemOption={true}
-                                                pngOption={false}
-                                                thumbnailSize={THUMBNAIL_SIZE}
-                                                hasItem={hasHairSide}
-                                                setHasItemCallback={setHasHairSide}
-                                                setIndexCallback={setHairSideIndex}
-                                                itemIndex={hairSideIndex}
-                                                updateUnownedCallback={updateUnowned}
-                                                unownedIndex={unownedHairSide}
-                                                setUnownedCallback={setUnownedHairSide}
-                                            />
-                                            :
-                                            <AvatarColorMenuComponent
-                                                title={"Hair colors"}
-                                                usesPng={false}
-                                                data={hair_colors}
-                                                setIndexCallback={setHairColorIndex}
-                                                colorIndex={hairColorIndex}
-                                            />
-                                        }
-                                    </> : null}
                             </View>
 
                         </View>
@@ -2170,14 +2210,14 @@ const SvgTestScreen = ({ navigation }) => {
 
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', borderWidth: 0.5, borderColor: 'gray', }}>
+            <View style={{ flex: 1, flexDirection: 'row', borderTopWidth: 0.5, borderColor: 'gray', }}>
                 <View style={{ flex: 1 }}></View>
                 <View style={{ flex: 2, }}
                     opacity={isLoading ? 0.3 : 1}>
                     <TouchableOpacity
                         style={{
-                            justifyContent: 'center', marginVertical: 20,
-                            paddingVertical: 10, borderRadius: 5, backgroundColor: '#ABC57E'
+                            justifyContent: 'center', marginVertical: 15,
+                            paddingVertical: 15, borderRadius: 15, backgroundColor: '#ABC57E'
                         }}
                         disabled={isLoading}
                         onPress={() => {
@@ -2187,8 +2227,8 @@ const SvgTestScreen = ({ navigation }) => {
 
                         }}>
                         {totalUnowned > 0 ?
-                            <Text style={[styles.textDefault, { textAlign: 'center', fontSize: 14, color: 'white', }]}>Redeem and Save Avatar</Text> :
-                            <Text style={[styles.textDefault, { textAlign: 'center', fontSize: 14, color: 'white' }]}>Save Avatar</Text>}
+                            <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 14, color: 'white', }]}>Redeem and Save Avatar</Text> :
+                            <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 16, color: 'white' }]}>Save Avatar</Text>}
                     </TouchableOpacity>
                 </View>
                 <View style={{ flex: 1 }}></View>
@@ -2199,7 +2239,13 @@ const SvgTestScreen = ({ navigation }) => {
 
             <TouchableOpacity
                 style={styles.backButton}
-                onPress={() => { areYouSureGoBack() }}>
+                onPress={() => {
+                    if (colorMenuActive) {
+                        toggleColorMenuActive()
+                    } else {
+                        areYouSureGoBack()
+                    }
+                }}>
                 <Icon
                     name='arrow-back-outline'
                     type='ionicon'
@@ -2227,6 +2273,9 @@ SvgTestScreen.navigationOptions = () => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

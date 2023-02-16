@@ -303,9 +303,6 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     return (
         <View
             style={[styles.container, { borderWidth: 0, }]}
-            onLayout={({ nativeEvent }) => {
-                console.log(nativeEvent.layout)
-            }}
         >
             <ImageBackground
                 source={img_timer}

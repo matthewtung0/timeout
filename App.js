@@ -826,7 +826,7 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
               name={isFocused ? iconLabelActive : iconLabel}
               size={24}
               color={'white'} />
-            <Text style={{ color: 'white' }}>
+            <Text style={{ color: 'white', fontFamily: 'Inter-Medium', fontSize: 14, }}>
               {label}
             </Text>
           </TouchableOpacity>
@@ -850,6 +850,7 @@ function CreateMainFlowTab() {
         }} />*/}
       <Tab.Screen name="SessionSelect" component={SessionSelectScreen}
         options={{
+          labelStyle: { fontFamily: 'Inter-Bold', fontSize: 18, },
           tabBarLabel: 'Timer',
           tabBarIconLabel: 'time-outline',
           tabBarIconLabelActive: 'time'

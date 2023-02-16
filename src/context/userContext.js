@@ -203,11 +203,9 @@ const userReducer = (state, action) => {
 const fetchSelf = dispatch => async () => {
     try {
         const response = await timeoutApi.get(`/info/self`)
-        console.log("setting self info to", response.data)
         dispatch({ type: 'fetch_self', payload: response.data })
 
         await AsyncStorage.setItem('fetchSelf', JSON.stringify(response.data));
-        console.log("fetchSelf complete. Returning this user id: ", response.data)
         const user_id_temp = response.data.user_info
         return user_id_temp;
 
