@@ -135,7 +135,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
     )
     const setNotesFunc = (txt) => {
         var num_lines = txt.split(/\r\n|\r|\n/).length
-        if (num_lines <= 4) {
+        if (num_lines <= 5) {
             setNotes(txt)
         }
     }
@@ -150,7 +150,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                         style={[styles.inputStyle, { width: INPUT_WIDTH, height: 45, }]}
                         placeholder='Task name'
                         placeholderTextColor={'#90AB72'}
-                        maxLength={30}
+                        maxLength={50}
                         autoCorrect={false}
                         value={toDoItemName}
                         onChangeText={setToDoItemName}
@@ -158,7 +158,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                     <TextInput
                         style={[styles.notes, styles.textDefault, { width: INPUT_WIDTH }]}
                         multiline={true}
-                        numberOfLines={4}
+                        numberOfLines={5}
                         maxHeight={120}
                         editable
                         maxLength={150}
@@ -209,7 +209,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
 
                         <Text style={[styles.textDefault,
                         { color: 'crimson', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
-                            Delete task from your to-do list. You can add it again later if you change your mind.</Text>
+                            Delete task from your to-do list.</Text>
                     </View>
 
                     : null}

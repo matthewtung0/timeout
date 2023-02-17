@@ -23,28 +23,43 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
         useCallback(() => {
             var category_array = []
             if (categoryState.userCategories) {
-                category_array = categoryState.userCategories.filter(item => item.archived !== true).map(item => {
-                    return {
-                        label: item.category_name,
-                        value: item.category_id,
-                        color: item.color_id,
-                        /*containerStyle: {
-                            backgroundColor: constants.colors[item.color_id]
-                        }*/
-                    }
-                })
+                category_array = categoryState.userCategories
+                    .filter(item => item.archived !== true)
+                    .map(item => {
+                        return {
+                            label: item.category_name,
+                            value: item.category_id,
+                            color: item.color_id,
+                            /*containerStyle: {
+                                backgroundColor: constants.colors[item.color_id]
+                            }*/
+                        }
+                    })
             }
             category_array = category_array.sort(function (a, b) {
                 return String(a.label).localeCompare(String(b.label))
             })
+            console.log(category_array)
+
+            var category_array_sorted = [
+                ...category_array.filter(req => req.value == '3'),
+                ...category_array.filter(req => req.value != '3'),
+            ]
+            console.log(category_array_sorted)
+            /*category_array = category_array.reduce((acc, element) => {
+                if (element.label == 'Unsorted') {
+                    return [element, ...acc]
+                }
+                return [...acc, element]
+            })*/
             if (allCategoriesOption) {
-                category_array.unshift({
+                category_array_sorted.unshift({
                     label: 'All categories',
                     value: 'All categories',
                     color: 'c10',
                 })
             }
-            setItems(category_array)
+            setItems(category_array_sorted)
         }, [categoryState.userCategories])
     )
     console.log

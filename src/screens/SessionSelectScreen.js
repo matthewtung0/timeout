@@ -41,6 +41,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
     const [modalVisible, setModalVisible] = useState(false)
 
+
     const updateTime = (a) => {
         setTime(a);
     }
@@ -137,6 +138,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
     const clearInputs = () => {
         setCategoryId("3")
+        setNewCatName("unsorted")
         setTime(0)
         updateTime(0)
         setNewColorId('c10')
@@ -289,7 +291,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             rightIconContainerStyle={styles.rightIconInput}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoCorrect={true}
-                            maxLength={30}
+                            maxLength={50}
                             value={customActivity}
                             onChangeText={(text) => {
                                 setCustomActivity(text)
@@ -311,31 +313,66 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             setCategoryIdCallback={setCategoryId}
                         />
                     </View>
+                    <View style={{ flexDirection: 'row', marginTop: 15, }}>
+                        <View style={{ flex: 1, }} />
+                        <TouchableOpacity
+                            style={[styles.start, { flex: 3.5, backgroundColor: '#C0C0C0', height: height / 12 }]}
+                            onPress={() => {
+                                if (!validateInputs() || isLoading) {
+                                    return;
+                                }
+                                let cat_Name = newCatName
+                                let cat_Id = categoryId
+                                let timer_Time = time
+                                navigate('SessionBackfill', {
+                                    numMins: timer_Time,
+                                    categoryId: cat_Id,
+                                    categoryName: cat_Name,
+                                    activityName: customActivity,
+                                    colorId: newColorId,
+                                })
+                                clearInputs()
+                                circularRef.current.resetSlider()
+                            }}>
+                            <Text style={[styles.startText, styles.textDefaultSemiBold, {
+                                fontSize: 18,
+                                paddingVertical: 10, paddingHorizontal: 10, textAlign: 'center',
+                            }]}>
+                                I already did this</Text>
 
-                    <TouchableOpacity
-                        style={[styles.start, { width: width / 2.2, height: height / 12 }]}
-                        onPress={() => {
-                            if (!validateInputs() || isLoading) {
-                                return;
-                            }
-                            let cat_Name = newCatName
-                            let cat_Id = categoryId
-                            let timer_Time = time
+                        </TouchableOpacity>
+                        <View style={{ flex: 1, }} />
+                        <TouchableOpacity
+                            style={[styles.start, { flex: 3.5, height: height / 12 }]}
+                            onPress={() => {
+                                if (!validateInputs() || isLoading) {
+                                    return;
+                                }
+                                let cat_Name = newCatName
+                                let cat_Id = categoryId
+                                let timer_Time = time
 
-                            clearInputs()
-                            circularRef.current.resetSlider()
 
-                            navigate('SessionOngoing', {
-                                numMins: timer_Time,
-                                categoryId: cat_Id,
-                                categoryName: cat_Name,
-                                activityName: customActivity,
-                                colorId: newColorId,
-                            })
-                        }}>
-                        <Text style={[styles.startText, styles.textDefaultBold]}>Start</Text>
+                                circularRef.current.resetSlider()
 
-                    </TouchableOpacity>
+                                navigate('SessionOngoing', {
+                                    numMins: timer_Time,
+                                    categoryId: cat_Id,
+                                    categoryName: cat_Name,
+                                    activityName: customActivity,
+                                    colorId: newColorId,
+                                })
+                                clearInputs()
+                            }}>
+                            <Text style={[styles.startText, styles.textDefaultSemiBold,
+                            { fontSize: 18, paddingVertical: 10, paddingHorizontal: 10, }]}>Start now</Text>
+
+                        </TouchableOpacity>
+                        <View style={{ flex: 1, }} />
+
+                    </View>
+
+
 
                     {state.errorMessage && 0 ?
                         <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
@@ -375,6 +412,9 @@ SessionSelectScreen.navigationOptions = () => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
@@ -446,15 +486,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#ABC57E',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 20,
+        borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 20,
         marginTop: 20,
         shadowOffset: {
-            width: 0.3,
-            height: 0.3,
+            width: 0.2,
+            height: 0.2,
         },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.1,
 
     },
     startText: {

@@ -22,7 +22,7 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
                     toggleFunction()
                 }}>
 
-                <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <View style={[styles.categoryStyle, { flex: 1, backgroundColor: bgColorHex }]}>
                         <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultSemiBold]}>{item.category_name}</Text>
                     </View>

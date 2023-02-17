@@ -11,8 +11,9 @@ import Modal from 'react-native-modal'
 import AddCategoryModal from '../components/AddCategoryModal';
 import Header from '../components/Header';
 const constants = require('../components/constants.json')
-//const img = require('../../assets/tasks_topbar.png')
-const bg_bottom = require('../../assets/background_sidebar.png')
+
+const bg_bottom = require('../../assets/border.png')
+//const bg_bottom = require('../../assets/background_sidebar.png')
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

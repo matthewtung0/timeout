@@ -1,11 +1,11 @@
 
 const unknown = require('../../assets/avatar_500/20_BACKGROUND/1_pink.png')
 
-const base1 = require('../../assets/avatar_500/16_base/1.png');
-const base2 = require('../../assets/avatar_500/16_base/2.png');
-const base3 = require('../../assets/avatar_500/16_base/3.png');
-const base4 = require('../../assets/avatar_500/16_base/4.png');
-const base5 = require('../../assets/avatar_500/16_base/5.png');
+const base1 = require('../../assets/avatar_500/16_base/BASE_1.png');
+const base2 = require('../../assets/avatar_500/16_base/BASE_2.png');
+const base3 = require('../../assets/avatar_500/16_base/BASE_3.png');
+const base4 = require('../../assets/avatar_500/16_base/BASE_4.png');
+const base5 = require('../../assets/avatar_500/16_base/BASE_5.png');
 const base6 = require('../../assets/avatar_500/16_base/BASE_6.png');
 const base7 = require('../../assets/avatar_500/16_base/BASE_7.png');
 const base8 = require('../../assets/avatar_500/16_base/BASE_8.png');
@@ -76,8 +76,8 @@ const glasses3 = require('../../assets/avatar_500/1_glasses/3_rectangle-shade-1_
 const glasses4 = require('../../assets/avatar_500/1_glasses/4_rectangle-glasses-PINK.png')
 const glasses5 = require('../../assets/avatar_500/1_glasses/5_round-glasses-BLACK.png')
 const glasses6 = require('../../assets/avatar_500/1_glasses/6_round-glasses-PINK.png')
-//const glassesTypes = [[unknown], [glasses1], [glasses2], [glasses3]]
-const glassesTypes = [[glasses1], [glasses2], [glasses3], [glasses4], [glasses5], [glasses6]]
+const glassesTypes = [[glasses1], [glasses5], [glasses6], [glasses2], [glasses3], [glasses4]]
+// reordered so that round and rectangle are next to each other
 
 // ---------------------------------------- PIERCINGS ----------------------------------------------
 const piercingsHoop1 = require('../../assets/avatar_500/2_piercings/1_brow-hoop_1_black.png')

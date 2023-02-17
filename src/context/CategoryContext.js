@@ -91,7 +91,8 @@ const categoryReducer = (state, action) => {
                         return {
                             ...item, color_id: action.payload.colorId,
                             archived: action.payload.archived,
-                            isPublic: action.payload.isPublic,
+                            //isPublic: action.payload.isPublic,
+                            public: action.payload.isPublic,
                         }
                     }
                     return item

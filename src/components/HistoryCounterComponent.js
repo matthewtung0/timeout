@@ -22,12 +22,7 @@ const HistoryCounterComponent = ({ session_obj }) => {
                 </View>
             </View>
 
-            <View
-                style={{
-                    borderBottomColor: 'grey',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-            />
+
         </>
 
 

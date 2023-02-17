@@ -303,17 +303,29 @@ const HistoryDailyScreen = ({ navigation }) => {
                                 } else {
                                     return (
                                         <View
-                                            key={j.counter_id}
-                                            style={{
-                                                marginRight: MARGIN_HORIZONTAL, marginLeft: MARGIN_HORIZONTAL,
-                                                paddingLeft: MARGIN_HORIZONTAL,
-                                                backgroundColor: constants.colors[j.color_id]
-                                            }}>
-                                            <HistoryCounterComponent
-                                                session_obj={j}
-                                                is_active={true}>
-                                            </HistoryCounterComponent>
+                                            key={j.counter_id}>
+                                            <View
+                                                style={{
+                                                    marginRight: MARGIN_HORIZONTAL, marginLeft: MARGIN_HORIZONTAL,
+                                                    paddingLeft: MARGIN_HORIZONTAL,
+                                                    backgroundColor: constants.colors[j.color_id]
+                                                }}>
+                                                <HistoryCounterComponent
+                                                    session_obj={j}
+                                                    is_active={true}>
+                                                </HistoryCounterComponent>
+
+                                            </View>
+                                            <View
+                                                style={{
+                                                    marginRight: MARGIN_HORIZONTAL, marginLeft: MARGIN_HORIZONTAL,
+                                                    paddingLeft: MARGIN_HORIZONTAL,
+                                                    borderColor: 'grey',
+                                                    borderBottomWidth: 0.5//StyleSheet.hairlineWidth,
+                                                }}
+                                            />
                                         </View>
+
                                     )
                                 }
 
@@ -466,7 +478,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         </View >
             <View
 
-                style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: height / 11 }}>
+                style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 90 }}>
                 <TouchableOpacity
                     style={{
                         borderWidth: 1, borderRadius: 10,
@@ -474,7 +486,12 @@ const HistoryDailyScreen = ({ navigation }) => {
                         borderColor: '#67806D'
                     }}
                     onPress={() => { navigation.navigate('HistorySearch') }}>
-                    <Text style={[styles.textDefault, { color: 'white', }]}>Go to search</Text>
+                    <Icon
+                        name="search"
+                        type='ionicon'
+                        size={20}
+                        color='white' />
+                    {/*<Text style={[styles.textDefault, { color: 'white', }]}>Go to search</Text>*/}
                 </TouchableOpacity>
             </View>
 

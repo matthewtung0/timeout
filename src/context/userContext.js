@@ -653,6 +653,11 @@ export const { Provider, Context } = createDataContext(
                     color: -1,
                     active: true,
                 },
+                overlay: {
+                    item: 0,
+                    color: -1,
+                    active: true,
+                }
             },
             clothing: {
                 under: {

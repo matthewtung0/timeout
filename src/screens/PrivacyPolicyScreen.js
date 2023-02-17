@@ -29,7 +29,7 @@ const PrivacyPolicyScreen = ({ navigation, }) => {
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Information Collection and Use</Text>
                     <Text style={[styles.regularText]}>
                         While using TimeOut, we may require you to provide us with certain personally identifiable information, including but not limited to first name, last name, and email. This information is
-                        securely stored, and we do not share this information with any thid parties nor do we profit from the information in any way.
+                        securely stored, and we do not share this information with any third parties nor do we profit from the information in any way.
                     </Text>
 
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Log Data</Text>
@@ -53,7 +53,7 @@ const PrivacyPolicyScreen = ({ navigation, }) => {
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Contact Us</Text>
                     <Text style={[styles.regularText]}>
                         If you have any questions or suggestions about this policy or anything related to TimeOut,
-                        please contact us at nofuss.exe@gmail.com.</Text>
+                        please contact us at exe@nofuss.xyz</Text>
                 </ScrollView>
 
 

@@ -41,7 +41,7 @@ const roundRating = (rating) => {
 }
 
 const HistoryComponent = ({ session_obj, is_active }) => {
-    console.log(`Rendering component with name ${session_obj.activity_name}`)
+    //console.log(`Rendering component with name ${session_obj.activity_name}`)
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>
@@ -80,49 +80,51 @@ const HistoryComponent = ({ session_obj, is_active }) => {
 
                 <View style={{ flex: 1, alignItems: 'flex-end', }}>
                     {/* 5 STARS */}
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                    {session_obj.prod_rating < 0 ? null :
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                        {session_obj.prod_rating >= 20 ?
+                            {session_obj.prod_rating >= 20 ?
 
-                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
+                                <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
 
-                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
-                        }
+                                : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
+                            }
 
-                        {session_obj.prod_rating >= 40 ?
-                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
+                            {session_obj.prod_rating >= 40 ?
+                                <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
 
-                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
-                        }
+                                : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
+                            }
 
-                        {session_obj.prod_rating >= 60 ?
-                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
+                            {session_obj.prod_rating >= 60 ?
+                                <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
 
-                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
-                        }
+                                : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
+                            }
 
-                        {session_obj.prod_rating >= 80 ?
-                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
+                            {session_obj.prod_rating >= 80 ?
+                                <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
 
-                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
-                        }
+                                : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
+                            }
 
-                        {session_obj.prod_rating >= 100 ?
-                            <Icon_rating style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
+                            {session_obj.prod_rating >= 100 ?
+                                <Icon_rating style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
 
-                            : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
-                                width={STAR_SIZE} height={STAR_SIZE} />
-                        }
-                    </View>
+                                : <Icon_rating_null style={styles.svgDefault} fill={bgColorHex}
+                                    width={STAR_SIZE} height={STAR_SIZE} />
+                            }
+                        </View>
+                    }
                 </View>
             </View>
             <View

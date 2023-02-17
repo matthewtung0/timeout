@@ -402,29 +402,32 @@ const CounterScreen = () => {
                                     </View>
 
                                     <View style={{ flex: 1, justifyContent: 'center', }}>
-                                        {isLoading && selectedCounterId == item.counter_id ?
+                                        {isLoadingSubtract && selectedCounterId == item.counter_id ?
                                             <ActivityIndicator
                                                 style={{ justifyContent: 'center', }}
                                                 size="large" /> :
                                             <TouchableOpacity
                                                 style={{
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10,
-                                                    backgroundColor: constants.colors[item['color_id']], height: '100%',
                                                     paddingVertical: 5,
-                                                    borderColor: '#A7BEAD'
+                                                    backgroundColor: constants.colors[item['color_id']],
+                                                    height: '100%', borderColor: '#A7BEAD'
                                                 }}
                                                 onPress={() => {
                                                     setSelectedCounterId(item.counter_id)
-                                                    addTallyValidation(item.counter_id, 1, item['point_count'])
+                                                    addTallyValidation(item.counter_id, -1, item['point_count'])
                                                 }}>
-                                                <View style={{ height: '100%', justifyContent: 'center' }}>
+                                                <View style={{ height: '100%', justifyContent: 'center', }}>
                                                     <Text style={[styles.textDefaultBold,
-                                                    { color: '#67806D', fontSize: 14, }]}>+1</Text>
+                                                    { color: '#67806D', fontSize: 14, }]}>-1</Text>
                                                 </View>
 
                                             </TouchableOpacity>
                                         }
                                     </View>
+
+
+
 
                                     <View style={{ flex: 2, justifyContent: 'center', }}>
                                         {isLoadingCustom && selectedCounterId == item.counter_id ?
@@ -459,24 +462,24 @@ const CounterScreen = () => {
                                         }
                                     </View>
                                     <View style={{ flex: 1, justifyContent: 'center', }}>
-                                        {isLoadingSubtract && selectedCounterId == item.counter_id ?
+                                        {isLoading && selectedCounterId == item.counter_id ?
                                             <ActivityIndicator
                                                 style={{ justifyContent: 'center', }}
                                                 size="large" /> :
                                             <TouchableOpacity
                                                 style={{
                                                     borderWidth: 1, alignItems: 'center', borderRadius: 10,
+                                                    backgroundColor: constants.colors[item['color_id']], height: '100%',
                                                     paddingVertical: 5,
-                                                    backgroundColor: constants.colors[item['color_id']],
-                                                    height: '100%', borderColor: '#A7BEAD'
+                                                    borderColor: '#A7BEAD'
                                                 }}
                                                 onPress={() => {
                                                     setSelectedCounterId(item.counter_id)
-                                                    addTallyValidation(item.counter_id, -1, item['point_count'])
+                                                    addTallyValidation(item.counter_id, 1, item['point_count'])
                                                 }}>
-                                                <View style={{ height: '100%', justifyContent: 'center', }}>
+                                                <View style={{ height: '100%', justifyContent: 'center' }}>
                                                     <Text style={[styles.textDefaultBold,
-                                                    { color: '#67806D', fontSize: 14, }]}>-1</Text>
+                                                    { color: '#67806D', fontSize: 14, }]}>+1</Text>
                                                 </View>
 
                                             </TouchableOpacity>

@@ -123,25 +123,43 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
       </View>
       <View style={styles.listItem}>
         <View style={{ flex: 1, borderWidth: 0, }}>
-          <Text numberOfLines={2} style={{}}>
-            <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: "#67806D" }]}>{item.username}</Text>
-            <Text style={[styles.textDefault, { fontSize: 13, }]}> worked on </Text>
+          <View style={{ flexDirection: 'row', borderWidth: 0, alignItems: 'flex-end', }}>
+            <Text numberOfLines={1} style={{}}>
+              <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: "#67806D" }]}>{item.username}</Text>
+              <Text style={[styles.textDefault, { fontSize: 13, }]}> worked on </Text>
+            </Text>
             {item.is_private ?
               <>
-                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+                <View style={[styles.categoryStyle, {
+                  borderColor: "grey", backgroundColor: '#C0C0C0',
+                  justifyContent: 'center', paddingHorizontal: 7,
+                }]}>
+                  <Text style={[styles.textDefault, { fontSize: 15, color: "#67806D", color: 'white', }]}>{item.category_name}</Text>
+                </View>
               </>
               :
               <>
-                <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.activity_name}</Text>
-                <Text style={[styles.textDefault, { fontSize: 13, }]}> in category </Text>
                 {item.public ?
-                  <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.category_name}</Text>
+                  <View style={[styles.categoryStyle, {
+                    borderColor: "grey", backgroundColor: '#C0C0C0',
+                    justifyContent: 'center', paddingHorizontal: 7,
+                  }]}>
+                    <Text style={[styles.textDefault, { fontSize: 15, color: "#67806D", color: 'white', }]}>{item.category_name}</Text>
+                  </View>
+
                   :
                   <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>[REDACTED]</Text>
                 }
               </>
             }
-          </Text>
+          </View>
+
+
+          {item.is_private ? null :
+            <Text style={{ marginTop: 5, }}>
+              <Text style={[styles.textDefaultMed, { fontSize: 15, color: "#67806D" }]}>{item.activity_name}</Text>
+            </Text>
+          }
           <View style={{ flexDirection: 'row', marginTop: 4, }}>
             <View style={{ borderWidth: 0 }}>
               <Icon
@@ -307,7 +325,10 @@ const styles = StyleSheet.create({
   tabBarText: {
     color: 'white',
     fontSize: 17,
-  }
+  }, categoryStyle: {
+    borderRadius: 10,
+    paddingHorizontal: 4,
+  },
 
 })
 

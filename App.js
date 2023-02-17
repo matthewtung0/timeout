@@ -15,6 +15,7 @@ import {
 } from '@react-navigation/drawer';
 
 import SessionSelectScreen from './src/screens/SessionSelectScreen';
+import SessionBackfillScreen from './src/screens/SessionBackfillScreen';
 import CounterScreen from './src/screens/CounterScreen';
 import SessionRewardScreen from './src/screens/SessionRewardScreen';
 import FriendFeedScreen from './src/screens/FriendFeedScreen'
@@ -607,6 +608,11 @@ function CreateSessionStack() {
         name="mainFlow"
         component={CreateMainFlowTab}
 options={pageOptions} />*/}
+      <Stack.Screen
+        name="SessionBackfill"
+        component={SessionBackfillScreen}
+        options={pageOptions}>
+      </Stack.Screen>
       <Stack.Screen
         name="SessionOngoing"
         component={SessionOngoingScreen}

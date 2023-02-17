@@ -288,7 +288,7 @@ const ProfileScreen = ({ navigation }) => {
                                     <Text style={[styles.categoryText, styles.textDefaultMed]}>{item['category_name']}</Text>
                                     :
                                     <Text style={[styles.categoryText, styles.textDefaultMed,
-                                    { color: constants.colors[item['color_id']] }]}>{item['category_name']}</Text>}
+                                    { color: constants.colors[item['color_id']], opacity: 0, }]}>{item['category_name']}</Text>}
                             </View>
                         )
 

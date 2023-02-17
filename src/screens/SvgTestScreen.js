@@ -37,7 +37,7 @@ import {
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
     EyeMakeup1_svg, EyeMakeup2_svg,
-    Base1_svg, Base2_svg, Base2_new_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
+    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
     Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
     Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
     Eyes1_svg, Eyes2_svg,
@@ -257,7 +257,7 @@ const SvgTestScreen = ({ navigation }) => {
                 colorFill={c} len={size} />, id: 1,
             owned: true
         }, {
-            svg: <Base2_new_svg
+            svg: <Base2_svg
                 colorFill={c} len={size} />, id: 2,
             owned: true
         }, {
@@ -702,11 +702,14 @@ const SvgTestScreen = ({ navigation }) => {
         { id: 5, hex: '#466B61' },
     ]
     // silver, black, gold, pink
+    // black, silver, light-teal, teal, pink, gold
     const eye_makeup_colors = [
-        { id: 1, hex: '#B3B6B8' },
-        { id: 2, hex: '#6B7174' },
-        { id: 3, hex: '#FCC759' },
-        { id: 4, hex: '#F49A8C' },
+        { id: 1, hex: '#000000' },
+        { id: 2, hex: '#B3B6B8' },
+        { id: 3, hex: '#86CEC8' },
+        { id: 4, hex: '#00B7B2' },
+        { id: 5, hex: '#F49A8D' },
+        { id: 6, hex: '#FCC759' },
     ]
 
     const eye_colors = [
@@ -741,6 +744,7 @@ const SvgTestScreen = ({ navigation }) => {
     const [skinPickerVisible, setSkinPickerVisible] = useState(true)
     const [piercingPickerVisible, setPiercingPickerVisible] = useState(false)
     const [glassesPickerVisible, setGlassesPickerVisible] = useState(false)
+    const [overlayPickerVisible, setOverlayPickerVisible] = useState(false)
 
     const [baseIndex, setBaseIndex] = useState(state.avatarJSON.face.base.item)
     const [underlayerIndex, setUnderlayerIndex] = useState(state.avatarJSON.clothing.under.item);
@@ -775,7 +779,7 @@ const SvgTestScreen = ({ navigation }) => {
 
     const [hairIndex, setHairIndex] = useState(state.avatarJSON.hair.base.item)
 
-    const [overlayIndex, setOverlayIndex] = useState(1)
+    const [overlayIndex, setOverlayIndex] = useState(state.avatarJSON.accessories.overlay.item)
     const [backgroundIndex, setBackgroundIndex] = useState(state.avatarJSON.accessories.background.item)
 
 
@@ -801,6 +805,7 @@ const SvgTestScreen = ({ navigation }) => {
     const [unownedPiercings, setUnownedPiercings] = useState(0)
     const [unownedGlasses, setUnownedGlasses] = useState(0)
     const [unownedBackground, setUnownedBackground] = useState(0)
+    const [unownedOverlay, setUnownedOverlay] = useState(0)
     const [unownedUnder, setUnownedUnder] = useState(0)
     const [unownedTop, setUnownedTop] = useState(0)
     const [unownedOuter, setUnownedOuter] = useState(0)
@@ -846,11 +851,11 @@ const SvgTestScreen = ({ navigation }) => {
         setTotalUnowned(unownedMouth + unownedEyes + unownedMakeup + unownedEyebrows + unownedBase +
             unownedHairAccessories + unownedGenAccessories + unownedPiercings + unownedGlasses +
             unownedBackground + unownedUnder + unownedTop + unownedOuter + unownedHairBase + unownedHairFront +
-            unownedHairSide + unownedHairBack)
+            unownedHairSide + unownedHairBack + unownedOverlay)
     }, [unownedMouth, unownedEyes, unownedMakeup, unownedEyebrows, unownedBase,
         unownedHairAccessories, unownedGenAccessories, unownedPiercings, unownedGlasses,
         unownedBackground, unownedUnder, unownedTop, unownedOuter, unownedHairBase, unownedHairFront,
-        unownedHairSide, unownedHairBack])
+        unownedHairSide, unownedHairBack, unownedOverlay])
 
     /* Reset avatar menu selections when user exits the screen */
     useFocusEffect(
@@ -897,8 +902,6 @@ const SvgTestScreen = ({ navigation }) => {
             setHasPiercings(state.avatarJSON.accessories.piercings.active)
             setHasGlasses(state.avatarJSON.accessories.glasses.active)
 
-            console.log("test focus effect")
-
             return () => {
                 console.log("cleaning up")
                 setTotalUnowned(0)
@@ -928,6 +931,7 @@ const SvgTestScreen = ({ navigation }) => {
         setTotalUnowned(0);
         alert("Avatar successfully saved!")
         setIsLoading(false)
+        navigation.navigate('mainFlow')
     }
 
     const saveAvatarCallbackFail = () => {
@@ -1047,11 +1051,17 @@ const SvgTestScreen = ({ navigation }) => {
                     item: glassesIndex,
                     color: glassesColorIndex,
                     active: hasGlasses,
-                }, background: {
+                },
+                background: {
                     item: backgroundIndex,
                     color: -1,
                     active: true,
                 },
+                overlay: {
+                    item: overlayIndex,
+                    color: -1,
+                    active: true,
+                }
             },
             clothing: {
                 under: {
@@ -1225,7 +1235,7 @@ const SvgTestScreen = ({ navigation }) => {
                     </View>
                     {hasEyeMakeup ?
                         <View style={{ position: 'absolute' }}>
-                            {eye_makeup_types(AVATAR_SIZE, mouth_colors[eyeMakeupColorIndex].hex)[eyeMakeupIndex].svg}
+                            {eye_makeup_types(AVATAR_SIZE, eye_makeup_colors[eyeMakeupColorIndex].hex)[eyeMakeupIndex].svg}
                         </View> : null}
 
                     <View style={{ position: 'absolute' }}>
@@ -2161,6 +2171,10 @@ const SvgTestScreen = ({ navigation }) => {
                                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 0, }}>
                                     <TouchableOpacity style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}
                                         onPress={() => {
+                                            if (overlayPickerVisible) {
+                                                setOverlayPickerVisible(false)
+                                                setBackgroundPickerVisible(true)
+                                            }
                                         }}>
                                         <Icon
                                             name='caret-back'
@@ -2174,8 +2188,17 @@ const SvgTestScreen = ({ navigation }) => {
                                             styles.subItemSelector}>
 
                                     </View>
+                                    <View
+                                        style={overlayPickerVisible ? [styles.subItemSelectorActive] :
+                                            styles.subItemSelector}>
+
+                                    </View>
                                     <TouchableOpacity
                                         onPress={() => {
+                                            if (backgroundPickerVisible) {
+                                                setOverlayPickerVisible(true)
+                                                setBackgroundPickerVisible(false)
+                                            }
                                         }}
                                         style={{ marginHorizontal: 5, borderWidth: 0, paddingVertical: 10, paddingHorizontal: 5, }}>
                                         <Icon
@@ -2201,6 +2224,26 @@ const SvgTestScreen = ({ navigation }) => {
                                                 updateUnownedCallback={updateUnowned}
                                                 unownedIndex={unownedBackground}
                                                 setUnownedCallback={setUnownedBackground}
+                                            />
+                                            : null}
+                                    </>
+                                    : null}
+
+                                {/* background */}
+                                {overlayPickerVisible ?
+                                    <>
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"Overlay"}
+                                                data={DIR.overlayTypes}
+                                                //hasItemCallback={}
+                                                pngOption={true}
+                                                thumbnailSize={THUMBNAIL_SIZE}
+                                                setIndexCallback={setOverlayIndex}
+                                                itemIndex={backgroundIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedOverlay}
+                                                setUnownedCallback={setUnownedOverlay}
                                             />
                                             : null}
                                     </>

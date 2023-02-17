@@ -348,7 +348,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                                 if (deleteToggle) {
                                     if (validateDelete() === false) {
                                         Alert.alert(
-                                            "You currently have to-do items with this category. Delete those first before deleting this category"
+                                            "You currently have to-do items with this category. \nDelete those first before deleting this category"
                                         )
                                         return
                                     }
@@ -358,7 +358,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                                 } else if (archiveToggle) {
                                     if (validateDelete() === false) {
                                         Alert.alert(
-                                            "You currently have to-do items with this category. Delete those first before archiving this category"
+                                            "You currently have to-do items with this category. \nDelete those first before archiving this category"
                                         )
                                         return
                                     }
