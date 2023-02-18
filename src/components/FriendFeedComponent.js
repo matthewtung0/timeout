@@ -204,7 +204,9 @@ const FriendFeedComponent = ({ item, index, cacheChecker, myUsername, navigation
                   }
                   reactToActivity_(item.activity_id, is_like, reactCallback)
                   if (item.expo_token && is_like) {
-                    sendLikeNotification_(myUsername, item.expo_token, item.activity_name)
+                    var tokenJSON = JSON.parse(item.expo_token)
+                    console.log(`Sending notification to token ${tokenJSON}`)
+                    sendLikeNotification_(myUsername, tokenJSON['token']['data'], item.activity_name)
                   }
 
                 }}>

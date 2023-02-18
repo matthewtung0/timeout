@@ -420,6 +420,7 @@ const fetchFriends = dispatch => async (callback = null) => {
 
 const postNotificationToken = dispatch => async (expo_token, callback = null) => {
     try {
+        console.log("Posting token ", expo_token)
         const response = await timeoutApi.patch('/self_user/expo_token', { expo_token })
         if (callback) { callback() }
         console.log("Post expo token complete")

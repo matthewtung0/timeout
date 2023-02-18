@@ -14,7 +14,6 @@ const NUM_TO_RETRIEVE = 50;
 
 const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const { width, height } = Dimensions.get('window');
-    //const { fetchUserReactions } = useContext(SessionContext)
     const { state: reactionState, fetchSessions, reactToActivity, sendLikeNotification } = useContext(ReactionContext)
     const { state } = useContext(UserContext)
     //const [refreshToken, setRefreshToken] = useState(0)

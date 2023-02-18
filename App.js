@@ -885,7 +885,7 @@ function CreateMainFlowTab() {
   )
 }
 
-async function registerForPushNotificationsAsync(postNotificationToken) {
+async function registerForPushNotificationsAsync(userId, postNotificationToken) {
   let token;
 
   if (Platform.OS === 'android') {
@@ -908,12 +908,20 @@ async function registerForPushNotificationsAsync(postNotificationToken) {
       alert('Failed to get push token for push notification!');
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    token = await Notifications.getExpoPushTokenAsync({
+      experienceId: '@mtung0219/timeout',
+    })
     console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
   }
-  postNotificationToken(token)
+
+  var toPost = JSON.stringify({
+    userId,
+    token,
+  })
+
+  postNotificationToken(toPost)
   return token;
 }
 
@@ -947,10 +955,11 @@ function CreateMainNavigator() {
             (res) => {
               fetchAvatarGeneral(res.user_id, forceRetrieve = true, isSelf = true)
               fetchUserCategories(res.user_id, getPrivate = true, isSelf = true);
+              registerForPushNotificationsAsync(res.user_id, postNotificationToken)
             }
           ))
 
-        registerForPushNotificationsAsync(postNotificationToken)
+
         var endTime = endOfMonth(sessionState.calendarDate)
         var startTime = startOfMonth(subMonths(startOfMonth(sessionState.calendarDate), 3))
         await fetchMultipleMonths(startTime, endTime).then(
