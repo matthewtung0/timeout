@@ -6,10 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as ReactionContext } from '../context/ReactionContext';
 import { Context as UserContext } from '../context/userContext';
-import timeoutApi from '../api/timeout';
-import { compareAsc } from 'date-fns';
 import FriendFeedComponent from '../components/FriendFeedComponent';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //const REFRESH_THRESHOLD_POSITION = -50;
 const SCROLL_THROTTLE_RATE = 200;

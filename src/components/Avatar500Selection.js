@@ -5,7 +5,7 @@ const base1 = require('../../assets/avatar_500/16_base/BASE_1.png');
 const base2 = require('../../assets/avatar_500/16_base/BASE_2.png');
 const base3 = require('../../assets/avatar_500/16_base/BASE_3.png');
 const base4 = require('../../assets/avatar_500/16_base/BASE_4.png');
-const base5 = require('../../assets/avatar_500/16_base/BASE_5.png');
+//const base5 = require('../../assets/avatar_500/16_base/BASE_5.png');
 const base6 = require('../../assets/avatar_500/16_base/BASE_6.png');
 const base7 = require('../../assets/avatar_500/16_base/BASE_7.png');
 const base8 = require('../../assets/avatar_500/16_base/BASE_8.png');
@@ -17,14 +17,14 @@ const base13 = require('../../assets/avatar_500/16_base/BASE_13.png');
 const base14 = require('../../assets/avatar_500/16_base/BASE_14.png');
 const base15 = require('../../assets/avatar_500/16_base/BASE_15.png');
 const base16 = require('../../assets/avatar_500/16_base/BASE_16.png');
-const baseTypes = [[base1], [base2], [base3], [base4], [base5], [base6], [base7], [base8], [base9],
+const baseTypes = [[base1], [base2], [base3], [base4], [base6], [base7], [base8], [base9],
 [base10], [base11], [base12], [base13], [base14], [base15], [base16]]
 
 const ear1 = require('../../assets/avatar_500/3_ear/1.png')
 const ear2 = require('../../assets/avatar_500/3_ear/2.png')
 const ear3 = require('../../assets/avatar_500/3_ear/3.png')
 const ear4 = require('../../assets/avatar_500/3_ear/4.png')
-const ear5 = require('../../assets/avatar_500/3_ear/5.png')
+//const ear5 = require('../../assets/avatar_500/3_ear/5.png')
 const ear6 = require('../../assets/avatar_500/3_ear/BASE-ear_6.png')
 const ear7 = require('../../assets/avatar_500/3_ear/BASE-ear_7.png')
 const ear8 = require('../../assets/avatar_500/3_ear/BASE-ear_8.png')
@@ -36,7 +36,7 @@ const ear13 = require('../../assets/avatar_500/3_ear/BASE-ear_13.png')
 const ear14 = require('../../assets/avatar_500/3_ear/BASE-ear_14.png')
 const ear15 = require('../../assets/avatar_500/3_ear/BASE-ear_15.png')
 const ear16 = require('../../assets/avatar_500/3_ear/BASE-ear_16.png')
-const earTypes = [ear1, ear2, ear3, ear4, ear5, ear6, ear7, ear8, ear9, ear10, ear11,
+const earTypes = [ear1, ear2, ear3, ear4, ear6, ear7, ear8, ear9, ear10, ear11,
     ear12, ear13, ear14, ear15, ear16,]
 
 // ---------------------------------------- Eyes ----------------------------------------------

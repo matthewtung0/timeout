@@ -435,14 +435,14 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                 <View opacity={isLoading ? 0.3 : 1} style={{ alignItems: 'center', borderWidth: 0, }}>
                     <TouchableOpacity
                         style={{
-                            backgroundColor: "#CAE3B7", alignItems: 'center', paddingVertical: 13,
+                            backgroundColor: "#ABC57E", alignItems: 'center', paddingVertical: 13,
                             borderRadius: 10, marginTop: 25, width: 150,
                             shadowOffset: {
-                                width: 0,
-                                height: 0.5,
+                                width: 0.1,
+                                height: 0.1,
                             },
                             shadowOpacity: 0.2,
-                            color: '#CAE3B7',
+                            color: '#ABC57E',
                             fontSize: 18,
                         }}
                         onPress={() => {

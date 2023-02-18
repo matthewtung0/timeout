@@ -20,7 +20,9 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
 
   const duration = (startTime, endTime) => {
     var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
-    if (diff_in_min <= 1) {
+    if (diff_in_min >= 60) {
+      return `${Math.floor(diff_in_min / 60)} hours ${diff_in_min % 60} minutes`
+    } else if (diff_in_min <= 1) {
       return `${differenceInSeconds(parseISO(endTime), parseISO(startTime))} seconds`
     }
     return `${diff_in_min} minutes`

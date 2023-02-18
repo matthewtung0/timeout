@@ -36,6 +36,9 @@ const HistoryDailyScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedObject, setSelectedObject] = useState({})
 
+    const [offset, setOffset] = useState(0)
+    const [visibleOffset, setVisibleOffset] = useState(0);
+
     // number of months prior to current month that is currently fetched from server
 
     //const [offsetFetched, setOffsetFetched] = useState(3);
@@ -51,6 +54,7 @@ const HistoryDailyScreen = ({ navigation }) => {
             return
         }
         setIsLoading(true)
+        setVisibleOffset(0)
         await resetCalendarDate(dt)
 
         setDisplayedMonth(longMonth(dt))
@@ -65,6 +69,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         if (isLoading) { return }
         var dt = subMonths(startOfMonth(state.calendarDate), 1)
         setIsLoading(true)
+        setVisibleOffset(0)
         setDisplayedMonth(longMonth(dt))
         var monthKey = format(dt, 'M/yyyy', { locale: enUS }).toString()
         setDisplayedMonthKey(monthKey)
@@ -138,6 +143,8 @@ const HistoryDailyScreen = ({ navigation }) => {
         setDisplayedYear(state.calendarDate.getFullYear())
         setDisplayedMonthKey(format(state.calendarDate, 'M/yyyy', { locale: enUS }).toString());
 
+
+        updateVisibleOffset();
     }
 
     useFocusEffect(
@@ -152,6 +159,9 @@ const HistoryDailyScreen = ({ navigation }) => {
         useCallback(() => {
             focusEffectFunc();
             return () => {
+                console.log("Cleaning up")
+                setVisibleOffset(0)
+                setOffset(0)
             }
         }, [state.calendarDate, state.curOffset, state.needHardReset, counterState.counterTablesLocked]
         )
@@ -341,17 +351,44 @@ const HistoryDailyScreen = ({ navigation }) => {
         return (<View style={{ height: 50 }}></View>)
     }
 
+    const updateVisibleOffset = () => {
+        console.log("Updating visible offset")
+        //var visibleOffsetStart = 0;
+        //setVisibleOffset(visibleOffsetStart)
+        //setOffset(0);
+        if (!state.batchData[displayMonthKey]) { return; }
+
+        // get number of components in each date object, to get how many date objects to render
+        var lengthMap = state.batchData[displayMonthKey].map((item) => { return [item[0], item[1].length] })
+
+        if (visibleOffset >= state.batchData[displayMonthKey].length - 1) { return }
+
+        // start from visibleOffset, add more dates until + 10 more
+        console.log("Starting from visibleOffset", visibleOffset + 1);
+        var numToAdd = lengthMap[visibleOffset + 1][1]
+        var tempVisibleOffset = visibleOffset + 1;
+        while (numToAdd < 10) {
+            tempVisibleOffset += 1
+            console.log("Adding in index", tempVisibleOffset)
+            numToAdd += lengthMap[tempVisibleOffset]
+        }
+        console.log("Visible offset is now ", tempVisibleOffset)
+        setVisibleOffset(tempVisibleOffset)
+    }
+
+    //console.log("Flatlist map ", state.batchData[displayMonthKey].map((item) => { return [item[0], item[1].length] }))
+
     const flatListItself = () => {
         return (
             <FlatList
                 ListHeaderComponent={renderHeader}
                 style={{}}
                 horizontal={false}
-                //initialNumToRender={5}
                 //data={monthlyTasksGrouped}
                 //data={batchTasksGrouped[displayMonthKey]}
-                data={state.batchData[displayMonthKey]}
+                data={state.batchData[displayMonthKey] ? state.batchData[displayMonthKey].slice(0, visibleOffset + 1) : []}
                 showsHorizontalScrollIndicator={false}
+                onEndReached={updateVisibleOffset}
                 keyExtractor={(item) => item[0]}
                 ListFooterComponent={renderFooter}
                 renderItem={({ item }) =>
@@ -362,7 +399,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         )
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey]])
+    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], visibleOffset])
 
     return (
         <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 110 : 100 }]}>

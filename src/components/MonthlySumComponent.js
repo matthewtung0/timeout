@@ -61,9 +61,9 @@ const MonthlySumComponent = ({ monthBatch }) => {
                             <View
                                 style={styles.container}
                                 key={item[0]}>
-                                <View style={styles.textContainer}>
+                                <View style={[styles.textContainer, { width: width / 4, marginLeft: 5, }]}>
                                     <Text numberOfLines={2}
-                                        style={[styles.barLabel, styles.textDefaultSemiBold]}>{item[0]}</Text>
+                                        style={[styles.barLabel, styles.textDefaultMed]}>{item[0]}</Text>
                                 </View>
 
                                 {BAR_MAX_WIDTH * getBarPct(item[1]) > 40 ?
@@ -92,6 +92,8 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     title: {
         margin: 30,
@@ -105,7 +107,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 28,
     }, textContainer: {
-        width: 75,
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 10,
@@ -114,8 +115,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         textAlign: 'right',
         color: '#67806D',
-        fontSize: 11,
-        fontWeight: '600',
+        fontSize: 12,
     }, timeLabel: {
         position: 'absolute',
         alignSelf: 'flex-end',

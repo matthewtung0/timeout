@@ -3,7 +3,7 @@ import React, { useState, useContext, useCallback } from 'react';
 import { StyleSheet, Dimensions, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
 import { Dropdown } from 'react-native-element-dropdown';
-import { BorderlessButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 
@@ -39,13 +39,11 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
             category_array = category_array.sort(function (a, b) {
                 return String(a.label).localeCompare(String(b.label))
             })
-            console.log(category_array)
 
             var category_array_sorted = [
                 ...category_array.filter(req => req.value == '3'),
                 ...category_array.filter(req => req.value != '3'),
             ]
-            console.log(category_array_sorted)
             /*category_array = category_array.reduce((acc, element) => {
                 if (element.label == 'Unsorted') {
                     return [element, ...acc]
@@ -62,7 +60,6 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
             setItems(category_array_sorted)
         }, [categoryState.userCategories])
     )
-    console.log
 
     const Item = (props) => {
         return (

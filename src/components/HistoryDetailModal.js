@@ -96,7 +96,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
 
     const setNotesFunc = (txt) => {
         var num_lines = txt.split(/\r\n|\r|\n/).length
-        if (num_lines <= 4) {
+        if (num_lines <= 6) {
             setNotes(txt)
         }
     }
@@ -164,11 +164,11 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             paddingHorizontal: 20, marginTop: 20, marginHorizontal: 20,
                         }}>
                             <TextInput
-                                style={[styles.notes, { width: INPUT_WIDTH, color: '#67806D' }]}
+                                style={[styles.notes, { width: INPUT_WIDTH, color: '#67806D', height: height / 6 }]}
                                 multiline={true}
-                                numberOfLines={4}
+                                numberOfLines={6}
                                 editable
-                                maxLength={150}
+                                maxLength={300}
                                 placeholder={'Enter any notes'}
                                 value={notes}
                                 textAlignVertical='top'
@@ -406,10 +406,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         padding: 10,
         paddingTop: 12,
-        borderRadius: 10,
+        borderRadius: 15,
         marginHorizontal: 25,
         marginBottom: 20,
-        height: 80,
     }, inputStyleContainer: {
         borderBottomWidth: 0,
     },

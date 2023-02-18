@@ -16,7 +16,7 @@ import Ear1 from '../../assets/avatar_svg/3_ear/ear_1.svg'
 import Ear2 from '../../assets/avatar_svg/3_ear/ear_2.svg'
 import Ear3 from '../../assets/avatar_svg/3_ear/ear_3.svg'
 import Ear4 from '../../assets/avatar_svg/3_ear/ear_4.svg'
-import Ear5 from '../../assets/avatar_svg/3_ear/ear_5.svg'
+//import Ear5 from '../../assets/avatar_svg/3_ear/ear_5.svg'
 import Ear6 from '../../assets/avatar_svg/3_ear/ear_6.svg'
 import Ear7 from '../../assets/avatar_svg/3_ear/ear_7.svg'
 import Ear8 from '../../assets/avatar_svg/3_ear/ear_8.svg'
@@ -90,7 +90,7 @@ import Base1 from '../../assets/avatar_svg/16_base/base_1.svg'
 import Base2 from '../../assets/avatar_svg/16_base/base_2.svg'
 import Base3 from '../../assets/avatar_svg/16_base/base_3.svg'
 import Base4 from '../../assets/avatar_svg/16_base/base_4.svg'
-import Base5 from '../../assets/avatar_svg/16_base/base_5.svg'
+//import Base5 from '../../assets/avatar_svg/16_base/base_5.svg'
 import Base6 from '../../assets/avatar_svg/16_base/base_6.svg'
 import Base7 from '../../assets/avatar_svg/16_base/base_7.svg'
 import Base8 from '../../assets/avatar_svg/16_base/base_8.svg'
@@ -381,9 +381,9 @@ const Base3_svg = ({ colorFill, len }) => {
 const Base4_svg = ({ colorFill, len }) => {
     return (<Base4 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
-const Base5_svg = ({ colorFill, len }) => {
+{/*const Base5_svg = ({ colorFill, len }) => {
     return (<Base5 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
-}
+}*/}
 const Base6_svg = ({ colorFill, len }) => {
     return (<Base6 style={styles.svgDefault} fill={colorFill} width={len} height={len} />)
 }
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
 module.exports = {
     SvgTestScreen2,
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
-    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
+    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
     Hairfront1_svg, Hairfront2_svg, Hairfront3_svg, Hairfront4_svg, Hairfront5_svg, Hairfront6_svg,
     Hairside1_svg, Hairside2_svg,
     Outerwear1_svg,
@@ -591,7 +591,7 @@ module.exports = {
     Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
     Eyes1_svg, Eyes2_svg,
     EyeMakeup1_svg, EyeMakeup2_svg,
-    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
+    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
     Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
     Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
     HairAccessories1_svg, HairAccessories2_svg, HairAccessories3_svg,

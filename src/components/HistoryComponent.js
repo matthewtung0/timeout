@@ -41,7 +41,7 @@ const roundRating = (rating) => {
 }
 
 const HistoryComponent = ({ session_obj, is_active }) => {
-    //console.log(`Rendering component with name ${session_obj.activity_name}`)
+    console.log(`Rendering component with name ${session_obj.activity_name}`)
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>
@@ -141,6 +141,13 @@ const HistoryComponent = ({ session_obj, is_active }) => {
     )
 }
 
+const equal = (prevItem, nextItem) => {
+    if (prevItem.session_obj.activity_id != nextItem.session_obj.activity_id) {
+        return false;
+    }
+    return true;
+}
+
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
@@ -181,4 +188,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default HistoryComponent;
+export default React.memo(HistoryComponent, equal)

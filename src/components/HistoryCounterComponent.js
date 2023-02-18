@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, } from 'react-native';
 const constants = require('../components/constants.json')
 
 const HistoryCounterComponent = ({ session_obj }) => {
+    console.log(`Rendering component with name ${session_obj.activity_name}`)
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>
@@ -21,13 +22,15 @@ const HistoryCounterComponent = ({ session_obj }) => {
                         times</Text>
                 </View>
             </View>
-
-
         </>
-
-
-
     )
+}
+
+const equal = (prevItem, nextItem) => {
+    if (prevItem.session_obj.activity_id != nextItem.session_obj.activity_id) {
+        return false;
+    }
+    return true;
 }
 
 const styles = StyleSheet.create({
@@ -70,4 +73,5 @@ const styles = StyleSheet.create({
 
 })
 
-export default HistoryCounterComponent;
+export default React.memo(HistoryCounterComponent, equal)
+//export default HistoryCounterComponent;

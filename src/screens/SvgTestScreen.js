@@ -28,7 +28,7 @@ import pointSquares from '../../assets/point_squares.png';
 
 import {
     Piercing1_svg, Piercing2_svg, Piercing3_svg, Piercing4_svg, Piercing5_svg, Piercing6_svg, Piercing7_svg,
-    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear5_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
+    Ear1_svg, Ear2_svg, Ear3_svg, Ear4_svg, Ear6_svg, Ear7_svg, Ear8_svg, Ear9_svg, Ear10_svg, Ear11_svg, Ear12_svg, Ear13_svg, Ear14_svg, Ear15_svg, Ear16_svg,
     Hairfront1_svg, Hairfront2_svg, Hairfront3_svg, Hairfront4_svg, Hairfront5_svg, Hairfront6_svg,
     Hairside1_svg, Hairside2_svg,
     Outerwear1_svg,
@@ -37,7 +37,7 @@ import {
     Underlayer1_svg, Underlayer2_svg, Underlayer3_svg, Underlayer4_svg, Underlayer5_svg, Underlayer6_svg, Underlayer7_svg, Underlayer9_svg,
     Mouth1_svg, Mouth2_svg, Mouth3_svg, Mouth4_svg,
     EyeMakeup1_svg, EyeMakeup2_svg,
-    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base5_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
+    Base1_svg, Base2_svg, Base3_svg, Base4_svg, Base6_svg, Base7_svg, Base8_svg, Base9_svg, Base10_svg,
     Base11_svg, Base12_svg, Base13_svg, Base14_svg, Base15_svg, Base16_svg,
     Eyebrows1_svg, Eyebrows2_svg, Eyebrows3_svg,
     Eyes1_svg, Eyes2_svg,
@@ -170,10 +170,6 @@ const SvgTestScreen = ({ navigation }) => {
                 colorFill={c} len={size} />, id: 4,
             owned: true
         }, {
-            svg: <Ear5_svg
-                colorFill={c} len={size} />, id: 5,
-            owned: true
-        }, {
             svg: <Ear6_svg
                 colorFill={c} len={size} />, id: 6,
             owned: true
@@ -267,10 +263,6 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Base4_svg
                 colorFill={c} len={size} />, id: 4,
-            owned: true
-        }, {
-            svg: <Base5_svg
-                colorFill={c} len={size} />, id: 5,
             owned: true
         }, {
             svg: <Base6_svg
@@ -1231,7 +1223,7 @@ const SvgTestScreen = ({ navigation }) => {
                     source={DIR.baseTypes[baseIndex][0]} />*/}
 
                     <View style={{ position: 'absolute' }}>
-                        {eyebrow_types(AVATAR_SIZE, mouth_colors[eyebrowColorIndex].hex)[eyebrowIndex].svg}
+                        {eyebrow_types(AVATAR_SIZE, hair_colors[eyebrowColorIndex].hex)[eyebrowIndex].svg}
                     </View>
                     {hasEyeMakeup ?
                         <View style={{ position: 'absolute' }}>
@@ -1617,7 +1609,7 @@ const SvgTestScreen = ({ navigation }) => {
                                             <AvatarColorMenuComponent
                                                 title={"Eyebrow Colors"}
                                                 usesPng={false}
-                                                data={eye_makeup_colors}
+                                                data={hair_colors}
                                                 setIndexCallback={setEyebrowColorIndex}
                                                 colorIndex={eyebrowColorIndex}
                                             />

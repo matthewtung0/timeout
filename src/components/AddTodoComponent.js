@@ -135,7 +135,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
     )
     const setNotesFunc = (txt) => {
         var num_lines = txt.split(/\r\n|\r|\n/).length
-        if (num_lines <= 5) {
+        if (num_lines <= 6) {
             setNotes(txt)
         }
     }
@@ -156,12 +156,11 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                         onChangeText={setToDoItemName}
                     />
                     <TextInput
-                        style={[styles.notes, styles.textDefault, { width: INPUT_WIDTH }]}
+                        style={[styles.notes, styles.textDefault, { width: INPUT_WIDTH, height: height / 4 }]}
                         multiline={true}
-                        numberOfLines={5}
-                        maxHeight={120}
+                        numberOfLines={7}
                         editable
-                        maxLength={150}
+                        maxLength={300}
                         placeholderTextColor={'#90AB72'}
                         placeholder={'Enter notes (optional)'}
                         value={notes}
@@ -291,7 +290,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginHorizontal: 25,
         marginBottom: 20,
-        height: 120,
         color: '#67806D',
         fontSize: 16,
     }, inputStyleContainer: {
