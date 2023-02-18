@@ -15,7 +15,7 @@ const NUM_TO_RETRIEVE = 50;
 const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const { width, height } = Dimensions.get('window');
     //const { fetchUserReactions } = useContext(SessionContext)
-    const { state: reactionState, fetchSessions, reactToActivity } = useContext(ReactionContext)
+    const { state: reactionState, fetchSessions, reactToActivity, sendLikeNotification } = useContext(ReactionContext)
     const { state } = useContext(UserContext)
     //const [refreshToken, setRefreshToken] = useState(0)
 
@@ -134,17 +134,18 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                         item={item}
                         index={index}
                         cacheChecker={cacheChecker}
+                        myUsername={state.username}
                         setCacheChecker={setCacheChecker}
                         navigation={navigation}
                         userReaction={reactionState.userReaction}
-                        reactToActivity_={reactToActivity} />
+                        reactToActivity_={reactToActivity}
+                        sendLikeNotification_={sendLikeNotification} />
                 }
             >
             </FlatList>
         )
     }
 
-    //console.log(reactionState.userReaction)
 
     const memoizedFlatList = useMemo(flatListItself, [reactionState.userSessions, visibleOffset, atEnd,
     reactionState.userReaction, state.friends])

@@ -9,7 +9,9 @@ import { format } from 'date-fns';
 import { Icon } from 'react-native-elements';
 import DropDownComponent2 from '../components/DropDownComponent2';
 import HistoryCounterComponent from '../components/HistoryCounterComponent';
+import Modal from 'react-native-modal'
 import HistoryComponent from '../components/HistoryComponent';
+import HistoryDailyModal from '../components/HistoryDetailModal'
 const constants = require('../components/constants.json')
 
 const HideKeyboard = ({ children }) => (
@@ -30,9 +32,20 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
 
     const [batchData, setBatchData] = useState({})
     const [batchDataForSummary, setBatchDataForSummary] = useState({})
+    const [selectedObject, setSelectedObject] = useState({})
+    const [modalVisible, setModalVisible] = useState(false)
     const MARGIN_HORIZONTAL = 20;
 
-    console.log(searchTerm)
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    }
+    const modalCallback = async (item_deleted = false) => {
+        if (item_deleted && 0) {
+            var endTime = endOfMonth(state.calendarDate)
+            var startTime = startOfMonth(state.calendarDate)
+            await fetchMultipleMonths(startTime, endTime)
+        }
+    }
     const searchSessions = async () => {
         if (searchCatId == 'All categories' && searchTerm == '') {
             // do not let search return all - may be too many
@@ -216,6 +229,36 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
     return (
         <HideKeyboard>
             <View style={[styles.container, { paddingTop: Platform.OS === 'ios' ? 120 : 120 }]}>
+
+
+                <Modal
+                    isVisible={modalVisible}
+                    //animationType="fade"
+                    animationIn='slideInLeft'
+                    animationOut='slideOutLeft'
+                    backdropTransitionOutTiming={0}
+                >
+
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                    }}>
+                        <View style={{
+                            height: height * 0.7
+                        }}>
+
+                            <HistoryDailyModal
+                                toggleFunction={toggleModal}
+                                selectedObject={selectedObject}
+
+                                callback={modalCallback}>
+                            </HistoryDailyModal>
+
+                        </View>
+                    </View>
+                </Modal>
+
                 <View style={{ marginHorizontal: 20, }}>
                     <Text style={[styles.textDefaultSemiBold, { color: '#67806D' }]}>
                         Search by keyword:</Text>

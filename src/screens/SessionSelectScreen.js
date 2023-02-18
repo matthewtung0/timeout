@@ -38,6 +38,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [categoryId, setCategoryId] = useState("3");
     const [newCatName, setNewCatName] = useState('unsorted')
     const [newColorId, setNewColorId] = useState('c10')
+    const [token, setToken] = useState('')
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -361,6 +362,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                     categoryName: cat_Name,
                                     activityName: customActivity,
                                     colorId: newColorId,
+                                    token: token,
                                 })
                                 clearInputs()
                             }}>

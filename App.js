@@ -75,6 +75,8 @@ import { useFonts } from 'expo-font';
 import {
   subMonths, startOfMonth, endOfMonth
 } from 'date-fns';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 const drawer_bg = require('./assets/background_sidebar.png');
 
@@ -883,6 +885,38 @@ function CreateMainFlowTab() {
   )
 }
 
+async function registerForPushNotificationsAsync(postNotificationToken) {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+  postNotificationToken(token)
+  return token;
+}
+
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
@@ -890,7 +924,8 @@ function CreateMainNavigator() {
   const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
   const { fetchUserCounters, fetchMultipleMonthsCounters } = useContext(CounterContext)
   const { fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
-    fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
+    fetchIncomingRequests, fetchFriends, fetchSelf,
+    fetchAvatarItemsOwned, postNotificationToken } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
     'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
@@ -915,6 +950,7 @@ function CreateMainNavigator() {
             }
           ))
 
+        registerForPushNotificationsAsync(postNotificationToken)
         var endTime = endOfMonth(sessionState.calendarDate)
         var startTime = startOfMonth(subMonths(startOfMonth(sessionState.calendarDate), 3))
         await fetchMultipleMonths(startTime, endTime).then(

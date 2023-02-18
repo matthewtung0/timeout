@@ -33,7 +33,7 @@ Notifications.setNotificationHandler({
 
 const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
-    const { numMins, categoryId, categoryName, activityName, colorId } = params;
+    const { numMins, categoryId, categoryName, activityName, colorId, token } = params;
     let bgColorHex = constants.colors[colorId]
 
     const [plannedMin, setPlannedMin] = useState(numMins)
@@ -105,8 +105,6 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
     const [endEarlyFlag, setEndEarlyFlag] = useState(false)
     const [sessionStartTime, setSessionStartTime] = useState('')
 
-    //console.log("Rerendering ongoing .. ");
-
 
     const handleReset = (endEarly = false, plannedNumMinutes) => {
         clearInterval(increment.current)
@@ -131,16 +129,6 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
         navigation.navigate('SessionSelect')
     }
 
-    const testNotification = () => {
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-            setNotification(notification);
-        });
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
-        });
-
-    }
 
     const backAction = () => {
         Alert.alert('Hold on!', 'Are you sure you want to go back?', [
@@ -182,6 +170,13 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
             );*/
         })
 
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
         const subscription = AppState.addEventListener('change', nextAppState => {
             if (appState.current.match(/inactive|background/) &&
                 (nextAppState === 'active' || nextAppState === 'foreground')) {
@@ -210,6 +205,8 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
         return () => {
             //backHandler.remove();
             subscription.remove();
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
         };
     })
 
@@ -223,7 +220,6 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                 console.log("we are done")
                 return;
             }
-            testNotification();
 
             if (isThisSecond(fromUnixTime(endTime))) {
                 handleReset(false, numMins)
@@ -237,43 +233,10 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
             return () => {
                 console.log("Cleaning up..?")
                 setEndTime(0)
-                Notifications.removeNotificationSubscription(notificationListener.current);
-                Notifications.removeNotificationSubscription(responseListener.current);
+
             }
         }, [])
     )
-
-    async function registerForPushNotificationsAsync() {
-        let token;
-
-        if (Platform.OS === 'android') {
-            await Notifications.setNotificationChannelAsync('default', {
-                name: 'default',
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#FF231F7C',
-            });
-        }
-
-        if (Device.isDevice) {
-            const { status: existingStatus } = await Notifications.getPermissionsAsync();
-            let finalStatus = existingStatus;
-            if (existingStatus !== 'granted') {
-                const { status } = await Notifications.requestPermissionsAsync();
-                finalStatus = status;
-            }
-            if (finalStatus !== 'granted') {
-                alert('Failed to get push token for push notification!');
-                return;
-            }
-            token = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log(token);
-        } else {
-            alert('Must use physical device for Push Notifications');
-        }
-
-        return token;
-    }
 
     async function cancelPushNotification() {
         await Notifications.cancelAllScheduledNotificationsAsync()

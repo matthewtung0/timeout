@@ -155,6 +155,32 @@ const reactToActivity = dispatch => async (activity_id, is_like, reactCallback =
     }
 }
 
+const sendLikeNotification = dispatch => async (username, expo_token, activity_name) => {
+    try {
+        const message = {
+            to: expo_token,
+            sound: 'default',
+            title: `${username} on Time Out`,
+            body: `${username} liked your activity ${activity_name}`,
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    } catch (err) {
+        console.log("Failure to send notification for like")
+    }
+}
+
+
+
 const clearReactionContext = dispatch => async () => {
     try {
         dispatch({ type: 'clear_context' })
@@ -167,7 +193,7 @@ export const { Provider, Context } = createDataContext(
     reactionReducer,
     {
         fetchUserReactions, reactToActivity, fetchLikersOfActivity, clearReactionContext,
-        fetchSessions, fetchSessionsNextBatch
+        fetchSessions, fetchSessionsNextBatch, sendLikeNotification
     },
     {
         userSessions: [],

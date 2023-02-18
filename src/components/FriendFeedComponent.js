@@ -12,7 +12,8 @@ import { Context as UserContext } from '../context/userContext';
 import AvatarComponent from '../components/AvatarComponent';
 import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
 
-const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReaction, reactToActivity_ }) => {
+const FriendFeedComponent = ({ item, index, cacheChecker, myUsername, navigation, userReaction, reactToActivity_,
+  sendLikeNotification_ }) => {
   const { height } = Dimensions.get('window');
   const { setIdToView } = useContext(UserContext)
   const [reactionCount, setReactionCount] = useState(item.reaction_count)
@@ -202,6 +203,10 @@ const FriendFeedComponent = ({ item, index, cacheChecker, navigation, userReacti
                     setReactionCount(reactionCount + 1)
                   }
                   reactToActivity_(item.activity_id, is_like, reactCallback)
+                  if (item.expo_token && is_like) {
+                    sendLikeNotification_(myUsername, item.expo_token, item.activity_name)
+                  }
+
                 }}>
                 {JSON.stringify(userReaction).includes(item.activity_id) ?
                   <Icon

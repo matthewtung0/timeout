@@ -418,6 +418,17 @@ const fetchFriends = dispatch => async (callback = null) => {
     }
 };
 
+const postNotificationToken = dispatch => async (expo_token, callback = null) => {
+    try {
+        const response = await timeoutApi.patch('/self_user/expo_token', { expo_token })
+        if (callback) { callback() }
+        console.log("Post expo token complete")
+
+    } catch (err) {
+        console.log("Problem posting my expo token:", err)
+    }
+}
+
 
 const fetchFriendsIfUpdate = dispatch => async (callback = null) => {
     try {
@@ -551,7 +562,7 @@ export const { Provider, Context } = createDataContext(
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
         saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2, fetchAvatarGeneral,
-        fetchFriendsIfUpdate,
+        fetchFriendsIfUpdate, postNotificationToken
     },
     {
         outgoingFriendReqs: [],
