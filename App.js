@@ -1,5 +1,5 @@
 //import 'react-native-gesture-handler';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from 'react-native-modal'
@@ -908,9 +908,18 @@ async function registerForPushNotificationsAsync(userId, postNotificationToken) 
       alert('Failed to get push token for push notification!');
       return;
     }
-    token = await Notifications.getExpoPushTokenAsync({
-      experienceId: '@mtung0219/timeout',
-    })
+    if (Platform.OS === 'android') {
+      token = await Notifications.getExpoPushTokenAsync({
+        applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
+        experienceId: '@mtung0219/timeout',
+      })
+    } else {
+      token = await Notifications.getExpoPushTokenAsync({
+        applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
+        experienceId: '@mtung0219/timeout',
+      })
+    }
+
     console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
@@ -940,16 +949,23 @@ function CreateMainNavigator() {
     'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf')
   });
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
     async function startup() {
       console.log("trying local sign in ")
 
-
       let res = await tryLocalSignin();
       let firstTime = new Date()
       let splashDisplayTime = 5000;
       if (res) {
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+          console.log(notification);
+        });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+          console.log(response);
+        });
         await updateLastSignin()
           .then((res) => fetchSelf().then(
             (res) => {
@@ -991,6 +1007,11 @@ function CreateMainNavigator() {
       }
     }
     startup();
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    }
 
   }, [])
 

@@ -176,6 +176,7 @@ const sendLikeNotification = dispatch => async (username, expo_token, activity_n
         });
     } catch (err) {
         console.log("Failure to send notification for like")
+        console.log(err);
     }
 }
 
