@@ -16,6 +16,9 @@ import { Easing } from 'react-native-reanimated';
 import {
     subMonths, startOfMonth, endOfMonth
 } from 'date-fns';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+
 
 const img_src = require('../../assets/signin_background.png');
 const cloud = require('../../assets/cloud.png');
@@ -36,7 +39,7 @@ const SigninScreen = ({ navigation }) => {
     const { fetchUserReactions } = useContext(ReactionContext)
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
     const { fetchOutgoingRequests, fetchIncomingRequests, fetchAvatarGeneral, fetchAvatarItemsOwned,
-        fetchFriends, fetchSelf } = useContext(UserContext)
+        fetchFriends, fetchSelf, postNotificationToken } = useContext(UserContext)
     const { fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
     const { fetchUserCounters } = useContext(CounterContext)
 
@@ -54,6 +57,63 @@ const SigninScreen = ({ navigation }) => {
         setIsLoading(false)
     }
 
+
+    async function registerForPushNotificationsAsync(userId, postNotificationToken) {
+        let token;
+
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+
+        if (Device.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                alert('Failed to get push token for push notification!');
+                return;
+            }
+            if (Platform.OS === 'android') {
+                const token_FCM = (await Notifications.getDevicePushTokenAsync());
+                token = await Notifications.getExpoPushTokenAsync({
+                    applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
+                    experienceId: '@mtung0219/timeout',
+                })
+                console.log(`ANDROID TOKEN IS ${JSON.stringify(token_FCM)}`)
+                //eYByL5AtSWyHwLgErS1EuS:APA91bExyOYgvYyqkkNVfq8eI6rjJCLiaEVhquEuqbeoMb7VYaqVgMO6USvWaIBnAS9MJ2IHmjcE2TX55SzHInO5yKW_lApk-NdzUeEMdu6cgc5ZUW04kirDrgP0ZPJoVhjCqvGt6kXS
+            } else {
+                const token_APN = (await Notifications.getDevicePushTokenAsync());
+                token = await Notifications.getExpoPushTokenAsync({
+                    experienceId: '@mtung0219/timeout',
+                })
+                console.log(`APPLE TOKEN IS ${JSON.stringify(token_APN)}`)
+            }
+
+
+        } else {
+            alert('Must use physical device for Push Notifications');
+        }
+
+
+
+        var toPost = JSON.stringify({
+            userId,
+            token,
+        })
+
+        postNotificationToken(toPost)
+        console.log(`Posted token: ${token}`);
+        return token;
+    }
+
     const signInCallback = async () => {
         var tempDt = new Date()
         var endTime = endOfMonth(tempDt)
@@ -63,6 +123,8 @@ const SigninScreen = ({ navigation }) => {
                 console.log('fetched self');
                 fetchAvatarGeneral(res, forceRetrieve = true, isSelf = true)
                 fetchUserCategories(res, getPrivate = true, isSelf = true);
+
+                registerForPushNotificationsAsync(res.user_id, postNotificationToken)
             }
         )
         await fetchMultipleMonths(startTime, endTime).then(

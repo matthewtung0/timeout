@@ -885,55 +885,6 @@ function CreateMainFlowTab() {
   )
 }
 
-async function registerForPushNotificationsAsync(userId, postNotificationToken) {
-  let token;
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    if (Platform.OS === 'android') {
-      token = await Notifications.getExpoPushTokenAsync({
-        applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
-        experienceId: '@mtung0219/timeout',
-      })
-    } else {
-      token = await Notifications.getExpoPushTokenAsync({
-        applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
-        experienceId: '@mtung0219/timeout',
-      })
-    }
-
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
-
-  var toPost = JSON.stringify({
-    userId,
-    token,
-  })
-
-  postNotificationToken(toPost)
-  return token;
-}
-
 function CreateMainNavigator() {
   const { state, tryLocalSignin, tempVarSet } = useContext(AuthContext);
   const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
@@ -942,7 +893,7 @@ function CreateMainNavigator() {
   const { fetchUserCounters, fetchMultipleMonthsCounters } = useContext(CounterContext)
   const { fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
     fetchIncomingRequests, fetchFriends, fetchSelf,
-    fetchAvatarItemsOwned, postNotificationToken } = useContext(UserContext)
+    fetchAvatarItemsOwned } = useContext(UserContext)
   const [fontsLoaded] = useFonts({
     'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
     'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
@@ -955,23 +906,23 @@ function CreateMainNavigator() {
   useEffect(() => {
     async function startup() {
       console.log("trying local sign in ")
+      notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        console.log(notification);
+      });
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log(response);
+      });
 
       let res = await tryLocalSignin();
       let firstTime = new Date()
       let splashDisplayTime = 5000;
       if (res) {
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-          console.log(notification);
-        });
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-          console.log(response);
-        });
+
         await updateLastSignin()
           .then((res) => fetchSelf().then(
             (res) => {
               fetchAvatarGeneral(res.user_id, forceRetrieve = true, isSelf = true)
               fetchUserCategories(res.user_id, getPrivate = true, isSelf = true);
-              registerForPushNotificationsAsync(res.user_id, postNotificationToken)
             }
           ))
 

@@ -178,6 +178,33 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         return true
     }
 
+    const testFCMNotification = async () => {
+        try {
+            var asdf = await fetch('https://fcm.googleapis.com/fcm/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: 'key=AAAAh1XmPc8:APA91bFwYf7RqiHHu6o_2jBwM2Op6MsuJ_Wua3LkntAT6XJqBVCXerG11jvBeLrOwykVwI9VDbJclhGYiqkLxdb-0L0uuaGU_PqdjOvonzx6vbSoBlLzCt5Ra7qDC0FBQY5dhUtlJKOx',
+                },
+                body: JSON.stringify({
+                    to: "eYByL5AtSWyHwLgErS1EuS:APA91bExyOYgvYyqkkNVfq8eI6rjJCLiaEVhquEuqbeoMb7VYaqVgMO6USvWaIBnAS9MJ2IHmjcE2TX55SzHInO5yKW_lApk-NdzUeEMdu6cgc5ZUW04kirDrgP0ZPJoVhjCqvGt6kXS",
+                    priority: 'high',
+                    data: {
+                        experienceId: '@mtung0219/timeout',
+                        scopeKey: '@mtung0219/timeout',
+                        title: "📧 You've got mail",
+                        message: 'Hello world! 🌐',
+                    },
+                }),
+            });
+            console.log(JSON.stringify(asdf))
+        } catch (err) {
+            console.log(err)
+        }
+
+        console.log("Sent notif")
+    }
+
     return (
         <HideKeyboard>
             <>
@@ -343,6 +370,15 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                         </TouchableOpacity>
                         <View style={{ flex: 1, }} />
+                        <TouchableOpacity
+                            style={[styles.start, { flex: 3.5, height: height / 12 }]}
+                            onPress={() => {
+                                testFCMNotification();
+                            }}>
+                            <Text style={[styles.startText, styles.textDefaultSemiBold,
+                            { fontSize: 18, paddingVertical: 10, paddingHorizontal: 10, }]}>Test Notif</Text>
+
+                        </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.start, { flex: 3.5, height: height / 12 }]}
                             onPress={() => {

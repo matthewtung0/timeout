@@ -27,7 +27,7 @@
       "package": "com.nofussexe.timeout",
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
