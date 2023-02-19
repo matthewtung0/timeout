@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "timeout",
+    "name": "Time Out by nofuss.exe",
     "slug": "timeout",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -17,7 +17,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "nofussexe.timeout"
     },
     "android": {
       "adaptiveIcon": {
