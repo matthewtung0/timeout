@@ -127,8 +127,15 @@ const FriendFeedComponent = ({ item, index, cacheChecker, myUsername, navigation
       <View style={styles.listItem}>
         <View style={{ flex: 1, borderWidth: 0, }}>
           <View style={{ flexDirection: 'row', borderWidth: 0, alignItems: 'flex-end', }}>
-            <Text numberOfLines={1} style={{}}>
+
+            <TouchableOpacity style={{ borderWidth: 0 }}
+              onPress={() => {
+                setIdToView({ username: item.username, user_id: item.user_id })
+                navigation.navigate('Profile temp')
+              }}>
               <Text style={[styles.textDefaultSemiBold, { fontSize: 15, color: "#67806D" }]}>{item.username}</Text>
+            </TouchableOpacity>
+            <Text numberOfLines={1} style={{}}>
               <Text style={[styles.textDefault, { fontSize: 13, }]}> worked on </Text>
             </Text>
             {item.is_private ?

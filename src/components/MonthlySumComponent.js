@@ -53,13 +53,13 @@ const MonthlySumComponent = ({ monthBatch }) => {
     }
     return (
 
-        <View>
+        <View style={{}}>
             <>
                 {sortedRes
                     .map((item) => {
                         return (
                             <View
-                                style={styles.container}
+                                style={[styles.container, {}]}
                                 key={item[0]}>
                                 <View style={[styles.textContainer, { width: width / 4, marginLeft: 5, }]}>
                                     <Text numberOfLines={2}

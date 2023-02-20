@@ -150,6 +150,8 @@ const SessionBackfillScreen = ({ navigation, route: { params } }) => {
 
     const saveSessionErrorCallback = () => {
         setIsLoading(false);
+        alert("Something went wrong - please try again later.")
+        navigation.navigate('SessionSelect')
     }
     const saveSession_callback = async () => {
         console.log("sessionStartTime is ", sessionObjFinal.time_start);
@@ -191,7 +193,7 @@ const SessionBackfillScreen = ({ navigation, route: { params } }) => {
             </Modal>
 
 
-            <View style={{
+            {/*<View style={{
                 position: 'absolute', flex: 1, width: '100%', height: '100%',
                 justifyContent: 'flex-end',
             }}>
@@ -200,10 +202,10 @@ const SessionBackfillScreen = ({ navigation, route: { params } }) => {
                     style={{ width: '100%', height: 50, }}
                     resizeMode="cover"
                 />
-            </View>
+        </View>*/}
 
 
-            <View style={{ padding: 20, paddingTop: 40, }}>
+            <View style={{ padding: 20, paddingTop: 50, }}>
                 <View style={{
                     height: 70, marginTop: 50, borderRadius: 20,
                     backgroundColor: 'white', shadowOffset: { width: 0.1, height: 0.1, },
@@ -262,10 +264,10 @@ const SessionBackfillScreen = ({ navigation, route: { params } }) => {
                                     <TouchableOpacity
                                         style={{
                                             borderWidth: 1, justifyContent: 'center', alignItems: 'center',
-                                            borderRadius: 5, borderColor: '#CAE3B7', backgroundColor: '#CAE3B7'
+                                            borderRadius: 5, borderColor: '#CAE3B7', backgroundColor: '#90AB72'
                                         }}
                                         onPress={showDatePickerAndroid}>
-                                        <Text style={[styles.textDefault, { paddingVertical: 5, color: 'grey' }]}>Enter Date</Text>
+                                        <Text style={[styles.textDefault, { paddingVertical: 5, color: 'white' }]}>Enter Date</Text>
 
                                     </TouchableOpacity>
                                 </View>
@@ -286,10 +288,10 @@ const SessionBackfillScreen = ({ navigation, route: { params } }) => {
                                     <TouchableOpacity
                                         style={{
                                             borderWidth: 1, justifyContent: 'center', alignItems: 'center',
-                                            borderRadius: 5, borderColor: '#CAE3B7', backgroundColor: '#CAE3B7'
+                                            borderRadius: 5, borderColor: '#CAE3B7', backgroundColor: '#90AB72'
                                         }}
                                         onPress={showTimePickerAndroid}>
-                                        <Text style={[styles.textDefault, { paddingVertical: 5, color: 'grey' }]}>Enter Time</Text>
+                                        <Text style={[styles.textDefault, { paddingVertical: 5, color: 'white' }]}>Enter Time</Text>
                                     </TouchableOpacity>
                                 </View>
 

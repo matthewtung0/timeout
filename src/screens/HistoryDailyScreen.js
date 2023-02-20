@@ -2,9 +2,7 @@ import React, { useContext, useState, useCallback, useMemo } from 'react';
 import {
     View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, Platform,
 } from 'react-native';
-import {
-    startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format,
-} from 'date-fns';
+import { startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format, } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import MonthlySumComponent from '../components/MonthlySumComponent';
 import { useFocusEffect } from '@react-navigation/native';
@@ -402,7 +400,7 @@ const HistoryDailyScreen = ({ navigation }) => {
     const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], visibleOffset])
 
     return (
-        <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 110 : 100 }]}>
+        <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 90 : 80 }]}>
             <Modal
                 isVisible={modalVisible}
                 //animationType="fade"
@@ -513,6 +511,21 @@ const HistoryDailyScreen = ({ navigation }) => {
 
 
         </View >
+
+            <View style={[styles.modalContainer, { marginTop: height / 4, borderWidth: 0, }]}>
+                {/*<View style={styles.modalDummy} />*/}
+
+                <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: '#67806D' }]}
+                    onPress={() => { navigation.navigate('HistorySearch') }}>
+                    <Icon
+                        name="search"
+                        type='ionicon'
+                        size={20}
+                        color='white' />
+                </TouchableOpacity>
+            </View>
+            {/*
             <View
 
                 style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 90 }}>
@@ -528,9 +541,9 @@ const HistoryDailyScreen = ({ navigation }) => {
                         type='ionicon'
                         size={20}
                         color='white' />
-                    {/*<Text style={[styles.textDefault, { color: 'white', }]}>Go to search</Text>*/}
                 </TouchableOpacity>
             </View>
+                */}
 
 
         </>
@@ -582,7 +595,25 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontSize: 18,
         fontWeight: '600',
-    }
+    },
+    modalContainer: {
+        flex: 1,
+        height: '100%',
+        position: 'absolute',
+    },
+    // decides how high up the modal tab is
+    modalDummy: {
+        flex: 0.2,
+    },
+    modalButton: {
+        width: 40,
+        height: 40,
+        backgroundColor: '#ABC57E',
+        borderBottomRightRadius: 10,
+        borderTopRightRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 })
 
 export default HistoryDailyScreen;

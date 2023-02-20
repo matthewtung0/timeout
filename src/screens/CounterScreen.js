@@ -419,7 +419,7 @@ const CounterScreen = () => {
                                                 }}>
                                                 <View style={{ height: '100%', justifyContent: 'center', }}>
                                                     <Text style={[styles.textDefaultBold,
-                                                    { color: '#67806D', fontSize: 14, }]}>-1</Text>
+                                                    { color: '#67806D', fontSize: 16, }]}>-1</Text>
                                                 </View>
 
                                             </TouchableOpacity>
@@ -479,7 +479,7 @@ const CounterScreen = () => {
                                                 }}>
                                                 <View style={{ height: '100%', justifyContent: 'center' }}>
                                                     <Text style={[styles.textDefaultBold,
-                                                    { color: '#67806D', fontSize: 14, }]}>+1</Text>
+                                                    { color: '#67806D', fontSize: 16, }]}>+1</Text>
                                                 </View>
 
                                             </TouchableOpacity>

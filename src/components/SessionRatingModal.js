@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import { Context as SessionContext } from '../context/SessionContext';
-import { fromUnixTime, startOfMonth, endOfMonth, subDays } from 'date-fns';
+import { fromUnixTime, startOfMonth, endOfMonth, differenceInSeconds } from 'date-fns';
 const sessionCompleteBanner = require('../../assets/sessionCompleteBanner.png');
 const iconRatingNull = require('../../assets/icon_rating-null.png')
 const iconRating = require('../../assets/icon_rating.png')
@@ -47,12 +47,19 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const [toKeep, setToKeep] = useState(true);
     const [toAdd, setToAdd] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [pointsEarned, setPointsEarned] = useState(0);
 
     const { state: s, deleteTodoItem, addTodoItem, fetchUserTodoItems } = useContext(CategoryContext)
     const { state: userState, addPoints, fetchSelf } = useContext(UserContext)
     const { saveSession, fetchMultipleMonths } = useContext(SessionContext)
 
     const toggleRatingViewActive = () => {
+        var num_stars = sessionObjFinal.prod_rating / 20
+        var num_sec = differenceInSeconds(sessionObjFinal.time_end, sessionObjFinal.time_start)
+        console.log(`num stars: ${num_stars}`)
+        console.log(`num sec: ${num_sec}`)
+        setPointsEarned(Math.ceil(1000 * (num_stars + 1) / 5 * num_sec / 3600));
+
         setRatingViewActive(!ratingViewActive)
     }
     const toggleRemoveTodo = () => {
@@ -101,8 +108,10 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             return
         }
 
+        // setting num points earned: max of 1000 points for 60 min and 5 stars
+        // 1000 * ((num_stars+1) / 5) * (num_mins / 60)
         try {
-            await addPoints(userState.user_id, 100, offBoard())
+            await addPoints(userState.user_id, pointsEarned, offBoard())
         } catch (err) {
             console.log("Problem adding points")
             offBoard();
@@ -351,7 +360,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         <Text style={[styles.textDefaultBold,
                         {
                             color: '#67806D', marginTop: 10, fontSize: 22,
-                        }]}>You earned 100 </Text>
+                        }]}>You earned {pointsEarned} </Text>
                         <Image
                             source={pointSquares}
                             style={{ width: 22, height: 22, }}

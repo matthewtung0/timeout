@@ -3,14 +3,12 @@ import {
     View, StyleSheet, TouchableOpacity, Dimensions,
     Image, Keyboard, TouchableWithoutFeedback, Animated, TextInput
 } from 'react-native';
-
+import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
-import { Input, Text } from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import timeoutApi from '../api/timeout';
 import { Easing } from 'react-native-reanimated';
 
-const img_src = require('../../assets/signin_background.png');
-const img = require('../../assets/signup_plant.png')
 const cloud = require('../../assets/cloud.png');
 const character = require('../../assets/character.png');
 const speechBubbleMore = require('../../assets/speech_bubble_more.png');
@@ -39,6 +37,17 @@ const SignupScreen = ({ navigation, route: { params } }) => {
     const [username, setUsername] = useState('');
     const [passwordMismatch, setPasswordMismatch] = useState(false)
 
+    const [passwordVisible, setPasswordVisible] = useState(false)
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
+
+    const togglePasswordVisible = () => {
+        setPasswordVisible(!passwordVisible)
+    }
+
+    const toggleConfirmPasswordVisible = () => {
+        setConfirmPasswordVisible(!confirmPasswordVisible)
+    }
+
     const checkEmailAndNext = async () => {
         try {
             const emailTaken = await timeoutApi.get('/email_exists', { params: { email } })
@@ -51,6 +60,7 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                 alert("Email is aleady taken. Please use another")
             }
         } catch (err) {
+            alert("Something went wrong. Please check your internet connection.")
             console.log(err)
         }
     }
@@ -118,7 +128,7 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
     const setBioFunc = (txt) => {
         var num_lines = txt.split(/\r\n|\r|\n/).length
-        if (num_lines <= 4) {
+        if (num_lines <= 6) {
             setBio(txt)
         }
     }
@@ -139,7 +149,7 @@ const SignupScreen = ({ navigation, route: { params } }) => {
             <View style={{
                 flex: 1,
             }}>
-                <View style={{ flex: 0.8, backgroundColor: '#FCC759' }}>
+                <View style={{ flex: 0.6, backgroundColor: '#FCC759' }}>
 
                     <View style={{
                         position: 'absolute', height: '100%', width: '100%',
@@ -216,29 +226,43 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                 <View style={{ flex: 1.5 }}>
                     {activeMenu == 0 ?
                         <View style={styles.inner}>
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                                First Name</Text>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D', marginHorizontal: 35 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='First Name'
+                                maxLength={30}
                                 autoCorrect={false}
                                 value={firstName}
                                 onChangeText={setFirstName}
                             />
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            <Text style={[styles.textDefaultMed, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 3,
+                                marginTop: 5,
+                            }]}>
+                                Last Name</Text>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D', marginHorizontal: 35 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='Last Name'
+                                maxLength={30}
                                 autoCorrect={false}
                                 value={lastName}
                                 onChangeText={setLastName}
                             />
-
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            <Text style={[styles.textDefaultMed, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 3,
+                                marginTop: 10,
+                            }]}>
+                                Email Address</Text>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, marginBottom: 25, color: '#67806D', marginHorizontal: 35 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='Email'
                                 autoCapitalize='none'
                                 autoCorrect={false}
+                                maxLength={50}
                                 value={email}
                                 onChangeText={(value) => {
                                     setEmail(value)
@@ -260,9 +284,11 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 <Text style={styles.signUpTextStyle}>Next</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() =>
-                                navigation.navigate('SignIn')
-                            }
+                            <TouchableOpacity
+                                style={{ marginTop: 10, }}
+                                onPress={() =>
+                                    navigation.navigate('SignIn')
+                                }
                             >
                                 <Text style={styles.redirectToSignInStyleWhite}>Already have an account?
                                     <Text style={styles.redirectToSignInStyleYellow}> Sign in here!</Text>
@@ -279,9 +305,12 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                         <View style={styles.inner}>
 
                             <TextInput
-                                style={[styles.inputStyleBio, styles.textDefault, { fontSize: 16, paddingTop: 15, }]}
+                                style={[styles.inputStyleBio, styles.textDefault, {
+                                    fontSize: 16, paddingTop: 15,
+                                    color: '#67806D'
+                                }]}
                                 multiline={true}
-                                numberOfLines={4}
+                                numberOfLines={6}
                                 editable
                                 maxLength={150}
                                 //containerStyle={styles.nameInputStyleContainer}
@@ -326,9 +355,10 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                         : null}
                     {activeMenu == 2 ?
                         <View style={styles.inner}>
-
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
+                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                                Username</Text>
+                            <TextInput
+                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D', marginHorizontal: 35, }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 secureTextEntry={false}
                                 placeholder="Username"
@@ -337,33 +367,65 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 value={username}
                                 onChangeText={setUsername}
                             />
+                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, marginTop: 5, }]}>
+                                Password</Text>
+                            <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
+                                <TextInput
+                                    style={[styles.inputStyle, styles.textDefault, {
+                                        fontSize: 16, color: '#67806D',
+                                        marginHorizontal: 0, flex: 5,
+                                    }]}
+                                    inputContainerStyle={styles.inputStyleContainer}
+                                    secureTextEntry={!passwordVisible}
+                                    placeholder="Password"
+                                    autoCapitalize='none'
+                                    autoCorrect={false}
+                                    value={password}
+                                    onChangeText={setPassword}
+                                />
+                                <View style={{ flex: 1 }}>
+                                    <TouchableOpacity onPress={togglePasswordVisible}>
+                                        <Icon
+                                            name={passwordVisible ? "eye-outline" : "eye-off-outline"}
+                                            type='ionicon'
+                                            size={25}
+                                            color='white' />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
 
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                secureTextEntry={true}
-                                placeholder="Password"
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                value={password}
-                                onChangeText={setPassword}
-                            />
+                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, marginTop: 5, }]}>
+                                Confirm Password</Text>
+                            <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
 
-                            <Input
-                                style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
-                                inputContainerStyle={styles.inputStyleContainer}
-                                secureTextEntry={true}
-                                placeholder="Confirm Password"
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                value={passwordConfirm}
-                                onChangeText={(value) => {
-                                    setPasswordConfirm(value)
-                                    setPasswordMismatch(false)
-                                }}
-                                errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 16, color: '#F5BBAE' }]}
-                                errorMessage={passwordMismatch ? "Passwords don't match!" : null}
-                            />
+                                <TextInput
+                                    style={[styles.inputStyle, styles.textDefault, {
+                                        fontSize: 16, marginBottom: 20, marginHorizontal: 0,
+                                        color: '#67806D', flex: 5,
+                                    }]}
+                                    inputContainerStyle={styles.inputStyleContainer}
+                                    secureTextEntry={!confirmPasswordVisible}
+                                    placeholder="Confirm Password"
+                                    autoCapitalize='none'
+                                    autoCorrect={false}
+                                    value={passwordConfirm}
+                                    onChangeText={(value) => {
+                                        setPasswordConfirm(value)
+                                        setPasswordMismatch(false)
+                                    }}
+                                    errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 16, color: '#F5BBAE' }]}
+                                    errorMessage={passwordMismatch ? "Passwords don't match!" : null}
+                                />
+                                <View style={{ flex: 1 }}>
+                                    <TouchableOpacity onPress={toggleConfirmPasswordVisible}>
+                                        <Icon
+                                            name={confirmPasswordVisible ? "eye-outline" : "eye-off-outline"}
+                                            type='ionicon'
+                                            size={25}
+                                            color='white' />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
 
                             <TouchableOpacity
                                 style={[styles.textDefaultBold, styles.signUpBoxStyle]}
@@ -415,6 +477,8 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     container: {
         flex: 1,

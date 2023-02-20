@@ -1,7 +1,7 @@
 import React, { useContext, useState, useCallback, useRef } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions, Animated, TouchableWithoutFeedback,
-    Image, Keyboard,
+    Image, Keyboard, TextInput,
 } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { Easing } from 'react-native-reanimated';
@@ -156,20 +156,31 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 </View>
 
                 <View style={{ flex: 1.5, backgroundColor: '#67806D' }}>
-                    <View style={{ marginTop: 35, }} />
-                    <Input
-                        style={[styles.inputStyle, styles.textDefault, { marginBottom: 10, }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        placeholder='Email'
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={email}
-                        onChangeText={setEmail}
-                    />
+                    <View style={{ marginTop: 20, }} />
+                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 5, }]}>
+                        Email Address</Text>
+                    <View style={{ flexDirection: 'row', marginHorizontal: 35, marginBottom: 10, }}>
+                        <TextInput
+                            style={[styles.inputStyle, styles.textDefault, {
+                                marginBottom: 10, marginHorizontal: 0,
+                                flex: 5,
+                            }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            placeholder='Email'
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+                    </View>
+
                     {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
 
                     <TouchableOpacity
-                        style={isLoading ? [styles.signUpBoxStyle, { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#FFDA95' }] : [styles.signUpBoxStyle, { paddingHorizontal: 20, paddingVertical: 10, }]}
+                        style={isLoading ? [styles.signUpBoxStyle, {
+                            marginTop: 30,
+                            paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#FFDA95'
+                        }] : [styles.signUpBoxStyle, { paddingHorizontal: 20, paddingVertical: 10, }]}
                         onPress={() => {
                             if (isLoading) { return }
                             setIsLoading(true)
@@ -208,6 +219,8 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     container: {
         flex: 1,

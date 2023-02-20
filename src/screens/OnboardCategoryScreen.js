@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, ScrollView, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,11 +11,9 @@ import { Context as CounterContext } from '../context/CounterContext'
 import { Context as ReactionContext } from '../context/ReactionContext'
 import { Context as SessionContext } from '../context/SessionContext'
 import { Context as UserContext } from '../context/userContext'
-import {
-    subMonths, startOfMonth, endOfMonth
-} from 'date-fns';
+import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
-const bg_bottom = require('../../assets/background_sidebar.png')
+const bg_bottom = require('../../assets/border.png')
 
 const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
@@ -153,7 +151,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                         <Text style={[styles.textDefaultSemiBold,
                         { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>Select some categories to track.</Text>
                         <Text style={[styles.textDefaultSemiBold,
-                        { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>You can edit them later in the app.</Text>
+                        { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>You can add your own later in the app.</Text>
                     </View>
 
 
@@ -169,7 +167,11 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                     key={item[0]}
                                     style={{ height: 45, }}>
                                     <View style={item[2] ?
-                                        { flexDirection: 'row', flex: 1, paddingBottom: 5, borderWidth: 1, borderRadius: 20, } :
+                                        {
+                                            flexDirection: 'row', flex: 1, paddingBottom: 5,
+                                            borderWidth: 0, borderRadius: 20, borderColor: '#67806D',
+                                            backgroundColor: '#DCDBDB'
+                                        } :
                                         { flexDirection: 'row', flex: 1, paddingBottom: 5, borderRadius: 20, }}>
                                         <View style={{ flex: 8, justifyContent: 'center', paddingLeft: 10, }}>
                                             <TouchableOpacity
@@ -212,63 +214,10 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                         >
                         </FlatList>
 
-
-                        {/*
-                        {categoryArr
-                            //.sort(function (a, b) {return String(a.category_name).localeCompare(String(b.category_name))})
-                            .map((item) => {
-                                return (
-                                    <View
-                                        key={item[0]}
-                                        style={{ height: 45, }}>
-                                        <View style={item[2] ?
-                                            { flexDirection: 'row', flex: 1, paddingBottom: 5, borderWidth: 1, borderRadius: 20, } :
-                                            { flexDirection: 'row', flex: 1, paddingBottom: 5, borderRadius: 20, }}>
-                                            <View style={{ flex: 8, justifyContent: 'center', paddingLeft: 10, }}>
-                                                <TouchableOpacity
-                                                    style={{ borderWidth: 0, flex: 1, justifyContent: 'center', }}
-                                                    onPress={() => { toggleSelected(item[0]) }}>
-                                                    <View style={{ justifyContent: 'center', }}>
-                                                        <Text style={[styles.textDefault,
-                                                        { color: '#67806D', fontSize: 15 }]}>{item[1]}</Text>
-                                                    </View>
-
-                                                </TouchableOpacity>
-
-                                            </View>
-
-                                            <View style={{ flex: 1, justifyContent: 'center', }}>
-                                                <View style={{ backgroundColor: constants.colors[item[3]], height: 20, width: 20, }} />
-                                            </View>
-
-                                            <View style={{ flex: 1, justifyContent: 'center', }}>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        if (isLoading) { return }
-                                                        setSelectedItem(item)
-                                                        toggleModal()
-                                                    }}>
-                                                    <Icon name='pencil-outline' type='ionicon' size={20} color='#67806D' />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                        <View
-                                            style={{
-                                                borderBottomColor: '#DCDBDB',
-                                                //borderBottomWidth: StyleSheet.hairlineWidth,
-                                                borderBottomWidth: 1.5,
-                                                marginBottom: 0,
-                                            }}
-                                        />
-                                    </View>
-                                )
-                            })}
-                        */}
-
                     </View>
                     <View opacity={isLoading ? 0.2 : 1} style={{ flex: 1.5, }}>
                         <TouchableOpacity
-                            style={styles.signUpBoxStyle}
+                            style={[styles.signUpBoxStyle, { backgroundColor: '#67806D' }]}
                             onPress={() => {
                                 if (isLoading) { return; }
                                 setIsLoading(true)
@@ -284,7 +233,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                     errorCallback: errorCallback
                                 })
                             }}>
-                            <Text style={styles.signUpTextStyle}>Complete Sign Up</Text>
+                            <Text style={[styles.textDefaultMed, styles.signUpTextStyle]}>Complete Sign Up</Text>
                         </TouchableOpacity>
                         {isLoading ?
                             <ActivityIndicator
@@ -324,12 +273,13 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     textDefaultSemiBold: {
         fontFamily: 'Inter-SemiBold',
     },
     signUpBoxStyle: {
-        backgroundColor: '#FCC859',
         paddingVertical: 10,
         paddingHorizontal: 20,
         alignSelf: 'center',

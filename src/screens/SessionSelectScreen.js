@@ -242,26 +242,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
                     <View
-                        //onLayout={({ nativeEvent }) => {
-                        /*newRef?.current?.measure((x, y, pageX, pageY, width, height) => {
-                            console.log('Component width is: ' + width)
-                            console.log('Component height is: ' + height)
-                            console.log('Component x is: ' + x)
-                            console.log('Component y is: ' + y)
-                            console.log('Component pageX is: ' + pageX)
-                            console.log('Component pageY is: ' + pageY)
-                        })
-        
-                        newRef?.current?.measureInWindow((fx, fy, width, height, px, py) => {
-                            console.log('Component width is: ' + width)
-                            console.log('Component height is: ' + height)
-                            console.log('X offset to frame: ' + fx)
-                            console.log('Y offset to frame: ' + fy)
-                            console.log('X offset to page: ' + px)
-                            console.log('Y offset to page: ' + py)
-                        })*/
-                        //console.log(nativeEvent.layout)
-                        //}}
                         style={{ borderColor: 'pink', borderWidth: 0, }}
                     >
                         <View style={{ position: 'absolute', flex: 1, borderWidth: 0, width: '100%', height: '100%', }}>
@@ -283,8 +263,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             style={{
                                 //width: 235, 
                                 width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0.1, borderColor: 'yellow',
-                                marginTop: 30,
+                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0, borderColor: 'yellow',
+                                marginTop: 20,
                             }}
                             resizeMode="contain" />
                         <View
@@ -299,7 +279,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             source={clock_bottom}
                             style={{
                                 width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.085, alignSelf: "center", borderWidth: 0.1, borderColor: 'yellow'
+                                height: (width / 2 / 0.80) * 0.0842, alignSelf: "center", borderWidth: 0, borderColor: 'yellow'
                             }}
                             resizeMode="contain" />
                         {/* some space for desk */}
@@ -370,7 +350,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                         </TouchableOpacity>
                         <View style={{ flex: 1, }} />
-                        <TouchableOpacity
+                        {/*<TouchableOpacity
                             style={[styles.start, { flex: 3.5, height: height / 12 }]}
                             onPress={() => {
                                 testFCMNotification();
@@ -378,7 +358,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             <Text style={[styles.startText, styles.textDefaultSemiBold,
                             { fontSize: 18, paddingVertical: 10, paddingHorizontal: 10, }]}>Test Notif</Text>
 
-                        </TouchableOpacity>
+                            </TouchableOpacity>*/}
                         <TouchableOpacity
                             style={[styles.start, { flex: 3.5, height: height / 12 }]}
                             onPress={() => {
@@ -410,8 +390,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                     </View>
 
-
-
                     {state.errorMessage && 0 ?
                         <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
                             <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
@@ -421,9 +399,9 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                         : null}
                     {isLoading ?
-                        <ActivityIndicator size="large" color="black" /> : null}
+                        <ActivityIndicator size="large" color="#67806D" /> : null}
 
-                    <View style={styles.modalContainer}>
+                    <View style={[styles.modalContainer, { marginTop: PADDING_TOP }]}>
                         <View style={styles.modalDummy} />
 
                         <TouchableOpacity

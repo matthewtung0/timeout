@@ -26,7 +26,7 @@ const EditSessionTimeModal = ({ toggleFunction,
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
 
-            <View style={{ flex: 1, backgroundColor: '#F9EAD3', borderRadius: BORDER_RADIUS }}>
+            <View style={{ flex: 1, backgroundColor: '#F5F5F5', borderRadius: BORDER_RADIUS }}>
 
                 <View style={{ marginHorizontal: 20, marginTop: 90, alignItems: 'center', }}>
 
@@ -34,22 +34,21 @@ const EditSessionTimeModal = ({ toggleFunction,
                         {isLoading ?
                             <ActivityIndicator
                                 style={[styles.inputStyle, {
-                                    paddingVertical: 10, backgroundColor: '#F9EAD3',
+                                    paddingVertical: 10, backgroundColor: '#F5F5F5',
                                     fontSize: 40,//backgroundColor: constants.colors[chosenColor],
                                 }]}
                                 size="large" color="gray" />
                             :
                             <View style={{
-                                flexDirection: 'row', borderWidth: 1, justifyContent: 'center',
-                                alignItems: 'flex-end', width: '100%',
+                                flexDirection: 'row', borderWidth: 0,
+                                alignItems: 'center', width: '90%', justifyContent: 'center',
                             }}>
-
 
                                 <TextInput
                                     style={[styles.inputStyle, {
                                         flex: 1,
-                                        paddingVertical: 10, backgroundColor: '#F9EAD3', borderWidth: 1, borderColor: '#67806D',
-                                        fontSize: 40, //backgroundColor: constants.colors[chosenColor],
+                                        paddingVertical: 10, backgroundColor: '#F5F5F5', borderColor: '#67806D',
+                                        fontSize: 40, borderWidth: 1,//backgroundColor: constants.colors[chosenColor],
                                     }]}
                                     inputContainerStyle={styles.inputStyleContainer}
                                     keyboardType={"number-pad"}
@@ -63,13 +62,18 @@ const EditSessionTimeModal = ({ toggleFunction,
                                     value={hours}
                                     onChangeText={setHours}
                                 />
-                                <View style={[styles.textDefaultMed, { fontSize: 22, flex: 1, }]}><Text>hours</Text>
+                                <View style={[styles.textDefaultMed, {
+                                    flex: 3, marginLeft: 5,
+                                }]}><Text style={[styles.textDefaultMed, {
+                                    fontSize: 20, color: '#67806D',
+                                }]}>hours</Text>
                                 </View>
 
 
                                 <TextInput
                                     style={[styles.inputStyle, {
-                                        paddingVertical: 10, backgroundColor: '#F9EAD3', flex: 1, borderWidth: 1, borderColor: '#67806D',
+                                        paddingVertical: 10, backgroundColor: '#F5F5F5',
+                                        flex: 2, borderWidth: 1, borderColor: '#67806D',
                                         fontSize: 40,//backgroundColor: constants.colors[chosenColor],
                                     }]}
                                     inputContainerStyle={styles.inputStyleContainer}
@@ -85,7 +89,10 @@ const EditSessionTimeModal = ({ toggleFunction,
                                     value={numMins}
                                     onChangeText={setMins}
                                 />
-                                <View style={[styles.textDefaultMed, { fontSize: 22, flex: 1, }]}><Text>minutes</Text>
+                                <View style={[styles.textDefaultMed, { flex: 3, marginLeft: 5, }]}>
+                                    <Text style={[styles.textDefaultMed, {
+                                        fontSize: 20, color: '#67806D',
+                                    }]}>minutes</Text>
                                 </View>
 
 
@@ -102,7 +109,7 @@ const EditSessionTimeModal = ({ toggleFunction,
                                 callback(mins, hours);
                                 toggleFunction();
                             }}>
-                            <Text style={styles.submitText}>Submit</Text>
+                            <Text style={styles.submitText}>OK</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -117,7 +124,7 @@ const EditSessionTimeModal = ({ toggleFunction,
                     borderTopRightRadius: BORDER_RADIUS,
                 }} />
 
-            <Text style={[styles.title, { position: 'absolute' }]}>{activityName}</Text>
+            <Text style={[styles.title, { position: 'absolute' }]}>{activityName} duration</Text>
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}

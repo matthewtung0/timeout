@@ -117,7 +117,15 @@ const FriendScreen = ({ navigation, route: { params } }) => {
 
                             {/* NAME // FRIEND SINCE- */}
                             <View style={{ flex: 5, justifyContent: 'space-around' }}>
-                                <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}</Text>
+                                <TouchableOpacity onPress={() => {
+                                    setIdToView({ username: item.username, user_id: item.friend })
+                                    navigation.navigate('Profile temp')
+                                }}>
+                                    <Text style={[styles.textDefaultBold, { fontSize: 17, color: '#67806D' }]}>{item['username']}
+                                    </Text>
+                                </TouchableOpacity>
+
+
                                 <Text style={[styles.textDefault, { fontSize: 14, color: 'gray' }]}>
                                     {"Friend since " + formatDate(item['time_created'])}
                                 </Text>

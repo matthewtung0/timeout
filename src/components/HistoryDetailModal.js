@@ -200,7 +200,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                             </TouchableOpacity>
 
                             <Text style={[styles.textDefault,
-                            { color: 'black', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
+                            { color: 'white', marginHorizontal: 5, flexWrap: 'wrap', flex: 1, }]}>
                                 Task is public - task name will be visible on your friend feed.</Text>
                         </View>
 

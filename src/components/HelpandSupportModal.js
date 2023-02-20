@@ -26,7 +26,7 @@ const HelpandSupportModal = ({ toggleFunction, selectedObject, callback }) => {
                     marginHorizontal: 20, fontSize: 16,
                     marginTop: 20, color: '#67806D',
                 }]}>
-                    <Text>nofuss.exe@gmail.com</Text>
+                    <Text>exe@nofuss.xyz</Text>
                 </Text>
                 <Text style={[styles.textDefault, {
                     marginHorizontal: 20, fontSize: 16,

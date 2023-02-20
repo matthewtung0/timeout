@@ -1,9 +1,10 @@
 import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator,
+    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator, TextInput
 } from 'react-native';
-import { Input, Text } from 'react-native-elements';
+import { Icon } from 'react-native-elements'
+import { Text } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as AuthContext } from '../context/AuthContext';
 
@@ -23,7 +24,6 @@ import * as Notifications from 'expo-notifications';
 const img_src = require('../../assets/signin_background.png');
 const cloud = require('../../assets/cloud.png');
 const character = require('../../assets/character.png');
-const speechBubbleMore = require('../../assets/speech_bubble_more.png');
 const speechBubbleThin = require('../../assets/speech_bubble_thin.png');
 
 
@@ -47,14 +47,21 @@ const SigninScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
+    const [showError, setShowError] = useState(false)
 
     const imgWidth = Image.resolveAssetSource(img_src).width
     const imgHeight = Image.resolveAssetSource(img_src).height
     const heightSet = width * (imgHeight / imgWidth)
+    const [passwordVisible, setPasswordVisible] = useState(false)
 
     const signInCallbackFail = async () => {
         setPassword('')
         setIsLoading(false)
+        setShowError(true)
+    }
+
+    const togglePasswordVisible = () => {
+        setPasswordVisible(!passwordVisible)
     }
 
 
@@ -269,28 +276,55 @@ const SigninScreen = ({ navigation }) => {
                 </View>
 
                 <View style={[styles.inputContainer, { flex: 1.5 }]}>
-                    <View style={{ marginTop: 35, }} />
-                    <Input
-                        style={[styles.inputStyle, styles.textDefault, { marginBottom: 10, fontSize: 16, }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={email}
-                        placeholder="Email"
-                        onChangeText={setEmail}
-                    />
+                    <View style={{ marginTop: 10, }} />
+                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                        Email</Text>
 
-                    <Input
-                        style={[styles.inputStyle, styles.textDefault, { fontSize: 16, }]}
-                        inputContainerStyle={styles.inputStyleContainer}
-                        secureTextEntry={true}
-                        placeholder="Password"
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        value={password}
-                        onChangeText={setPassword}
-                    />
+                    <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
 
+                        <TextInput
+                            style={[styles.inputStyle, styles.textDefault, {
+                                marginBottom: 10, fontSize: 16, marginHorizontal: 0, flex: 5,
+                                color: '#67806D'
+                            }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={email}
+                            placeholder="Email"
+                            onChangeText={setEmail}
+                        />
+                        {/*<View style={{ flex: 1, }} />*/}
+                    </View>
+
+                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                        Password</Text>
+                    <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
+                        <TextInput
+                            style={[styles.inputStyle, styles.textDefault, {
+                                fontSize: 16, flex: 7, marginHorizontal: 0,
+                                color: '#67806D'
+                            }]}
+                            inputContainerStyle={styles.inputStyleContainer}
+                            secureTextEntry={!passwordVisible}
+                            placeholder="Password"
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <View style={{ flex: 1, }}>
+                            <TouchableOpacity
+                                style={{ marginLeft: 3, }}
+                                onPress={togglePasswordVisible}>
+                                <Icon
+                                    name={passwordVisible ? "eye-outline" : "eye-off-outline"}
+                                    type='ionicon'
+                                    size={25}
+                                    color='white' />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     <TouchableOpacity
                         style={isLoading ? [styles.signInBoxStyle, { backgroundColor: '#FFDA95' }] : [styles.signInBoxStyle]}
@@ -314,8 +348,10 @@ const SigninScreen = ({ navigation }) => {
 
                     <TouchableOpacity
                         style={{}}
-                        onPress={() =>
+                        onPress={() => {
+                            clearErrorMessage();
                             navigation.navigate('ForgotPassword')
+                        }
                         }
                     >
                         <Text style={[styles.button, styles.textDefault, { fontSize: 16, }]}>Forgot your password?</Text>
@@ -326,7 +362,11 @@ const SigninScreen = ({ navigation }) => {
 
                     <TouchableOpacity
                         style={{ marginTop: 10, }}
-                        onPress={() => navigation.navigate('SignUp', { defaultMenuNum: 0 })}
+                        onPress={() => {
+                            clearErrorMessage();
+                            navigation.navigate('SignUp', { defaultMenuNum: 0 }
+                            )
+                        }}
                     >
 
                         <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault,]}>Don't have an account?
@@ -351,6 +391,8 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     container: {
     },
@@ -393,6 +435,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
         marginBottom: 20,
+        marginTop: 20,
     },
     signInTextStyle: {
         color: '#F6F2DF',

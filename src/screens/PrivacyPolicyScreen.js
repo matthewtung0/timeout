@@ -9,7 +9,7 @@ const PrivacyPolicyScreen = ({ navigation, }) => {
     return (
         <>
             <View style={styles.container}>
-                <Text style={[styles.textDefaultBold, styles.title]}>TimeOut Privacy Policy</Text>
+                <Text style={[styles.textDefaultBold, styles.title]}>Time Out Privacy Policy</Text>
 
                 <Text style={[styles.textDefaultSemiBold, styles.title, { fontSize: 16, }]}>Last updated {constants['privacyPolicyLastUpdated']}</Text>
 
@@ -17,18 +17,18 @@ const PrivacyPolicyScreen = ({ navigation, }) => {
 
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Privacy Policy Overview</Text>
                     <Text style={[styles.regularText]}>
-                        nofuss.exe built TimeOut as a free app, with potential ad integration in the future. This app is provided by nofuss.exe at no cost and is intended for use as is.
+                        nofuss.exe built Time Out as a free app, with potential ad integration in the future. This app is provided by nofuss.exe at no cost and is intended for use as is.
 
                         This page is used to comply with legal requirements and to inform users regarding policies with the collection, use, and disclosure of personal Information for anyone using this app.
 
                         By using this app, you agree to the collection and use of information in relation to this policy. We will not use or share your information with anyone except as described in this Privacy Policy.
 
-                        The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which are accessible at TimeOut unless otherwise defined in this Privacy Policy.
+                        The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which are accessible at Time Out unless otherwise defined in this Privacy Policy.
                     </Text>
 
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Information Collection and Use</Text>
                     <Text style={[styles.regularText]}>
-                        While using TimeOut, we may require you to provide us with certain personally identifiable information, including but not limited to first name, last name, and email. This information is
+                        While using Time Out, we may require you to provide us with certain personally identifiable information, including but not limited to first name, last name, and email. This information is
                         securely stored, and we do not share this information with any third parties nor do we profit from the information in any way.
                     </Text>
 
@@ -52,7 +52,7 @@ const PrivacyPolicyScreen = ({ navigation, }) => {
 
                     <Text style={[styles.textDefaultSemiBold, styles.subHeader,]}>Contact Us</Text>
                     <Text style={[styles.regularText]}>
-                        If you have any questions or suggestions about this policy or anything related to TimeOut,
+                        If you have any questions or suggestions about this policy or anything related to Time Out,
                         please contact us at exe@nofuss.xyz</Text>
                 </ScrollView>
 

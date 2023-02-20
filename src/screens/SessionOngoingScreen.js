@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
-    AppState, BackHandler, Platform
+    AppState, BackHandler
 } from 'react-native';
 import { fromUnixTime, getUnixTime, isThisSecond, differenceInMilliseconds, addSeconds } from 'date-fns';
 import uuid from 'uuid-random'
@@ -11,9 +11,7 @@ import Modal from 'react-native-modal'
 import { Text as TextSVG } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import SessionRatingModal from '../components/SessionRatingModal';
-import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import * as NavigationBar from "expo-navigation-bar";
 
 const constants = require('../components/constants.json')
 const clock_middle = require('../../assets/clock_middle.png');
@@ -147,7 +145,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
             'hardwareBackPress',
             backAction,
         );*/
-        if (Platform.OS === 'android') { NavigationBar.setVisibilityAsync("hidden"); }
+        {/*if (Platform.OS === 'android') { NavigationBar.setVisibilityAsync("hidden"); }*/ }
 
         navigation.addListener('beforeRemove', (e) => {
 
@@ -364,7 +362,10 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                 <Image
                     source={clock_top}
                     style={{
-                        width: 235, height: 52, alignSelf: "center",
+                        width: width / 2 / 0.80,
+                        height: (width / 2 / 0.80) * 0.22,
+                        //width: 235, height: 52, 
+                        alignSelf: "center",
                         marginTop: 30,
                     }}
                     resizeMode="contain" />
@@ -404,7 +405,6 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                                         <TextSVG x={77} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
                                         >{twoDigits(secLeft % 60)[1]}</TextSVG>
                                     </>
-
                                 }
                             </Svg>
                         </View>
@@ -413,7 +413,12 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
 
                 <Image
                     source={clock_bottom}
-                    style={{ width: 175, height: 23, alignSelf: "center", borderWidth: 0, borderColor: 'yellow' }}
+                    style={{
+                        width: width / 2 / 0.80,
+                        height: (width / 2 / 0.80) * 0.0842,
+                        //width: 180, height: 23, 
+                        alignSelf: "center", borderWidth: 0, borderColor: 'yellow'
+                    }}
                     resizeMode="contain" />
 
                 <View style={[styles.gotThisContainer,
@@ -464,15 +469,11 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                         </View>
                     </View>
                 </View>
-
-
             </View>
 
             <View style={{ height: 70 }}>
-
                 <View style={styles.activityContainer}>
-
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#D7B4D5' }]}
+                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FCC759' }]}
                         onPress={areYouSureEndEarly}>
                         <Text style={[styles.textDefaultBold, styles.buttonText]}>End Early</Text>
                     </TouchableOpacity>
@@ -573,7 +574,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontWeight: 'bold',
         color: 'white',
-        fontSize: 13,
+        fontSize: 15,
     },
     clockContainer: {
         alignSelf: 'stretch',

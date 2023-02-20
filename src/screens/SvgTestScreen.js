@@ -2249,7 +2249,7 @@ const SvgTestScreen = ({ navigation }) => {
 
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', borderTopWidth: 0.5, borderColor: 'gray', }}>
+            <View style={{ flex: 0.8, flexDirection: 'row', borderTopWidth: 0.5, borderColor: 'gray', }}>
                 <View style={{ flex: 1 }}></View>
                 <View style={{ flex: 2, }}
                     opacity={isLoading ? 0.3 : 1}>
