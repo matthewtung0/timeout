@@ -57,7 +57,7 @@ const EditProfileScreen = ({ navigation }) => {
 
     const setBioFunc = (txt) => {
         var num_lines = txt.split(/\r\n|\r|\n/).length
-        if (num_lines <= 4) {
+        if (num_lines <= 6) {
             setBio(txt)
         }
     }

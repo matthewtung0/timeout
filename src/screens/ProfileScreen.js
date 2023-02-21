@@ -35,7 +35,9 @@ const ProfileScreen = ({ navigation }) => {
         last_signin: '',
         bio: '',
         time_created: '',
-        username: ''
+        username: '',
+        first_name: '',
+        last_name: '',
     })
 
     useFocusEffect(
@@ -101,7 +103,9 @@ const ProfileScreen = ({ navigation }) => {
                 last_signin: response.data.last_signin,
                 bio: response.data.bio,
                 time_created: response.data.time_created,
-                username: response.data.username
+                username: response.data.username,
+                first_name: response.data.first_name,
+                last_name: response.data.last_name,
             })
             /*console.log(`response username is ${response.data.username} and my username is ${state.username}`)
             if (response.data.username == state.username) {
@@ -200,6 +204,7 @@ const ProfileScreen = ({ navigation }) => {
     const togglePFPModal = () => {
         setPFPModalVisible(!pfpModalVisible)
     }
+    console.log(profileStats)
 
     const renderHeader = () => {
         return (
@@ -221,7 +226,9 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
 
-                <Text style={[styles.username, styles.textDefaultBold, { marginTop: BANNER_HEIGHT - 65, }]}>{profileStats.username}</Text>
+                <Text style={[styles.username, styles.textDefaultBold, { marginTop: BANNER_HEIGHT - 95, }]}>{profileStats.username}</Text>
+                <Text style={[styles.username, styles.textDefaultSemiBold, { marginTop: BANNER_HEIGHT - 60, fontSize: 20, }]}>{profileStats.first_name} {profileStats.last_name}</Text>
+
                 <View style={[styles.textContainer, { marginTop: BANNER_HEIGHT - 30, }]}>
                     <Text style={[styles.text, styles.textDefault]}>{profileStats.totalTasks} Tasks</Text>
                     <Text style={[styles.text, styles.textDefaultBold]}> · </Text>
@@ -419,6 +426,12 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
+    },
+    textDefaultMedium: {
+        fontFamily: 'Inter-Medium',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',

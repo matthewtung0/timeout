@@ -1,9 +1,10 @@
 import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
-    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform,
+    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Touchable,
 } from 'react-native';
 import { Text } from 'react-native-elements';
+import { Icon } from 'react-native-elements'
 import CircularSelector from '../components/CircularSelector';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -14,6 +15,7 @@ import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { fromUnixTime, startOfMonth, endOfMonth } from 'date-fns';
+import InformationalModal from '../components/InformationalModal';
 
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -41,6 +43,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [token, setToken] = useState('')
 
     const [modalVisible, setModalVisible] = useState(false)
+    const [infoModalVisible, setInfoModalVisible] = useState(false)
 
 
     const updateTime = (a) => {
@@ -152,6 +155,10 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         setModalVisible(!modalVisible);
     };
 
+    const toggleInfoModal = () => {
+        setInfoModalVisible(!infoModalVisible);
+    }
+
     // callback from modal selection
     const fillInWithItem = (returned_info) => {
         const { item_desc, cat_id, item_id, cat_name, color_id } = returned_info
@@ -241,6 +248,33 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         </Modal>
                     </View>
 
+                    {/* informational modal */}
+
+                    <View>
+                        <Modal isVisible={infoModalVisible}
+                            animationIn='slideInLeft'
+                            animationOut='slideOutLeft'
+                            backdropTransitionOutTiming={0}
+                        >
+
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                            }}>
+                                <View style={{
+                                    height: height * 0.7,
+                                    borderRadius: 20,
+                                }}>
+                                    <InformationalModal
+                                        toggleFunction={toggleInfoModal}
+                                    />
+
+                                </View>
+                            </View>
+                        </Modal>
+                    </View>
+
                     <View
                         style={{ borderColor: 'pink', borderWidth: 0, }}
                     >
@@ -321,7 +355,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                             setCategoryIdCallback={setCategoryId}
                         />
                     </View>
-                    <View style={{ flexDirection: 'row', marginTop: 15, }}>
+
+                    <View style={{ flexDirection: 'row', borderWidth: 0, marginTop: 15, }}>
                         <View style={{ flex: 1, }} />
                         <TouchableOpacity
                             style={[styles.start, { flex: 3.5, backgroundColor: '#C0C0C0', height: height / 12 }]}
@@ -389,6 +424,34 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         <View style={{ flex: 1, }} />
 
                     </View>
+                    {/*<View style={{ flexDirection: 'row', marginTop: 0, borderWidth: 0, }}>
+                        <View style={{ flex: 1, }} />
+                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
+                            <TouchableOpacity
+                                style={{}}
+                                onPress={() => { toggleInfoModal() }}>
+                                <Icon
+                                    name="information-circle"
+                                    type='ionicon'
+                                    size={25}
+                                    color='#67806D' />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1, }} />
+                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
+                            <TouchableOpacity
+                                style={{}}
+                                onPress={() => { toggleInfoModal() }}>
+                                <Icon
+                                    name="information-circle"
+                                    type='ionicon'
+                                    size={25}
+                                    color='#67806D' />
+                            </TouchableOpacity>
+
+                        </View>
+                        <View style={{ flex: 1, }} />
+                            </View>*/}
 
                     {state.errorMessage && 0 ?
                         <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
@@ -504,8 +567,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 15,
         alignSelf: 'center',
-        marginBottom: 20,
-        marginTop: 20,
+        marginBottom: 10,
         shadowOffset: {
             width: 0.2,
             height: 0.2,

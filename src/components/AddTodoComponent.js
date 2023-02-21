@@ -1,7 +1,7 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
     View, StyleSheet, Alert, Text, TextInput, TouchableOpacity, Dimensions, Keyboard, TouchableWithoutFeedback,
-    ActivityIndicator, Image
+    ActivityIndicator, Image, Platform
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -143,7 +143,7 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
     return (
         <HideKeyboard>
             <View style={[styles.container, { minHeight: 300, borderRadius: BORDER_RADIUS }]}>
-                <><Text style={styles.title}></Text>
+                <><Text style={[styles.title, { marginTop: Platform.OS === 'android' ? 50 : 70 }]}></Text>
 
                     < TextInput
                         inputContainerStyle={[styles.inputStyleContainer, styles.textDefault,]}
@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
     },
     title: {
         alignSelf: 'center',
-        marginTop: 70,
         fontSize: 20,
         fontWeight: 'bold',
         color: '#F6F2DF',
