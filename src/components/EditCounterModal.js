@@ -4,6 +4,7 @@ import {
     TouchableOpacity, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements'
+import tinycolor from 'tinycolor2';
 import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Context as CounterContext } from '../context/CounterContext'
 import { Context as SessionContext } from '../context/SessionContext'
@@ -209,7 +210,15 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                     <View opacity={isLoading ? 0.2 : 1}>
                         <TouchableOpacity
                             style={[styles.updateColorButton, {
-                                width: width / 2, backgroundColor: 'white',
+                                width: width / 2.2, backgroundColor: 'white',
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('white').darken(25).toString(),
+                                marginBottom: 30,
                             }]}
                             onPress={() => {
                                 if (isLoading) { return }
@@ -221,7 +230,7 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                                     submitColorChange();
                                 }
                             }}>
-                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
+                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72', fontSize: 18, }]}>OK</Text>
                         </TouchableOpacity>
                     </View>
 

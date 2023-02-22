@@ -8,9 +8,11 @@ import Modal from 'react-native-modal'
 import { startOfDay, compareAsc } from 'date-fns';
 import AddCounterModal from '../components/AddCounterModal';
 import EditCounterModal from '../components/EditCounterModal';
+import tinycolor from 'tinycolor2';
 import CounterAddCustomModal from '../components/CounterAddCustomModal';
 const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
+import { Shadow } from 'react-native-shadow-2';
 const BANNER_IMG_HEIGHT = 75;
 const BORDER_RADIUS = 20;
 
@@ -187,6 +189,33 @@ const CounterScreen = () => {
         )
         toggleAddCounterModal();
         alert("Counter added successfully!")
+    }
+
+    const addNewCounterButton = () => {
+        return (
+            <TouchableOpacity style={[styles.addCounterButton, {
+                width: width / 1.8, justifyContent: 'center', marginBottom: 25,
+                shadowOffset: {
+                    width: 0,
+                    height: 6,
+                },
+                shadowOpacity: 1,
+                shadowRadius: 0,
+                shadowColor: tinycolor('#ABC57E').darken(25).toString()
+            }]}
+                onPress={() => {
+                    toggleAddCounterModal();
+
+                    //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
+                }}>
+                <View style={{ height: '100%', justifyContent: 'center', }}>
+                    <Text style={[styles.textDefaultMed, styles.addCounterText, {}]}>
+                        Add New Counter</Text>
+                </View>
+
+
+            </TouchableOpacity>
+        )
     }
 
     useFocusEffect(
@@ -515,22 +544,63 @@ const CounterScreen = () => {
                     }}>
                 </FlatList >
                 : null}
+            {Platform.OS === 'ios' ?
+                addNewCounterButton()
+                :
+                <View style={{ alignItems: 'center', margin: 10, }}>
 
-            <TouchableOpacity style={[styles.addCounterButton, {
-                width: width / 1.8, justifyContent: 'center',
-            }]}
-                onPress={() => {
-                    toggleAddCounterModal();
+                    <Shadow distance={2}
+                        offset={[0, 5]}
+                        style={{ width: width / 1.8 - 5 }}
+                        paintInside={true}
+                        startColor={tinycolor('#ABC57E').darken(25).toString()}
+                        endColor={tinycolor('#ABC57E').darken(25).toString()}
+                        sides={{
+                            'bottom': true,
+                            'start': true,
+                            'end': true,
+                            'top': true
+                        }}
+                        corners={{
+                            'topStart': true,
+                            'topEnd': true,
+                            'bottomStart': true,
+                            'bottomEnd': true
+                        }}
 
-                    //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
-                }}>
-                <View style={{ height: '100%', justifyContent: 'center', }}>
-                    <Text style={[styles.textDefault, styles.addCounterText, {}]}>
-                        Add New Counter</Text>
+                    >
+                        <TouchableOpacity style={[{
+                            height: 40,
+                            backgroundColor: '#ABC57E',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 10,
+                            width: width / 1.8, justifyContent: 'center', marginBottom: 25,
+                            shadowOffset: {
+                                width: 0,
+                                height: 6,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                        }]}
+                            onPress={() => {
+                                toggleAddCounterModal();
+
+                                //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
+                            }}>
+                            <View style={{ height: '100%', justifyContent: 'center', }}>
+                                <Text style={[styles.textDefaultMed, styles.addCounterText, {}]}>
+                                    Add New Counter</Text>
+                            </View>
+
+
+                        </TouchableOpacity>
+                    </Shadow>
                 </View>
+            }
 
-
-            </TouchableOpacity>
         </View >
     )
 }
@@ -541,6 +611,9 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     title: {
         fontSize: 20,

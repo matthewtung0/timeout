@@ -1,12 +1,14 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
+    View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image, Platform
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native';
 import ToDoComponent from './ToDoComponent';
 import AddTodoComponent from './AddTodoComponent';
 import { Context as CategoryContext } from '../context/CategoryContext';
+import tinycolor from 'tinycolor2';
+import { Shadow } from 'react-native-shadow-2';
 
 const img = require('../../assets/tasks_topbar.png')
 const BANNER_IMG_HEIGHT = 75;
@@ -84,6 +86,36 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
 
             return a.time_created - b.time_created;
         }) : []
+    }
+
+    const addNewTaskButton = () => {
+        return (
+            <TouchableOpacity
+                style={[styles.plus, {
+                    width: width / 2.2, shadowOffset: {
+                        width: 0,
+                        height: 6,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 0,
+                    shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                }]}
+                onPress={() => {
+
+                    setChildTitle('Add Task')
+                    setButtonText('Submit')
+                    setShowChild(true)
+                }}>
+                <View style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <Text style={[styles.textDefaultSemiBold, styles.plusText]}>Add New Task</Text>
+                </View>
+
+            </TouchableOpacity>
+        )
     }
 
     const parentView = () => {
@@ -218,26 +250,69 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                         )
                     }}
                     ListFooterComponent={() =>
-                        <View>
+                        <View style={{}}>
 
                             {/* button to add a new todo item */}
-                            <TouchableOpacity
-                                style={[styles.plus, { width: width / 2.2, }]}
-                                onPress={() => {
-
-                                    setChildTitle('Add Task')
-                                    setButtonText('Submit')
-                                    setShowChild(true)
-                                }}>
+                            {Platform.OS === 'ios' ?
+                                addNewTaskButton()
+                                :
                                 <View style={{
-                                    flex: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
+                                    alignSelf: 'center',
+                                    marginBottom: 20,
+                                    marginTop: 20,
                                 }}>
-                                    <Text style={[styles.textDefaultBold, styles.plusText]}>Add New Task</Text>
+                                    <Shadow distance={1}
+                                        offset={[2.5, 5]}
+                                        style={[{
+                                            width: width / 2.2 - 5,
+                                        }]}
+                                        paintInside={true}
+                                        startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                        endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                        sides={{
+                                            'bottom': true,
+                                            'start': true,
+                                            'end': true,
+                                            'top': true
+                                        }}
+                                        corners={{
+                                            'topStart': true,
+                                            'topEnd': true,
+                                            'bottomStart': true,
+                                            'bottomEnd': true
+                                        }}
+                                    >
+                                        <TouchableOpacity
+                                            style={[{
+                                                backgroundColor: '#ABC57E', borderRadius: 15,
+                                                width: width / 2.2, shadowOffset: {
+                                                    width: 0,
+                                                    height: 6,
+                                                },
+                                                shadowOpacity: 1,
+                                                shadowRadius: 0,
+                                                shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                                            }]}
+                                            onPress={() => {
+
+                                                setChildTitle('Add Task')
+                                                setButtonText('Submit')
+                                                setShowChild(true)
+                                            }}>
+                                            <View style={{
+                                                flex: 1,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}>
+                                                <Text style={[styles.textDefaultSemiBold, styles.plusText]}>Add New Task</Text>
+                                            </View>
+
+                                        </TouchableOpacity>
+                                    </Shadow>
+
                                 </View>
 
-                            </TouchableOpacity>
+                            }
                         </View>
                     }
                 />
@@ -432,11 +507,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 20,
         marginTop: 20,
-        shadowOffset: {
-            width: 0.01,
-            height: 0.02,
-        },
-        shadowOpacity: 0.1,
     },
     plusText: {
         color: 'white',

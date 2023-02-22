@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, Dimensions, 
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 import { useFocusEffect } from '@react-navigation/native';
+import tinycolor from 'tinycolor2';
 import Modal from 'react-native-modal'
 import OnboardCategoriesModal from '../components/OnboardCategoriesModal';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -217,7 +218,9 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                     </View>
                     <View opacity={isLoading ? 0.2 : 1} style={{ flex: 1.5, }}>
                         <TouchableOpacity
-                            style={[styles.signUpBoxStyle, { backgroundColor: '#67806D' }]}
+                            style={[styles.signUpBoxStyle, {
+                                backgroundColor: '#FCC859', shadowColor: tinycolor('#FCC859').darken(25).toString()
+                            }]}
                             onPress={() => {
                                 if (isLoading) { return; }
                                 setIsLoading(true)
@@ -233,7 +236,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                     errorCallback: errorCallback
                                 })
                             }}>
-                            <Text style={[styles.textDefaultMed, styles.signUpTextStyle]}>Complete Sign Up</Text>
+                            <Text style={[styles.textDefaultMed, styles.signUpTextStyle, { fontSize: 18, }]}>Complete Sign Up</Text>
                         </TouchableOpacity>
                         {isLoading ?
                             <ActivityIndicator
@@ -285,7 +288,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10
+        borderRadius: 10,
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 0,
     },
     signUpTextStyle: {
         color: '#F6F2DF',

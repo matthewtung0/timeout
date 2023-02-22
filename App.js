@@ -79,6 +79,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
 const drawer_bg = require('./assets/background_sidebar.png');
+const pointSquares = require('./assets/point_squares.png')
 
 const config = {
   animation: 'spring',
@@ -118,10 +119,17 @@ function mainOptions(points) {
       return (
         <View style={{
           backgroundColor: '#F6F2DF', padding: 5, borderTopRightRadius: 50, borderBottomRightRadius: 50,
-          flexDirection: 'row', borderWidth: 1, borderColor: '#EAD39E',
+          flexDirection: 'row', borderWidth: 2, borderColor: '#EAD39E',
         }}>
-          <View style={{ backgroundColor: '#ABC57E', height: 20, width: 20, }}></View>
-          <Text style={{ fontSize: 15, color: '#67806D', marginHorizontal: 5, }}>
+          {/*<View style={{ backgroundColor: '#ABC57E', height: 20, width: 20, }}></View>*/}
+          <Image
+            source={pointSquares}
+            style={{ width: 22, height: 22, }}
+          />
+          <Text style={[{
+            fontSize: 17, color: '#67806D', marginHorizontal: 5,
+            fontFamily: 'Inter-Medium',
+          }]}>
             {points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
               //parseInt(points).toLocaleString()
             }

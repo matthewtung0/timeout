@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import { Context as SessionContext } from '../context/SessionContext';
+import tinycolor from 'tinycolor2';
 import { FriendNotificationItem } from '../components/FriendNotificationComponent';
 const NUM_TO_RETRIEVE = 50
 
@@ -214,12 +215,27 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                             <View style={[styles.tabBarButton, {
                                 backgroundColor: '#8DC867', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
                                 borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 4,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#8DC867').darken(15).toString()
                             }]}>
                                 <Text style={[styles.tabBarText, styles.textDefault,]}>Me</Text>
                             </View>
                             <TouchableOpacity style={[styles.tabBarButton, , {
                                 backgroundColor: '#83B569',
-                                borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                                borderWidth: 1, borderColor: '#83B569', borderRightWidth: 0, paddingVertical: 5,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 4,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#83B569').darken(15).toString()
+
                             }]}
                                 onPress={() => { navigation.navigate('FriendFeed') }}>
                                 <Text style={[styles.tabBarText, styles.textDefault, {}]}>Feed</Text>
@@ -228,7 +244,14 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                             <TouchableOpacity style={[styles.tabBarButton, , {
                                 backgroundColor: '#83B569',
                                 borderTopRightRadius: 15, borderBottomRightRadius: 15,
-                                borderWidth: 1, borderColor: '#8DC867', borderLeftWidth: 0, paddingVertical: 5,
+                                borderWidth: 1, borderColor: '#83B569', borderLeftWidth: 0, paddingVertical: 5,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 4,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#83B569').darken(15).toString()
                             }]}
                                 onPress={() => { navigation.navigate('Friend', params) }}>
                                 <Text style={[styles.tabBarText, styles.textDefault,

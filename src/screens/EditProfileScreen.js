@@ -4,6 +4,7 @@ import {
     TouchableWithoutFeedback
 } from 'react-native';
 import { Input, Text, Icon } from 'react-native-elements';
+import tinycolor from 'tinycolor2';
 import { Context as UserContext } from '../context/userContext';
 import { Context as AuthContext } from '../context/AuthContext';
 const MARGIN_HORIZONTAL = 20
@@ -141,12 +142,22 @@ const EditProfileScreen = ({ navigation }) => {
                             }}
                         />
                         <TouchableOpacity
-                            style={styles.signInBoxStyle}
+                            style={[styles.signInBoxStyle,
+                            {
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                padding: 15,
+                            }]}
                             onPress={() => {
                                 setIsLoading(true)
                                 editSelf(firstName, lastName, username, bio, updateInfoCallback, errorReset)
                             }}>
-                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Update Information</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold, { fontSize: 16, }]}>Update Information</Text>
                         </TouchableOpacity>
 
                         {isLoading ?
@@ -181,15 +192,34 @@ const EditProfileScreen = ({ navigation }) => {
                             onChangeText={setNewPassword}
                         />
                         <TouchableOpacity
-                            style={styles.signInBoxStyle}
+                            style={[styles.signInBoxStyle, {
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                padding: 15,
+                            }]}
                             onPress={() => {
                                 if (oldPassword == '' || newPassword == '') { return }
                                 changePassword(oldPassword, newPassword, resultCallback, errorReset)
                             }}>
-                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold,]}>Change Password</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold, { fontSize: 16, }]}>Change Password</Text>
                         </TouchableOpacity>
 
+
                         {passwordMessage ? <Text>{passwordMessage}</Text> : null}
+
+
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 25, fontSize: 20, marginBottom: 10, }]}>
+                            Option to delete data</Text>
+
+                        <Text style={[styles.title, styles.textDefault, { marginTop: 15, fontSize: 14, marginBottom: 30, }]}>
+                            If you would like for us to permanently delete all data that we have collected through Time Out,
+                            please send an email to exe@nofuss.xyz using the email address you have on file with Time Out stating your request.
+                        </Text>
 
                         {/*<TouchableOpacity
                             style={[styles.signInBoxStyle, { marginTop: 15, }]}
@@ -219,7 +249,6 @@ const styles = StyleSheet.create({
     title: {
         color: '#67806D',
         fontSize: 24,
-        fontWeight: '600',
         marginBottom: 10,
     },
     inputStyle: {
@@ -237,8 +266,6 @@ const styles = StyleSheet.create({
     },
     signInBoxStyle: {
         backgroundColor: '#FCC859',
-        width: 150,
-        height: 40,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',

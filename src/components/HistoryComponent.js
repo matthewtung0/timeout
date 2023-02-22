@@ -41,7 +41,7 @@ const roundRating = (rating) => {
 }
 
 const HistoryComponent = ({ session_obj, is_active }) => {
-    console.log(`Rendering component with name ${session_obj.activity_name}`)
+    //console.log(`Rendering component with name ${session_obj.activity_name}`)
     let bgColorHex = constants.colors[session_obj.color_id]
     return (
         <>

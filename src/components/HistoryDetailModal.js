@@ -4,6 +4,7 @@ import {
     Keyboard, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements'
+import tinycolor from 'tinycolor2';
 import { Context as SessionContext } from '../context/SessionContext';
 const img = require('../../assets/tasks_topbar.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
@@ -231,7 +232,14 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
                         </View>
                         <View opacity={isLoading ? 0.2 : 1}>
                             <TouchableOpacity style={[styles.updateColorButton, {
-                                width: width / 3, backgroundColor: 'white', marginTop: 20,
+                                width: width / 2.2, backgroundColor: 'white', marginTop: 20,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('white').darken(25).toString(),
                             }]}
                                 onPress={() => {
                                     if (isLoading) { return }
@@ -247,7 +255,7 @@ const HistoryDailyModal = ({ toggleFunction, selectedObject, callback }) => {
 
                                     }
                                 }}>
-                                <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#67806D' }]}>OK</Text>
+                                <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#67806D', fontSize: 18, }]}>OK</Text>
                             </TouchableOpacity>
                         </View>
 

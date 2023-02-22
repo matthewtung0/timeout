@@ -5,6 +5,7 @@ import { Context as userContext } from '../context/userContext';
 import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
 import AvatarComponent from '../components/AvatarComponent';
+import tinycolor from 'tinycolor2';
 import { useFocusEffect } from '@react-navigation/native';
 
 const FriendScreen = ({ navigation, route: { params } }) => {
@@ -177,7 +178,14 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                 <View style={{ marginHorizontal: 20, flexDirection: 'row', paddingBottom: 10, }}>
                     <TouchableOpacity style={[styles.tabBarButton, {
                         backgroundColor: '#83B569', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
-                        borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                        borderWidth: 1, borderColor: '#83B569', borderRightWidth: 0, paddingVertical: 5,
+                        shadowOffset: {
+                            width: 0,
+                            height: 4,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#83B569').darken(15).toString()
                     }]}
                         onPress={() => { navigation.navigate('Notifications', params) }}>
                         <Text style={[styles.tabBarText, styles.textDefault,
@@ -185,7 +193,14 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.tabBarButton, {
                         backgroundColor: '#83B569',
-                        borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                        borderWidth: 1, borderColor: '#83B569', borderRightWidth: 0, paddingVertical: 5,
+                        shadowOffset: {
+                            width: 0,
+                            height: 4,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#83B569').darken(15).toString()
                     }]}
                         onPress={() => { navigation.navigate('FriendFeed') }}>
                         <Text style={[styles.tabBarText, styles.textDefault, {}]}>Feed</Text>
@@ -194,6 +209,13 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                         backgroundColor: '#8DC867',
                         borderTopRightRadius: 15, borderBottomRightRadius: 15,
                         borderWidth: 1, borderColor: '#8DC867', borderLeftWidth: 0, paddingVertical: 5,
+                        shadowOffset: {
+                            width: 0,
+                            height: 4,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#8DC867').darken(15).toString()
                     }]}>
                         <Text style={[styles.tabBarText, styles.textDefault,]}>Friends</Text>
                     </View>
@@ -201,7 +223,16 @@ const FriendScreen = ({ navigation, route: { params } }) => {
 
 
                 <TouchableOpacity
-                    style={[styles.addFriend, { width: width / 1.8, height: height / 18, backgroundColor: '#83B569', }]}
+                    style={[styles.addFriend, {
+                        width: width / 1.8, height: height / 18, backgroundColor: '#83B569',
+                        shadowOffset: {
+                            width: 0,
+                            height: 6,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#83B569').darken(25).toString()
+                    }]}
                     onPress={() => {
                         toggleModal()
                     }}>
@@ -279,11 +310,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 10,
         marginBottom: 20,
-        shadowOffset: {
-            width: 0.3,
-            height: 0.3,
-        },
-        shadowOpacity: 0.4,
     },
     addFriendText: {
         color: 'white',

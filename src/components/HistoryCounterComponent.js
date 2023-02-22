@@ -3,8 +3,7 @@ import { View, StyleSheet, Text, } from 'react-native';
 const constants = require('../components/constants.json')
 
 const HistoryCounterComponent = ({ session_obj }) => {
-    console.log(`Rendering component with name ${session_obj.activity_name}`)
-    let bgColorHex = constants.colors[session_obj.color_id]
+    //console.log(`Rendering component with name ${session_obj.activity_name}`)
     return (
         <>
             <View style={{

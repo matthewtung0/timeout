@@ -1,7 +1,9 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Alert, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Alert, Dimensions, PlatformColor, Platform } from 'react-native';
+import { Shadow } from 'react-native-shadow-2';
 import * as DIR from '../components/Avatar500Selection';
 import { Icon } from 'react-native-elements'
+import tinycolor from 'tinycolor2';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../context/userContext';
 import AvatarMenuComponent from '../components/AvatarMenuComponent';
@@ -1194,6 +1196,34 @@ const SvgTestScreen = ({ navigation }) => {
         })
     }
 
+    const saveAvatarButton = () => {
+        return (
+            <TouchableOpacity
+                style={{
+                    justifyContent: 'center', marginVertical: 15,
+                    paddingVertical: 15, borderRadius: 15, backgroundColor: '#ABC57E',
+                    shadowOffset: {
+                        width: 0,
+                        height: 6,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 0,
+                    shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                }}
+                disabled={isLoading}
+                onPress={() => {
+                    if (!isLoading) {
+                        saveAvatarEntry()
+                    }
+
+                }}>
+                {totalUnowned > 0 ?
+                    <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 14, color: 'white', }]}>Redeem and Save Avatar</Text> :
+                    <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 16, color: 'white' }]}>Save Avatar</Text>}
+            </TouchableOpacity>
+        )
+    }
+
     return (
         <>
             <View style={{ marginTop: 80, }}>
@@ -2253,22 +2283,60 @@ const SvgTestScreen = ({ navigation }) => {
                 <View style={{ flex: 1 }}></View>
                 <View style={{ flex: 2, }}
                     opacity={isLoading ? 0.3 : 1}>
-                    <TouchableOpacity
-                        style={{
-                            justifyContent: 'center', marginVertical: 15,
-                            paddingVertical: 15, borderRadius: 15, backgroundColor: '#ABC57E'
-                        }}
-                        disabled={isLoading}
-                        onPress={() => {
-                            if (!isLoading) {
-                                saveAvatarEntry()
-                            }
-
+                    {Platform.OS === 'ios' ?
+                        saveAvatarButton()
+                        :
+                        <View style={{
+                            justifyContent: 'center',
+                            paddingVertical: 15, alignItems: 'center',
                         }}>
-                        {totalUnowned > 0 ?
-                            <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 14, color: 'white', }]}>Redeem and Save Avatar</Text> :
-                            <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', fontSize: 16, color: 'white' }]}>Save Avatar</Text>}
-                    </TouchableOpacity>
+                            <Shadow distance={2}
+                                offset={[2.5, 4]}
+                                style={{ width: width / 2.5 - 5, }}
+                                paintInside={true}
+                                startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                sides={{
+                                    'bottom': true,
+                                    'start': true,
+                                    'end': true,
+                                    'top': true
+                                }}
+                                corners={{
+                                    'topStart': true,
+                                    'topEnd': true,
+                                    'bottomStart': true,
+                                    'bottomEnd': true
+                                }}
+
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        borderRadius: 15, backgroundColor: '#ABC57E', width: width / 2.5,
+
+                                    }}
+                                    disabled={isLoading}
+                                    onPress={() => {
+                                        if (!isLoading) {
+                                            saveAvatarEntry()
+                                        }
+
+                                    }}>
+                                    {totalUnowned > 0 ?
+                                        <Text style={[styles.textDefaultSemiBold, {
+                                            textAlign: 'center', fontSize: 14, color: 'white', paddingVertical: 10,
+                                        }]}>Redeem and Save Avatar</Text> :
+                                        <Text style={[styles.textDefaultSemiBold, {
+                                            textAlign: 'center', fontSize: 16,
+                                            color: 'white', paddingVertical: 10,
+                                        }]}>Save Avatar</Text>}
+                                </TouchableOpacity>
+                            </Shadow>
+                        </View>
+
+
+
+                    }
                 </View>
                 <View style={{ flex: 1 }}></View>
 

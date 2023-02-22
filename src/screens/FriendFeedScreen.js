@@ -6,6 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as ReactionContext } from '../context/ReactionContext';
 import { Context as UserContext } from '../context/userContext';
+import tinycolor from 'tinycolor2';
 import FriendFeedComponent from '../components/FriendFeedComponent';
 
 //const REFRESH_THRESHOLD_POSITION = -50;
@@ -132,9 +133,7 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                     <FriendFeedComponent
                         item={item}
                         index={index}
-                        cacheChecker={cacheChecker}
                         myUsername={state.username}
-                        setCacheChecker={setCacheChecker}
                         navigation={navigation}
                         userReaction={reactionState.userReaction}
                         reactToActivity_={reactToActivity}
@@ -166,7 +165,14 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                         <TouchableOpacity style={[styles.tabBarButton,
                         {
                             backgroundColor: '#83B569', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
-                            borderWidth: 1, borderColor: '#8DC867', borderRightWidth: 0, paddingVertical: 5,
+                            borderWidth: 1, borderColor: '#83B569', borderRightWidth: 0, paddingVertical: 5,
+                            shadowOffset: {
+                                width: 0,
+                                height: 4,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('#83B569').darken(15).toString()
                         }]}
                             onPress={() => {
                                 navigation.navigate('Notifications', { cacheChecker })
@@ -176,6 +182,13 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                         <View style={[styles.tabBarButton, {
                             backgroundColor: '#8DC867',
                             borderWidth: 1, borderColor: '#8DC867', paddingVertical: 5,
+                            shadowOffset: {
+                                width: 0,
+                                height: 4,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('#8DC867').darken(15).toString()
                         }]}>
                             <Text style={[styles.tabBarText, styles.textDefault,]}>Feed</Text>
                         </View>
@@ -183,7 +196,14 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
                         <TouchableOpacity style={[styles.tabBarButton, , {
                             backgroundColor: '#83B569',
                             borderTopRightRadius: 15, borderBottomRightRadius: 15,
-                            borderWidth: 1, borderColor: '#8DC867', borderLeftWidth: 0, paddingVertical: 5,
+                            borderWidth: 1, borderColor: '#83B569', borderLeftWidth: 0, paddingVertical: 5,
+                            shadowOffset: {
+                                width: 0,
+                                height: 4,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('#83B569').darken(15).toString()
                         }]}
                             onPress={() => { navigation.navigate('Friend', { cacheChecker }) }}>
                             <Text style={[styles.tabBarText, styles.textDefault,]}>Friends</Text>

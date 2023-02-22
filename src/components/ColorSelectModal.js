@@ -3,6 +3,7 @@ import {
     View, StyleSheet, Text, FlatList, Dimensions, ActivityIndicator,
     TouchableOpacity, Alert, Image
 } from 'react-native';
+import tinycolor from 'tinycolor2';
 import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -343,6 +344,14 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                     <View opacity={isLoading ? 0.2 : 1}>
                         <TouchableOpacity style={[styles.updateColorButton, {
                             width: width / 2, backgroundColor: 'white',
+                            shadowOffset: {
+                                width: 0,
+                                height: 5,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('white').darken(25).toString(),
+                            marginBottom: 30,
                         }]}
                             onPress={() => {
                                 if (deleteToggle) {
@@ -369,7 +378,7 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
                                     submitEdit();
                                 }
                             }}>
-                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
+                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72', fontSize: 18, }]}>OK</Text>
                         </TouchableOpacity>
                     </View>
 

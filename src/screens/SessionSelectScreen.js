@@ -15,7 +15,12 @@ import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { fromUnixTime, startOfMonth, endOfMonth } from 'date-fns';
+import tinycolor from 'tinycolor2';
 import InformationalModal from '../components/InformationalModal';
+
+
+import { Shadow } from 'react-native-shadow-2';
+
 
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -212,6 +217,111 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         console.log("Sent notif")
     }
 
+    const startButton = () => {
+        return (
+            <TouchableOpacity
+                style={[styles.start, {
+                    height: height / 12,
+                    width: width / 3,
+                    shadowOffset: {
+                        width: 0,
+                        height: 6,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 0,
+                    shadowColor: tinycolor('#ABC57E').darken(25).toString(),
+                    //elevation: 4,
+                }]}
+                onPress={() => {
+                    if (!validateInputs() || isLoading) {
+                        return;
+                    }
+                    let cat_Name = newCatName
+                    let cat_Id = categoryId
+                    let timer_Time = time
+
+
+                    circularRef.current.resetSlider()
+
+                    navigate('SessionOngoing', {
+                        numMins: timer_Time,
+                        categoryId: cat_Id,
+                        categoryName: cat_Name,
+                        activityName: customActivity,
+                        colorId: newColorId,
+                        token: token,
+                    })
+                    clearInputs()
+                }}>
+                <Text style={[styles.startText, styles.textDefaultSemiBold,
+                { fontSize: 18, paddingHorizontal: 10, }]}>Start now</Text>
+
+            </TouchableOpacity>
+        )
+    }
+
+    const alreadyDidButton = () => {
+        return (
+            <TouchableOpacity
+                style={[styles.start, {
+                    backgroundColor: '#C0C0C0',
+                    height: height / 12,
+                    width: width / 3,
+                    shadowOffset: {
+                        width: 0,
+                        height: 6,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 0,
+                    shadowColor: tinycolor('#C0C0C0').darken(25).toString()
+                }]}
+                onPress={() => {
+                    if (!validateInputs() || isLoading) {
+                        return;
+                    }
+                    let cat_Name = newCatName
+                    let cat_Id = categoryId
+                    let timer_Time = time
+                    navigate('SessionBackfill', {
+                        numMins: timer_Time,
+                        categoryId: cat_Id,
+                        categoryName: cat_Name,
+                        activityName: customActivity,
+                        colorId: newColorId,
+                    })
+                    clearInputs()
+                    circularRef.current.resetSlider()
+                }}>
+                <Text style={[styles.startText, styles.textDefaultSemiBold, {
+                    fontSize: 18, textAlign: 'center', paddingHorizontal: 10,
+                }]}>
+                    I already did this</Text>
+
+            </TouchableOpacity>
+        )
+    }
+
+    const todoTabIcon = () => {
+        return (
+            <TouchableOpacity
+                style={[styles.modalButton,
+                {
+                    width: 40, height: 40,
+                    shadowOffset: {
+                        width: 0,
+                        height: 5,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 0,
+                    shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                }
+                ]}
+                onPress={toggleModal}>
+                <Text style={[styles.modalButtonText, styles.textDefaultBold]}>+</Text>
+            </TouchableOpacity>
+        )
+    }
+
     return (
         <HideKeyboard>
             <>
@@ -344,7 +454,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
 
-                    <View style={{ minHeight: 50, backgroundColor: '#F8E9D2', paddingBottom: 20, }}>
+                    <View style={{ backgroundColor: '#F8E9D2', paddingBottom: 20, }}>
                         <DropDownComponent2
                             isInModal={false}
                             categoryId={categoryId}
@@ -356,124 +466,156 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         />
                     </View>
 
-                    <View style={{ flexDirection: 'row', borderWidth: 0, marginTop: 15, }}>
-                        <View style={{ flex: 1, }} />
-                        <TouchableOpacity
-                            style={[styles.start, { flex: 3.5, backgroundColor: '#C0C0C0', height: height / 12 }]}
-                            onPress={() => {
-                                if (!validateInputs() || isLoading) {
-                                    return;
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+                        <View style={{ flexDirection: 'row', borderWidth: 0, }}>
+                            <View style={{ flex: 1, }} />
+                            {Platform.OS === 'ios' ?
+
+                                alreadyDidButton() :
+                                <Shadow distance={2}
+                                    offset={[0, 5]}
+                                    style={{ width: width / 3 - 5 }}
+                                    paintInside={true}
+                                    startColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                    endColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                    sides={{
+                                        'bottom': true,
+                                        'start': true,
+                                        'end': true,
+                                        'top': true
+                                    }}
+                                    corners={{
+                                        'topStart': true,
+                                        'topEnd': true,
+                                        'bottomStart': true,
+                                        'bottomEnd': true
+                                    }}
+
+                                >
+                                    {alreadyDidButton()}
+                                </Shadow>
+                            }
+
+
+                            <View style={{ flex: 1, }} />
+                            <View
+                                style={{ flex: 3.5 }}>
+                                {Platform.OS === 'ios' ?
+                                    startButton() :
+                                    <Shadow distance={2}
+                                        offset={[0, 5]}
+                                        style={{ width: width / 3 - 5 }}
+                                        paintInside={true}
+                                        startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                        endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                        sides={{
+                                            'bottom': true,
+                                            'start': true,
+                                            'end': true,
+                                            'top': true
+                                        }}
+                                        corners={{
+                                            'topStart': true,
+                                            'topEnd': true,
+                                            'bottomStart': true,
+                                            'bottomEnd': true
+                                        }}
+
+                                    >
+                                        {startButton()}
+                                    </Shadow>
                                 }
-                                let cat_Name = newCatName
-                                let cat_Id = categoryId
-                                let timer_Time = time
-                                navigate('SessionBackfill', {
-                                    numMins: timer_Time,
-                                    categoryId: cat_Id,
-                                    categoryName: cat_Name,
-                                    activityName: customActivity,
-                                    colorId: newColorId,
-                                })
-                                clearInputs()
-                                circularRef.current.resetSlider()
-                            }}>
-                            <Text style={[styles.startText, styles.textDefaultSemiBold, {
-                                fontSize: 18,
-                                paddingVertical: 10, paddingHorizontal: 10, textAlign: 'center',
-                            }]}>
-                                I already did this</Text>
+                            </View>
+                            <View style={{ flex: 1, }} />
 
-                        </TouchableOpacity>
+                        </View>
+
+
+
+                        {/*
+                        <View style={{ flexDirection: 'row', marginTop: 0, borderWidth: 0, }}>
                         <View style={{ flex: 1, }} />
-                        {/*<TouchableOpacity
-                            style={[styles.start, { flex: 3.5, height: height / 12 }]}
-                            onPress={() => {
-                                testFCMNotification();
-                            }}>
-                            <Text style={[styles.startText, styles.textDefaultSemiBold,
-                            { fontSize: 18, paddingVertical: 10, paddingHorizontal: 10, }]}>Test Notif</Text>
-
-                            </TouchableOpacity>*/}
-                        <TouchableOpacity
-                            style={[styles.start, { flex: 3.5, height: height / 12 }]}
-                            onPress={() => {
-                                if (!validateInputs() || isLoading) {
-                                    return;
-                                }
-                                let cat_Name = newCatName
-                                let cat_Id = categoryId
-                                let timer_Time = time
-
-
-                                circularRef.current.resetSlider()
-
-                                navigate('SessionOngoing', {
-                                    numMins: timer_Time,
-                                    categoryId: cat_Id,
-                                    categoryName: cat_Name,
-                                    activityName: customActivity,
-                                    colorId: newColorId,
-                                    token: token,
-                                })
-                                clearInputs()
-                            }}>
-                            <Text style={[styles.startText, styles.textDefaultSemiBold,
-                            { fontSize: 18, paddingVertical: 10, paddingHorizontal: 10, }]}>Start now</Text>
-
-                        </TouchableOpacity>
+                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
+                            <TouchableOpacity
+                                style={{}}
+                                onPress={() => { toggleInfoModal() }}>
+                                <Icon
+                                    name="information-circle"
+                                    type='ionicon'
+                                    size={25}
+                                    color='#67806D' />
+                            </TouchableOpacity>
+                        </View>
                         <View style={{ flex: 1, }} />
+                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
+                            <TouchableOpacity
+                                style={{}}
+                                onPress={() => { toggleInfoModal() }}>
+                                <Icon
+                                    name="information-circle"
+                                    type='ionicon'
+                                    size={25}
+                                    color='#67806D' />
+                            </TouchableOpacity>
+
+                        </View>
+                        <View style={{ flex: 1, }} />
+                            </View>
+*/}
+                        {state.errorMessage && 0 ?
+                            <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
+                                <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
+                                    No internet connection - will attempt to save any tasks done once connection is restored.
+                                </Text>
+                            </View>
+
+                            : null}
 
                     </View>
-                    {/*<View style={{ flexDirection: 'row', marginTop: 0, borderWidth: 0, }}>
-                        <View style={{ flex: 1, }} />
-                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                style={{}}
-                                onPress={() => { toggleInfoModal() }}>
-                                <Icon
-                                    name="information-circle"
-                                    type='ionicon'
-                                    size={25}
-                                    color='#67806D' />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 1, }} />
-                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                style={{}}
-                                onPress={() => { toggleInfoModal() }}>
-                                <Icon
-                                    name="information-circle"
-                                    type='ionicon'
-                                    size={25}
-                                    color='#67806D' />
-                            </TouchableOpacity>
 
-                        </View>
-                        <View style={{ flex: 1, }} />
-                            </View>*/}
 
-                    {state.errorMessage && 0 ?
-                        <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
-                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
-                                No internet connection - will attempt to save any tasks done once connection is restored.
-                            </Text>
-                        </View>
 
-                        : null}
-                    {isLoading ?
-                        <ActivityIndicator size="large" color="#67806D" /> : null}
-
-                    <View style={[styles.modalContainer, { marginTop: PADDING_TOP }]}>
+                    <View style={[styles.modalContainer, { marginTop: PADDING_TOP, borderWidth: 0, }]}>
                         <View style={styles.modalDummy} />
+                        {Platform.OS === 'ios' ?
+                            todoTabIcon() :
+                            <Shadow distance={2}
+                                offset={[0, 4]}
+                                style={{ width: 40 - 3 }}
+                                paintInside={true}
+                                startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                sides={{
+                                    'bottom': true,
+                                    'start': true,
+                                    'end': true,
+                                    'top': true
+                                }}
+                                corners={{
+                                    'topStart': true,
+                                    'topEnd': true,
+                                    'bottomStart': true,
+                                    'bottomEnd': true
+                                }}
 
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={toggleModal}>
-                            <Text style={[styles.modalButtonText, styles.textDefaultBold]}>+</Text>
-                        </TouchableOpacity>
+                            >
+                                {todoTabIcon()}
+                            </Shadow>
+                        }
                     </View>
+
                 </View>
+                {isLoading ?
+                    <View style={{
+                        position: 'absolute', width: '100%', height: '100%',
+                        flex: 1, justifyContent: 'flex-end',
+                    }}>
+                        <View style={{ marginBottom: 10, }}>
+                            <ActivityIndicator size="large" color="#67806D" />
+                        </View>
+
+                    </View>
+                    : null}
                 {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
 
             </>
@@ -536,8 +678,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     modalButton: {
-        width: 40,
-        height: 40,
         backgroundColor: '#ABC57E',
         borderBottomRightRadius: 10,
         borderTopRightRadius: 10,
@@ -568,11 +708,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 10,
-        shadowOffset: {
-            width: 0.2,
-            height: 0.2,
-        },
-        shadowOpacity: 0.1,
 
     },
     startText: {

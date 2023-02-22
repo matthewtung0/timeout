@@ -7,7 +7,7 @@ import { Icon } from 'react-native-elements'
 import { Text } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as AuthContext } from '../context/AuthContext';
-
+import tinycolor from 'tinycolor2';
 import { Context as CategoryContext } from '../context/CategoryContext'
 import { Context as SessionContext } from '../context/SessionContext'
 import { Context as CounterContext } from '../context/CounterContext'
@@ -285,12 +285,14 @@ const SigninScreen = ({ navigation }) => {
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 marginBottom: 10, fontSize: 16, marginHorizontal: 0, flex: 5,
+                                paddingVertical: 5,
                                 color: '#67806D'
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
-                            autoCapitalize='none'
+                            autoCapitalize='email'
                             autoCorrect={false}
                             value={email}
+                            placeholderTextColor="grey"
                             placeholder="Email"
                             onChangeText={setEmail}
                         />
@@ -303,12 +305,14 @@ const SigninScreen = ({ navigation }) => {
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 fontSize: 16, flex: 7, marginHorizontal: 0,
+                                paddingVertical: 5,
                                 color: '#67806D'
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             secureTextEntry={!passwordVisible}
                             placeholder="Password"
                             autoCapitalize='none'
+                            placeholderTextColor="grey"
                             autoCorrect={false}
                             value={password}
                             onChangeText={setPassword}
@@ -327,7 +331,9 @@ const SigninScreen = ({ navigation }) => {
                     </View>
 
                     <TouchableOpacity
-                        style={isLoading ? [styles.signInBoxStyle, { backgroundColor: '#FFDA95' }] : [styles.signInBoxStyle]}
+                        style={isLoading ? [styles.signInBoxStyle,
+                        { backgroundColor: '#FFDA95', shadowColor: tinycolor('#FFDA95').darken(25).toString() }] :
+                            [styles.signInBoxStyle, { shadowColor: tinycolor('#FCC859').darken(25).toString() }]}
                         onPress={() => {
                             clearErrorMessage();
                             if (!isLoading) {
@@ -354,7 +360,7 @@ const SigninScreen = ({ navigation }) => {
                         }
                         }
                     >
-                        <Text style={[styles.button, styles.textDefault, { fontSize: 16, }]}>Forgot your password?</Text>
+                        <Text style={[styles.button, styles.textDefault, { fontSize: 15, }]}>Forgot your password?</Text>
 
                     </TouchableOpacity>
 
@@ -369,8 +375,8 @@ const SigninScreen = ({ navigation }) => {
                         }}
                     >
 
-                        <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault,]}>Don't have an account?
-                            <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault]}> Sign up here!</Text>
+                        <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault, { fontSize: 17, }]}>Don't have an account?
+                            <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault, { fontSize: 17 }]}> Sign up here!</Text>
                         </Text>
                     </TouchableOpacity>
                     {isLoading ? <ActivityIndicator style={{ marginTop: 10 }} size="large" color="white"></ActivityIndicator>
@@ -435,7 +441,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
         marginBottom: 20,
-        marginTop: 20,
+        marginTop: 30,
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 0,
     },
     signInTextStyle: {
         color: '#F6F2DF',

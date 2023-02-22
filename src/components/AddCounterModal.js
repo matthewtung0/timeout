@@ -4,6 +4,7 @@ import {
     TextInput, ActivityIndicator,
 } from 'react-native';
 import { Icon } from 'react-native-elements'
+import tinycolor from 'tinycolor2';
 import { Context as CounterContext } from '../context/CounterContext';
 const img = require('../../assets/tasks_topbar.png')
 
@@ -70,6 +71,7 @@ const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }
                         }}>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
+                                    color: '#67806D'
                                     //backgroundColor: constants.colors[chosenColor],
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
@@ -162,7 +164,16 @@ const AddCounterModal = ({ toggleFunction, colorArr, currentCounters, callback }
 
                     <View opacity={isLoading ? 0.3 : 1}>
                         <TouchableOpacity
-                            style={[styles.submit, { width: width / 2.6, }]}
+                            style={[styles.submit, {
+                                width: width / 2.6,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 5,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                            }]}
                             onPress={() => {
                                 if (!validateInputs()) {
                                     alert("Counter name already exists!")

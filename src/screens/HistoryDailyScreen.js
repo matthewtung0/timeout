@@ -13,6 +13,7 @@ import HistoryCounterComponent from '../components/HistoryCounterComponent';
 import MonthlyCounterComponent from '../components/MonthlyCounterComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
+import tinycolor from 'tinycolor2';
 import enUS from 'date-fns/locale/en-US';
 const constants = require('../components/constants.json')
 
@@ -516,7 +517,16 @@ const HistoryDailyScreen = ({ navigation }) => {
                 {/*<View style={styles.modalDummy} />*/}
 
                 <TouchableOpacity
-                    style={[styles.modalButton, { backgroundColor: '#67806D' }]}
+                    style={[styles.modalButton, {
+                        backgroundColor: '#67806D',
+                        shadowOffset: {
+                            width: 0,
+                            height: 6,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#67806D').darken(25).toString()
+                    }]}
                     onPress={() => { navigation.navigate('HistorySearch') }}>
                     <Icon
                         name="search"

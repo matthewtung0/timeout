@@ -6,6 +6,8 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import DropDownComponent2 from './DropDownComponent2';
+import tinycolor from 'tinycolor2';
+import { Shadow } from 'react-native-shadow-2';
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
 
 const HideKeyboard = ({ children }) => (
@@ -140,6 +142,45 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
         }
     }
 
+    const addOrEditButton = () => {
+        return (
+            <View opacity={isLoading ? 0.3 : 1}>
+                <TouchableOpacity
+                    style={[styles.plus, {
+                        width: width / 2.5,
+                        shadowOffset: {
+                            width: 0,
+                            height: 5,
+                        },
+                        shadowOpacity: 1,
+                        shadowRadius: 0,
+                        shadowColor: tinycolor('#FCC859').darken(25).toString()
+                    }]}
+                    onPress={() => {
+                        if (isLoading) { return; }
+                        setIsLoading(true)
+                        if (item) {
+                            if (toggleDelete) {
+                                areYouSureDelete(item.item_id, "Task deleted successfully", errorReset)
+                            } else {
+                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                    resetInputsEdit, errorReset)
+                            }
+
+                        } else {
+                            if (!validateInputs()) {
+                                setIsLoading(false)
+                                return
+                            }
+                            addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
+                        }
+                    }}>
+                    <Text style={styles.plusText}>{buttonText}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
     return (
         <HideKeyboard>
             <View style={[styles.container, { minHeight: 300, borderRadius: BORDER_RADIUS }]}>
@@ -214,31 +255,76 @@ const AddTodoComponent = ({ title, buttonText, callback, item, deleteCallback, e
                     : null}
 
                 {/* add or edit the item */}
-                <View opacity={isLoading ? 0.3 : 1}>
-                    <TouchableOpacity
-                        style={[styles.plus, { width: width / 2.5, }]}
-                        onPress={() => {
-                            if (isLoading) { return; }
-                            setIsLoading(true)
-                            if (item) {
-                                if (toggleDelete) {
-                                    areYouSureDelete(item.item_id, "Task deleted successfully", errorReset)
-                                } else {
-                                    editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
-                                        resetInputsEdit, errorReset)
-                                }
+                {Platform.OS === 'ios' ?
+                    addOrEditButton()
+                    :
+                    <View style={{
+                        alignSelf: 'center',
+                        marginBottom: 20,
+                        marginTop: 20,
+                    }}><Shadow distance={2}
+                        offset={[2.5, 4]}
+                        style={[{
+                            width: width / 2.5 - 5,
+                        }]}
+                        paintInside={true}
+                        startColor={tinycolor('#FCC859').darken(25).toString()}
+                        endColor={tinycolor('#FCC859').darken(25).toString()}
+                        sides={{
+                            'bottom': true,
+                            'start': true,
+                            'end': true,
+                            'top': true
+                        }}
+                        corners={{
+                            'topStart': true,
+                            'topEnd': true,
+                            'bottomStart': true,
+                            'bottomEnd': true
+                        }}
+                    >
+                            <View opacity={isLoading ? 0.3 : 1} style={{ borderRadius: 15, }}>
+                                <TouchableOpacity
+                                    style={[{
+                                        width: width / 2.5,
+                                        borderRadius: 15,
+                                        backgroundColor: '#FCC859',
+                                        alignItems: 'center',
+                                        shadowOffset: {
+                                            width: 0,
+                                            height: 5,
+                                        },
+                                        shadowOpacity: 1,
+                                        shadowRadius: 0,
+                                        shadowColor: tinycolor('#FCC859').darken(25).toString()
+                                    }]}
+                                    onPress={() => {
+                                        if (isLoading) { return; }
+                                        setIsLoading(true)
+                                        if (item) {
+                                            if (toggleDelete) {
+                                                areYouSureDelete(item.item_id, "Task deleted successfully", errorReset)
+                                            } else {
+                                                editTodoItem(toDoItemName, categoryId, notes, item.item_desc,
+                                                    resetInputsEdit, errorReset)
+                                            }
+                                        } else {
+                                            if (!validateInputs()) {
+                                                setIsLoading(false)
+                                                return
+                                            }
+                                            addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
+                                        }
+                                    }}>
+                                    <Text style={styles.plusText}>{buttonText}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Shadow>
+                    </View>
 
-                            } else {
-                                if (!validateInputs()) {
-                                    setIsLoading(false)
-                                    return
-                                }
-                                addTodoItem(toDoItemName, new Date(), categoryId, notes, resetInputs, errorReset);
-                            }
-                        }}>
-                        <Text style={styles.plusText}>{buttonText}</Text>
-                    </TouchableOpacity>
-                </View>
+
+
+                }
 
                 {isLoading ?
                     <ActivityIndicator size="large" color="white" /> : null}
@@ -284,7 +370,7 @@ const styles = StyleSheet.create({
     notes: {
         alignSelf: 'center',
         backgroundColor: 'white',
-        padding: 10,
+        padding: 15,
         paddingTop: 12,
         borderRadius: 10,
         marginHorizontal: 25,
@@ -311,11 +397,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 10,
         marginTop: 30,
-        shadowOffset: {
-            width: 0.05,
-            height: 0.05,
-        },
-        shadowOpacity: 0.1,
     },
     plusText: {
         color: 'white',

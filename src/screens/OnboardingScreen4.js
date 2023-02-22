@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import { Context as AuthContext } from '../context/AuthContext';
 import { Icon } from 'react-native-elements'
-
+import tinycolor from 'tinycolor2';
 
 const OnboardingScreen4 = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
@@ -35,8 +35,6 @@ const OnboardingScreen4 = ({ navigation, route: { params } }) => {
                             Review and search through all that you've done. Compare stats for each month.
                         </Text>
                     </View>
-
-
 
                     <View style={{ flex: 1 }}>
 
@@ -89,18 +87,20 @@ const OnboardingScreen4 = ({ navigation, route: { params } }) => {
                             onPress={() => { setShowOnboarding(false) }}
                             style={{
                                 width: width / 2, alignSelf: 'center', borderWidth: 1, paddingVertical: 10,
-                                marginTop: 15, borderRadius: 20, backgroundColor: '#90AB72', borderColor: '#90AB72'
+                                marginTop: 15, borderRadius: 10, backgroundColor: '#90AB72', borderColor: '#90AB72',
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 5,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#90AB72').darken(25).toString()
                             }}>
-                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'white', fontSize: 16, }]}>Go to app</Text>
+                            <Text style={[styles.textDefaultSemiBold, { textAlign: 'center', color: 'white', fontSize: 20, }]}>
+                                Go to app</Text>
                         </TouchableOpacity>
-
                     </View>
-
                 </View>
-
-
-
-
             </View>
 
         </>
@@ -115,6 +115,13 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+        color: '#67806D',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
+        color: '#67806D',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
         color: '#67806D',
     },
     title: {

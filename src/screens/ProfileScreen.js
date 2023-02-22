@@ -230,10 +230,10 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={[styles.username, styles.textDefaultSemiBold, { marginTop: BANNER_HEIGHT - 60, fontSize: 20, }]}>{profileStats.first_name} {profileStats.last_name}</Text>
 
                 <View style={[styles.textContainer, { marginTop: BANNER_HEIGHT - 30, }]}>
-                    <Text style={[styles.text, styles.textDefault]}>{profileStats.totalTasks} Tasks</Text>
+                    <Text style={[styles.text, styles.textDefaultMedium]}>{profileStats.totalTasks} Tasks</Text>
                     <Text style={[styles.text, styles.textDefaultBold]}> · </Text>
                     {profileStats.totalTime ?
-                        <Text style={[styles.text, styles.textDefault]}>
+                        <Text style={[styles.text, styles.textDefaultMedium]}>
                             {profileStats.totalTime.hours ? profileStats.totalTime.hours + 'h ' : '0h '}
                             {profileStats.totalTime.minutes ? profileStats.totalTime.minutes + 'm ' : '0m '}
                             {profileStats.totalTime.seconds ? profileStats.totalTime.seconds + 's ' : '0s '}</Text>
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
         marginLeft: 25,
     },
     text: {
-        fontSize: 18,
+        fontSize: 14,
         color: 'white',
     },
     bioText: {

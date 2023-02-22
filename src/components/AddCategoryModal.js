@@ -3,6 +3,7 @@ import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image,
     TextInput, ActivityIndicator,
 } from 'react-native';
+import tinycolor from 'tinycolor2';
 import { Icon } from 'react-native-elements'
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext'
@@ -179,7 +180,16 @@ const AddCategoryModal = ({ toggleFunction, colorArr }) => {
 
                     <View opacity={isLoading ? 0.3 : 1}>
                         <TouchableOpacity
-                            style={[styles.submit, { width: width / 2.6, }]}
+                            style={[styles.submit, {
+                                width: width / 2.6,
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#FCC859').darken(25).toString()
+                            }]}
                             onPress={() => {
                                 if (categoryName == '') {
                                     alert("Please enter a category name")

@@ -287,8 +287,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    borderBottomWidth: 0.2,
-    borderBottomColor: 'gray',
     //height: 75,
   },
   pfpcontainer: {

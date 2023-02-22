@@ -4,6 +4,7 @@ import {
     Keyboard, TouchableWithoutFeedback, Image, Dimensions, Alert, Platform
 } from 'react-native';
 import { Icon } from 'react-native-elements';
+import tinycolor from 'tinycolor2';
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
 import ColorSelectModal from '../components/ColorSelectModal';
@@ -208,12 +209,22 @@ const AddCategoryScreen = ({ navigation }) => {
                                 })}
                         </View>
 
-                        <TouchableOpacity style={[styles.addCategoryButton, { width: width / 1.8 }]}
+                        <TouchableOpacity style={[styles.addCategoryButton, {
+                            width: width / 1.8,
+                            shadowOffset: {
+                                width: 0,
+                                height: 6,
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 0,
+                            shadowColor: tinycolor('#ABC57E').darken(25).toString(),
+                            marginBottom: 25,
+                        }]}
                             onPress={() => {
                                 toggleAddCategoryModal();
                                 //addCategory(categoryName, new Date(), chosenColor, isEnabled, resetInputs)
                             }}>
-                            <Text style={styles.addCategoryText}>Add Category</Text>
+                            <Text style={[styles.addCategoryText, styles.textDefaultSemiBold, { fontSize: 18, }]}>Add Category</Text>
                         </TouchableOpacity>
 
                         <Text style={[styles.textDefaultBold,
@@ -295,6 +306,8 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold'
     },
     title: {
         margin: 30,
