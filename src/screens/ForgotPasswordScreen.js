@@ -169,7 +169,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
                             placeholder='Email'
                             placeholderTextColor={'gray'}
                             autoCapitalize='none'
-                            autoCorrect='email'
+                            autoCorrect={false}
+                            autoComplete='email'
                             value={email}
                             onChangeText={setEmail}
                         />

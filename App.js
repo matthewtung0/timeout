@@ -433,10 +433,10 @@ function CustomDrawerContent(props) {
             props.navigation.navigate("privacyPolicyFlow")
           }}
         />
-        <DrawerItem
+        {/*<DrawerItem
           labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           label="Terms of Use"
-          onPress={() => { }} />
+        onPress={() => { }} />*/}
 
       </View>
       <View style={{ flex: 1, }} />

@@ -51,7 +51,8 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
     const checkEmailAndNext = async () => {
         try {
-            const emailTaken = await timeoutApi.get('/email_exists', { params: { email } })
+            var lowerCaseEmail = email.toLowerCase();
+            const emailTaken = await timeoutApi.get('/email_exists', { params: { lowerCaseEmail } })
             setIsEmailTaken(emailTaken.data)
             if (emailTaken.data == 0) {
                 //navigation.navigate('SignUp2', { email, firstName, lastName })

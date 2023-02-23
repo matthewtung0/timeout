@@ -128,8 +128,8 @@ const SigninScreen = ({ navigation }) => {
         await fetchSelf().then(
             (res) => {
                 console.log('fetched self');
-                fetchAvatarGeneral(res, forceRetrieve = true, isSelf = true)
-                fetchUserCategories(res, getPrivate = true, isSelf = true);
+                fetchAvatarGeneral(res.user_id, true, true, false)
+                fetchUserCategories(res.user_id, true, true);
 
                 registerForPushNotificationsAsync(res.user_id, postNotificationToken)
             }
@@ -289,7 +289,7 @@ const SigninScreen = ({ navigation }) => {
                                 color: '#67806D'
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
-                            autoCapitalize='email'
+                            autoComplete='email'
                             autoCorrect={false}
                             value={email}
                             placeholderTextColor="grey"
@@ -341,8 +341,9 @@ const SigninScreen = ({ navigation }) => {
                                     return;
                                 }
                                 setIsLoading(true)
-                                console.log("pressed sign in button")
-                                signin(email, password, signInCallback, signInCallbackFail)
+                                var emailLowerCase = email.toLowerCase();
+
+                                signin(emailLowerCase, password, signInCallback, signInCallbackFail)
                             }
                         }}>
                         {isLoading ?

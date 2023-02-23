@@ -224,8 +224,9 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                             onPress={() => {
                                 if (isLoading) { return; }
                                 setIsLoading(true)
+                                var lowerCaseEmail = email.toLowerCase();
                                 signup({
-                                    email,
+                                    lowerCaseEmail,
                                     password,
                                     username,
                                     firstName,

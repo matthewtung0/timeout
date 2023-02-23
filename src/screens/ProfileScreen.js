@@ -316,7 +316,6 @@ const ProfileScreen = ({ navigation }) => {
             </>
         )
     }
-    console.log(profileSessions[0]);
 
     const flatListItself = () => {
         return (
