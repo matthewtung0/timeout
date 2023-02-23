@@ -1,7 +1,7 @@
 import React, { useState, useContext, useCallback } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback, Alert
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import timeoutApi from '../api/timeout';
@@ -77,6 +77,20 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     console.log("sessionObj is ", sessionObjFinal)
     console.log("End early flag: ", endEarlyFlag)
     console.log("End time: ", sessionEndTime)
+
+    const areYouSureDelete = () => {
+        Alert.alert(
+            "Deleting this from your to-do list will erase any notes you may have there. Continue?",
+            "",
+            [{ text: "Go back", onPress: () => { setIsLoading(false) }, style: "cancel" },
+            {
+                text: "Delete", onPress: () => {
+                    setIsLoading(true)
+                    saveSession(sessionObjFinal, saveSession_callback, saveSessionErrorCallback, false)
+                }
+            }]
+        );
+    }
 
     const saveSession_callback = async () => {
         console.log("sessionStartTime is ", fromUnixTime(sessionStartTime));
@@ -456,8 +470,14 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         }}
                         onPress={() => {
                             if (!isLoading) {
-                                setIsLoading(true)
-                                saveSession(sessionObjFinal, saveSession_callback, saveSessionErrorCallback, false)
+                                // if deleting task from to-do list, ask for confirmation
+                                if (existingItem && !toKeep) {
+                                    areYouSureDelete()
+                                } else {
+                                    setIsLoading(true)
+                                    saveSession(sessionObjFinal, saveSession_callback, saveSessionErrorCallback, false)
+                                }
+
                             }
 
                         }}>

@@ -285,7 +285,7 @@ const SigninScreen = ({ navigation }) => {
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 marginBottom: 10, fontSize: 16, marginHorizontal: 0, flex: 5,
-                                paddingVertical: 5,
+                                paddingVertical: 7,
                                 color: '#67806D'
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
@@ -305,7 +305,7 @@ const SigninScreen = ({ navigation }) => {
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 fontSize: 16, flex: 7, marginHorizontal: 0,
-                                paddingVertical: 5,
+                                paddingVertical: 7,
                                 color: '#67806D'
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}

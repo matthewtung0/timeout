@@ -163,12 +163,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 marginBottom: 10, marginHorizontal: 0,
-                                flex: 5,
+                                flex: 5, paddingVertical: 10, fontSize: 16, color: '#67806D',
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             placeholder='Email'
+                            placeholderTextColor={'gray'}
                             autoCapitalize='none'
-                            autoCorrect={false}
+                            autoCorrect='email'
                             value={email}
                             onChangeText={setEmail}
                         />

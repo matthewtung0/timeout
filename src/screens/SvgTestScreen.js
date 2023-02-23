@@ -341,13 +341,15 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Underlayer7_svg
                 colorFill={c} len={size} />, id: 'Underlayer7',
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer7').length > 0,
-            cost: 100,
+            owned: true,
+            //owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer7').length > 0,
+            cost: 1000,
         }, {
             svg: <Underlayer9_svg
                 colorFill={c} len={size} />, id: 'Underlayer9',
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer9').length > 0,
-            cost: 100,
+            owned: true,
+            //owned: state.avatarItemsOwned.filter(e => e.item_id === 'Underlayer9').length > 0,
+            cost: 1000,
         },
         ]
     }
@@ -641,17 +643,20 @@ const SvgTestScreen = ({ navigation }) => {
         }, {
             svg: <Bg8_svg
                 colorFill={c} len={size} />, id: 'Bg8',
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg8').length > 0,
+            owned: true,
+            //owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg8').length > 0,
             cost: 1000,
         }, {
             svg: <Bg9_svg
                 colorFill={c} len={size} />, id: 'Bg9',
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg9').length > 0,
+            owned: true,
+            //owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg9').length > 0,
             cost: 1000,
         }, {
             svg: <Bg10_svg
                 colorFill={c} len={size} />, id: 'Bg10',
-            owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg10').length > 0,
+            owned: true,
+            //owned: state.avatarItemsOwned.filter(e => e.item_id === 'Bg10').length > 0,
             cost: 1000,
         },]
     }

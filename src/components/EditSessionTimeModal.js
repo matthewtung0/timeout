@@ -65,7 +65,7 @@ const EditSessionTimeModal = ({ toggleFunction,
                                 <View style={[styles.textDefaultMed, {
                                     flex: 3, marginLeft: 5,
                                 }]}><Text style={[styles.textDefaultMed, {
-                                    fontSize: 20, color: '#67806D',
+                                    fontSize: 18, color: '#67806D',
                                 }]}>hours</Text>
                                 </View>
 
@@ -91,7 +91,7 @@ const EditSessionTimeModal = ({ toggleFunction,
                                 />
                                 <View style={[styles.textDefaultMed, { flex: 3, marginLeft: 5, }]}>
                                     <Text style={[styles.textDefaultMed, {
-                                        fontSize: 20, color: '#67806D',
+                                        fontSize: 18, color: '#67806D',
                                     }]}>minutes</Text>
                                 </View>
 
@@ -124,7 +124,7 @@ const EditSessionTimeModal = ({ toggleFunction,
                     borderTopRightRadius: BORDER_RADIUS,
                 }} />
 
-            <Text style={[styles.title, { position: 'absolute' }]}>{activityName} duration</Text>
+            <Text style={[styles.title, { position: 'absolute' }]}>Edit duration</Text>
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}

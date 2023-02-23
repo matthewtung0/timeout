@@ -9,8 +9,6 @@ import Icon_rating from '../../assets/icon_rating.svg'
 
 const constants = require('../components/constants.json')
 const PRODUCTIVITY_WIDTH = 100
-const iconRatingNull = require('../../assets/icon_rating-null.png')
-const iconRating = require('../../assets/icon_rating.png')
 const STAR_SIZE = 16;
 const ICON_LENGTH = 16;
 

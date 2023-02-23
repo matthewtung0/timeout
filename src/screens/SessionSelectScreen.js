@@ -4,7 +4,6 @@ import {
     Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Touchable,
 } from 'react-native';
 import { Text } from 'react-native-elements';
-import { Icon } from 'react-native-elements'
 import CircularSelector from '../components/CircularSelector';
 import { Context as UserContext } from '../context/userContext';
 import { Context as CategoryContext } from '../context/CategoryContext';
@@ -14,7 +13,7 @@ import ToDoSelector from '../components/ToDoSelector';
 import DropDownComponent2 from '../components/DropDownComponent2';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { fromUnixTime, startOfMonth, endOfMonth } from 'date-fns';
+import { startOfMonth, endOfMonth } from 'date-fns';
 import tinycolor from 'tinycolor2';
 import InformationalModal from '../components/InformationalModal';
 
@@ -408,7 +407,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 //width: 235, 
                                 width: width / 2 / 0.80,
                                 height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0, borderColor: 'yellow',
-                                marginTop: 20,
+                                marginTop: height * 0.06,
                             }}
                             resizeMode="contain" />
                         <View

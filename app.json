@@ -4,9 +4,9 @@
     "slug": "timeout",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/app_icon_final.png",
+    "icon": "./assets/app_icon_final2.png",
     "splash": {
-      "image": "./assets/splash_image.png",
+      "image": "./assets/splash_image2.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
@@ -22,13 +22,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/app_icon_final.png",
+        "foregroundImage": "./assets/app_icon_final2.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.nofussexe.timeout",
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
