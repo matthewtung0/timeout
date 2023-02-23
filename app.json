@@ -2,7 +2,7 @@
   "expo": {
     "name": "Time Out: Mindful Life Tracker",
     "slug": "timeout",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/app_icon_final2.png",
     "splash": {
@@ -19,8 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "nofussexe.timeout",
-      "icon": "./assets/app_icon_1024.png",
-      "buildNumber": 6
+      "icon": "./assets/app_icon_1024.png"
     },
     "android": {
       "adaptiveIcon": {
