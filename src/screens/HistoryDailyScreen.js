@@ -19,7 +19,7 @@ const constants = require('../components/constants.json')
 
 const HistoryDailyScreen = ({ navigation }) => {
 
-    console.log("History daily screen rerender")
+    //console.log("History daily screen rerender")
     const MARGIN_HORIZONTAL = 9;
     const { height, width } = Dimensions.get('window');
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,

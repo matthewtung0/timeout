@@ -53,7 +53,6 @@ const FriendFeedScreen = ({ navigation, route: { params } }) => {
     const getFeed = async () => {
         try {
             let temp = await fetchSessions(state.friends, 0, 10, true)
-            console.log(temp)
 
             console.log(`Right now, offset is ${offset}`)
             setOffset(10)

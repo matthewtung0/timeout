@@ -12,12 +12,10 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
     const { fetchAvatarGeneral, state } = useContext(userContext)
     const pullPfp = async (forceRetrieve = false) => {
         try {
-            //console.log(`calling fetchAvatarGeneral with forceRetrieve = ${forceRetrieve}, for id ${id}`)
             var startTime = performance.now()
             const base64Icon = await fetchAvatarGeneral(id, forceRetrieve, false, isThumbnail)
             setPngData(base64Icon)
             var endTime = performance.now()
-            //console.log(`Call to pull pfp took ${endTime - startTime} milliseconds`)
         } catch (err) {
             console.log(err)
             setPngData(constants.defaultBase64)

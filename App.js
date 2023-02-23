@@ -456,7 +456,7 @@ function CustomDrawerContent(props) {
           source={drawer_bg}
           resizeMode="contain"></Image>
         <View style={{ alignContent: 'center', justifyContent: 'center', marginBottom: 10, }}>
-          <Text style={{ textAlign: 'center', alignSelf: 'center', }}>Time Out ver. 0.01</Text>
+          <Text style={{ textAlign: 'center', alignSelf: 'center', fontFamily: 'Inter-Regular', color: '#67806D' }}>Time Out ver. 1.0.0</Text>
         </View>
       </View>
 

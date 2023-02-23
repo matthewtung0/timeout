@@ -79,7 +79,7 @@ const FriendFeedComponent = ({ item, index, cacheChecker, myUsername, navigation
     setModalVisible(!modalVisible)
   }
 
-  console.log("Rendered " + index)
+  //console.log("Rendered " + index)
 
   return (
     <View style={styles.container}>
@@ -188,7 +188,7 @@ const FriendFeedComponent = ({ item, index, cacheChecker, myUsername, navigation
         <View style={{ borderWidth: 0, }}>
           <View style={{ flexDirection: 'row' }}>
             <View>
-              <Text style={[styles.textDefault, { fontSize: 13, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
+              <Text style={[styles.textDefault, { fontSize: 14, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
 
             </View>
 

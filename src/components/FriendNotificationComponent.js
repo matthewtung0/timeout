@@ -51,7 +51,7 @@ const FriendNotificationComponent = ({ item, navigation }) => {
         setDisableTouch(false)
     }
 
-    console.log("Rendered ", item)
+    //console.log("Rendered ", item)
 
     return (
 

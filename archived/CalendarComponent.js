@@ -17,7 +17,6 @@ const CalendarComponent = ({ curDate, updateCallback, updateMonth, setMonthlyCal
                         updateCallback(day);
                     }}
                     onMonthChange={month => {
-                        //console.log('month changed', month);
                         setCurMonth(month.dateString)
                         updateMonth(month);
                     }}

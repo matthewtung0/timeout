@@ -1,14 +1,19 @@
-import React, { } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text } from 'react-native-elements';
 import AvatarComponent from './AvatarComponent';
 import {
     differenceInDays, differenceInYears, differenceInMonths, differenceInHours,
     parseISO, differenceInSeconds, differenceInMinutes
 } from 'date-fns';
+import Modal from 'react-native-modal'
+import FriendFeedReactorsModal from '../components/FriendFeedReactorsModal'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const constants = require('../components/constants.json')
 
 const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe }) => {
+    const [modalVisible, setModalVisible] = useState(false)
+    const { height } = Dimensions.get('window');
 
     const duration = (startTime, endTime) => {
         var diff_in_min = differenceInMinutes(parseISO(endTime), parseISO(startTime))
@@ -16,6 +21,9 @@ const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe 
             return `${differenceInSeconds(parseISO(endTime), parseISO(startTime))} seconds`
         }
         return `${diff_in_min} minutes`
+    }
+    const toggleModal = () => {
+        setModalVisible(!modalVisible)
     }
 
     const timeAgo = (endTime) => {
@@ -63,6 +71,29 @@ const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe 
     console.log(`I am rerendering: ${index} and isMe is ${isMe}`)
     return (
         <View style={styles.recentItemContainer}>
+
+            <Modal isVisible={modalVisible}
+                animationIn='slideInUp'
+                animationOut='slideOutUp'
+                backdropTransitionOutTiming={0}>
+
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <View style={{
+                        height: height * 0.7
+                    }}>
+                        <FriendFeedReactorsModal
+                            toggleFunction={toggleModal}
+                            activityId={item.activity_id}
+                        />
+                    </View>
+                </View>
+            </Modal>
+
+
             <View style={styles.pfpcontainerTEMP}>
 
                 {/* smaller pfp here */}
@@ -74,7 +105,11 @@ const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe 
                         isMe={isMe} />
                 </View>
             </View>
-            <View style={styles.listItem}>
+            <View style={{
+                flex: 1,
+                margin: 5,
+                padding: 5, borderWidth: 0,
+            }}>
                 <Text>
                     <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>{item.username}</Text>
                     <Text style={[styles.textDefault, { color: '#67806D' }]}> worked on </Text>
@@ -88,8 +123,21 @@ const profileComponent = ({ item, index, pfpSrc, idToView, privateVisible, isMe 
                         <Text style={[styles.bolded, styles.textDefaultBold, { color: '#67806D' }]}>[REDACTED]</Text>
                     }
                 </Text>
-                <Text style={[styles.textDefault,
-                { fontSize: 11, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
+                <View style={{ flexDirection: 'row' }}>
+
+
+                    <View style={{ flex: 1, borderWidth: 0, }}><Text style={[styles.textDefault,
+                    { fontSize: 14, color: '#949494', marginTop: 5, }]}> {timeAgo(item.time_end)}</Text>
+                    </View>
+                    {item.reaction_count > 0 ?
+                        <TouchableOpacity
+                            style={{ flex: 1, borderWidth: 0, marginRight: 10, marginTop: 5, }}
+                            onPress={toggleModal}>
+                            <Text style={[styles.bolded, styles.textDefault, { color: '#67806D' }]}>{item.reaction_count} {item.reaction_count == 1 ? 'like' : 'likes'}</Text>
+                        </TouchableOpacity>
+                        : null}
+                </View>
+
             </View>
         </View>
     )
@@ -205,12 +253,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         fontSize: 18,
-    },
-    listItem: {
-        flex: 1,
-        margin: 5,
-        padding: 5,
-        //backgroundColor: 'red',
     },
     likeContainer: {
         flex: 1,

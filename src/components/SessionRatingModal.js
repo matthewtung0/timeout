@@ -56,8 +56,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const toggleRatingViewActive = () => {
         var num_stars = sessionObjFinal.prod_rating / 20
         var num_sec = differenceInSeconds(sessionObjFinal.time_end, sessionObjFinal.time_start)
-        console.log(`num stars: ${num_stars}`)
-        console.log(`num sec: ${num_sec}`)
         setPointsEarned(Math.ceil(1000 * (num_stars + 1) / 5 * num_sec / 3600));
 
         setRatingViewActive(!ratingViewActive)
@@ -74,10 +72,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         setToAdd(previousState => !previousState);
     }
 
-    console.log("sessionObj is ", sessionObjFinal)
-    console.log("End early flag: ", endEarlyFlag)
-    console.log("End time: ", sessionEndTime)
-
     const areYouSureDelete = () => {
         Alert.alert(
             "Deleting this from your to-do list will erase any notes you may have there. Continue?",
@@ -93,7 +87,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
 
     const saveSession_callback = async () => {
-        console.log("sessionStartTime is ", fromUnixTime(sessionStartTime));
         var endTime = endOfMonth(fromUnixTime(sessionStartTime))
         var startTime = startOfMonth(fromUnixTime(sessionStartTime))
         try {
@@ -212,12 +205,10 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             var _itemDesc = curTodoItems[i]['item_desc']
 
             if (_catId == sessionObjFinal.cat_id && _itemDesc == sessionObjFinal.activity_name) {
-                console.log("This is an existing item")
                 setExistingItem(true)
                 setExistingId(curTodoItems[i]['item_id'])
                 return
             } else {
-                console.log("This is not an existing item")
             }
         }
     }
