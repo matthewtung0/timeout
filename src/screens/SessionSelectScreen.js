@@ -82,6 +82,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
             console.log("Problem adding points")
         }
         setIsLoading(false)
+        alert("Offline sessions now updated")
     }
 
     const checkStoredSessions = async () => {
@@ -102,7 +103,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                 //await fetchSelf()
 
 
-                alert(String(storedSessions.length) + " stored sessions now updated")
+
             } catch (err) {
                 //alert("Error uploading stored sessions")
                 setIsLoading(false)
