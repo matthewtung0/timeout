@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const instance = axios.create({
     //baseURL: 'https://0bcc-76-88-125-70.ngrok.io'
-    baseURL: 'http://timeoutserverdev-env.eba-ufn4rhwk.us-east-1.elasticbeanstalk.com:80/'
-    //baseURL: 'https://time-out-app.xyz:443/'
+    //baseURL: 'http://timeoutserverdev-env.eba-ufn4rhwk.us-east-1.elasticbeanstalk.com:80/'
+    baseURL: 'https://time-out-app.xyz:443/'
 })
 
 instance.interceptors.request.use(
