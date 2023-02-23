@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Time Out: Mindful Life Tracker",
+    "name": "Time Out",
     "slug": "timeout",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,7 +28,7 @@
       "package": "com.nofussexe.timeout",
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png"

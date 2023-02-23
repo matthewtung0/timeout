@@ -84,7 +84,7 @@ const AddCategoryScreen = ({ navigation }) => {
                 </>
                 :
                 <>
-                    <View style={{
+                    {/*<View style={{
                         position: 'absolute', flex: 1, width: '100%', height: '100%',
                         justifyContent: 'flex-end',
                     }}>
@@ -93,7 +93,7 @@ const AddCategoryScreen = ({ navigation }) => {
                             style={{ width: '100%', height: 50, }}
                             resizeMode="cover"
                         />
-                    </View>
+                </View>*/}
 
                     <ScrollView
                         style={{}}>

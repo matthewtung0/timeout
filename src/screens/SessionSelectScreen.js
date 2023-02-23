@@ -408,7 +408,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 //width: 235, 
                                 width: width / 2 / 0.80,
                                 height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0, borderColor: 'yellow',
-                                marginTop: height * 0.06,
+                                //marginTop: height * 0.06,
+                                marginTop: 20,
                             }}
                             resizeMode="contain" />
                         <View
@@ -433,11 +434,11 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
                     <View style={{
                         //flex: 1
-                        paddingTop: 15, backgroundColor: '#F8E9D2'
+                        paddingTop: 15, backgroundColor: '#F8E9D2',
                     }}>
                         <TextInput
                             style={[styles.input, styles.textDefault,
-                            { width: width * 0.8, marginBottom: 20, height: 45, color: '#67806D' }]}
+                            { width: width * 0.8, marginBottom: 20, height: 45, color: '#67806D', }]}
                             placeholder="Task"
                             placeholderTextColor={'#DCDBDB'}
                             rightIconContainerStyle={styles.rightIconInput}
@@ -454,7 +455,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
 
-                    <View style={{ backgroundColor: '#F8E9D2', paddingBottom: 20, }}>
+                    <View style={{ backgroundColor: '#F8E9D2', paddingBottom: 20 }}>
                         <DropDownComponent2
                             isInModal={false}
                             categoryId={categoryId}
@@ -466,40 +467,43 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         />
                     </View>
 
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
-                        <View style={{ flexDirection: 'row', borderWidth: 0, }}>
-                            <View style={{ flex: 1, }} />
-                            {Platform.OS === 'ios' ?
-
-                                alreadyDidButton() :
-                                <Shadow distance={2}
-                                    offset={[0, 5]}
-                                    style={{ width: width / 3 - 5 }}
-                                    paintInside={true}
-                                    startColor={tinycolor('#C0C0C0').darken(25).toString()}
-                                    endColor={tinycolor('#C0C0C0').darken(25).toString()}
-                                    sides={{
-                                        'bottom': true,
-                                        'start': true,
-                                        'end': true,
-                                        'top': true
-                                    }}
-                                    corners={{
-                                        'topStart': true,
-                                        'topEnd': true,
-                                        'bottomStart': true,
-                                        'bottomEnd': true
-                                    }}
-
-                                >
-                                    {alreadyDidButton()}
-                                </Shadow>
-                            }
-
-
-                            <View style={{ flex: 1, }} />
+                    <View style={{
+                        justifyContent: 'center',
+                        borderWidth: 0, width: width * 0.8, alignSelf: 'center', flex: 1,
+                    }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View
-                                style={{ flex: 3.5 }}>
+                                style={{}}>
+                                {Platform.OS === 'ios' ?
+
+                                    alreadyDidButton() :
+                                    <Shadow distance={2}
+                                        offset={[0, 5]}
+                                        style={{ width: width / 3 - 5 }}
+                                        paintInside={true}
+                                        startColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                        endColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                        sides={{
+                                            'bottom': true,
+                                            'start': true,
+                                            'end': true,
+                                            'top': true
+                                        }}
+                                        corners={{
+                                            'topStart': true,
+                                            'topEnd': true,
+                                            'bottomStart': true,
+                                            'bottomEnd': true
+                                        }}
+
+                                    >
+                                        {alreadyDidButton()}
+                                    </Shadow>
+                                }
+                            </View>
+
+                            <View
+                                style={{}}>
                                 {Platform.OS === 'ios' ?
                                     startButton() :
                                     <Shadow distance={2}
@@ -526,7 +530,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                     </Shadow>
                                 }
                             </View>
-                            <View style={{ flex: 1, }} />
 
                         </View>
 
@@ -617,9 +620,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
                     : null}
                 {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
-
             </>
-
         </HideKeyboard >
     )
 }

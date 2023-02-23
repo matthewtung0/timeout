@@ -518,20 +518,20 @@ const HistoryDailyScreen = ({ navigation }) => {
 
                 <TouchableOpacity
                     style={[styles.modalButton, {
-                        backgroundColor: '#67806D',
+                        backgroundColor: '#ABC57E',
                         shadowOffset: {
                             width: 0,
                             height: 6,
                         },
                         shadowOpacity: 1,
                         shadowRadius: 0,
-                        shadowColor: tinycolor('#67806D').darken(25).toString()
+                        shadowColor: tinycolor('#ABC57E').darken(25).toString()
                     }]}
                     onPress={() => { navigation.navigate('HistorySearch') }}>
                     <Icon
                         name="search"
                         type='ionicon'
-                        size={20}
+                        size={25}
                         color='white' />
                 </TouchableOpacity>
             </View>
@@ -616,8 +616,8 @@ const styles = StyleSheet.create({
         flex: 0.2,
     },
     modalButton: {
-        width: 40,
-        height: 40,
+        width: 43,
+        height: 43,
         backgroundColor: '#ABC57E',
         borderBottomRightRadius: 10,
         borderTopRightRadius: 10,
