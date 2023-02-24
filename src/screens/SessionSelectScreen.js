@@ -20,6 +20,7 @@ import InformationalModal from '../components/InformationalModal';
 
 import { Shadow } from 'react-native-shadow-2';
 
+const constants = require('../src/components/constants.json')
 
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
@@ -122,20 +123,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
         setIsLoading(true)
         await fetchFriendsIfUpdate();
         checkStoredSessions()
-        //AsyncStorage.removeItem('storedSessions'); // TEMP
-
-        /*AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-1:e7cd068c-97f2-48f2-a12b-8abf24e576e4' }, {region:'us-east-1'});
-        AWS.config.credentials.getPromise();
-
-        //register the device with the push service
-        Notifications.registerRemoteNotifications();
-        //setup the onRegistration listener (lambda for clarity)
-        Notifications.events().registerRemoteNotificationsRegistered((token) => onRegistration(token))
-
-        const sns = new AWS.SNS();
-        sns.createPlatformEndpoint({ARN, Token}, callback);
-*/
         setIsLoading(false)
     }
 
@@ -196,7 +183,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: 'key=AAAAh1XmPc8:APA91bFwYf7RqiHHu6o_2jBwM2Op6MsuJ_Wua3LkntAT6XJqBVCXerG11jvBeLrOwykVwI9VDbJclhGYiqkLxdb-0L0uuaGU_PqdjOvonzx6vbSoBlLzCt5Ra7qDC0FBQY5dhUtlJKOx',
+                    Authorization: `key=${constants.fcmAuthorizationKey}`,
                 },
                 body: JSON.stringify({
                     to: "eYByL5AtSWyHwLgErS1EuS:APA91bExyOYgvYyqkkNVfq8eI6rjJCLiaEVhquEuqbeoMb7VYaqVgMO6USvWaIBnAS9MJ2IHmjcE2TX55SzHInO5yKW_lApk-NdzUeEMdu6cgc5ZUW04kirDrgP0ZPJoVhjCqvGt6kXS",
