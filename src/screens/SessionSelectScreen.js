@@ -20,7 +20,7 @@ import InformationalModal from '../components/InformationalModal';
 
 import { Shadow } from 'react-native-shadow-2';
 
-const constants = require('../src/components/constants.json')
+const constants = require('../components/constants.json')
 
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');

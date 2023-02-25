@@ -98,6 +98,18 @@ const categoryReducer = (state, action) => {
                     return item
                 })
             }
+        case 'edit_todo_item_pin':
+            return {
+                ...state, userTodoItems: state.userTodoItems.map(item => {
+                    if (item.item_id == action.payload.toDoId) {
+                        return {
+                            ...item,
+                            is_pinned: action.payload.is_pinned,
+                        }
+                    }
+                    return item
+                })
+            }
         case 'clear_context':
             return {
                 userCategories: [],
@@ -183,8 +195,6 @@ const fetchUserCategories = dispatch => async (id, getPrivate = true, isSelf = t
         } catch (err) {
             dispatch({ type: 'add_error', payload: 'There was a problem retrieving the categories.' })
         }
-
-
     }
 }
 
@@ -223,6 +233,20 @@ const addTodoItem = dispatch => async (toDoItemName, timeSubmitted, categoryId, 
         if (errorCallback) { errorCallback() }
     }
 }
+
+const editTodoItemPin = dispatch => async (toDoId, is_pinned, callback = null, errorCallback = null) => {
+    try {
+        const response = await timeoutApi.put('/todoItem/pin', { toDoId, is_pinned })
+        dispatch({ type: 'edit_todo_item_pin', payload: { toDoId, is_pinned } })
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("error editing todo item pin:", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem editing the todo item.' })
+        alert("There was a problem editing the task. Please try again later.")
+        if (errorCallback) { errorCallback() }
+    }
+}
+
 
 const editTodoItem = dispatch => async (toDoItemName, categoryId, notes, oldToDoName, callback = null, errorCallback = null) => {
     try {
@@ -360,7 +384,7 @@ export const { Provider, Context } = createDataContext(
         fetchUserCategories, setChosen, setActivityName, setStartTime, setEndTime, setProdRating,
         fetchUserTodoItems, addTodoItem, addCategory, deleteTodoItem, deleteCategory, editTodoItem,
         changeArchiveCategory, changeColorCategory, clearCategoryContext, changePublicCategory,
-        editCategory,
+        editCategory, editTodoItemPin,
     },
     {
         userCategories: [],

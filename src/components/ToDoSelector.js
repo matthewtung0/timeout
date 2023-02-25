@@ -24,6 +24,8 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
     const [sortBy, setSortBy] = useState(0); // 0 -> old to new; 1-> new to old; 2-> alphabetical; 3-> category; 
     const [sortedTodoItems, setSortedTodoItems] = useState(categoryState.userTodoItems ?
         categoryState.userTodoItems.sort(function (a, b) {
+            if (a.is_pinned && !b.is_pinned) { return -1 }
+            if (b.is_pinned && !a.is_pinned) { return 1 }
             if (sortBy == 0) {
                 return String(b.time_created).localeCompare(String(a.time_created))
             }
@@ -464,7 +466,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     toDoComponent: {
-        marginHorizontal: 15,
+        marginRight: 15,
     },
     backButton: {
         width: 50,

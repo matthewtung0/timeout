@@ -1,16 +1,41 @@
-import React, { } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useContext } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Pressable, Alert } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 
 const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask }) => {
     let bgColorHex = constants.colors[item.color_id]
-    return (
-        <View style={styles.container}>
-            {/*<View style={styles.dummy} />*/}
+    const { editTodoItemPin } = useContext(CategoryContext)
 
-            <TouchableOpacity
-                style={styles.toDoComponent}
+    const editPin = (to_pin) => {
+        if (to_pin) {
+            editTodoItemPin(item.item_id, to_pin, editPinCallback, editPinCallbackError)
+        } else {
+            editTodoItemPin(item.item_id, to_pin, editUnpinCallback, editPinCallbackError)
+        }
+    }
+
+    const editPinCallback = () => {
+        alert("Item pinned")
+    }
+
+    const editUnpinCallback = () => {
+        alert("Item unpinned")
+    }
+
+    const editPinCallbackError = () => {
+        alert("Something went wrong. Please try again later")
+    }
+
+    return (
+        <View style={[styles.container, {}]}>
+
+            <Pressable
+                style={({ pressed }) => [styles.toDoComponent, { opacity: pressed ? 0.5 : 1 }]}
+                onLongPress={() => {
+                    editPin(!item.is_pinned)
+                }}
                 onPress={() => {
                     callback({
                         "item_desc": item.item_desc,
@@ -22,15 +47,28 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
                     toggleFunction()
                 }}>
 
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={[styles.categoryStyle, { flex: 1, backgroundColor: bgColorHex }]}>
-                        <Text numberOfLines={1} style={[styles.categoryText, styles.textDefaultSemiBold]}>{item.category_name}</Text>
+                <View style={{
+                    flex: 1, flexDirection: 'row', alignItems: 'center',
+                    justifyContent: 'center', borderWidth: 0,
+                }}>
+                    {item.is_pinned ?
+                        <View style={{ flex: 0.3, }}>
+                            <Icon
+                                name="pin"
+                                type='ionicon'
+                                color='gray' />
+                        </View>
+                        : <View style={{ flex: 0.3 }}></View>}
+                    <View style={[styles.categoryStyle, { flex: 1, backgroundColor: bgColorHex, alignSelf: 'center', }]}>
+                        <Text numberOfLines={1}
+                            style={[styles.categoryText, styles.textDefaultSemiBold,]}>{item.category_name}</Text>
                     </View>
+
                     <View style={{ flex: 2.5, justifyContent: 'center' }}>
                         <Text numberOfLines={2} style={[styles.text, styles.textDefaultMed,]}>{item.item_desc}</Text>
                     </View>
                 </View>
-            </TouchableOpacity>
+            </Pressable>
 
             <View style={styles.editContainer}>
                 <TouchableOpacity
