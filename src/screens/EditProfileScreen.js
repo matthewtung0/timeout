@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback, Dimensions
 } from 'react-native';
 import { Input, Text, Icon } from 'react-native-elements';
 import tinycolor from 'tinycolor2';
-import { Context as UserContext } from '../context/userContext';
-import { Context as AuthContext } from '../context/AuthContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import Modal from 'react-native-modal'
+import { Context as UserContext } from '../context/userContext'
+import { Context as AuthContext } from '../context/AuthContext'
 const MARGIN_HORIZONTAL = 20
 
 const HideKeyboard = ({ children }) => (
@@ -16,8 +18,9 @@ const HideKeyboard = ({ children }) => (
 );
 
 const EditProfileScreen = ({ navigation }) => {
-    const { state, editSelf, } = useContext(UserContext)
-    const { changePassword } = useContext(AuthContext)
+    const { height, width } = Dimensions.get('window');
+    const { state, editSelf } = useContext(UserContext)
+    const { changePassword, signout } = useContext(AuthContext)
     const [firstName, setFirstName] = useState(state.firstName)
     const [lastName, setLastName] = useState(state.lastName)
     const [username, setUsername] = useState(state.username)
@@ -27,6 +30,7 @@ const EditProfileScreen = ({ navigation }) => {
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [passwordMessage, setPasswordMessage] = useState('')
+    const [modalVisible, setModalVisible] = useState(false)
 
     const resultCallback = () => {
         setPasswordMessage('Password change successful!')
@@ -63,11 +67,41 @@ const EditProfileScreen = ({ navigation }) => {
         }
     }
 
+    const toggleModal = () => {
+        setModalVisible(!modalVisible)
+    }
     // firstname, lastname, username, password
     return (
 
         <HideKeyboard>
             <>
+
+                <View>
+                    <Modal isVisible={modalVisible}
+                        //animationIn='slideInLeft'
+                        //animationOut='slideOutLeft'
+                        backdropTransitionOutTiming={0}
+                    >
+
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                        }}>
+                            <View style={{
+                                height: height * 0.5,
+                                borderRadius: 20,
+                            }}>
+
+                                <DeleteConfirmModal
+                                    toggleFunction={toggleModal} />
+
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+
+
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => { navigation.navigate('Profile') }}>
@@ -82,7 +116,7 @@ const EditProfileScreen = ({ navigation }) => {
 
                     <ScrollView>
 
-                        <Text style={[styles.title, styles.textDefaultSemiBold, { fontSize: 20, }]}>Edit my information:</Text>
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { fontSize: 20, }]}>Edit my information</Text>
 
                         <Input
                             style={[styles.inputStyle, styles.textDefault, { fontSize: 16, color: '#67806D' }]}
@@ -165,7 +199,7 @@ const EditProfileScreen = ({ navigation }) => {
 
                         {/*{state.responseMessage ? <Text>{state.responseMessage}</Text> : null}*/}
 
-                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 15, fontSize: 20 }]}>Change password:</Text>
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 15, fontSize: 20 }]}>Change password</Text>
 
                         <Input
                             style={[styles.inputStyle, styles.textDefault, { fontSize: 14, color: '#67806D' }]}
@@ -212,20 +246,42 @@ const EditProfileScreen = ({ navigation }) => {
 
                         {passwordMessage ? <Text>{passwordMessage}</Text> : null}
 
+                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 15, fontSize: 20 }]}>
+                            Delete Account</Text>
 
-                        <Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 25, fontSize: 20, marginBottom: 10, }]}>
+                        <Text style={[styles.title, styles.textDefault, { marginTop: 5, fontSize: 14, marginBottom: 20, }]}>
+                            Press the button below to delete your account. This action will be permanent and cannot be undone.
+                        </Text>
+
+
+                        <TouchableOpacity
+                            style={[styles.signInBoxStyle, {
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 6,
+                                },
+                                shadowOpacity: 1,
+                                shadowRadius: 0,
+                                shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                padding: 15,
+                                paddingVertical: 7,
+                                marginBottom: 30,
+                            }]}
+                            onPress={toggleModal}>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultSemiBold, { fontSize: 16, }]}>
+                                Delete Account</Text>
+                        </TouchableOpacity>
+
+
+                        {/*<Text style={[styles.title, styles.textDefaultSemiBold, { marginTop: 25, fontSize: 20, marginBottom: 10, }]}>
                             Option to delete data</Text>
 
                         <Text style={[styles.title, styles.textDefault, { marginTop: 15, fontSize: 14, marginBottom: 30, }]}>
                             If you would like for us to permanently delete all data that we have collected through Time Out,
                             please send an email to exe@nofuss.xyz using the email address you have on file with Time Out stating your request.
-                        </Text>
+                        </Text>*/}
 
-                        {/*<TouchableOpacity
-                            style={[styles.signInBoxStyle, { marginTop: 15, }]}
-                            onPress={areYouSure}>
-                            <Text style={styles.signInTextStyle}>DELETE ACCOUNT</Text>
-                        </TouchableOpacity>*/}
+
 
                     </ScrollView>
                 </View>

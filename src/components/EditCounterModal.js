@@ -218,7 +218,7 @@ const EditCounterModal = ({ toggleFunction, colorArr, selectedColorId, selectedC
                                 shadowOpacity: 1,
                                 shadowRadius: 0,
                                 shadowColor: tinycolor('white').darken(25).toString(),
-                                marginBottom: 30,
+                                marginBottom: 20,
                             }]}
                             onPress={() => {
                                 if (isLoading) { return }

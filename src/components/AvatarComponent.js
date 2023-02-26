@@ -37,7 +37,7 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
             }
             var now = new Date();
             var diffInMin = differenceInMinutes(now, new Date(cache_time))
-            if (diffInMin >= 60) {
+            if (diffInMin >= 240) {
                 console.log(`${id} is ${diffInMin} min old, so force retrieve`)
                 if (!pfpSrc) { pullPfp(forceRetrieve = true) }
             } else {

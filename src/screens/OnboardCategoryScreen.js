@@ -13,6 +13,7 @@ import { Context as ReactionContext } from '../context/ReactionContext'
 import { Context as SessionContext } from '../context/SessionContext'
 import { Context as UserContext } from '../context/userContext'
 import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { normalize } from '../components/FormatUtils';
 
 const bg_bottom = require('../../assets/border.png')
 
@@ -140,7 +141,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                 }}>
                     <Image
                         source={bg_bottom}
-                        style={{ width: '100%', height: 50, }}
+                        style={{ width: '100%', height: normalize(45), }}
                         resizeMode="cover"
                     />
                 </View>
@@ -152,7 +153,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                         <Text style={[styles.textDefaultSemiBold,
                         { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>Select some categories to track.</Text>
                         <Text style={[styles.textDefaultSemiBold,
-                        { marginLeft: 25, fontSize: 18, color: '#67806D' }]}>You can add your own later in the app.</Text>
+                        { marginLeft: 25, fontSize: 17, color: '#67806D' }]}>You can add your own later in the app.</Text>
                     </View>
 
 
@@ -166,7 +167,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                             renderItem={({ item, index }) => (
                                 <View
                                     key={item[0]}
-                                    style={{ height: 45, }}>
+                                    style={{ height: height * 0.06, }}>
                                     <View style={item[2] ?
                                         {
                                             flexDirection: 'row', flex: 1, paddingBottom: 5,
@@ -180,7 +181,7 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                                 onPress={() => { toggleSelected(item[0]) }}>
                                                 <View style={{ justifyContent: 'center', }}>
                                                     <Text style={[styles.textDefault,
-                                                    { color: '#67806D', fontSize: 15 }]}>{item[1]}</Text>
+                                                    { color: '#67806D', fontSize: 16 }]}>{item[1]}</Text>
                                                 </View>
 
                                             </TouchableOpacity>
@@ -188,7 +189,10 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                         </View>
 
                                         <View style={{ flex: 1, justifyContent: 'center', }}>
-                                            <View style={{ backgroundColor: constants.colors[item[3]], height: 20, width: 20, }} />
+                                            <View style={{
+                                                backgroundColor: constants.colors[item[3]],
+                                                height: 23, width: 23,
+                                            }} />
                                         </View>
 
                                         <View style={{ flex: 1, justifyContent: 'center', }}>
@@ -237,7 +241,11 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                     errorCallback: errorCallback
                                 })
                             }}>
-                            <Text style={[styles.textDefaultMed, styles.signUpTextStyle, { fontSize: 18, }]}>Complete Sign Up</Text>
+                            <Text style={[styles.textDefaultMed, styles.signUpTextStyle, {
+                                fontSize: 17,
+                                paddingHorizontal: 20,
+                            }]}>
+                                Complete Sign Up</Text>
                         </TouchableOpacity>
                         {isLoading ?
                             <ActivityIndicator
@@ -299,8 +307,6 @@ const styles = StyleSheet.create({
     },
     signUpTextStyle: {
         color: '#F6F2DF',
-        fontSize: 15,
-        fontWeight: 'bold'
     },
     categoryContainer: {
         marginVertical: 20,

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator, TextInput
+    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator, TextInput, PixelRatio
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Text } from 'react-native-elements';
@@ -20,6 +20,9 @@ import {
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
+import { normalize } from '../components/FormatUtils';
+
+
 
 const img_src = require('../../assets/signin_background.png');
 const cloud = require('../../assets/cloud.png');
@@ -35,6 +38,7 @@ const HideKeyboard = ({ children }) => (
 
 const SigninScreen = ({ navigation }) => {
     const { height, width } = Dimensions.get('window');
+
     const { state, signin, clearErrorMessage } = useContext(AuthContext);
     const { fetchUserReactions } = useContext(ReactionContext)
     const { fetchUserCategories, fetchUserTodoItems } = useContext(CategoryContext)
@@ -198,7 +202,7 @@ const SigninScreen = ({ navigation }) => {
         <HideKeyboard>
             <View style={{ flex: 1 }}>
 
-                <View style={{ flex: 1, backgroundColor: '#FCC759' }}>
+                <View style={{ flex: 0.8, backgroundColor: '#FCC759' }}>
 
                     <View style={{
                         position: 'absolute', height: '100%', width: '100%',
@@ -266,9 +270,21 @@ const SigninScreen = ({ navigation }) => {
                         position: 'absolute', height: '100%', width: '100%',
                         justifyContent: 'center', alignItems: 'center',
                     }}>
-                        <View style={{ width: '60%', height: '45%', padding: 10, }}>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>Good morning!</Text>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>I hope we all make the most out of our time!</Text>
+                        <View style={{ width: '60%', height: '47%', paddingTop: 0, paddingHorizontal: 10, borderWidth: 0, }}>
+                            <Text
+                                adjustsFontSizeToFit={true}
+                                numberOfLines={1}
+                                style={[styles.textDefaultSemiBold, {
+                                    color: '#67806D',
+                                    fontSize: normalize(16)
+                                }]}>Good morning!</Text>
+                            <Text
+                                adjustsFontSizeToFit={true}
+                                numberOfLines={2}
+                                style={[styles.textDefaultSemiBold, {
+                                    color: '#67806D',
+                                    fontSize: normalize(12)
+                                }]}>I hope we all make the most out of our time!</Text>
                         </View>
 
 
@@ -276,17 +292,21 @@ const SigninScreen = ({ navigation }) => {
                 </View>
 
                 <View style={[styles.inputContainer, { flex: 1.5 }]}>
-                    <View style={{ marginTop: 10, }} />
-                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                    <View style={{ marginTop: normalize(10), }} />
+                    <Text
+                        style={[styles.textDefault, {
+                            marginHorizontal: 40, color: 'white', marginBottom: 7,
+                            fontSize: 14,
+                        }]}>
                         Email</Text>
 
                     <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
 
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
-                                marginBottom: 10, fontSize: 16, marginHorizontal: 0, flex: 5,
+                                marginBottom: 14, marginHorizontal: 0, flex: 5,
                                 paddingVertical: 7,
-                                color: '#67806D'
+                                color: '#67806D', fontSize: 18
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             autoComplete='email'
@@ -299,14 +319,17 @@ const SigninScreen = ({ navigation }) => {
                         {/*<View style={{ flex: 1, }} />*/}
                     </View>
 
-                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                    <Text style={[styles.textDefault, {
+                        marginHorizontal: 40, color: 'white', marginBottom: 7,
+                        fontSize: 14
+                    }]}>
                         Password</Text>
                     <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 fontSize: 16, flex: 7, marginHorizontal: 0,
                                 paddingVertical: 7,
-                                color: '#67806D'
+                                color: '#67806D', fontSize: 18
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             secureTextEntry={!passwordVisible}
@@ -317,14 +340,14 @@ const SigninScreen = ({ navigation }) => {
                             value={password}
                             onChangeText={setPassword}
                         />
-                        <View style={{ flex: 1, }}>
+                        <View style={{ flex: 1, justifyContent: 'center', }}>
                             <TouchableOpacity
                                 style={{ marginLeft: 3, }}
                                 onPress={togglePasswordVisible}>
                                 <Icon
                                     name={passwordVisible ? "eye-outline" : "eye-off-outline"}
                                     type='ionicon'
-                                    size={25}
+                                    size={24}
                                     color='white' />
                             </TouchableOpacity>
                         </View>
@@ -332,8 +355,14 @@ const SigninScreen = ({ navigation }) => {
 
                     <TouchableOpacity
                         style={isLoading ? [styles.signInBoxStyle,
-                        { backgroundColor: '#FFDA95', shadowColor: tinycolor('#FFDA95').darken(25).toString() }] :
-                            [styles.signInBoxStyle, { shadowColor: tinycolor('#FCC859').darken(25).toString() }]}
+                        {
+                            backgroundColor: '#FFDA95', shadowColor: tinycolor('#FFDA95').darken(25).toString(),
+                            marginTop: height * 0.04, marginBottom: height * 0.04,
+                        }] :
+                            [styles.signInBoxStyle, {
+                                shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                marginTop: height * 0.04, marginBottom: height * 0.04,
+                            }]}
                         onPress={() => {
                             clearErrorMessage();
                             if (!isLoading) {
@@ -349,23 +378,26 @@ const SigninScreen = ({ navigation }) => {
                         {isLoading ?
                             <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Signing in ...</Text>
                             :
-                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,]}>Sign In</Text>
+                            <Text style={[styles.signInTextStyle, styles.textDefaultBold,
+                            { fontSize: 18 }]}>Sign In</Text>
                         }
                     </TouchableOpacity>
-
                     <TouchableOpacity
-                        style={{}}
+                        style={{ borderWidth: 0, }}
                         onPress={() => {
                             clearErrorMessage();
                             navigation.navigate('ForgotPassword')
                         }
                         }
                     >
-                        <Text style={[styles.button, styles.textDefault, { fontSize: 15, }]}>Forgot your password?</Text>
+                        <Text style={[styles.button, styles.textDefault,
+                        { fontSize: 15, }]}>Forgot your password?</Text>
 
                     </TouchableOpacity>
 
-                    {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault,]}>{state.errorMessage}</Text> : null}
+
+
+                    {state.errorMessage ? <Text style={[styles.errorMessage, styles.textDefault, { fontSize: 16 }]}>{state.errorMessage}</Text> : null}
 
                     <TouchableOpacity
                         style={{ marginTop: 10, }}
@@ -376,8 +408,11 @@ const SigninScreen = ({ navigation }) => {
                         }}
                     >
 
-                        <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault, { fontSize: 17, }]}>Don't have an account?
-                            <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault, { fontSize: 17 }]}> Sign up here!</Text>
+                        <Text style={[styles.redirectToSignInStyleWhite, styles.textDefault, { fontSize: 16, }]}>
+                            Don't have an account?
+                            <Text> </Text>
+                            <Text style={[styles.redirectToSignInStyleYellow, styles.textDefault, { fontSize: 16 }]}>
+                                Sign up here!</Text>
                         </Text>
                     </TouchableOpacity>
                     {isLoading ? <ActivityIndicator style={{ marginTop: 10 }} size="large" color="white"></ActivityIndicator>
@@ -388,13 +423,16 @@ const SigninScreen = ({ navigation }) => {
                 </View>
 
             </View>
-        </HideKeyboard>
+        </HideKeyboard >
     )
 }
 
 const styles = StyleSheet.create({
     textDefaultBold: {
         fontFamily: 'Inter-Bold',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
@@ -434,15 +472,14 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
     },
     signInBoxStyle: {
+        paddingHorizontal: 30,
+        paddingVertical: 15,
         backgroundColor: '#FCC859',
-        width: 150,
-        height: 40,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
         marginBottom: 20,
-        marginTop: 30,
         shadowOffset: {
             width: 0,
             height: 5,

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
 import {
     View, StyleSheet, Text, TouchableOpacity, FlatList, Dimensions, Image, Platform
 } from 'react-native';
@@ -20,6 +20,7 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
     const [childTitle, setChildTitle] = useState('Add Task')
     const [buttonText, setButtonText] = useState('Submit')
     const [editItem, setEditItem] = useState(null)
+    const [visibleOffset, setVisibleOffset] = useState(10);
     const { state: categoryState } = useContext(CategoryContext)
     const [sortBy, setSortBy] = useState(0); // 0 -> old to new; 1-> new to old; 2-> alphabetical; 3-> category; 
     const [sortedTodoItems, setSortedTodoItems] = useState(categoryState.userTodoItems ?
@@ -48,7 +49,6 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
 
     useFocusEffect(
         useCallback(() => {
-            console.log("fOCUS EFFECT")
             setSortedTodoItems(toSort(categoryState.userTodoItems, sortBy))
             return () => {
             }
@@ -70,6 +70,8 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
 
     const toSort = (todoItems, sortBy) => {
         return todoItems ? todoItems.sort(function (a, b) {
+            if (a.is_pinned && !b.is_pinned) { return -1 }
+            if (b.is_pinned && !a.is_pinned) { return 1 }
             if (sortBy == 0) {
                 return String(b.time_created).localeCompare(String(a.time_created))
             }
@@ -119,6 +121,124 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
             </TouchableOpacity>
         )
     }
+
+    const flatListItself = () => {
+        return (
+            <FlatList
+                style
+                horizontal={false}
+                onEndReached={getMoreData}
+                onEndReachedThreshold={0.6}
+                data={sortedTodoItems.slice(0, visibleOffset)}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(result) => result.item_id}
+                ItemSeparatorComponent={() => {
+                    return (<View
+                        style={{
+                            borderBottomColor: '#A7BEAD',
+                            //borderBottomWidth: StyleSheet.hairlineWidth,
+                            borderBottomWidth: 0.8,
+                            marginHorizontal: 20,
+                        }}
+                    />)
+                }}
+                renderItem={({ item }) => {
+                    return (
+                        // SELECT THE OBJECT, TO GO BACK TO SESSION SELECT SCREEN
+
+                        <View style={styles.toDoComponent}>
+                            <ToDoComponent
+                                item={item}
+                                callback={callback}
+                                toggleFunction={toggleFunction}
+                                show_error={show_error}
+                                editTask={editTask}
+                            />
+                        </View>
+                    )
+                }}
+                ListFooterComponent={() =>
+                    <View style={{}}>
+
+                        {/* button to add a new todo item */}
+                        {Platform.OS === 'ios' ?
+                            addNewTaskButton()
+                            :
+                            <View style={{
+                                alignSelf: 'center',
+                                marginBottom: 20,
+                                marginTop: 20,
+                            }}>
+                                <Shadow distance={1}
+                                    offset={[2.5, 5]}
+                                    style={[{
+                                        width: width / 2.2 - 5,
+                                    }]}
+                                    paintInside={true}
+                                    startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                    endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                    sides={{
+                                        'bottom': true,
+                                        'start': true,
+                                        'end': true,
+                                        'top': true
+                                    }}
+                                    corners={{
+                                        'topStart': true,
+                                        'topEnd': true,
+                                        'bottomStart': true,
+                                        'bottomEnd': true
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={[{
+                                            backgroundColor: '#ABC57E', borderRadius: 15,
+                                            width: width / 2.2, shadowOffset: {
+                                                width: 0,
+                                                height: 6,
+                                            },
+                                            shadowOpacity: 1,
+                                            shadowRadius: 0,
+                                            shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                                        }]}
+                                        onPress={() => {
+
+                                            setChildTitle('Add Task')
+                                            setButtonText('Submit')
+                                            setShowChild(true)
+                                        }}>
+                                        <View style={{
+                                            flex: 1,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text style={[styles.textDefaultSemiBold, styles.plusText]}>Add New Task</Text>
+                                        </View>
+
+                                    </TouchableOpacity>
+                                </Shadow>
+
+                            </View>
+
+                        }
+                    </View>
+                }
+            />
+        )
+    }
+
+    const getMoreData = () => {
+        if (visibleOffset >= categoryState.userTodoItems.length) {
+            return;
+        }
+        if (visibleOffset + 10 >= categoryState.userTodoItems.length) {
+            setVisibleOffset(categoryState.userTodoItems.length)
+        } else {
+            setVisibleOffset(visibleOffset + 10)
+        }
+    }
+
+    const memoizedFlatList = useMemo(flatListItself, [sortedTodoItems, visibleOffset, sortBy])
 
     const parentView = () => {
         return (
@@ -219,105 +339,8 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                     </View>
 
                     : null}
+                {memoizedFlatList}
 
-                <FlatList
-                    style
-                    horizontal={false}
-                    data={sortedTodoItems}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(result) => result.item_id}
-                    ItemSeparatorComponent={() => {
-                        return (<View
-                            style={{
-                                borderBottomColor: '#A7BEAD',
-                                //borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderBottomWidth: 0.8,
-                                marginHorizontal: 20,
-                            }}
-                        />)
-                    }}
-                    renderItem={({ item }) => {
-                        return (
-                            // SELECT THE OBJECT, TO GO BACK TO SESSION SELECT SCREEN
-
-                            <View style={styles.toDoComponent}>
-                                <ToDoComponent
-                                    item={item}
-                                    callback={callback}
-                                    toggleFunction={toggleFunction}
-                                    show_error={show_error}
-                                    editTask={editTask}
-                                />
-                            </View>
-                        )
-                    }}
-                    ListFooterComponent={() =>
-                        <View style={{}}>
-
-                            {/* button to add a new todo item */}
-                            {Platform.OS === 'ios' ?
-                                addNewTaskButton()
-                                :
-                                <View style={{
-                                    alignSelf: 'center',
-                                    marginBottom: 20,
-                                    marginTop: 20,
-                                }}>
-                                    <Shadow distance={1}
-                                        offset={[2.5, 5]}
-                                        style={[{
-                                            width: width / 2.2 - 5,
-                                        }]}
-                                        paintInside={true}
-                                        startColor={tinycolor('#ABC57E').darken(25).toString()}
-                                        endColor={tinycolor('#ABC57E').darken(25).toString()}
-                                        sides={{
-                                            'bottom': true,
-                                            'start': true,
-                                            'end': true,
-                                            'top': true
-                                        }}
-                                        corners={{
-                                            'topStart': true,
-                                            'topEnd': true,
-                                            'bottomStart': true,
-                                            'bottomEnd': true
-                                        }}
-                                    >
-                                        <TouchableOpacity
-                                            style={[{
-                                                backgroundColor: '#ABC57E', borderRadius: 15,
-                                                width: width / 2.2, shadowOffset: {
-                                                    width: 0,
-                                                    height: 6,
-                                                },
-                                                shadowOpacity: 1,
-                                                shadowRadius: 0,
-                                                shadowColor: tinycolor('#ABC57E').darken(25).toString()
-                                            }]}
-                                            onPress={() => {
-
-                                                setChildTitle('Add Task')
-                                                setButtonText('Submit')
-                                                setShowChild(true)
-                                            }}>
-                                            <View style={{
-                                                flex: 1,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}>
-                                                <Text style={[styles.textDefaultSemiBold, styles.plusText]}>Add New Task</Text>
-                                            </View>
-
-                                        </TouchableOpacity>
-                                    </Shadow>
-
-                                </View>
-
-                            }
-                        </View>
-                    }
-                />
 
             </View >
         )

@@ -8,7 +8,10 @@ const clock_top = require('../../assets/clock_top.png');
 
 
 const { height, width } = Dimensions.get('window');
-const picked_width = width / 2 / 0.80
+const picked_width = height / 3.46
+
+//width / 2 / 0.80
+
 
 const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     const timer_radius_pct = 0.45 // fraction of screen that the radius takes
@@ -144,7 +147,7 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     let goRightCheck = false;
     let goLeftCheck = false;
     let prev_theta = -1;
-    let topBoundary_ = 55 + (width / 2 / 0.80) * 0.22 + 30
+    let topBoundary_ = 55 + (picked_width) * 0.22 + 20//30
 
     var disabled = false;
     const panResponder = useRef(

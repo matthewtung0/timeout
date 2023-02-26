@@ -9,7 +9,7 @@ const img = require('../../assets/tasks_topbar.png')
 const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selectedColorId, callback, item }) => {
     const { height, width } = Dimensions.get('window');
     const BORDER_RADIUS = 20;
-    const COLOR_WIDTH = 40;
+    const COLOR_WIDTH = 35;
     const [chosenColorId, setChosenColorId] = useState(selectedColorId)
 
     const separator = () => {
@@ -34,11 +34,11 @@ const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selecte
         <>
             <View style={[styles.container, { borderRadius: BORDER_RADIUS }]}>
 
-                <View style={{ marginHorizontal: 20, marginTop: 90 }}>
+                <View style={{ marginHorizontal: 20, marginTop: 80 }}>
 
 
-                    <Text style={[styles.textDefaultBold, {
-                        fontSize: 16, color: '#67806D',
+                    <Text style={[styles.textDefaultMed, {
+                        fontSize: 15, color: '#67806D',
                         marginLeft: 5, color: 'gray',
                     }]}>Category Name</Text>
 
@@ -59,7 +59,7 @@ const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selecte
 
                     {separator()}
 
-                    <Text style={[styles.textDefaultBold, styles.labelText, { fontSize: 16, color: '#67806D' }]}>Color</Text>
+                    <Text style={[styles.textDefaultMed, styles.labelText, { fontSize: 15, color: '#67806D' }]}>Color</Text>
 
                     <View style={{ marginVertical: 10, marginHorizontal: 10, }}>
                         <View style={{
@@ -73,7 +73,7 @@ const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selecte
 
                             <View
                                 style={[{
-                                    marginVertical: 5, marginHorizontal: COLOR_WIDTH / 2,
+                                    marginVertical: 8, marginHorizontal: COLOR_WIDTH / 2,
                                     //backgroundColor: constants.colors[chosenColor],
                                 }]}
                             >
@@ -129,7 +129,7 @@ const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selecte
                                 onSubmit();
 
                             }}>
-                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72' }]}>OK</Text>
+                            <Text style={[styles.textDefaultBold, styles.addCategoryText, { color: '#90AB72', fontSize: 19 }]}>OK</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -139,11 +139,11 @@ const OnboardCategoriesModal = ({ toggleFunction, colorArr, categoryArr, selecte
                 source={img}
                 resizeMode='stretch'
                 style={{
-                    maxWidth: width * 0.9, maxHeight: 75, position: 'absolute',
+                    maxWidth: width * 0.9, maxHeight: 60, position: 'absolute',
                     borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
                 }} />
 
-            <Text style={[styles.title, { position: 'absolute' }]}>Choose Color</Text>
+            <Text style={[styles.title, { position: 'absolute', fontSize: 24, }]}>Choose Color</Text>
 
             <View style={styles.backContainer}>
                 <TouchableOpacity
@@ -168,6 +168,9 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
+    },
+    textDefaultMed: {
+        fontFamily: 'Inter-Medium',
     },
     container: {
         backgroundColor: '#f6F2DF',

@@ -66,6 +66,7 @@ const FriendNotificationComponent = ({ item, navigation }) => {
                         }}>
                         <AvatarComponent w={50}
                             id={item.user_id}
+                            isThumbnail={true}
                         />
                     </TouchableOpacity>
                 </View>

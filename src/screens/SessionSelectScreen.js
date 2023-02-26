@@ -26,6 +26,11 @@ const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 const PADDING_TOP = 55;
+const { height, width } = Dimensions.get('window');
+const WIDTH_SETTING = height / 3.46
+//
+//width / 2 / 0.80
+
 
 const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -34,7 +39,7 @@ const HideKeyboard = ({ children }) => (
 );
 
 const SessionSelectScreen = ({ navigation: { navigate }, }) => {
-    const { height, width } = Dimensions.get('window');
+
     const [time, setTime] = useState(0);
     const { state, fetchSelf, fetchFriendsIfUpdate, addPoints } = useContext(UserContext)
     const { setChosen, setActivityName } = useContext(CategoryContext)
@@ -330,7 +335,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 justifyContent: 'center',
                             }}>
                                 <View style={{
-                                    height: height * 0.7,
+                                    height: height * 0.85,
                                     borderRadius: 20,
                                 }}>
 
@@ -373,16 +378,17 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
 
                     <View
-                        style={{ borderColor: 'pink', borderWidth: 0, }}
+                        style={{}}
                     >
                         <View style={{ position: 'absolute', flex: 1, borderWidth: 0, width: '100%', height: '100%', }}>
                             <View style={{ flex: 1, }}>
 
                             </View>
-                            <View style={{ flex: 1, }}>
+                            <View style={{ flex: 1, borderWidth: 0, }}>
                                 <Image
                                     source={background_desk}
                                     style={{ width: '100%', height: '100%', }}
+                                    resizeMode='stretch'
                                 //resizeMode='contain'
                                 />
                             </View>
@@ -392,14 +398,14 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                         <Image
                             source={clock_top}
                             style={{
-                                //width: 235, 
-                                width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.22, alignSelf: "center", borderWidth: 0, borderColor: 'yellow',
+                                width: WIDTH_SETTING,
+                                height: (WIDTH_SETTING) * 0.22,
+                                alignSelf: "center",
                                 //marginTop: height * 0.06,
                                 marginTop: 20,
                             }}
                             resizeMode="contain" />
-                        <View
+                        <View style={{}}
                         >
                             <CircularSelector
                                 minSet={0}
@@ -407,13 +413,14 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                                 ref={circularRef} />
                         </View>
 
-                        <Image
+                        {/*<Image
                             source={clock_bottom}
                             style={{
-                                width: width / 2 / 0.80,
-                                height: (width / 2 / 0.80) * 0.0842, alignSelf: "center", borderWidth: 0, borderColor: 'yellow'
+                                width: WIDTH_SETTING,
+                                height: (WIDTH_SETTING) * 0.0844,
+                                alignSelf: "center",
                             }}
-                            resizeMode="contain" />
+                        resizeMode="contain" />*/}
                         {/* some space for desk */}
                         <View style={{ height: height * 0.05, }} />
 

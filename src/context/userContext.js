@@ -510,6 +510,17 @@ const editSelf = dispatch => async (firstName, lastName, username, bio, callback
     }
 }
 
+const deleteSelf = dispatch => async (callback = null, errorCallback = null) => {
+    try {
+        const response = await timeoutApi.delete('/self_user')
+        console.log("Response is:", response)
+        if (callback) { callback() }
+    } catch (err) {
+        console.log("Problem deleting account", err);
+        if (errorCallback) { errorCallback() }
+    }
+}
+
 const addPoints = dispatch => async (id, pointsToAdd, callback) => {
     try {
         const response = await timeoutApi.patch(`/points/${id}`, { pointsToAdd })
@@ -563,7 +574,7 @@ export const { Provider, Context } = createDataContext(
         acceptFriendRequest, rejectFriendRequest, fetchFriends, editSelf,
         addPoints, clearResponseMessage, clearUserContext, fetchAvatar, updateLastSignin,
         saveAvatar, setIdToView, fetchAvatarItemsOwned, purchaseItems, saveAvatar2, fetchAvatarGeneral,
-        fetchFriendsIfUpdate, postNotificationToken
+        fetchFriendsIfUpdate, postNotificationToken, deleteSelf
     },
     {
         outgoingFriendReqs: [],

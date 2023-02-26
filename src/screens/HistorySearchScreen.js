@@ -5,13 +5,14 @@ import {
 } from 'react-native';
 import timeoutApi from '../api/timeout';
 import { useFocusEffect } from '@react-navigation/native';
-import { format } from 'date-fns';
+import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { Icon } from 'react-native-elements';
 import DropDownComponent2 from '../components/DropDownComponent2';
 import HistoryCounterComponent from '../components/HistoryCounterComponent';
 import Modal from 'react-native-modal'
 import HistoryComponent from '../components/HistoryComponent';
 import HistoryDailyModal from '../components/HistoryDetailModal'
+import enUS from 'date-fns/locale/en-US';
 const constants = require('../components/constants.json')
 
 const HideKeyboard = ({ children }) => (
@@ -29,6 +30,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [noResultsMessage, setNoResultsMessage] = useState('');
 
+    var toRefresh = true;
 
     const [batchData, setBatchData] = useState({})
     const [batchDataForSummary, setBatchDataForSummary] = useState({})
@@ -40,12 +42,89 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
         setModalVisible(!modalVisible);
     }
     const modalCallback = async (item_deleted = false) => {
+        if (item_deleted) {
+            toRefresh = true;
+        }
         if (item_deleted && 0) {
             var endTime = endOfMonth(state.calendarDate)
             var startTime = startOfMonth(state.calendarDate)
             await fetchMultipleMonths(startTime, endTime)
         }
     }
+
+    const byDayKey = (dt, parse = true) => {
+        if (parse) {
+            var actual_date = format(parseISO(dt), 'M/dd/yyyy', { locale: enUS })
+            var actual_parts = actual_date.split('/')
+            var yr = actual_parts[2]
+            var month = actual_parts[0]
+            var day = actual_parts[1]
+            return month + "/" + day + "/" + yr
+        } else {
+            var actual_date = format(dt, 'M/dd/yyyy', { locale: enUS })
+            var actual_parts = actual_date.split('/')
+            var yr = actual_parts[2]
+            var month = actual_parts[0]
+            var day = actual_parts[1]
+
+            return month + "/" + day + "/" + yr
+        }
+    }
+
+    // only group by day, since we will include all months together
+    const groupMonthlyTasksForSearch = (monthSessions) => {
+        var overallMap = {}
+        for (var i = 0; i < monthSessions.length; i++) {
+            var session = monthSessions[i]
+            console.log(session)
+
+            if (session.entry_type == 1) { // if counter type
+                var dayKey = session.date_key
+            } else {
+                var dayKey = byDayKey(session.time_start)
+            }
+            //var monthKey = byMonthKey(session.time_start)
+
+            if (dayKey in overallMap) {
+                overallMap[dayKey].push(session)
+            } else {
+                overallMap[dayKey] = [session]
+            }
+        }
+        var mapToArray = Object.keys(overallMap).map((key) => [key, overallMap[key]])
+        mapToArray.sort((a, b) => {
+            var a_split = a[0].split('/');
+            var b_split = b[0].split('/');
+            var a_yr = parseInt(a_split[2])
+            var a_month = parseInt(a_split[0])
+            var a_day = parseInt(a_split[1])
+            var b_yr = parseInt(b_split[2])
+            var b_month = parseInt(b_split[0])
+            var b_day = parseInt(b_split[1])
+
+            if (a_yr > b_yr) {
+                return -1
+            }
+            if (b_yr > a_yr) {
+                return 1
+            }
+            if (a_month > b_month) {
+                return -1
+            }
+            if (b_month > a_month) {
+                return 1
+            }
+            if (a_day > b_day) {
+                return -1
+            }
+            return 1
+        })
+        console.log("OVERALL MAP ", mapToArray)
+        return mapToArray
+    }
+
+
+
     const searchSessions = async () => {
         if (searchCatId == 'All categories' && searchTerm == '') {
             // do not let search return all - may be too many
@@ -58,14 +137,21 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
             /* TEMPORARY */
             const results = await timeoutApi.get('/searchSessionsAndCounters',
                 { params: { searchTerm: searchTerm.toLowerCase(), searchCatId: searchCatId } })
-            console.log("RESULTS ARE : ", results.data.groupedData)
-            if (results.data.groupedData.length == 0) {
+
+
+
+            console.log("Results are now", results.data.combinedData)
+
+            //console.log("RESULTS ARE : ", results.data.groupedData)
+            if (results.data.combinedData.length == 0) {
                 setNoResultsMessage("No results")
             } else {
                 setNoResultsMessage("")
             }
-            setBatchData(results.data.groupedData)
-            setBatchDataForSummary(results.data.groupedDataForSummary)
+            let groupedData = groupMonthlyTasksForSearch(results.data.combinedData)
+
+            setBatchData(groupedData)
+            //setBatchDataForSummary(results.data.groupedDataForSummary)
             setIsLoading(false)
 
         } catch (err) {
@@ -317,7 +403,7 @@ const HistorySearchScreen = ({ navigation, route: { params } }) => {
                 </View>
                 <TouchableOpacity
                     style={[styles.backButton, { marginTop: Platform.OS === 'ios' ? 80 : 80 }]}
-                    onPress={() => { navigation.navigate('HistoryDaily') }}>
+                    onPress={() => { navigation.navigate('HistoryDaily', { toRefresh }) }}>
                     <Icon
                         name='arrow-back-outline'
                         type='ionicon'

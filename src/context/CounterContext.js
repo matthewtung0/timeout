@@ -45,7 +45,8 @@ const counterReducer = (state, action) => {
         case 'change_color':
             return {
                 ...state, userCounters: state.userCounters.map(item => {
-                    if (item.counter_id == action.payload.counter_id) {
+                    if (item.counter_id == action.payload.counterId) {
+                        console.log("replacing with ", action.payload.colorId)
                         return { ...item, color_id: action.payload.colorId }
                     }
                     return item
@@ -225,7 +226,7 @@ const deleteCounter = dispatch => async (counterId, callback = null) => {
     }
 }
 
-const addTally = dispatch => async (counterId, updateAmount, callback = null) => {
+const addTally = dispatch => async (counterId, updateAmount, callback = null, errorCallback = null) => {
     try {
         var dateObject = new Date();
         var month_ = (dateObject.getMonth() + 1).toString()
@@ -243,6 +244,7 @@ const addTally = dispatch => async (counterId, updateAmount, callback = null) =>
     } catch (err) {
         console.log("error adding tally to counter:", err);
         dispatch({ type: 'add_error', payload: 'There was a problem adding the tally to counter.' })
+        if (errorCallback) { errorCallback() }
     }
 }
 

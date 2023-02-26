@@ -117,11 +117,12 @@ function mainOptions(points) {
     headerTitleAlign: 'center',
     headerTitle: () => {
       return (
-        <View style={{
+        <>
+        </>
+        /*<View style={{
           backgroundColor: '#F6F2DF', padding: 5, borderTopRightRadius: 50, borderBottomRightRadius: 50,
           flexDirection: 'row', borderWidth: 2, borderColor: '#EAD39E',
         }}>
-          {/*<View style={{ backgroundColor: '#ABC57E', height: 20, width: 20, }}></View>*/}
           <Image
             source={pointSquares}
             style={{ width: 22, height: 22, }}
@@ -131,11 +132,10 @@ function mainOptions(points) {
             fontFamily: 'Inter-Medium',
           }]}>
             {points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              //parseInt(points).toLocaleString()
             }
 
           </Text>
-        </View>
+          </View>*/
       )
     },
   }

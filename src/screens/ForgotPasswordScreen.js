@@ -7,6 +7,7 @@ import { Input, Text } from 'react-native-elements';
 import { Easing } from 'react-native-reanimated';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as AuthContext } from '../context/AuthContext';
+import { normalize } from '../components/FormatUtils';
 
 const cloud = require('../../assets/cloud.png');
 const character = require('../../assets/character.png');
@@ -148,7 +149,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
                         justifyContent: 'center', alignItems: 'center',
                     }}>
                         <View style={{ width: '60%', height: '45%', padding: 10, }}>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>Enter your email to get a password reset link.</Text>
+                            <Text style={[styles.textDefaultSemiBold, {
+                                color: '#67806D',
+                                fontSize: normalize(14),
+                            }]}>
+                                Enter your email to get a password reset link.</Text>
                         </View>
 
 
@@ -157,13 +162,17 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
                 <View style={{ flex: 1.5, backgroundColor: '#67806D' }}>
                     <View style={{ marginTop: 20, }} />
-                    <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 5, }]}>
+                    <Text style={[styles.textDefault, {
+                        marginHorizontal: 40, color: 'white', marginBottom: normalize(5),
+                        fontSize: normalize(12)
+                    }]}>
                         Email Address</Text>
-                    <View style={{ flexDirection: 'row', marginHorizontal: 35, marginBottom: 10, }}>
+                    <View style={{ flexDirection: 'row', marginHorizontal: 35, marginBottom: normalize(20), }}>
                         <TextInput
                             style={[styles.inputStyle, styles.textDefault, {
                                 marginBottom: 10, marginHorizontal: 0,
-                                flex: 5, paddingVertical: 10, fontSize: 16, color: '#67806D',
+                                flex: 5, paddingVertical: 10, color: '#67806D',
+                                fontSize: normalize(14)
                             }]}
                             inputContainerStyle={styles.inputStyleContainer}
                             placeholder='Email'
@@ -188,15 +197,19 @@ const ForgotPasswordScreen = ({ navigation }) => {
                             setIsLoading(true)
                             forgot_password(email, forgotPasswordCallback)
                         }}>
-                        <Text style={[styles.signUpTextStyle, styles.textDefaultBold,]}>Send Reset Link</Text>
+                        <Text style={[styles.signUpTextStyle, styles.textDefaultBold,
+                        { fontSize: normalize(14) }]}>Send Reset Link</Text>
                     </TouchableOpacity>
 
 
-                    <TouchableOpacity onPress={() =>
-                        navigation.navigate('SignIn')
-                    }
+                    <TouchableOpacity
+                        style={{ marginTop: normalize(20) }}
+                        onPress={() =>
+                            navigation.navigate('SignIn')
+                        }
                     >
-                        <Text style={[styles.button, styles.textDefault,]}>Go back to sign in page</Text>
+                        <Text style={[styles.button, styles.textDefault,
+                        { fontSize: normalize(12) }]}>Go back to sign in page</Text>
 
                     </TouchableOpacity>
 
@@ -223,6 +236,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
     }, textDefaultMed: {
         fontFamily: 'Inter-Medium',
+    }, textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold'
     },
     container: {
         flex: 1,

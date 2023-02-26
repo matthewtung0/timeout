@@ -8,6 +8,8 @@ const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask })
     let bgColorHex = constants.colors[item.color_id]
     const { editTodoItemPin } = useContext(CategoryContext)
 
+    console.log("Rendering item:", item.item_desc)
+
     const editPin = (to_pin) => {
         if (to_pin) {
             editTodoItemPin(item.item_id, to_pin, editPinCallback, editPinCallbackError)
@@ -140,4 +142,12 @@ const styles = StyleSheet.create({
 
 })
 
-export default ToDoComponent;
+//export default ToDoComponent;
+const equal = (prevItem, nextItem) => {
+    if (prevItem.item.item_id != nextItem.item.item_id || prevItem.item.is_pinned != nextItem.item.is_pinned) {
+        return false;
+    }
+    return true;
+}
+
+export default React.memo(ToDoComponent, equal)

@@ -17,7 +17,7 @@ import tinycolor from 'tinycolor2';
 import enUS from 'date-fns/locale/en-US';
 const constants = require('../components/constants.json')
 
-const HistoryDailyScreen = ({ navigation }) => {
+const HistoryDailyScreen = ({ navigation, route: { params } }) => {
 
     //console.log("History daily screen rerender")
     const MARGIN_HORIZONTAL = 9;
@@ -128,7 +128,7 @@ const HistoryDailyScreen = ({ navigation }) => {
         console.log(`Focus effect with calendar date ${state.calendarDate} and offset ${state.curOffset}, 
         counter tables locked: ${counterState.counterTablesLocked}, needReset: ${state.needHardReset}`)
 
-        if (state.needHardReset && !counterState.counterTablesLocked) {
+        if ((state.needHardReset && !counterState.counterTablesLocked)) {
             setIsLoading(true)
             // if reset needed, refresh most recent month
             var endTime = endOfMonth(new Date())
@@ -388,6 +388,7 @@ const HistoryDailyScreen = ({ navigation }) => {
                 data={state.batchData[displayMonthKey] ? state.batchData[displayMonthKey].slice(0, visibleOffset + 1) : []}
                 showsHorizontalScrollIndicator={false}
                 onEndReached={updateVisibleOffset}
+                onEndReachedThreshold={0.6}
                 keyExtractor={(item) => item[0]}
                 ListFooterComponent={renderFooter}
                 renderItem={({ item }) =>

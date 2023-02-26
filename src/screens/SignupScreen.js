@@ -9,6 +9,7 @@ import { Text } from 'react-native-elements';
 import timeoutApi from '../api/timeout';
 import tinycolor from 'tinycolor2';
 import { Easing } from 'react-native-reanimated';
+import { normalize } from '../components/FormatUtils';
 
 const cloud = require('../../assets/cloud.png');
 const character = require('../../assets/character.png');
@@ -219,8 +220,11 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                         position: 'absolute', height: '100%', width: '100%',
                         justifyContent: 'center', alignItems: 'center',
                     }}>
-                        <View style={{ width: '60%', height: '45%', padding: 10, }}>
-                            <Text style={[styles.textDefaultBold, { color: '#67806D' }]}>{activeDialogue}</Text>
+                        <View style={{ width: '60%', height: '45%', paddingHorizontal: 10, paddingVertical: 5, }}>
+                            <Text style={[styles.textDefaultSemiBold, {
+                                color: '#67806D',
+                                fontSize: normalize(13)
+                            }]}>{activeDialogue}</Text>
                         </View>
 
                     </View>
@@ -228,11 +232,14 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                 <View style={{ flex: 1.5 }}>
                     {activeMenu == 0 ?
                         <View style={styles.inner}>
-                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                            <Text style={[styles.textDefault, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 5,
+                                fontSize: 14
+                            }]}>
                                 First Name</Text>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
-                                    fontSize: 16, color: '#67806D', marginHorizontal: 35, paddingVertical: 5,
+                                    fontSize: 18, color: '#67806D', marginHorizontal: 35, paddingVertical: 7,
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='First Name'
@@ -242,15 +249,16 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 value={firstName}
                                 onChangeText={setFirstName}
                             />
-                            <Text style={[styles.textDefaultMed, {
-                                marginHorizontal: 40, color: 'white', marginBottom: 3,
-                                marginTop: 5,
+                            <Text style={[styles.textDefault, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 5,
+                                marginTop: 10,
+                                fontSize: 14
                             }]}>
                                 Last Name</Text>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
-                                    fontSize: 16, color: '#67806D',
-                                    marginHorizontal: 35, paddingVertical: 5,
+                                    fontSize: 18, color: '#67806D',
+                                    marginHorizontal: 35, paddingVertical: 7,
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='Last Name'
@@ -260,15 +268,16 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 value={lastName}
                                 onChangeText={setLastName}
                             />
-                            <Text style={[styles.textDefaultMed, {
-                                marginHorizontal: 40, color: 'white', marginBottom: 3,
+                            <Text style={[styles.textDefault, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 5,
                                 marginTop: 10,
+                                fontSize: 14
                             }]}>
                                 Email Address</Text>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
-                                    fontSize: 16, marginBottom: 25,
-                                    color: '#67806D', marginHorizontal: 35, paddingVertical: 5,
+                                    fontSize: 18, marginBottom: 25,
+                                    color: '#67806D', marginHorizontal: 35, paddingVertical: 7,
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 placeholder='Email'
@@ -289,17 +298,20 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
                             <TouchableOpacity
                                 style={[styles.signUpBoxStyle,
-                                { shadowColor: tinycolor('#FCC859').darken(25).toString() }]}
+                                {
+                                    shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                    marginTop: 18
+                                }]}
                                 onPress={() => {
                                     if (validateInputs()) {
                                         checkEmailAndNext()
                                     }
                                 }}>
-                                <Text style={styles.signUpTextStyle}>Next</Text>
+                                <Text style={[styles.signUpTextStyle, { fontSize: 18 }]}>Next</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={{ marginTop: 20, }}
+                                style={{ marginTop: 24, }}
                                 onPress={() =>
                                     navigation.navigate('SignIn')
                                 }
@@ -320,8 +332,11 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
                             <TextInput
                                 style={[styles.inputStyleBio, styles.textDefault, {
-                                    fontSize: 16, paddingTop: 15,
-                                    color: '#67806D'
+                                    fontSize: 18,
+                                    paddingHorizontal: 14,
+                                    paddingTop: 12,
+                                    color: '#67806D',
+                                    height: height * 0.2,
                                 }]}
                                 multiline={true}
                                 numberOfLines={6}
@@ -341,12 +356,15 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                             />
 
                             <TouchableOpacity
-                                style={[styles.signUpBoxStyle, { shadowColor: tinycolor('#FCC859').darken(25).toString() }]}
+                                style={[styles.signUpBoxStyle, {
+                                    shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                    marginTop: height * 0.04, marginBottom: height * 0.04,
+                                }]}
                                 onPress={() => {
                                     setActiveDialogue(message2)
                                     setActiveMenu(2)
                                 }}>
-                                <Text style={[styles.signUpTextStyle, styles.textDefaultBold,]}>Next</Text>
+                                <Text style={[styles.signUpTextStyle, styles.textDefaultBold, { fontSize: 18, }]}>Next</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -360,8 +378,8 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 <Text style={[styles.textDefault, {
                                     color: '#F6F2DF',
                                     alignSelf: 'center',
-                                    marginTop: 30,
-                                    fontSize: 16,
+                                    marginTop: 24,
+                                    fontSize: 14,
                                 }]}>Go Back</Text>
                             </TouchableOpacity>
 
@@ -369,12 +387,16 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                         : null}
                     {activeMenu == 2 ?
                         <View style={styles.inner}>
-                            <Text style={[styles.textDefaultMed, { marginHorizontal: 40, color: 'white', marginBottom: 3, }]}>
+                            <Text style={[styles.textDefault, {
+                                marginHorizontal: 40, color: 'white', marginBottom: 7,
+                                fontSize: 14
+                            }]}>
                                 Username</Text>
                             <TextInput
                                 style={[styles.inputStyle, styles.textDefault, {
-                                    fontSize: 16, color: '#67806D',
-                                    marginHorizontal: 35, paddingVertical: 5,
+                                    color: '#67806D',
+                                    marginHorizontal: 35, paddingVertical: 7,
+                                    fontSize: 18,
                                 }]}
                                 inputContainerStyle={styles.inputStyleContainer}
                                 secureTextEntry={false}
@@ -385,16 +407,18 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 value={username}
                                 onChangeText={setUsername}
                             />
-                            <Text style={[styles.textDefaultMed, {
+                            <Text style={[styles.textDefault, {
                                 marginHorizontal: 40, color: 'white',
-                                marginBottom: 3, marginTop: 10,
+                                marginBottom: 7,
+                                fontSize: 14, marginTop: 10,
                             }]}>
                                 Password</Text>
                             <View style={{ flexDirection: 'row', marginHorizontal: 35, }}>
                                 <TextInput
                                     style={[styles.inputStyle, styles.textDefault, {
-                                        fontSize: 16, color: '#67806D',
-                                        marginHorizontal: 0, flex: 5, paddingVertical: 5,
+                                        color: '#67806D',
+                                        marginHorizontal: 0, flex: 5, paddingVertical: 7,
+                                        fontSize: 18,
                                     }]}
                                     inputContainerStyle={styles.inputStyleContainer}
                                     secureTextEntry={!passwordVisible}
@@ -405,19 +429,20 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                     value={password}
                                     onChangeText={setPassword}
                                 />
-                                <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1, justifyContent: 'center', }}>
                                     <TouchableOpacity onPress={togglePasswordVisible}>
                                         <Icon
                                             name={passwordVisible ? "eye-outline" : "eye-off-outline"}
                                             type='ionicon'
-                                            size={25}
+                                            size={24}
                                             color='white' />
                                     </TouchableOpacity>
                                 </View>
                             </View>
 
                             <Text style={[styles.textDefaultMed, {
-                                marginHorizontal: 40, color: 'white', marginBottom: 3,
+                                marginHorizontal: 40, color: 'white', marginBottom: 7,
+                                fontSize: 14,
                                 marginTop: 10,
                             }]}>
                                 Confirm Password</Text>
@@ -425,8 +450,9 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
                                 <TextInput
                                     style={[styles.inputStyle, styles.textDefault, {
-                                        fontSize: 16, marginBottom: 30, marginHorizontal: 0,
-                                        color: '#67806D', flex: 5, paddingVertical: 5,
+                                        marginHorizontal: 0,
+                                        color: '#67806D', flex: 5, paddingVertical: 7,
+                                        fontSize: 18,
                                     }]}
                                     inputContainerStyle={styles.inputStyleContainer}
                                     secureTextEntry={!confirmPasswordVisible}
@@ -439,15 +465,15 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                         setPasswordConfirm(value)
                                         setPasswordMismatch(false)
                                     }}
-                                    errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 16, color: '#F5BBAE' }]}
+                                    errorStyle={[styles.textDefault, { marginHorizontal: 30, fontSize: 14, color: '#F5BBAE' }]}
                                     errorMessage={passwordMismatch ? "Passwords don't match!" : null}
                                 />
-                                <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1, justifyContent: 'center', }}>
                                     <TouchableOpacity onPress={toggleConfirmPasswordVisible}>
                                         <Icon
                                             name={confirmPasswordVisible ? "eye-outline" : "eye-off-outline"}
                                             type='ionicon'
-                                            size={25}
+                                            size={24}
                                             color='white' />
                                     </TouchableOpacity>
                                 </View>
@@ -455,16 +481,19 @@ const SignupScreen = ({ navigation, route: { params } }) => {
 
                             <TouchableOpacity
                                 style={[styles.textDefaultBold, styles.signUpBoxStyle,
-                                { shadowColor: tinycolor('#FCC859').darken(25).toString() }]}
+                                {
+                                    shadowColor: tinycolor('#FCC859').darken(25).toString(),
+                                    marginTop: 34
+                                }]}
                                 onPress={() => {
                                     checkValidations()
                                 }}>
-                                <Text style={styles.signUpTextStyle}>Next</Text>
+                                <Text style={[styles.signUpTextStyle, { fontSize: 18 }]}>Next</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={{
-                                    alignSelf: 'center',
+                                    alignSelf: 'center', marginTop: 15,
                                 }}
                                 onPress={() => {
                                     setActiveDialogue(1)
@@ -474,7 +503,7 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                     color: '#F6F2DF',
                                     alignSelf: 'center',
                                     marginTop: 30,
-                                    fontSize: 16,
+                                    fontSize: 15,
                                 }]}>Go Back</Text>
                             </TouchableOpacity>
 
@@ -506,6 +535,9 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-Regular',
     }, textDefaultMed: {
         fontFamily: 'Inter-Medium',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold',
     },
     container: {
         flex: 1,
@@ -543,7 +575,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         paddingHorizontal: 17,
         marginBottom: 20,
-        height: 130,
     },
     inputContainer: {
         flex: 1,
@@ -562,9 +593,9 @@ const styles = StyleSheet.create({
         width: 230,
     },
     signUpBoxStyle: {
+        paddingHorizontal: 40,
+        paddingVertical: 15,
         backgroundColor: '#FCC859',
-        width: 150,
-        height: 40,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',

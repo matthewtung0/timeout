@@ -117,12 +117,15 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
         // setting num points earned: max of 1000 points for 60 min and 5 stars
         // 1000 * ((num_stars+1) / 5) * (num_mins / 60)
-        try {
+
+        // DISABLE POINTS FOR NOW
+        /*try {
             await addPoints(userState.user_id, pointsEarned, offBoard())
         } catch (err) {
             console.log("Problem adding points")
             offBoard();
-        }
+        }*/
+        offBoard();
     }
 
     const saveSessionErrorCallback = () => {
@@ -174,12 +177,12 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             offBoard();
         }
 
-        try {
+        /*try {
             await addPoints(userState.user_id, 100000, offBoard())
         } catch (err) {
             console.log("Problem adding points")
             offBoard();
-        }
+        }*/
     }
     // functions to add or remove from todo list if necessary
     const deleteItem = async () => {
@@ -361,7 +364,11 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     borderBottomLeftRadius: BORDER_RADIUS, borderBottomRightRadius: BORDER_RADIUS,
                 }}>
                 <View style={{ alignItems: 'center', }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+
+
+                    {/* You've earned _ _ points */}
+
+                    {/*<View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                         <Text style={[styles.textDefaultBold,
                         {
                             color: '#67806D', marginTop: 10, fontSize: 22,
@@ -372,7 +379,9 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                         />
                         <Text style={[styles.textDefaultBold,
                         { color: '#67806D', marginTop: 10, fontSize: 22, }]}>!</Text>
-                    </View>
+                        </View>*/}
+
+
                     <View style={{ flexDirection: 'row', marginTop: 25, alignItems: 'center', marginHorizontal: 50, }}>
                         {existingItem ?
                             <><TouchableOpacity
