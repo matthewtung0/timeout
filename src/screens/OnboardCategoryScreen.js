@@ -20,6 +20,7 @@ const bg_bottom = require('../../assets/border.png')
 const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
     const { email, password, username, firstName, lastName, bio } = params;
+    console.log(params)
 
     const { signup, setToken } = useContext(AuthContext);
     // [0, defaultCat[0], chosen or not (t/f), colorId]
@@ -229,8 +230,9 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                                 if (isLoading) { return; }
                                 setIsLoading(true)
                                 var lowerCaseEmail = email.toLowerCase();
+                                console.log("Sending email: ", lowerCaseEmail);
                                 signup({
-                                    lowerCaseEmail,
+                                    email: lowerCaseEmail,
                                     password,
                                     username,
                                     firstName,
