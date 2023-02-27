@@ -1,8 +1,9 @@
 import React, { useState, useContext, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image, TextInput,
-    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Touchable,
+    Keyboard, TouchableWithoutFeedback, ActivityIndicator, Platform, Touchable, Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from 'react-native-elements';
 import CircularSelector from '../components/CircularSelector';
 import { Context as UserContext } from '../context/userContext';
@@ -16,6 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import tinycolor from 'tinycolor2';
 import InformationalModal from '../components/InformationalModal';
+import { Easing } from 'react-native-reanimated';
 
 
 import { Shadow } from 'react-native-shadow-2';
@@ -133,6 +135,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
     useFocusEffect(
         useCallback(() => {
+
             focusEffectFunc()
         }, [])
     )

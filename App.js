@@ -603,7 +603,10 @@ function CreateOnboardingStack() {
 function CreateSessionStack() {
   return (
     <Stack.Navigator
-      screenOptions={pageOptions}>
+      screenOptions={{
+        headerShown: false,
+        animation: 'none'
+      }}>
 
       <Stack.Screen
         name="drawer"
@@ -626,7 +629,14 @@ options={pageOptions} />*/}
       <Stack.Screen
         name="SessionOngoing"
         component={SessionOngoingScreen}
-        options={pageOptions}
+        options={{
+          headerShown: false,
+          animation: 'none',
+          /*transitionSpec: {
+            open: config,
+            close: config,
+          }*/
+        }}
       />
       <Stack.Screen
         name="SessionEval"

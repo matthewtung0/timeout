@@ -245,7 +245,7 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 placeholder='First Name'
                                 placeholderTextColor='grey'
                                 maxLength={30}
-                                autoCorrect={'name'}
+                                autoCorrect={false}
                                 value={firstName}
                                 onChangeText={setFirstName}
                             />
@@ -264,7 +264,6 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 placeholder='Last Name'
                                 placeholderTextColor='grey'
                                 maxLength={30}
-                                autoCorrect={'family-name'}
                                 value={lastName}
                                 onChangeText={setLastName}
                             />
@@ -283,7 +282,6 @@ const SignupScreen = ({ navigation, route: { params } }) => {
                                 placeholder='Email'
                                 placeholderTextColor='grey'
                                 autoCapitalize='none'
-                                autoCorrect={'email'}
                                 maxLength={50}
                                 value={email}
                                 onChangeText={(value) => {

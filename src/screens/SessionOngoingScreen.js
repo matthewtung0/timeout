@@ -1,12 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-    Animated, View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
-    AppState, BackHandler
+    View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert, Image, ImageBackground,
+    AppState, BackHandler, Animated
 } from 'react-native';
 import { fromUnixTime, getUnixTime, isThisSecond, differenceInMilliseconds, addSeconds } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
 import uuid from 'uuid-random'
 import Svg from 'react-native-svg';
 import Modal from 'react-native-modal'
+import { Easing } from 'react-native-reanimated';
 
 import { Text as TextSVG } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
@@ -320,8 +322,8 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                 {/* SESSION REWARD MODAL */}
                 <View>
                     <Modal isVisible={rewardModalVisible}
-                        animationIn='slideInLeft'
-                        animationOut='slideOutLeft'
+                        animationIn='slideInDown'
+                        animationOut='lightSpeedOut'
                         backdropTransitionOutTiming={0}
                     >
 

@@ -1,11 +1,13 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useRef } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator,
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, ActivityIndicator, Animated,
     TouchableWithoutFeedback, Alert
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import timeoutApi from '../api/timeout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Easing } from 'react-native-reanimated';
 
 import { Context as CategoryContext } from '../context/CategoryContext';
 import { Context as UserContext } from '../context/userContext';
@@ -26,6 +28,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     const [prodRatingNum, setProdRatingNum] = useState(0)
     const [ratingViewActive, setRatingViewActive] = useState(true)
     const [isPrivate, setIsPrivate] = useState(false);
+    const [animStarted, setAnimStarted] = useState(false);
     const [sessionObjFinal, setSessionObjFinal] = useState({
         ...sessionObj,
         //sessionEndTime: sessionEndTime,
@@ -35,10 +38,6 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         time_start: fromUnixTime(sessionStartTime),
         time_end: fromUnixTime(sessionEndTime),
         is_private: false,
-        //startRange: startOfDay(fromUnixTime(sessionStartTime)),
-        //endRange: endOfDay(fromUnixTime(sessionStartTime)),
-        //yesterdayStartRange: subDays(startOfDay(fromUnixTime(sessionStartTime)), 1),
-        //yesterdayEndRange: subDays(endOfDay(fromUnixTime(sessionStartTime)), 1),
     })
 
     // handle adding to Todo List or not
@@ -129,7 +128,34 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
 
     const saveSessionErrorCallback = () => {
-        offBoard();
+        offBoardError();
+    }
+
+    const anim = useRef(new Animated.Value(0)).current;
+
+    const cloudAnim = () => {
+        //Animated.loop(
+        Animated.sequence([
+            Animated.timing(anim, {
+                toValue: -height + 30,
+                duration: 300,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+                toValue: -height - 30,
+                duration: 900,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+                toValue: -height * 2,
+                duration: 300,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }),
+        ])
+        //).start();
     }
 
     const saveSession_TEMPDISABLE = async () => {
@@ -194,10 +220,22 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
         await addTodoItem(sessionObjFinal.activity_name, new Date(), sessionObjFinal.cat_id)
         console.log("Added this task from todo list")
     }
-    const offBoard = () => {
-        setIsLoading(false)
+
+    const offBoardError = () => {
+        setIsLoading(false);
         toggleFunction()
         offBoardCallback();
+    }
+    const offBoard = () => {
+        setIsLoading(false)
+        //setAnimStarted(true)
+        //cloudAnim()
+
+        setTimeout(() => {
+            toggleFunction()
+            offBoardCallback();
+        }, 1)
+
     }
 
     const checkTodoMatch = () => {
@@ -505,37 +543,38 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
 
 
     return (
-        <><View
-            style={[styles.container, { width: width * 0.9, flex: 1, }]}>
-            <View style={{ borderWidth: 0, flex: 1, }}>
-
-            </View>
-            <View style={{
-                borderWidth: 0, flex: 1, backgroundColor: 'white',
-                borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
-            }}>
-
-            </View>
-            {ratingViewActive ? sessionRatingView() : sessionRewardView()}
-            <View style={{ borderWidth: 0, flex: 1, }}>
-
-            </View>
-
+        <>
             <View
-                style={{ borderWidth: 0, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
-                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}>
-                    <Image
-                        source={sessionCompleteBanner}
-                        resizeMode="contain"
-                        style={{ width: '100%' }} />
-                </View>
-                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1, }}>
+                style={[styles.container, { width: width * 0.9, flex: 1, }]}>
+                <View style={{ borderWidth: 0, flex: 1, }}>
 
                 </View>
-                <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}></View>
+                <View style={{
+                    borderWidth: 0, flex: 1, backgroundColor: 'white',
+                    borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                }}>
+
+                </View>
+                {ratingViewActive ? sessionRatingView() : sessionRewardView()}
+                <View style={{ borderWidth: 0, flex: 1, }}>
+
+                </View>
+
+                <View
+                    style={{ borderWidth: 0, position: 'absolute', borderColor: 'pink', flex: 1, width: '100%', height: '100%', }}>
+                    <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}>
+                        <Image
+                            source={sessionCompleteBanner}
+                            resizeMode="contain"
+                            style={{ width: '100%' }} />
+                    </View>
+                    <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1, }}>
+
+                    </View>
+                    <View style={{ borderWidth: 0, borderColor: 'pink', flex: 1 }}></View>
+                </View>
+
             </View>
-
-        </View>
             {isLoading ?
                 <View
                     style={{
@@ -546,6 +585,63 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                 </View>
                 :
                 null}
+
+
+            {animStarted ?
+                <View style={{
+                    position: 'absolute', borderWidth: 0, flex: 1, width: '100%', height: '100%',
+                    alignItems: 'center',
+                }}>
+                    <Animated.View style={{
+                        width: width * 0.7,
+                        height: height - 30,
+                        transform: [{ translateY: anim, }]
+                    }}>
+                        <LinearGradient
+                            // Button Linear Gradient
+                            colors={['rgba(255,255,255,0.2)', '#8DC867']}
+                            locations={[0.6, 0.9]}
+                            start={{ x: 0.5, y: 0, }}
+                            end={{ x: 0.5, y: 1, }}
+                            style={{ width: '100%', height: '100%', }}
+                        ></LinearGradient>
+                    </Animated.View>
+                    <Animated.View style={{
+                        width: width * 0.7,
+                        height: height + 60,
+                        backgroundColor: "#8DC867",
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        transform: [{ translateY: anim, }]
+                    }}>
+                        <LinearGradient
+                            // Button Linear Gradient
+                            colors={['#FFFFFF', '#8DC867', '#FFFFFF']}>
+
+                            <View style={{ alignItems: 'center', width: width * 0.7, borderWidth: 1, backgroundColor: "black" }}>
+                                <Text style={{ color: 'white', fontSize: 30, }}>TASK ADDED!</Text>
+                            </View>
+                        </LinearGradient>
+
+
+                    </Animated.View>
+                    <Animated.View style={{
+                        width: width * 0.7,
+                        height: height - 30,
+                        transform: [{ translateY: anim, }]
+                    }}>
+                        <LinearGradient
+                            // Button Linear Gradient
+                            colors={['#8DC867', 'rgba(255,255,255,0.2)']}
+                            locations={[0.1, 0.4]}
+                            start={{ x: 0.5, y: 0, }}
+                            end={{ x: 0.5, y: 1, }}
+                            style={{ width: '100%', height: '100%', }}
+                        ></LinearGradient>
+                    </Animated.View>
+                </View>
+                : null}
+
         </>
 
     )
