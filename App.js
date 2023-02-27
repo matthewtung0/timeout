@@ -632,6 +632,7 @@ options={pageOptions} />*/}
         options={{
           headerShown: false,
           animation: 'none',
+          gestureEnabled: false,
           /*transitionSpec: {
             open: config,
             close: config,
