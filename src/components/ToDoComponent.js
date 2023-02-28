@@ -4,11 +4,12 @@ import { Icon } from 'react-native-elements';
 import { Context as CategoryContext } from '../context/CategoryContext';
 const constants = require('../components/constants.json')
 
-const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask }) => {
-    let bgColorHex = constants.colors[item.color_id]
+const ToDoComponent = ({ item, callback, toggleFunction, show_error, editTask, color }) => {
+    let bgColorHex = constants.colors[color]
     const { editTodoItemPin } = useContext(CategoryContext)
 
     console.log("Rendering item:", item.item_desc)
+    console.log("COLOR", color)
 
     const editPin = (to_pin) => {
         if (to_pin) {
@@ -144,7 +145,9 @@ const styles = StyleSheet.create({
 
 //export default ToDoComponent;
 const equal = (prevItem, nextItem) => {
-    if (prevItem.item.item_id != nextItem.item.item_id || prevItem.item.is_pinned != nextItem.item.is_pinned) {
+    if ((prevItem.item.item_id != nextItem.item.item_id) ||
+        (prevItem.item.is_pinned != nextItem.item.is_pinned) ||
+        (prevItem.color != nextItem.color)) {
         return false;
     }
     return true;

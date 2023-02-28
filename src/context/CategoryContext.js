@@ -344,7 +344,8 @@ const changeColorCategory = dispatch => async (categoryId, newColorId, callback 
     }
 }
 
-const editCategory = dispatch => async ({ categoryId, newColorId, toPublic, toArchive, callback = null, errorCallback = null }) => {
+const editCategory = dispatch => async (categoryId, newColorId, toPublic, toArchive,
+    callback = null, errorCallback = null) => {
     /*console.log("Category id ", categoryId)
     console.log("newColorId ", newColorId)
     console.log("toPublic ", toPublic)

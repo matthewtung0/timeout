@@ -126,7 +126,7 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
     }
 
     const offBoardCallback = () => {
-        navigation.navigate('SessionSelect')
+        navigation.navigate('SessionSelect', { showAnimation: true })
     }
 
 

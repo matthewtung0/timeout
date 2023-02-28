@@ -139,8 +139,10 @@ const HistoryComponent = ({ session_obj, is_active }) => {
     )
 }
 
+
 const equal = (prevItem, nextItem) => {
-    if (prevItem.session_obj.activity_id != nextItem.session_obj.activity_id) {
+    if ((prevItem.session_obj.activity_id != nextItem.session_obj.activity_id) ||
+        (prevItem.session_obj.color_id != nextItem.session_obj.color_id)) {
         return false;
     }
     return true;

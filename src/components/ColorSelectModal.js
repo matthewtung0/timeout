@@ -32,15 +32,14 @@ const ColorSelectModal = ({ toggleFunction, colorArr, selectedColorId,
     const submitEdit = async () => {
         setIsLoading(true)
         // handle changes to public setting and color
-        await editCategory({
-            categoryId: selectedCatId,
-            newColorId: chosenColorId, toPublic: publicToggle, toArchive: archiveToggle, callback: editCallback,
-            errorCallback: errorReset,
-        })
+        await editCategory(selectedCatId, chosenColorId, publicToggle, archiveToggle, editCallback, errorReset,
+        )
     }
 
     const editCallback = async () => {
+        console.log(`chosen color id ${chosenColorId} and original ${selectedColorId}`)
         if (selectedColorId != chosenColorId) {
+            console.log("Doing hard reset")
             var dt = new Date()
             var endTime = endOfMonth(dt)
             var startTime = startOfMonth(subMonths(startOfMonth(dt), 3))

@@ -27,6 +27,7 @@ const constants = require('../components/constants.json')
 const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
+const transition_session_complete = require('../../assets/transition-session-complete.png')
 const PADDING_TOP = 55;
 const { height, width } = Dimensions.get('window');
 const WIDTH_SETTING = height / 3.46
@@ -40,8 +41,8 @@ const HideKeyboard = ({ children }) => (
     </TouchableWithoutFeedback>
 );
 
-const SessionSelectScreen = ({ navigation: { navigate }, }) => {
-
+const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) => {
+    const anim = useRef(new Animated.Value(0)).current;
     const [time, setTime] = useState(0);
     const { state, fetchSelf, fetchFriendsIfUpdate, addPoints } = useContext(UserContext)
     const { setChosen, setActivityName } = useContext(CategoryContext)
@@ -53,10 +54,10 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
     const [newCatName, setNewCatName] = useState('unsorted')
     const [newColorId, setNewColorId] = useState('c10')
     const [token, setToken] = useState('')
+    const [animStarted, setAnimStarted] = useState(false);
 
     const [modalVisible, setModalVisible] = useState(false)
     const [infoModalVisible, setInfoModalVisible] = useState(false)
-
 
     const updateTime = (a) => {
         setTime(a);
@@ -135,8 +136,14 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
     useFocusEffect(
         useCallback(() => {
+            if (false) {
+                anim.setValue(0)
+                setAnimStarted(true)
+                cloudAnim()
+            } else {
+                focusEffectFunc()
+            }
 
-            focusEffectFunc()
         }, [])
     )
 
@@ -315,6 +322,31 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                 <Text style={[styles.modalButtonText, styles.textDefaultBold]}>+</Text>
             </TouchableOpacity>
         )
+    }
+
+
+    const cloudAnim = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(anim, {
+                    toValue: -height + 30,
+                    duration: 300,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(anim, {
+                    toValue: -height - 30,
+                    duration: 900,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(anim, {
+                    toValue: -height * 3,
+                    duration: 300,
+                    easing: Easing.linear,
+                    useNativeDriver: true,
+                }),
+            ])).start();
     }
 
     return (
@@ -530,38 +562,6 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
 
                         </View>
 
-
-
-                        {/*
-                        <View style={{ flexDirection: 'row', marginTop: 0, borderWidth: 0, }}>
-                        <View style={{ flex: 1, }} />
-                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                style={{}}
-                                onPress={() => { toggleInfoModal() }}>
-                                <Icon
-                                    name="information-circle"
-                                    type='ionicon'
-                                    size={25}
-                                    color='#67806D' />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 1, }} />
-                        <View style={{ flex: 3.5, alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                style={{}}
-                                onPress={() => { toggleInfoModal() }}>
-                                <Icon
-                                    name="information-circle"
-                                    type='ionicon'
-                                    size={25}
-                                    color='#67806D' />
-                            </TouchableOpacity>
-
-                        </View>
-                        <View style={{ flex: 1, }} />
-                            </View>
-*/}
                         {state.errorMessage && 0 ?
                             <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
                                 <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
@@ -617,6 +617,64 @@ const SessionSelectScreen = ({ navigation: { navigate }, }) => {
                     </View>
                     : null}
                 {/*<View style={{ position: 'absolute', height: 100, backgroundColor: 'green', width: '100%', }} />*/}
+
+                {animStarted ?
+                    <View style={{
+                        position: 'absolute', borderWidth: 0, flex: 1, width: '100%', height: '100%',
+                        alignItems: 'center',
+                    }}>
+                        <Animated.View style={{
+                            width: width * 0.7,
+                            height: height - 30,
+                            transform: [{ translateY: anim, }]
+                        }}>
+                            <LinearGradient
+                                // Button Linear Gradient
+                                colors={['rgba(255,255,255,0.2)', '#8DC867']}
+                                locations={[0.6, 0.9]}
+                                start={{ x: 0.5, y: 0, }}
+                                end={{ x: 0.5, y: 1, }}
+                                style={{ width: '100%', height: '100%', }}
+                            ></LinearGradient>
+                        </Animated.View>
+                        <Animated.View style={{
+                            width: width * 0.7,
+                            height: height + 60,
+                            backgroundColor: "#8DC867",
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transform: [{ translateY: anim, }]
+                        }}>
+                            <LinearGradient
+                                // Button Linear Gradient
+                                colors={['#8DC867', '#8DC867', '#8DC867']}>
+
+                                <View style={{ alignItems: 'center', width: width * 0.7, borderWidth: 0, }}>
+                                    <Image
+                                        source={transition_session_complete}
+                                        style={{ width: width * 0.8 }}
+                                        resizeMode='contain' />
+                                </View>
+                            </LinearGradient>
+
+
+                        </Animated.View>
+                        <Animated.View style={{
+                            width: width * 0.7,
+                            height: height - 30,
+                            transform: [{ translateY: anim, }]
+                        }}>
+                            <LinearGradient
+                                // Button Linear Gradient
+                                colors={['#8DC867', 'rgba(255,255,255,0.2)']}
+                                locations={[0.1, 0.4]}
+                                start={{ x: 0.5, y: 0, }}
+                                end={{ x: 0.5, y: 1, }}
+                                style={{ width: '100%', height: '100%', }}
+                            ></LinearGradient>
+                        </Animated.View>
+                    </View> : null}
+
             </>
         </HideKeyboard >
     )

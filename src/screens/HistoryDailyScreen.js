@@ -8,6 +8,7 @@ import MonthlySumComponent from '../components/MonthlySumComponent';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as SessionContext } from '../context/SessionContext';
 import { Context as CounterContext } from '../context/CounterContext';
+import { Context as CategoryContext } from '../context/CategoryContext';
 import HistoryComponent from '../components/HistoryComponent';
 import HistoryCounterComponent from '../components/HistoryCounterComponent';
 import MonthlyCounterComponent from '../components/MonthlyCounterComponent';
@@ -25,6 +26,7 @@ const HistoryDailyScreen = ({ navigation, route: { params } }) => {
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,
         setCurOffset, setHardReset, resetMostCurrentDate } = useContext(SessionContext)
     const { state: counterState } = useContext(CounterContext);
+    const { state: categoryState } = useContext(CategoryContext);
 
     const [displayedMonth, setDisplayedMonth] = useState(format(state.calendarDate, 'MMMM', { locale: enUS }))
     const [displayMonthKey, setDisplayedMonthKey] = useState(format(state.calendarDate, 'M/yyyy', { locale: enUS }).toString())
@@ -399,7 +401,7 @@ const HistoryDailyScreen = ({ navigation, route: { params } }) => {
         )
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], visibleOffset])
+    const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], visibleOffset, categoryState.userCategories])
 
     return (
         <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 90 : 80 }]}>

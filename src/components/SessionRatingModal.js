@@ -17,6 +17,7 @@ const sessionCompleteBanner = require('../../assets/sessionCompleteBanner.png');
 const iconRatingNull = require('../../assets/icon_rating-null.png')
 const iconRating = require('../../assets/icon_rating.png')
 const yellowCheckmark = require('../../assets/yellow_checkmark.png')
+const transition_session_complete = require('../../assets/transition-session-complete.png')
 const pointSquares = require('../../assets/point_squares.png')
 const ICON_LENGTH = 30;
 const BORDER_RADIUS = 20;
@@ -149,12 +150,12 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                 useNativeDriver: true,
             }),
             Animated.timing(anim, {
-                toValue: -height * 2,
+                toValue: -height * 3,
                 duration: 300,
                 easing: Easing.linear,
                 useNativeDriver: true,
             }),
-        ])
+        ]).start()
         //).start();
     }
 
@@ -228,13 +229,13 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
     const offBoard = () => {
         setIsLoading(false)
-        //setAnimStarted(true)
-        //cloudAnim()
-
+        setAnimStarted(true)
+        cloudAnim()
         setTimeout(() => {
-            toggleFunction()
             offBoardCallback();
-        }, 1)
+            toggleFunction()
+
+        }, 1250)
 
     }
 
@@ -616,10 +617,13 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                     }}>
                         <LinearGradient
                             // Button Linear Gradient
-                            colors={['#FFFFFF', '#8DC867', '#FFFFFF']}>
+                            colors={['#8DC867', '#8DC867', '#8DC867']}>
 
-                            <View style={{ alignItems: 'center', width: width * 0.7, borderWidth: 1, backgroundColor: "black" }}>
-                                <Text style={{ color: 'white', fontSize: 30, }}>TASK ADDED!</Text>
+                            <View style={{ alignItems: 'center', width: width * 0.7 }}>
+                                <Image
+                                    source={transition_session_complete}
+                                    style={{ width: width * 0.8 }}
+                                    resizeMode='contain' />
                             </View>
                         </LinearGradient>
 

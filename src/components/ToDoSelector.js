@@ -143,12 +143,19 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                     />)
                 }}
                 renderItem={({ item }) => {
+                    var categoryColor = categoryState.userCategories.filter(req => req.category_id == item.category_id)
+                    if (categoryColor.length > 0) {
+                        var color = categoryColor[0].color_id
+                    } else {
+                        color = item.color_id
+                    }
                     return (
                         // SELECT THE OBJECT, TO GO BACK TO SESSION SELECT SCREEN
 
                         <View style={styles.toDoComponent}>
                             <ToDoComponent
                                 item={item}
+                                color={color}
                                 callback={callback}
                                 toggleFunction={toggleFunction}
                                 show_error={show_error}
@@ -238,7 +245,7 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
         }
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [sortedTodoItems, visibleOffset, sortBy])
+    const memoizedFlatList = useMemo(flatListItself, [sortedTodoItems, visibleOffset, sortBy, categoryState.userCategories])
 
     const parentView = () => {
         return (
