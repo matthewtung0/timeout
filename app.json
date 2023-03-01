@@ -2,7 +2,7 @@
   "expo": {
     "name": "Time Out",
     "slug": "timeout",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/app_icon_final2.png",
     "splash": {
@@ -20,7 +20,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "nofussexe.timeout",
       "icon": "./assets/app_icon_1024.png",
-      "buildNumber": "2"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +30,7 @@
       "package": "com.nofussexe.timeout",
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 10
+      "versionCode": 11
     },
     "web": {
       "favicon": "./assets/favicon.png"
