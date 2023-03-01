@@ -53,7 +53,9 @@ const signupValidation = (email, password) => {
 
 const signup = (dispatch) => async ({ email, password, username, firstName, lastName, categoryArr, bio, callback, errorCallback }) => {
     try {
-        const response = await timeoutApi.post('/signup', { email, password, username, firstName, lastName, categoryArr, bio });
+        const response = await timeoutApi.post('/signup',
+            { email, password, username, firstName, lastName, categoryArr, bio },
+            { timeout: 15000 });
         var token = response.data.token
         res = await AsyncStorage.setItem('token', token);
 

@@ -33,13 +33,13 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
             } else { var cache_time = await AsyncStorage.getItem(`avatar_date_${id}`) }
 
             if (!cache_time) { // not in cache, need to pull it anyways
-                if (!pfpSrc) { pullPfp(forceRetrieve = true) }
+                if (!pfpSrc) { pullPfp(true) }
             }
             var now = new Date();
             var diffInMin = differenceInMinutes(now, new Date(cache_time))
             if (diffInMin >= 240) {
                 console.log(`${id} is ${diffInMin} min old, so force retrieve`)
-                if (!pfpSrc) { pullPfp(forceRetrieve = true) }
+                if (!pfpSrc) { pullPfp(true) }
             } else {
                 console.log(`${id} is ${diffInMin} min old, so get from cache`)
                 if (isThumbnail) { var base64Icon_cached = await AsyncStorage.getItem(`thumbnail_avatar_${id}`); }
@@ -48,7 +48,7 @@ const AvatarComponent = ({ w, pfpSrc, id, modalView, isThumbnail = false, isMe =
             }
         } catch (err) {
             console.log("ERROR IS ", err)
-            if (!pfpSrc) { pullPfp(forceRetrieve = false) }
+            if (!pfpSrc) { pullPfp(false) }
         }
 
         /*if (useCache) {

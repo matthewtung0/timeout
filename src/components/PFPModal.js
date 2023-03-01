@@ -9,7 +9,6 @@ const PFPModal = ({ toggleFunction, idToView }) => {
     const { height, width } = Dimensions.get('window');
     const BORDER_RADIUS = 25;
     const INPUT_WIDTH = width * 0.8
-    console.log("ID to view: ", idToView)
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center', }]}>
             <View style={{
