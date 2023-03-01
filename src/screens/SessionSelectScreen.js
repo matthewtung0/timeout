@@ -16,22 +16,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import tinycolor from 'tinycolor2';
-import InformationalModal from '../components/InformationalModal';
 import { Easing } from 'react-native-reanimated';
-
-
 import { Shadow } from 'react-native-shadow-2';
+import InformationalModal from '../components/InformationalModal';
 
 const constants = require('../components/constants.json')
 
-const background_desk = require('../../assets/background_desk.png')
+//const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 const transition_session_complete = require('../../assets/transition-session-complete.png')
-//const test_bg6 = require('../../assets/test_bg6.png')
+//const test_bg7 = require('../../assets/test_bg7.png')
+const test_bg8 = require('../../assets/test_bg8.png')
+const SessionSelectDialog = require('../../assets/SessionSelectDialog.png')
 const PADDING_TOP = 55;
 const { height, width } = Dimensions.get('window');
-const WIDTH_SETTING = height / 3.46
+const WIDTH_SETTING = height / 3.6
 //
 //width / 2 / 0.80
 
@@ -352,82 +352,152 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
 
     return (
         <HideKeyboard>
-            <>
-                <View
-                    style={[styles.viewContainer, {}]}
-                >
+            <View
+                style={[styles.viewContainer, {}]}
+            >
 
-                    {/* TO-DO SELECTOR MODAL */}
-                    <View>
-                        <Modal isVisible={modalVisible}
-                            animationIn='slideInLeft'
-                            animationOut='slideOutLeft'
-                            backdropTransitionOutTiming={0}
-                        >
-
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                            }}>
-                                <View style={{
-                                    height: height * 0.85,
-                                    borderRadius: 20,
-                                }}>
-
-                                    <ToDoSelector
-                                        toggleFunction={toggleModal}
-                                        //todoItems={categoryState.userTodoItems}
-                                        show_error={state.errorMessage}
-                                        callback={fillInWithItem} />
-
-                                </View>
-                            </View>
-                        </Modal>
-                    </View>
-
-                    {/* informational modal */}
-
-                    <View>
-                        <Modal isVisible={infoModalVisible}
-                            animationIn='slideInLeft'
-                            animationOut='slideOutLeft'
-                            backdropTransitionOutTiming={0}
-                        >
-
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                            }}>
-                                <View style={{
-                                    height: height * 0.7,
-                                    borderRadius: 20,
-                                }}>
-                                    <InformationalModal
-                                        toggleFunction={toggleInfoModal}
-                                    />
-
-                                </View>
-                            </View>
-                        </Modal>
-                    </View>
-
-                    <View style={{ paddingTop: PADDING_TOP, }}>
-
-                        {/*<View style={{ position: 'absolute', width: '100%', height: '100%' }}>
-                            <Image
-                                source={test_bg6}
-                                style={{ width: '100%', height: '100%', }}
-                                resizeMode='contain'
-                            />
-                            </View>*/}
+                {/* TO-DO SELECTOR MODAL */}
+                <View>
+                    <Modal isVisible={modalVisible}
+                        animationIn='slideInLeft'
+                        animationOut='slideOutLeft'
+                        backdropTransitionOutTiming={0}
+                    >
 
                         <View style={{
-                            position: 'absolute', flex: 1,
-                            marginTop: PADDING_TOP, width: '100%', height: '100%',
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center',
                         }}>
-                            <View style={{ flex: 1, }}>
+                            <View style={{
+                                height: height * 0.85,
+                                borderRadius: 20,
+                            }}>
+
+                                <ToDoSelector
+                                    toggleFunction={toggleModal}
+                                    //todoItems={categoryState.userTodoItems}
+                                    show_error={state.errorMessage}
+                                    callback={fillInWithItem} />
+
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+
+                <View>
+                    <Modal isVisible={infoModalVisible}
+                        animationIn='slideInDown'
+                        animationOut='slideOutDown'
+                        animationInTiming={1}
+                        animationOutTiming={1}
+                        backdropTransitionOutTiming={0}
+                    >
+
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                        }}>
+                            <View style={{
+                                height: height * 0.6,
+                                borderRadius: 20,
+                            }}>
+
+                                <InformationalModal
+                                    toggleFunction={toggleInfoModal}
+                                    setCatNameCallback={setNewCatName}
+                                    setColorIdCallback={setNewColorId}
+                                    setCategoryIdCallback={setCategoryId}
+                                />
+
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+
+                <View>
+                    <View style={{
+                        position: 'absolute', height: '100%', width: '100%',
+                    }}>
+                        <Image source={test_bg8}
+                            style={{ height: '100%', width: '100%' }}
+                            resizeMode='stretch'
+                        />
+
+                    </View>
+                    <View style={{
+                        height: height * 0.25,
+                        justifyContent: 'flex-end',
+                    }}>
+                        <View style={{
+                            alignItems: 'center', borderWidth: 0, position: 'absolute',
+                            width: '100%', height: '100%', justifyContent: 'flex-end'
+                        }}>
+                            <Image
+                                style={{ width: '90%', height: '40%' }}
+                                resizeMode='stretch'
+                                source={SessionSelectDialog} />
+                        </View>
+
+                        {/* task input */}
+                        <View style={{
+                            height: '40%', flexDirection: 'row', width: width * 0.9, justifyContent: 'center',
+                            alignSelf: 'center',
+                            //flex: 1
+                            //backgroundColor: '#F8E9D2',
+                        }}>
+                            <TextInput
+                                style={[styles.input, styles.textDefault,
+                                { flex: 2, height: '65%', color: '#67806D', }]}
+                                placeholder="Task"
+                                placeholderTextColor={'#C0C0C0'}
+                                rightIconContainerStyle={styles.rightIconInput}
+                                inputContainerStyle={styles.inputStyleContainer}
+                                autoCorrect={true}
+                                maxLength={50}
+                                value={customActivity}
+                                onChangeText={(text) => {
+                                    setCustomActivity(text)
+                                    setActivityName(text)
+                                }
+                                }
+                            />
+                            {/* CATEGORY LABEL */}
+                            <View style={{
+                                flex: 1, height: '65%', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                                <TouchableOpacity
+                                    style={{ width: '90%', borderRadius: 15, }}
+                                    onPress={toggleInfoModal}>
+                                    <View style={{
+                                        backgroundColor: constants.colors[newColorId],
+                                        width: '100%', justifyContent: 'center', alignItems: 'center',
+                                        borderRadius: 25,
+                                    }}>
+                                        <Text style={[styles.textDefaultSemiBold, {
+                                            color: 'white',
+                                            paddingVertical: 10,
+                                        }]}>{newCatName}</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+
+                            </View>
+                        </View>
+
+                    </View>
+
+                    {/* Clock selector graphic */}
+                    <View style={{ borderWidth: 0, borderColor: 'purple' }}>
+
+                        {/* bg desk */}
+                        {/*<View style={{
+                            position: 'absolute', flex: 1,
+                            //marginTop: PADDING_TOP, 
+                            width: '100%', height: '100%',
+                        }}>
+                            <View style={{ flex: 0.6, }}>
 
                             </View>
                             <View style={{ flex: 1, borderWidth: 0, }}>
@@ -439,18 +509,19 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                                 />
                             </View>
 
-                        </View>
-
+                    </View>*/}
+                        {/* clock top */}
                         <Image
                             source={clock_top}
                             style={{
                                 width: WIDTH_SETTING,
                                 height: (WIDTH_SETTING) * 0.22,
                                 alignSelf: "center",
-                                //marginTop: height * 0.06,
                                 marginTop: 20,
                             }}
                             resizeMode="contain" />
+
+                        {/* circular selector */}
                         <View style={{ borderWidth: 0 }}
                         >
                             <CircularSelector
@@ -458,174 +529,154 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                                 updateCallback={updateTime}
                                 ref={circularRef} />
                         </View>
-
-                        {/*<Image
+                        {/* clock bottom - removed */}
+                        <Image
                             source={clock_bottom}
                             style={{
                                 width: WIDTH_SETTING,
                                 height: (WIDTH_SETTING) * 0.0844,
                                 alignSelf: "center",
                             }}
-                        resizeMode="contain" />*/}
+                            resizeMode="contain" />
                         {/* some space for desk */}
                         <View style={{ height: height * 0.05, }} />
+                    </View>
+                </View>
 
+                {/* category dropdown - to remove 
+                <View style={{
+                    backgroundColor: '#F8E9D2', paddingBottom: 0,
+                    paddingTop: 25,
+                }}>
+                    <DropDownComponent2
+                        isInModal={false}
+                        categoryId={categoryId}
+                        catName={newCatName}
+                        colorId={newColorId}
+                        setCatNameCallback={setNewCatName}
+                        setColorIdCallback={setNewColorId}
+                        setCategoryIdCallback={setCategoryId}
+                    />
+                </View>*/}
 
-
-
+                <View style={{
+                    justifyContent: 'center',
+                    borderWidth: 0, width: '100%', alignSelf: 'center', flex: 1,
+                }}>
+                    <View style={{
+                        position: 'absolute', width: '100%', height: '100%',
+                        backgroundColor: '#F8E9D2'
+                    }}>
                     </View>
                     <View style={{
-                        //flex: 1
-                        paddingTop: 15, backgroundColor: '#F8E9D2',
+                        flexDirection: 'row', justifyContent: 'space-between',
+                        marginHorizontal: '10%',
                     }}>
-                        <TextInput
-                            style={[styles.input, styles.textDefault,
-                            { width: width * 0.8, marginBottom: 20, height: 45, color: '#67806D', }]}
-                            placeholder="Task"
-                            placeholderTextColor={'#DCDBDB'}
-                            rightIconContainerStyle={styles.rightIconInput}
-                            inputContainerStyle={styles.inputStyleContainer}
-                            autoCorrect={true}
-                            maxLength={50}
-                            value={customActivity}
-                            onChangeText={(text) => {
-                                setCustomActivity(text)
-                                setActivityName(text)
+                        <View
+                            style={{}}>
+                            {Platform.OS === 'ios' ?
+
+                                alreadyDidButton() :
+                                <Shadow distance={2}
+                                    offset={[0, 5]}
+                                    style={{ width: width / 3 - 5 }}
+                                    paintInside={true}
+                                    startColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                    endColor={tinycolor('#C0C0C0').darken(25).toString()}
+                                    sides={{
+                                        'bottom': true,
+                                        'start': true,
+                                        'end': true,
+                                        'top': true
+                                    }}
+                                    corners={{
+                                        'topStart': true,
+                                        'topEnd': true,
+                                        'bottomStart': true,
+                                        'bottomEnd': true
+                                    }}
+
+                                >
+                                    {alreadyDidButton()}
+                                </Shadow>
                             }
-                            }
-                        />
-                    </View>
-
-
-                    <View style={{ backgroundColor: '#F8E9D2', paddingBottom: 20 }}>
-                        <DropDownComponent2
-                            isInModal={false}
-                            categoryId={categoryId}
-                            catName={newCatName}
-                            colorId={newColorId}
-                            setCatNameCallback={setNewCatName}
-                            setColorIdCallback={setNewColorId}
-                            setCategoryIdCallback={setCategoryId}
-                        />
-                    </View>
-
-                    <View style={{
-                        justifyContent: 'center',
-                        borderWidth: 0, width: '100%', alignSelf: 'center', flex: 1,
-                    }}>
-                        <View style={{
-                            position: 'absolute', width: '100%', height: '100%',
-                            backgroundColor: '#F8E9D2'
-                        }}>
-                        </View>
-                        <View style={{
-                            flexDirection: 'row', justifyContent: 'space-between',
-                            marginHorizontal: '10%',
-                        }}>
-                            <View
-                                style={{}}>
-                                {Platform.OS === 'ios' ?
-
-                                    alreadyDidButton() :
-                                    <Shadow distance={2}
-                                        offset={[0, 5]}
-                                        style={{ width: width / 3 - 5 }}
-                                        paintInside={true}
-                                        startColor={tinycolor('#C0C0C0').darken(25).toString()}
-                                        endColor={tinycolor('#C0C0C0').darken(25).toString()}
-                                        sides={{
-                                            'bottom': true,
-                                            'start': true,
-                                            'end': true,
-                                            'top': true
-                                        }}
-                                        corners={{
-                                            'topStart': true,
-                                            'topEnd': true,
-                                            'bottomStart': true,
-                                            'bottomEnd': true
-                                        }}
-
-                                    >
-                                        {alreadyDidButton()}
-                                    </Shadow>
-                                }
-                            </View>
-
-                            <View
-                                style={{}}>
-                                {Platform.OS === 'ios' ?
-                                    startButton() :
-                                    <Shadow distance={2}
-                                        offset={[0, 5]}
-                                        style={{ width: width / 3 - 5 }}
-                                        paintInside={true}
-                                        startColor={tinycolor('#ABC57E').darken(25).toString()}
-                                        endColor={tinycolor('#ABC57E').darken(25).toString()}
-                                        sides={{
-                                            'bottom': true,
-                                            'start': true,
-                                            'end': true,
-                                            'top': true
-                                        }}
-                                        corners={{
-                                            'topStart': true,
-                                            'topEnd': true,
-                                            'bottomStart': true,
-                                            'bottomEnd': true
-                                        }}
-
-                                    >
-                                        {startButton()}
-                                    </Shadow>
-                                }
-                            </View>
-
                         </View>
 
-                        {state.errorMessage && 0 ?
-                            <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
-                                <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
-                                    No internet connection - will attempt to save any tasks done once connection is restored.
-                                </Text>
-                            </View>
+                        <View
+                            style={{}}>
+                            {Platform.OS === 'ios' ?
+                                startButton() :
+                                <Shadow distance={2}
+                                    offset={[0, 5]}
+                                    style={{ width: width / 3 - 5 }}
+                                    paintInside={true}
+                                    startColor={tinycolor('#ABC57E').darken(25).toString()}
+                                    endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                    sides={{
+                                        'bottom': true,
+                                        'start': true,
+                                        'end': true,
+                                        'top': true
+                                    }}
+                                    corners={{
+                                        'topStart': true,
+                                        'topEnd': true,
+                                        'bottomStart': true,
+                                        'bottomEnd': true
+                                    }}
 
-                            : null}
+                                >
+                                    {startButton()}
+                                </Shadow>
+                            }
+                        </View>
 
                     </View>
 
+                    {state.errorMessage && 0 ?
+                        <View style={{ backgroundColor: '#F5BBAE', width: '100%', paddingHorizontal: 10, }}>
+                            <Text style={[styles.textDefault, { textAlign: 'center', color: 'red', fontSize: 16 }]}>
+                                No internet connection - will attempt to save any tasks done once connection is restored.
+                            </Text>
+                        </View>
 
-
-                    <View style={[styles.modalContainer, { marginTop: PADDING_TOP, borderWidth: 0, }]}>
-                        <View style={styles.modalDummy} />
-                        {Platform.OS === 'ios' ?
-                            todoTabIcon() :
-                            <Shadow distance={2}
-                                offset={[0, 4]}
-                                style={{ width: 40 - 3 }}
-                                paintInside={true}
-                                startColor={tinycolor('#ABC57E').darken(25).toString()}
-                                endColor={tinycolor('#ABC57E').darken(25).toString()}
-                                sides={{
-                                    'bottom': true,
-                                    'start': true,
-                                    'end': true,
-                                    'top': true
-                                }}
-                                corners={{
-                                    'topStart': true,
-                                    'topEnd': true,
-                                    'bottomStart': true,
-                                    'bottomEnd': true
-                                }}
-
-                            >
-                                {todoTabIcon()}
-                            </Shadow>
-                        }
-                    </View>
+                        : null}
 
                 </View>
+
+
+                {/* to-do selector tab */}
+                <View style={[{
+                    marginTop: height * 0.27,
+                    position: 'absolute',
+                }]}>
+                    {Platform.OS === 'ios' ?
+                        todoTabIcon() :
+                        <Shadow distance={2}
+                            offset={[0, 4]}
+                            style={{ width: 40 - 3 }}
+                            paintInside={true}
+                            startColor={tinycolor('#ABC57E').darken(25).toString()}
+                            endColor={tinycolor('#ABC57E').darken(25).toString()}
+                            sides={{
+                                'bottom': true,
+                                'start': true,
+                                'end': true,
+                                'top': true
+                            }}
+                            corners={{
+                                'topStart': true,
+                                'topEnd': true,
+                                'bottomStart': true,
+                                'bottomEnd': true
+                            }}
+
+                        >
+                            {todoTabIcon()}
+                        </Shadow>
+                    }
+                </View>
+
                 {isLoading ?
                     <View style={{
                         position: 'absolute', width: '100%', height: '100%',
@@ -696,7 +747,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                         </Animated.View>
                     </View> : null}
 
-            </>
+
+            </View>
         </HideKeyboard >
     )
 }
@@ -731,8 +783,6 @@ const styles = StyleSheet.create({
         flex: 1
     },
     input: {
-        alignSelf: 'center',
-        backgroundColor: 'white',
         borderRadius: 15,
         paddingHorizontal: 17,
         paddingVertical: 10,
@@ -755,31 +805,20 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     modalButton: {
-        backgroundColor: '#ABC57E',
+        //backgroundColor: '#ABC57E',
+        backgroundColor: '#8CC768',
         borderBottomRightRadius: 10,
         borderTopRightRadius: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },
     modalButtonText: {
-        fontWeight: 'bold',
-        fontSize: 25,
+        fontSize: 30,
         color: 'white',
     },
-    modalContainer: {
-        flex: 1,
-        height: '100%',
-        position: 'absolute',
-    },
-
-    // decides how high up the modal tab is
-    modalDummy: {
-        flex: 0.2,
-    },
-    clockBackground: {
-    },
     start: {
-        backgroundColor: '#ABC57E',
+        //backgroundColor: '#ABC57E',
+        backgroundColor: '#8CC768',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 15,

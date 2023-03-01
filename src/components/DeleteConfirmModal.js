@@ -36,7 +36,7 @@ const DeleteConfirmModal = ({ toggleFunction }) => {
     const callback = () => {
         setTimeout(() => {
             signout(signoutCallback)
-        }, "1000")
+        }, 1000)
 
     }
     const signoutCallback = async () => {

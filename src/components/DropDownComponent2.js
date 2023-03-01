@@ -128,43 +128,6 @@ const DropDownComponent2 = ({ catName, colorId, categoryId,
             renderItem={dropdownItem}
         />
     )
-
-    return (
-        <DropDownPicker
-            items={items}
-            setItems={setItems}
-            setOpen={setOpen}
-            open={open}
-            value={categoryId}
-            listMode="SCROLLVIEW"
-            zIndex={1000}
-            zIndexInverse={7000}
-            setValue={setCategoryIdCallback}
-            itemSeparator={true}
-            itemSeparatorStyle={{
-                backgroundColor: "#DCDBDB",
-            }}
-            labelStyle={[styles.textDefaultBold, { color: 'white' }]}
-            textStyle={[styles.textDefault, { fontSize: 16, color: 'gray', }]}
-            containerStyle={{
-                //borderWidth: 0,
-                width: selectedWidth,
-                alignSelf: 'center',
-            }}
-            dropDownContainerStyle={{
-                //borderWidth: 0,
-            }}
-            style={[styles.dropdown, {
-                backgroundColor: constants.colors[colorId],
-            }]}
-
-            renderListItem={(props) => <Item {...props} />}
-            onSelectItem={(item) => {
-                console.log("Item selected ..?")
-                setCatNameCallback(item.item.label)
-                setColorIdCallback(item.item.color)
-            }} />
-    )
 }
 
 const styles = StyleSheet.create({

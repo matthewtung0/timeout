@@ -217,7 +217,7 @@ const AddCategoryScreen = ({ navigation }) => {
                             },
                             shadowOpacity: 1,
                             shadowRadius: 0,
-                            shadowColor: tinycolor('#ABC57E').darken(25).toString(),
+                            shadowColor: tinycolor('#8CC768').darken(25).toString(),
                             marginBottom: 25,
                         }]}
                             onPress={() => {
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 15,
         margin: 10,
-        backgroundColor: '#ABC57E',
+        backgroundColor: '#8CC768',
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',

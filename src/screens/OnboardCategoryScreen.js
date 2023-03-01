@@ -1,5 +1,8 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import {
+    View, StyleSheet, Text, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator,
+    Platform
+} from 'react-native';
 import { Icon } from 'react-native-elements';
 const constants = require('../components/constants.json')
 import { useFocusEffect } from '@react-navigation/native';
@@ -15,6 +18,8 @@ import { Context as UserContext } from '../context/userContext'
 import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { normalize } from '../components/FormatUtils';
 
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 const bg_bottom = require('../../assets/border.png')
 
 const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
@@ -34,7 +39,8 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
     const { state: sessionState, fetchMultipleMonths, setOffsetFetched } = useContext(SessionContext)
     const { fetchUserCounters } = useContext(CounterContext)
     const { fetchAvatarGeneral, updateLastSignin, fetchOutgoingRequests,
-        fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned } = useContext(UserContext)
+        fetchIncomingRequests, fetchFriends, fetchSelf, fetchAvatarItemsOwned,
+        postNotificationToken } = useContext(UserContext)
     var colorArr = []
     for (var x in constants['colors']) {
         colorArr.push([x, constants['colors'][x]])
@@ -77,6 +83,58 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
         alert("Something went wrong with sign up. Please try again later")
     }
 
+    async function registerForPushNotificationsAsync(userId, postNotificationToken) {
+        let token;
+
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+
+        if (Device.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                //alert('Failed to get push token for push notification!');
+                return;
+            }
+            if (Platform.OS === 'android') {
+                const token_FCM = (await Notifications.getDevicePushTokenAsync());
+                token = await Notifications.getExpoPushTokenAsync({
+                    applicationId: '1:581261737423:android:d2b8f65c0ffd4a2221e6ba',
+                    experienceId: '@mtung0219/timeout',
+                })
+                console.log(`ANDROID TOKEN IS ${JSON.stringify(token_FCM)}`)
+                //eYByL5AtSWyHwLgErS1EuS:APA91bExyOYgvYyqkkNVfq8eI6rjJCLiaEVhquEuqbeoMb7VYaqVgMO6USvWaIBnAS9MJ2IHmjcE2TX55SzHInO5yKW_lApk-NdzUeEMdu6cgc5ZUW04kirDrgP0ZPJoVhjCqvGt6kXS
+            } else {
+                const token_APN = (await Notifications.getDevicePushTokenAsync());
+                token = await Notifications.getExpoPushTokenAsync({
+                    experienceId: '@mtung0219/timeout',
+                })
+                console.log(`APPLE TOKEN IS ${JSON.stringify(token_APN)}`)
+            }
+        } else {
+            //alert('Must use physical device for Push Notifications');
+        }
+
+        var toPost = JSON.stringify({
+            userId,
+            token,
+        })
+
+        postNotificationToken(toPost)
+        console.log(`Posted token: ${token}`);
+        return token;
+    }
+
     const signupCallback = async (token) => {
         console.log("At sign up callback")
         await updateLastSignin()
@@ -84,6 +142,8 @@ const OnboardCategoryScreen = ({ navigation, route: { params } }) => {
                 (res) => {
                     fetchAvatarGeneral(res.user_id, forceRetrieve = true, isSelf = true)
                     fetchUserCategories(res.user_id, getPrivate = true, isSelf = true);
+
+                    registerForPushNotificationsAsync(res.user_id, postNotificationToken)
                 }
             ))
 

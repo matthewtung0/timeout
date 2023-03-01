@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useCallback } from 'react';
 import {
     View, StyleSheet, TouchableOpacity, Dimensions, Image,
-    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator, TextInput, PixelRatio
+    Keyboard, TouchableWithoutFeedback, Animated, ActivityIndicator, TextInput
 } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { Text } from 'react-native-elements';
@@ -89,7 +89,7 @@ const SigninScreen = ({ navigation }) => {
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                alert('Failed to get push token for push notification!');
+                //alert('Failed to get push token for push notification!');
                 return;
             }
             if (Platform.OS === 'android') {
@@ -110,7 +110,7 @@ const SigninScreen = ({ navigation }) => {
 
 
         } else {
-            alert('Must use physical device for Push Notifications');
+            //alert('Must use physical device for Push Notifications');
         }
 
 

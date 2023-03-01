@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Time Out",
+    "name": "Time Out: Mindful Life Tracker",
     "slug": "timeout",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/app_icon_final2.png",
     "splash": {
@@ -17,10 +17,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "nofussexe.timeout",
       "icon": "./assets/app_icon_1024.png",
-      "buildNumber": "3"
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,7 +30,7 @@
       "package": "com.nofussexe.timeout",
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 11
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png"

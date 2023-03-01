@@ -1,6 +1,6 @@
 import React, { useContext, useState, useCallback, useMemo } from 'react';
 import {
-    View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, Platform,
+    View, StyleSheet, Text, Dimensions, ActivityIndicator, TouchableOpacity, FlatList, Platform, Image,
 } from 'react-native';
 import { startOfMonth, endOfMonth, addMonths, subMonths, compareAsc, format, } from 'date-fns';
 import { Icon } from 'react-native-elements'
@@ -15,14 +15,18 @@ import MonthlyCounterComponent from '../components/MonthlyCounterComponent';
 import Modal from 'react-native-modal'
 import HistoryDailyModal from '../components/HistoryDetailModal'
 import tinycolor from 'tinycolor2';
+import { useHeaderHeight } from '@react-navigation/elements';
 import enUS from 'date-fns/locale/en-US';
 const constants = require('../components/constants.json')
+const img = require('../../assets/tasks_topbar.png')
 
 const HistoryDailyScreen = ({ navigation, route: { params } }) => {
 
     //console.log("History daily screen rerender")
     const MARGIN_HORIZONTAL = 9;
     const { height, width } = Dimensions.get('window');
+    const headerHeight = useHeaderHeight();
+    const BANNER_IMG_HEIGHT = headerHeight ? headerHeight : 90;
     const { state, setOffsetFetched, fetchMultipleMonths, resetCalendarDate,
         setCurOffset, setHardReset, resetMostCurrentDate } = useContext(SessionContext)
     const { state: counterState } = useContext(CounterContext);
@@ -404,131 +408,149 @@ const HistoryDailyScreen = ({ navigation, route: { params } }) => {
     const memoizedFlatList = useMemo(flatListItself, [state.batchData[displayMonthKey], visibleOffset, categoryState.userCategories])
 
     return (
-        <><View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 90 : 80 }]}>
-            <Modal
-                isVisible={modalVisible}
-                //animationType="fade"
-                animationIn='slideInLeft'
-                animationOut='slideOutLeft'
-                backdropTransitionOutTiming={0}
-            >
+        <>
+            <View style={[styles.viewContainer, { marginTop: Platform.OS === 'ios' ? 0 : 0 }]}>
+                <Modal
+                    isVisible={modalVisible}
+                    //animationType="fade"
+                    animationIn='slideInLeft'
+                    animationOut='slideOutLeft'
+                    backdropTransitionOutTiming={0}
+                >
 
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center'
-                }}>
                     <View style={{
-                        height: height * 0.7
-                    }}>
-
-                        <HistoryDailyModal
-                            toggleFunction={toggleModal}
-                            selectedObject={selectedObject}
-                            displayMonthKey
-
-                            callback={modalCallback}>
-                        </HistoryDailyModal>
-
-                    </View>
-                </View>
-            </Modal>
-
-            <View opacity={isLoading || modalVisible ? 0.3 : 1}
-                style={modalVisible ? { flex: 1 } : { flex: 1, }}
-            >
-                <View style={{
-                    flex: 0.7, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15,
-                    backgroundColor: '#8CC768', marginHorizontal: MARGIN_HORIZONTAL + 5, paddingVertical: 5,
-                }}>
-                    <View style={{ flex: 1, }}>
-                        <TouchableOpacity
-                            onPress={() => { if (!isLoading) { goToPrevMonth() } }
-                            }>
-                            <Icon
-                                name="chevron-back-outline"
-                                type='ionicon'
-                                size={25}
-                                color='white' />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{
-                        flex: 3,
-                        alignItems: 'center', justifyContent: 'center', alignContent: 'center',
-                    }}>
-                        <Text style={[styles.overviewTitle, styles.textDefaultSemiBold, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
-                    </View>
-
-                    <View style={{ flex: 1, }}>
-                        <TouchableOpacity
-                            onPress={() => { if (!isLoading) { goToNextMonth() } }
-                            }>
-                            {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) <= 0 ?
-                                <Icon
-                                    name="chevron-forward-outline"
-                                    type='ionicon'
-                                    size={25}
-                                    color='#E8D39E' />
-                                :
-                                <Icon
-                                    name="chevron-forward-outline"
-                                    type='ionicon'
-                                    size={25}
-                                    color='white' />}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-
-                <View style={{ flex: 12, borderWidth: 0 }}>
-
-
-                    {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
-                    <View style={{
-                        backgroundColor: 'white', borderRadius: 0,
-                        paddingVertical: 0, marginHorizontal: MARGIN_HORIZONTAL,
-                        marginTop: 0,
                         flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center'
                     }}>
+                        <View style={{
+                            height: height * 0.7
+                        }}>
 
-                        <View style={{ flex: 1, }}>
-                            {isLoading ? null :
-                                memoizedFlatList
-                            }
+                            <HistoryDailyModal
+                                toggleFunction={toggleModal}
+                                selectedObject={selectedObject}
+                                displayMonthKey
+
+                                callback={modalCallback}>
+                            </HistoryDailyModal>
 
                         </View>
                     </View>
-                </View>
-            </View>
-
-            {
-                isLoading ?
+                </Modal>
+                <View>
+                    <Image
+                        source={img}
+                        resizeMode='stretch'
+                        style={{
+                            width: width, height: BANNER_IMG_HEIGHT,
+                            //borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                        }} />
                     <View style={{
-                        width: '100%', height: '100%', position: 'absolute',
-                        justifyContent: 'center', alignItems: 'center',
+                        position: 'absolute', width: '100%', height: '100%',
+                        alignItems: 'center', justifyContent: 'flex-end',
+                        paddingBottom: 10,
                     }}>
-                        <ActivityIndicator style={{ width: 100, height: 100 }} size="large" color="black" />
+                        <Text style={[styles.textDefaultBold,
+                        { fontSize: 25, color: 'white' }]}>My History</Text>
                     </View>
-                    :
-                    null
-            }
+                </View>
+
+                <View opacity={isLoading || modalVisible ? 0.3 : 1}
+                    style={modalVisible ? { flex: 1, marginTop: 20, } : { flex: 1, marginTop: 20, }}
+                >
+                    <View style={{
+                        flex: 0.7, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15,
+                        backgroundColor: '#8CC768', marginHorizontal: MARGIN_HORIZONTAL + 5, paddingVertical: 5,
+                    }}>
+                        <View style={{ flex: 1, }}>
+                            <TouchableOpacity
+                                onPress={() => { if (!isLoading) { goToPrevMonth() } }
+                                }>
+                                <Icon
+                                    name="chevron-back-outline"
+                                    type='ionicon'
+                                    size={25}
+                                    color='white' />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{
+                            flex: 3,
+                            alignItems: 'center', justifyContent: 'center', alignContent: 'center',
+                        }}>
+                            <Text style={[styles.overviewTitle, styles.textDefaultSemiBold, { fontSize: 22, }]}>{displayedMonth} {displayedYear}</Text>
+                        </View>
+
+                        <View style={{ flex: 1, }}>
+                            <TouchableOpacity
+                                onPress={() => { if (!isLoading) { goToNextMonth() } }
+                                }>
+                                {compareAsc(new Date(), addMonths(startOfMonth(state.calendarDate), 1)) <= 0 ?
+                                    <Icon
+                                        name="chevron-forward-outline"
+                                        type='ionicon'
+                                        size={25}
+                                        color='#E8D39E' />
+                                    :
+                                    <Icon
+                                        name="chevron-forward-outline"
+                                        type='ionicon'
+                                        size={25}
+                                        color='white' />}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
 
-        </View >
+                    <View style={{ flex: 12, borderWidth: 0 }}>
 
-            <View style={[styles.modalContainer, { marginTop: height / 4, borderWidth: 0, }]}>
+
+                        {/*/ =============== TASKS DETAIL CONTAINER ===============*/}
+                        <View style={{
+                            backgroundColor: 'white', borderRadius: 0,
+                            paddingVertical: 0, marginHorizontal: MARGIN_HORIZONTAL,
+                            marginTop: 0,
+                            flex: 1,
+                        }}>
+
+                            <View style={{ flex: 1, }}>
+                                {isLoading ? null :
+                                    memoizedFlatList
+                                }
+
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {
+                    isLoading ?
+                        <View style={{
+                            width: '100%', height: '100%', position: 'absolute',
+                            justifyContent: 'center', alignItems: 'center',
+                        }}>
+                            <ActivityIndicator style={{ width: 100, height: 100 }} size="large" color="black" />
+                        </View>
+                        :
+                        null
+                }
+
+
+            </View >
+
+            <View style={[styles.modalContainer, { marginTop: height / 3, borderWidth: 0, }]}>
                 {/*<View style={styles.modalDummy} />*/}
 
                 <TouchableOpacity
                     style={[styles.modalButton, {
-                        backgroundColor: '#ABC57E',
+                        backgroundColor: '#8CC768',
                         shadowOffset: {
                             width: 0,
                             height: 6,
                         },
                         shadowOpacity: 1,
                         shadowRadius: 0,
-                        shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                        shadowColor: tinycolor('#8CC768').darken(25).toString()
                     }]}
                     onPress={() => { navigation.navigate('HistorySearch') }}>
                     <Icon

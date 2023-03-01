@@ -4,6 +4,7 @@ import { Text } from 'react-native-elements';
 import { Context as CounterContext } from '../context/CounterContext';
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal'
+import { useHeaderHeight } from '@react-navigation/elements';
 import { startOfDay, compareAsc } from 'date-fns';
 import AddCounterModal from '../components/AddCounterModal';
 import EditCounterModal from '../components/EditCounterModal';
@@ -12,11 +13,13 @@ const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 import { Shadow } from 'react-native-shadow-2';
 import CounterComponent from '../components/CounterComponent';
-const BANNER_IMG_HEIGHT = 75;
+const BANNER_IMG_HEIGHT = 90;
 const BORDER_RADIUS = 20;
 
 const CounterScreen = () => {
     const { height, width } = Dimensions.get('window');
+    const headerHeight = useHeaderHeight();
+    const BANNER_IMG_HEIGHT = headerHeight ? headerHeight : 90;
     const { state: counterState, setCounterTablesLocked, fetchUserCounters } = useContext(CounterContext)
 
     const [addCounterModalVisible, setAddCounterModalVisible] = useState(false)
@@ -120,7 +123,9 @@ const CounterScreen = () => {
     };
 
     const focusEffectFunc = async (temp = false) => {
+
         var comp = compareAsc(counterState.lastUpdated, startOfDay(new Date()))
+        console.log(`Checking comparison ${comp}`)
         if (comp < 0 || temp) { // need updating
             console.log("Refreshing counters for new day")
             await fetchUserCounters()
@@ -143,7 +148,7 @@ const CounterScreen = () => {
                 },
                 shadowOpacity: 1,
                 shadowRadius: 0,
-                shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                shadowColor: tinycolor('#8CC768').darken(25).toString()
             }]}
                 onPress={() => {
                     toggleAddCounterModal();
@@ -180,7 +185,7 @@ const CounterScreen = () => {
     const flatListItself = () => {
         return (
             <FlatList
-                style={{ marginTop: 25, marginHorizontal: 20, borderWidth: 0, }}
+                style={{ marginTop: 25, marginHorizontal: 20, borderWidth: 0 }}
                 //data={sortedCounters}
                 data={counterState.userCounters}
                 keyExtractor={(item) => item.counter_id}
@@ -206,6 +211,17 @@ const CounterScreen = () => {
 
     return (
         <View style={{ flex: 1, }}>
+
+            {/*<View style={{
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+            }}>
+                <Image source={test_bg7}
+                    style={{ height: '100%', width: '100%' }}
+                    resizeMode='stretch'
+                />
+        </View>*/}
 
             <Modal isVisible={addCounterModalVisible}
                 animationIn='slideInUp'
@@ -250,7 +266,7 @@ const CounterScreen = () => {
                     </View></View>
             </Modal>
 
-            <View style={{ marginTop: Platform.OS === 'ios' ? 90 : 80 }}>
+            <View style={{ marginTop: Platform.OS === 'ios' ? 0 : 0 }}>
                 <Image
                     source={img}
                     resizeMode='stretch'
@@ -258,7 +274,11 @@ const CounterScreen = () => {
                         width: width, height: BANNER_IMG_HEIGHT,
                         //borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
                     }} />
-                <View style={{ position: 'absolute', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', }}>
+                <View style={{
+                    position: 'absolute', width: '100%', height: '100%',
+                    alignItems: 'center', justifyContent: 'flex-end',
+                    paddingBottom: 10,
+                }}>
                     <Text style={[styles.textDefaultBold,
                     { fontSize: 25, color: 'white' }]}>My Counters</Text>
                 </View>
@@ -379,8 +399,8 @@ const CounterScreen = () => {
                         offset={[0, 5]}
                         style={{ width: width / 1.8 - 5 }}
                         paintInside={true}
-                        startColor={tinycolor('#ABC57E').darken(25).toString()}
-                        endColor={tinycolor('#ABC57E').darken(25).toString()}
+                        startColor={tinycolor('#8CC768').darken(25).toString()}
+                        endColor={tinycolor('#8CC768').darken(25).toString()}
                         sides={{
                             'bottom': true,
                             'start': true,
@@ -397,7 +417,7 @@ const CounterScreen = () => {
                     >
                         <TouchableOpacity style={[{
                             height: 40,
-                            backgroundColor: '#ABC57E',
+                            backgroundColor: '#8CC768',
                             alignItems: 'center',
                             alignSelf: 'center',
                             justifyContent: 'center',
@@ -409,7 +429,7 @@ const CounterScreen = () => {
                             },
                             shadowOpacity: 1,
                             shadowRadius: 0,
-                            shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                            shadowColor: tinycolor('#8CC768').darken(25).toString()
                         }]}
                             onPress={() => {
                                 toggleAddCounterModal();
@@ -445,31 +465,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: 70,
     },
-    input: {
-        backgroundColor: 'white',
-        borderRadius: 15,
-        marginHorizontal: 27,
-        paddingHorizontal: 17,
-    },
-    inputStyleContainer: {
-        borderBottomWidth: 0,
-    },
-    rightIconInput: {
-        backgroundColor: 'brown',
-    },
-    colorSquare: {
-        width: 50,
-        height: 50,
-        marginHorizontal: 5,
-        marginVertical: 20,
-    },
-    categoryText: {
-        marginBottom: 1,
-    },
     addCounterButton: {
         margin: 10,
         height: 40,
-        backgroundColor: '#ABC57E',
+        backgroundColor: '#8CC768',
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',

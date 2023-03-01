@@ -2110,19 +2110,21 @@ const SvgTestScreen = ({ navigation }) => {
                                 {/* accessories */}
                                 {accessoriesPickerVisible ?
                                     <>
-                                        <AvatarMenuComponent
-                                            title={"General Accessories"}
-                                            data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
-                                                accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
-                                            noItemOption={true}
-                                            hasItem={hasAccessories}
-                                            setHasItemCallback={setHasAccessories}
-                                            setIndexCallback={setAccessoriesIndex}
-                                            itemIndex={accessoriesIndex}
-                                            updateUnownedCallback={updateUnowned}
-                                            unownedIndex={unownedGenAccessories}
-                                            setUnownedCallback={setUnownedGenAccessories}
-                                        />
+                                        {!colorMenuActive ?
+                                            <AvatarMenuComponent
+                                                title={"General Accessories"}
+                                                data={no_item(THUMBNAIL_SIZE, THUMBNAIL_COLOR).concat(
+                                                    accessories_types(THUMBNAIL_SIZE, THUMBNAIL_COLOR))}
+                                                noItemOption={true}
+                                                hasItem={hasAccessories}
+                                                setHasItemCallback={setHasAccessories}
+                                                setIndexCallback={setAccessoriesIndex}
+                                                itemIndex={accessoriesIndex}
+                                                updateUnownedCallback={updateUnowned}
+                                                unownedIndex={unownedGenAccessories}
+                                                setUnownedCallback={setUnownedGenAccessories}
+                                            />
+                                            : null}
                                     </>
                                     : null}
 

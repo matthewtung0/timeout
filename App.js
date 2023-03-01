@@ -364,11 +364,11 @@ function CustomDrawerContent(props) {
   }
   return (
     <><DrawerContentScrollView
-      style={{}}
+      style={{ backgroundColor: '#67806D' }}
       contentContainerStyle={{ flex: 1, }}
       {...props}
     >
-      <View style={{ flex: 5, }}>
+      <View style={{ flex: 5, backgroundColor: 'white', }}>
         <View style={{}}>
           <TouchableOpacity
             onPress={() => {
@@ -440,8 +440,8 @@ function CustomDrawerContent(props) {
         onPress={() => { }} />*/}
 
       </View>
-      <View style={{ flex: 1, }} />
-      <View style={{ flex: 1, }}>
+      <View style={{ flex: 1, backgroundColor: 'white', }} />
+      <View style={{ flex: 1, backgroundColor: 'white', }}>
         <DrawerItem
           labelStyle={{ color: 'crimson', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
           style={{}}
@@ -451,13 +451,13 @@ function CustomDrawerContent(props) {
           }} />
       </View>
 
-      <View style={{ flex: 1, justifyContent: 'flex-end', }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'white', }}>
         <Image
           style={{ position: 'absolute', }}
           source={drawer_bg}
           resizeMode="contain"></Image>
         <View style={{ alignContent: 'center', justifyContent: 'center', marginBottom: 10, }}>
-          <Text style={{ textAlign: 'center', alignSelf: 'center', fontFamily: 'Inter-Regular', color: '#67806D' }}>Time Out ver. 1.0.0</Text>
+          <Text style={{ textAlign: 'center', alignSelf: 'center', fontFamily: 'Inter-Regular', color: '#67806D' }}>Time Out ver. 1.0.5</Text>
         </View>
       </View>
 
@@ -485,15 +485,15 @@ function CreateDrawer() {
         headerLeft: props =>
           <TouchableOpacity
             style={{
-              marginLeft: 5, //backgroundColor: '#ABC57E', 
-              borderRadius: 10, paddingHorizontal: 5,
+              backgroundColor: '#8CC768',
+              borderRadius: 10, paddingHorizontal: 6,
             }}
             onPress={navigation.toggleDrawer}>
             <Icon
               name="menu"
               type='ionicon'
               size={35}
-              color='#67806D'
+              color='white'
             />
           </TouchableOpacity>
         ,
@@ -753,7 +753,10 @@ function CreateFriendFeedStack() {
         <Stack.Screen
           name="FriendFeed"
           component={FriendFeedScreen}
-          options={pageOptions}
+          options={{
+            headerShown: false,
+            animation: 'none',
+          }}
         />
 
       </Stack.Group>
@@ -762,7 +765,10 @@ function CreateFriendFeedStack() {
         <Stack.Screen
           name="Notifications"
           component={FriendNotificationScreen}
-          options={pageOptions}
+          options={{
+            headerShown: false,
+            animation: 'none'
+          }}
         />
       </Stack.Group>
       <Stack.Group
@@ -776,7 +782,10 @@ function CreateFriendFeedStack() {
         <Stack.Screen
           name="Friend"
           component={FriendScreen}
-          options={pageOptions}
+          options={{
+            headerShown: false,
+            animation: 'none'
+          }}
         />
       </Stack.Group>
 
@@ -871,7 +880,7 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
               name={isFocused ? iconLabelActive : iconLabel}
               size={24}
               color={'white'} />
-            <Text style={{ color: 'white', fontFamily: 'Inter-Medium', fontSize: 14, }}>
+            <Text style={{ color: 'white', fontFamily: 'Inter-SemiBold', fontSize: 16, }}>
               {label}
             </Text>
           </TouchableOpacity>
@@ -884,17 +893,11 @@ function MyTabBar({ state: tabState, descriptors, navigation }) {
 function CreateMainFlowTab() {
   return (
     <Tab.Navigator tabBar={(props) => <MyTabBar {...props} />}
-      screenOptions={pageOptions}
+    //screenOptions={pageOptions}
     >
-      {/*<Tab.Navigator>*/}
-
-      {/*<Tab.Screen name="sessionFlow" component={CreateSessionStack}
-        options={{
-          tabBarLabel: 'Timer',
-          tabBarIconLabel: 'time-outline',
-        }} />*/}
       <Tab.Screen name="SessionSelect" component={SessionSelectScreen}
         options={{
+          headerShown: false,
           labelStyle: { fontFamily: 'Inter-Bold', fontSize: 18, },
           tabBarLabel: 'Timer',
           tabBarIconLabel: 'time-outline',
@@ -902,18 +905,21 @@ function CreateMainFlowTab() {
         }} />
       <Tab.Screen name="CounterFlow" component={CounterScreen}
         options={{
+          headerShown: false,
           tabBarLabel: 'Counter',
           tabBarIconLabel: 'copy-outline',
           tabBarIconLabelActive: 'copy'
         }} />
       <Tab.Screen name="friendFeedFlow" component={CreateFriendFeedStack}
         options={{
+          headerShown: false,
           tabBarLabel: 'Friends',
           tabBarIconLabel: 'people-outline',
           tabBarIconLabelActive: 'people'
         }} />
-      <Tab.Screen name="profileFlow" component={CreateHistoryStack} //component={HistoryDailyScreen}
+      <Tab.Screen name="profileFlow" component={CreateHistoryStack}
         options={{
+          headerShown: false,
           tabBarLabel: 'History',
           tabBarIconLabel: 'calendar-outline',
           tabBarIconLabelActive: 'calendar',
@@ -958,8 +964,8 @@ function CreateMainNavigator() {
         await updateLastSignin()
           .then((res) => fetchSelf().then(
             (res) => {
-              fetchAvatarGeneral(res.user_id, forceRetrieve = true, isSelf = true)
-              fetchUserCategories(res.user_id, getPrivate = true, isSelf = true);
+              fetchAvatarGeneral(res.user_id, true, true, false)
+              fetchUserCategories(res.user_id, true, true);
             }
           ))
 
@@ -973,7 +979,7 @@ function CreateMainNavigator() {
         await fetchUserReactions();
         //await fetchMultipleMonthsCounters(startTime, endTime);
         await fetchAvatarItemsOwned();
-        await fetchUserTodoItems(isSelf = true);
+        await fetchUserTodoItems(true);
         await fetchFriends();
         await fetchOutgoingRequests();
         await fetchIncomingRequests();

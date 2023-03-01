@@ -102,7 +102,7 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                     },
                     shadowOpacity: 1,
                     shadowRadius: 0,
-                    shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                    shadowColor: tinycolor('#8CC768').darken(25).toString()
                 }]}
                 onPress={() => {
 
@@ -182,8 +182,8 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                                         width: width / 2.2 - 5,
                                     }]}
                                     paintInside={true}
-                                    startColor={tinycolor('#ABC57E').darken(25).toString()}
-                                    endColor={tinycolor('#ABC57E').darken(25).toString()}
+                                    startColor={tinycolor('#8CC768').darken(25).toString()}
+                                    endColor={tinycolor('#8CC768').darken(25).toString()}
                                     sides={{
                                         'bottom': true,
                                         'start': true,
@@ -199,14 +199,14 @@ const ToDoSelector = ({ toggleFunction, show_error, callback }) => {
                                 >
                                     <TouchableOpacity
                                         style={[{
-                                            backgroundColor: '#ABC57E', borderRadius: 15,
+                                            backgroundColor: '#8CC768', borderRadius: 15,
                                             width: width / 2.2, shadowOffset: {
                                                 width: 0,
                                                 height: 6,
                                             },
                                             shadowOpacity: 1,
                                             shadowRadius: 0,
-                                            shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                                            shadowColor: tinycolor('#8CC768').darken(25).toString()
                                         }]}
                                         onPress={() => {
 
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     plus: {
-        backgroundColor: '#ABC57E',
+        backgroundColor: '#8CC768',
         borderRadius: 15,
         alignSelf: 'center',
         marginBottom: 20,

@@ -1,14 +1,18 @@
 import React, { useState, useCallback, useContext, useMemo } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
 import { Context as SessionContext } from '../context/SessionContext';
-import tinycolor from 'tinycolor2';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { FriendNotificationItem } from '../components/FriendNotificationComponent';
 const NUM_TO_RETRIEVE = 50
+const img = require('../../assets/tasks_topbar.png')
 
 const FriendNotificationScreen = ({ navigation, route: { params } }) => {
+    const { height, width } = Dimensions.get('window');
+    const headerHeight = useHeaderHeight();
+    const BANNER_IMG_HEIGHT = headerHeight ? headerHeight : 90;
     const [isOnline, setIsOnline] = useState(true)
     const { state: sessionState,
         fetchNotifications, fetchNotificationsBatch } = useContext(SessionContext)
@@ -66,7 +70,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
     const getNotifications = async () => {
         setIsLoading(true)
         var initialBatchSize = 10
-        await fetchNotificationsBatch(0, initialBatchSize, true, callback = null, notificationErrorCallback);
+        await fetchNotificationsBatch(0, initialBatchSize, true, null, notificationErrorCallback);
         setVisibleOffset(initialBatchSize)
         setOffset(initialBatchSize);
         setIsLoading(false)
@@ -167,7 +171,6 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                 ListFooterComponent={renderFooter}
                 renderItem={({ item, index }) => (
                     <FriendNotificationItem
-                        cacheChecker={params.cacheChecker}
                         item={item}
                         navigation={navigation} />
                 )}
@@ -176,7 +179,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
         )
     }
 
-    const memoizedFlatList = useMemo(flatListItself, [sessionState.userNotifications, params.cacheChecker,
+    const memoizedFlatList = useMemo(flatListItself, [sessionState.userNotifications,
         offset,
         visibleOffset, atEnd])
 
@@ -190,7 +193,50 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
         />
     );
     return (
-        <View style={[styles.outerContainer, { marginTop: Platform.OS === 'ios' ? 100 : 80 }]}>
+        <View style={[styles.outerContainer, { marginTop: Platform.OS === 'ios' ? 0 : 0 }]}>
+
+            <View>
+                <Image
+                    source={img}
+                    resizeMode='stretch'
+                    style={{
+                        width: width, height: BANNER_IMG_HEIGHT,
+                        //borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                    }} />
+                <View style={{
+                    position: 'absolute', width: '100%', height: '100%',
+                    alignItems: 'center', justifyContent: 'flex-end',
+                    paddingBottom: 10,
+                }}>
+                    <Text style={[styles.textDefaultBold,
+                    { fontSize: 25, color: 'white' }]}>Friends Center</Text>
+                </View>
+            </View>
+
+            <View style={{ paddingBottom: 10, flexDirection: 'row', paddingHorizontal: 12, backgroundColor: '#83B569' }}>
+                <TouchableOpacity
+                    style={[styles.sortContainer, styles.sortContainerSelected,
+                    { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, }]}
+                    onPress={() => {
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Me</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.sortContainer,
+                { borderRightWidth: 0, }]}
+                    onPress={() => {
+                        navigation.navigate('FriendFeed')
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Feed</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.sortContainer,
+                { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                    onPress={() => {
+                        navigation.navigate('Friend')
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Friends</Text>
+                </TouchableOpacity>
+            </View>
 
             {!isOnline ?
                 <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', }}>
@@ -210,7 +256,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                         </View>
                         : null}
                     <View style={{ flex: 1, }}>
-
+                        {/*
                         <View style={{ marginHorizontal: 20, flexDirection: 'row', paddingBottom: 10, }}>
                             <View style={[styles.tabBarButton, {
                                 backgroundColor: '#8DC867', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
@@ -257,7 +303,7 @@ const FriendNotificationScreen = ({ navigation, route: { params } }) => {
                                 <Text style={[styles.tabBarText, styles.textDefault,
                                 {}]}>Friends</Text>
                             </TouchableOpacity>
-                        </View>
+                                </View>*/}
 
                         <View style={[styles.bodyContainer, { flex: 1, }]}>
                             <Text style={[styles.textDefaultSemiBold, styles.title, { color: '#67806D' }]}>Friend Requests</Text>
@@ -512,7 +558,16 @@ const styles = StyleSheet.create({
     bodyContainer: {
         marginHorizontal: 20,
         marginTop: 10,
-    }
+    }, sortText: {
+        textAlign: 'center', fontSize: 12, justifyContent: 'center', color: 'white',
+    },
+    sortContainer: {
+        borderWidth: 1, flex: 1,
+        paddingVertical: 7, borderColor: 'white',
+    },
+    sortContainerSelected: {
+        backgroundColor: '#8DC867',
+    },
 })
 
 export default FriendNotificationScreen;

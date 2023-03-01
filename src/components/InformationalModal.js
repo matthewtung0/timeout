@@ -1,27 +1,90 @@
-import React, { } from 'react';
+import React, { useContext } from 'react';
 import {
-    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image,
+    View, StyleSheet, Text, TouchableOpacity, Dimensions, Image, FlatList, Pressable
 } from 'react-native';
 import { Icon } from 'react-native-elements'
+import { Context as CategoryContext } from '../context/CategoryContext';
 const img = require('../../assets/tasks_topbar.png')
+const constants = require('../components/constants.json')
 
-const InformationalModal = ({ toggleFunction, callback }) => {
+const InformationalModal = ({ toggleFunction, setCatNameCallback,
+    setColorIdCallback, setCategoryIdCallback }) => {
     const { height, width } = Dimensions.get('window');
+    const { state: categoryState } = useContext(CategoryContext)
     const BORDER_RADIUS = 20;
 
+    var sortedCategoriesTemp = categoryState.userCategories
+        .filter(item => item.archived !== true)
+        .sort(function (a, b) {
+            return String(a.category_name).localeCompare(String(b.category_name))
+        })
+    var sortedCategories = [
+        ...sortedCategoriesTemp.filter(req => req.category_id == '3'),
+        ...sortedCategoriesTemp.filter(req => req.category_id != '3'),
+    ]
     return (
         <View style={[styles.container, { width: width * 0.9, alignSelf: 'center' }]}>
-            <View style={{ flex: 1, backgroundColor: '#F9EAD3', borderRadius: BORDER_RADIUS }}>
+            <View style={{
+                flex: 1,
+                backgroundColor: '#F9EAD3',
+                borderRadius: BORDER_RADIUS
+            }}>
                 <View style={{ marginHorizontal: 20, marginTop: 90, }}>
-                    <Text style={[styles.textDefaultMed, styles.labelText, { fontSize: 16, color: '#67806D' }]}>
-                        Use this option if you have a task you want to work on right now.
-                    </Text>
 
-                    <Text style={[styles.textDefaultMed, styles.labelText, { fontSize: 16, color: '#67806D', marginTop: 10, }]}>
-                        Enter a new task and a category for that task, or pick from your existing to-do list (the "+" symbol
-                        on the lefthand side).
-                    </Text>
+                    <FlatList
+                        style
+                        horizontal={false}
+                        //onEndReached={getMoreData}
+                        onEndReachedThreshold={0.6}
+                        data={sortedCategories}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(result) => result.category_id}
+                        ItemSeparatorComponent={() => {
+                            return (<View
+                                style={{
+                                    borderBottomColor: '#A7BEAD',
+                                    //borderBottomWidth: StyleSheet.hairlineWidth,
+                                    borderBottomWidth: 0.8,
+                                    marginHorizontal: 20,
+                                }}
+                            />)
+                        }}
+                        renderItem={({ item }) => {
+                            return (
+                                <View>
+                                    <Pressable
+                                        style={({ pressed }) => [styles.toDoComponent, { opacity: pressed ? 0.5 : 1 }]}
+                                        onPress={() => {
+                                            if (setCatNameCallback) { setCatNameCallback(item.category_name) }
+                                            if (setColorIdCallback) { setColorIdCallback(item.color_id) }
+                                            if (setCategoryIdCallback) { setCategoryIdCallback(item.category_id) }
+                                            toggleFunction()
+                                        }}>
 
+
+                                        <View style={{
+                                            flex: 1, flexDirection: 'row', alignItems: 'center',
+                                            borderWidth: 0,
+                                        }}>
+
+                                            <View style={[styles.categoryStyle, {
+                                                backgroundColor: constants.colors[item.color_id],
+                                                alignSelf: 'center', width: 30, height: 30, marginRight: 20,
+                                            }]}>
+                                            </View>
+                                            <Text numberOfLines={1}
+                                                style={[
+                                                    styles.textDefaultMed,
+                                                    { fontSize: 20, color: '#67806D', }]}>{item.category_name}</Text>
+
+                                        </View>
+
+
+                                    </Pressable>
+                                </View>
+                            )
+                        }}
+                    />
                 </View>
             </View>
 
@@ -33,7 +96,7 @@ const InformationalModal = ({ toggleFunction, callback }) => {
                     borderTopRightRadius: BORDER_RADIUS,
                 }} />
 
-            <Text style={[styles.title, { position: 'absolute' }]}>Start a Task Now</Text>
+            <Text style={[styles.title, { position: 'absolute' }]}>Choose a Category</Text>
             <View style={styles.backContainer}>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -44,7 +107,6 @@ const InformationalModal = ({ toggleFunction, callback }) => {
                         type='ionicon'
                         size={35}
                         color='white' />
-                    {/*<Text style={styles.backButtonText}>X</Text>*/}
                 </TouchableOpacity>
             </View>
 
@@ -60,8 +122,12 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         fontFamily: 'Inter-Regular',
-    }, textDefaultMed: {
+    },
+    textDefaultMed: {
         fontFamily: 'Inter-Medium',
+    },
+    textDefaultSemiBold: {
+        fontFamily: 'Inter-SemiBold'
     },
     container: {
         flex: 1,
@@ -89,13 +155,6 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
     },
-    backButtonText: {
-        alignSelf: 'center',
-        fontWeight: 'bold',
-        fontSize: 25,
-        color: 'white',
-
-    },
     backContainer: {
         flex: 1,
         width: '50%',
@@ -104,46 +163,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end'
     },
-    dummy: {
-        flex: 0.03,
-    },
-    goBackChild: {
-        width: 50,
-        height: 50,
-        alignItems: 'center',
+    toDoComponent: {
         justifyContent: 'center',
+        flex: 1,
+        paddingVertical: 12,
+        marginRight: 15,
         alignContent: 'center',
-    },
-    submit: {
-        backgroundColor: '#FCC859',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 15,
-        alignSelf: 'center',
-        marginBottom: 40,
-        marginTop: 30,
-        shadowOffset: {
-            width: 0.05,
-            height: 0.05,
-        },
-        shadowOpacity: 0.1,
-    },
-    submitText: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-        padding: 10,
-    },
-    inputStyleContainer: {
-        borderBottomWidth: 0,
-    },
-    inputStyle: {
-        borderRadius: 15,
-        paddingHorizontal: 15,
-        paddingTop: 15,
-        paddingBottom: 15,
-        color: 'gray',
-        fontSize: 16,
     },
 })
 

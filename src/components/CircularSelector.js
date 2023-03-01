@@ -3,18 +3,17 @@ import { Animated, View, StyleSheet, PanResponder, Dimensions, ImageBackground }
 import Svg, { Circle, Path, Text } from 'react-native-svg';
 
 const img_timer = require('../../assets/clock_middle.png');
-const clock_bottom = require('../../assets/clock_bottom.png');
-const clock_top = require('../../assets/clock_top.png');
-
+//const clock_bottom = require('../../assets/clock_bottom.png');
+//const clock_top = require('../../assets/clock_top.png');
 
 const { height, width } = Dimensions.get('window');
-const picked_width = height / 3.46
+const picked_width = height / 3.6
 
 //width / 2 / 0.80
 
 
 const CircularSelector = forwardRef(({ updateCallback }, ref) => {
-    const timer_radius_pct = 0.45 // fraction of screen that the radius takes
+    const timer_radius_pct = 0.43//0.45 // fraction of screen that the radius takes
     const radius = (width * timer_radius_pct) * 100 / width // ex. 40 for 0.4 timer_radius_pct
     const [st, setSt] = useState({ cx: width / 2, cy: height / 2 });
     const [theta, setTheta] = useState(0);
@@ -147,7 +146,14 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
     let goRightCheck = false;
     let goLeftCheck = false;
     let prev_theta = -1;
-    let topBoundary_ = 55 + (picked_width) * 0.22 + 20//30
+
+    // SET TOP BOUNDARY HERE
+    let topBoundary_ =
+        height * 0.25 // view above clock
+        + 20 //marginTop above clock
+        + (picked_width) * 0.22 //clock top image
+
+    //let topBoundary_ = 55 + (picked_width) * 0.22 + 20
 
     var disabled = false;
     const panResponder = useRef(
@@ -319,21 +325,22 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                     >
                         <Svg style={styles.svgStyle}
                             height="100%" width="100%" viewBox={`0 0 100 100`}>
-                            <Circle cx="50" cy="50" r={radius} stroke="#E8D39E" fill="none" strokeWidth="2"></Circle>
-                            <Path stroke="#ABC57E" strokeWidth="2" fill="none"
+                            <Circle cx="50" cy="50" r={radius} stroke="#E8D39E" fill="none"
+                                strokeWidth="3"></Circle>
+                            <Path stroke="#8CC768" strokeWidth="3" fill="none"
                                 // circular path
                                 d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
                             />
                             {/* circular knob */}
-                            <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
+                            <Circle cx={pathToPtX} cy={pathToPtY} r='6' fill='#90AB72'></Circle>
 
-                            <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            <Text x={24} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
                             >{formattedTens}</Text>
-                            <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            <Text x={40} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
                             >{formattedOnes}</Text>
                             <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
                             >:</Text>
-                            <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            <Text x={68} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
                             >00</Text>
 
                             {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>

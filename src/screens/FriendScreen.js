@@ -1,15 +1,19 @@
 import React, { useState, useContext, useMemo, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList, Platform, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Dimensions, FlatList, Platform, Alert, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { Context as userContext } from '../context/userContext';
+import { useHeaderHeight } from '@react-navigation/elements';
 import Modal from 'react-native-modal'
 import AddFriendModal from '../components/AddFriendModal';
 import AvatarComponent from '../components/AvatarComponent';
 import tinycolor from 'tinycolor2';
 import { useFocusEffect } from '@react-navigation/native';
+const img = require('../../assets/tasks_topbar.png')
 
 const FriendScreen = ({ navigation, route: { params } }) => {
     const { height, width } = Dimensions.get('window');
+    const headerHeight = useHeaderHeight();
+    const BANNER_IMG_HEIGHT = headerHeight ? headerHeight : 90;
     const [friendCode, setFriendCode] = useState('')
     const { state, rejectFriendRequest, fetchFriends, setIdToView } = useContext(userContext)
     const [modalVisible, setModalVisible] = useState(false)
@@ -158,7 +162,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
     const memoizedFlatList = useMemo(flatListItself, [state.friends, visibleOffset, atEnd,])
 
     return (
-        <View style={[styles.container, { marginTop: Platform.OS === 'ios' ? 100 : 80 }]}>
+        <View style={[styles.container, { marginTop: Platform.OS === 'ios' ? 0 : 0 }]}>
 
             <Modal isVisible={modalVisible}
                 animationIn='slideInLeft'
@@ -173,8 +177,52 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                 </View>
 
             </Modal>
-            <View>
 
+            <View>
+                <Image
+                    source={img}
+                    resizeMode='stretch'
+                    style={{
+                        width: width, height: BANNER_IMG_HEIGHT,
+                        //borderTopLeftRadius: BORDER_RADIUS, borderTopRightRadius: BORDER_RADIUS,
+                    }} />
+                <View style={{
+                    position: 'absolute', width: '100%', height: '100%',
+                    alignItems: 'center', justifyContent: 'flex-end',
+                    paddingBottom: 10,
+                }}>
+                    <Text style={[styles.textDefaultBold,
+                    { fontSize: 25, color: 'white' }]}>Friends Center</Text>
+                </View>
+            </View>
+            <View style={{ paddingBottom: 10, flexDirection: 'row', paddingHorizontal: 12, backgroundColor: '#83B569' }}>
+                <TouchableOpacity
+                    style={[styles.sortContainer,
+                    { borderRightWidth: 0, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, }]}
+                    onPress={() => {
+                        navigation.navigate('Notifications')
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Me</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.sortContainer,
+                { borderRightWidth: 0, }]}
+                    onPress={() => {
+                        navigation.navigate('FriendFeed')
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Feed</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.sortContainer, styles.sortContainerSelected,
+                { borderTopRightRadius: 15, borderBottomRightRadius: 15, }]}
+                    onPress={() => {
+                    }}>
+                    <Text style={[styles.textDefault, styles.sortText]}>Friends</Text>
+                </TouchableOpacity>
+            </View>
+
+
+            <View>
+                {/*
                 <View style={{ marginHorizontal: 20, flexDirection: 'row', paddingBottom: 10, }}>
                     <TouchableOpacity style={[styles.tabBarButton, {
                         backgroundColor: '#83B569', borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
@@ -219,8 +267,7 @@ const FriendScreen = ({ navigation, route: { params } }) => {
                     }]}>
                         <Text style={[styles.tabBarText, styles.textDefault,]}>Friends</Text>
                     </View>
-                </View>
-
+                </View>*/}
 
                 <TouchableOpacity
                     style={[styles.addFriend, {
@@ -334,10 +381,15 @@ const styles = StyleSheet.create({
         //color: 'white',
         //fontSize: 17,
         textAlign: 'center', fontSize: 17, justifyContent: 'center', color: 'white',
+    }, sortText: {
+        textAlign: 'center', fontSize: 12, justifyContent: 'center', color: 'white',
     },
-    categoryContainer: {
-        marginVertical: 20,
-        marginHorizontal: 25,
+    sortContainer: {
+        borderWidth: 1, flex: 1,
+        paddingVertical: 7, borderColor: 'white',
+    },
+    sortContainerSelected: {
+        backgroundColor: '#8DC867',
     },
 })
 
