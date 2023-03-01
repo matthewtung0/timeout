@@ -28,6 +28,10 @@ const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 const transition_session_complete = require('../../assets/transition-session-complete.png')
+const test_bg = require('../../assets/test_bg2.jpeg')
+const test_bg4 = require('../../assets/test_bg4.jpeg')
+const test_bg5 = require('../../assets/test_bg5.jpg')
+const test_bg6 = require('../../assets/test_bg6.png')
 const PADDING_TOP = 55;
 const { height, width } = Dimensions.get('window');
 const WIDTH_SETTING = height / 3.46
@@ -353,7 +357,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
         <HideKeyboard>
             <>
                 <View
-                    style={[styles.viewContainer, { paddingTop: PADDING_TOP, }]}
+                    style={[styles.viewContainer, {}]}
                 >
 
                     {/* TO-DO SELECTOR MODAL */}
@@ -412,10 +416,20 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                         </Modal>
                     </View>
 
-                    <View
-                        style={{}}
-                    >
-                        <View style={{ position: 'absolute', flex: 1, borderWidth: 0, width: '100%', height: '100%', }}>
+                    <View style={{ paddingTop: PADDING_TOP, }}>
+
+                        <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
+                            <Image
+                                source={test_bg6}
+                                style={{ width: '100%', height: '100%', }}
+                                resizeMode='contain'
+                            />
+                        </View>
+
+                        <View style={{
+                            position: 'absolute', flex: 1,
+                            marginTop: PADDING_TOP, width: '100%', height: '100%',
+                        }}>
                             <View style={{ flex: 1, }}>
 
                             </View>
@@ -440,7 +454,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                                 marginTop: 20,
                             }}
                             resizeMode="contain" />
-                        <View style={{}}
+                        <View style={{ borderWidth: 0 }}
                         >
                             <CircularSelector
                                 minSet={0}
@@ -458,6 +472,8 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                         resizeMode="contain" />*/}
                         {/* some space for desk */}
                         <View style={{ height: height * 0.05, }} />
+
+
 
 
                     </View>
@@ -498,9 +514,17 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
 
                     <View style={{
                         justifyContent: 'center',
-                        borderWidth: 0, width: width * 0.8, alignSelf: 'center', flex: 1,
+                        borderWidth: 0, width: '100%', alignSelf: 'center', flex: 1,
                     }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{
+                            position: 'absolute', width: '100%', height: '100%',
+                            backgroundColor: '#F8E9D2'
+                        }}>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row', justifyContent: 'space-between',
+                            marginHorizontal: '10%',
+                        }}>
                             <View
                                 style={{}}>
                                 {Platform.OS === 'ios' ?

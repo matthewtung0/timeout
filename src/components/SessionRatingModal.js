@@ -133,9 +133,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
 
     const anim = useRef(new Animated.Value(0)).current;
-
     const cloudAnim = () => {
-        //Animated.loop(
         Animated.sequence([
             Animated.timing(anim, {
                 toValue: -height + 30,
@@ -229,13 +227,13 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
     }
     const offBoard = () => {
         setIsLoading(false)
-        setAnimStarted(true)
         cloudAnim()
+        setAnimStarted(true)
         setTimeout(() => {
             offBoardCallback();
             toggleFunction()
 
-        }, 1250)
+        }, 1150)
 
     }
 
@@ -508,7 +506,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
                             fontSize: 18,
                         }}
                         onPress={() => {
-                            if (!isLoading) {
+                            if (!isLoading && !animStarted) {
                                 // if deleting task from to-do list, ask for confirmation
                                 if (existingItem && !toKeep) {
                                     areYouSureDelete()
@@ -535,9 +533,9 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             </View>
         )
     }
-
     useFocusEffect(
         useCallback(() => {
+
             checkTodoMatch()
         }, [])
     )
@@ -591,7 +589,7 @@ const SessionRatingModal = ({ toggleFunction, colorArr, sessionObj, sessionEndTi
             {animStarted ?
                 <View style={{
                     position: 'absolute', borderWidth: 0, flex: 1, width: '100%', height: '100%',
-                    alignItems: 'center',
+                    alignItems: 'center', zIndex: 2,
                 }}>
                     <Animated.View style={{
                         width: width * 0.7,

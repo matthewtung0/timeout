@@ -1,7 +1,8 @@
 //import 'react-native-gesture-handler';
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, withTheme } from 'react-native-elements';
+import { Icon } from 'react-native-elements'
 import Modal from 'react-native-modal'
 import { Ionicons } from "@expo/vector-icons";
 
@@ -480,7 +481,21 @@ function CreateDrawer() {
         totalTime={userState.totalTime}
         totalTasks={userState.totalTasks}
         pfpSrc={userState.base64pfp} />}
-      screenOptions={{ headerTintColor: '#67806D', }}
+      screenOptions={({ navigation }) => ({
+        headerLeft: props =>
+          <TouchableOpacity
+            style={{ marginLeft: 5, backgroundColor: '#ABC57E', borderRadius: 10, paddingHorizontal: 5, }}
+            onPress={navigation.toggleDrawer}>
+            <Icon
+              name="menu"
+              type='ionicon'
+              size={35}
+              color='white'
+            />
+          </TouchableOpacity>
+        ,
+        //headerTintColor: 'white',
+      })}
     >
 
       <Drawer.Screen name="mainFlow"

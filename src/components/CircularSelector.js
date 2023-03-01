@@ -307,36 +307,36 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
         <View
             style={[styles.container, { borderWidth: 0, }]}
         >
-            <ImageBackground
-                source={img_timer}
-                style={[styles.image]}
-                resizeMode='contain'>
+            <View>
+                <ImageBackground
+                    source={img_timer}
+                    resizeMode='contain'>
 
-                <Animated.View
-                    style={[styles.wrappedView]}
-                    {...panResponder.panHandlers}
+                    <Animated.View
+                        style={[styles.wrappedView]}
+                        {...panResponder.panHandlers}
 
-                >
-                    <Svg style={styles.svgStyle}
-                        height="100%" width="100%" viewBox={`0 0 100 100`}>
-                        <Circle cx="50" cy="50" r={radius} stroke="#E8D39E" fill="none" strokeWidth="2"></Circle>
-                        <Path stroke="#ABC57E" strokeWidth="2" fill="none"
-                            // circular path
-                            d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
-                        />
-                        {/* circular knob */}
-                        <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
+                    >
+                        <Svg style={styles.svgStyle}
+                            height="100%" width="100%" viewBox={`0 0 100 100`}>
+                            <Circle cx="50" cy="50" r={radius} stroke="#E8D39E" fill="none" strokeWidth="2"></Circle>
+                            <Path stroke="#ABC57E" strokeWidth="2" fill="none"
+                                // circular path
+                                d={`M50 ${50 - radius} A${radius} ${radius} 0 ${theta > 180 ? 1 : 0} 1 ${pathToPtX} ${pathToPtY}`}
+                            />
+                            {/* circular knob */}
+                            <Circle cx={pathToPtX} cy={pathToPtY} r='5' fill='#90AB72'></Circle>
 
-                        <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                        >{formattedTens}</Text>
-                        <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                        >{formattedOnes}</Text>
-                        <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                        >:</Text>
-                        <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
-                        >00</Text>
+                            <Text x={23} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            >{formattedTens}</Text>
+                            <Text x={38} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            >{formattedOnes}</Text>
+                            <Text x={50} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            >:</Text>
+                            <Text x={70} y={60} fontSize={25} textAnchor="middle" fill="#90AB72"
+                            >00</Text>
 
-                        {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>
+                            {/*<Text x={50} y={60} fontSize={5} textAnchor="middle" fill="black">{"phone y is " + height}</Text>
                         <Text x={50} y={65} fontSize={5} textAnchor="middle" fill="black">{"x position is " + st.cx}</Text>
                         <Text x={50} y={70} fontSize={5} textAnchor="middle" fill="black">{"y position is " + st.cy}</Text>
                         <Text x={50} y={75} fontSize={5} textAnchor="middle" fill="black">{"Theta angle is " + theta}</Text>
@@ -345,9 +345,9 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                         <Text x={50} y={90} fontSize={5} textAnchor="middle" fill="black">{"right check is " + rightCheck}</Text>
                         <Text x={50} y={95} fontSize={5} textAnchor="middle" fill="black">{"left check is " + leftCheck}</Text>
     */}
-                    </Svg>
+                        </Svg>
 
-                    {/*<View style={{ position: 'absolute', borderWidth: 2, width: '100%', height: '100%', flex: 1, flexDirection: 'row', }}>
+                        {/*<View style={{ position: 'absolute', borderWidth: 2, width: '100%', height: '100%', flex: 1, flexDirection: 'row', }}>
                         <View style={{ flex: 1, borderWidth: 1, }}>
                             <Text>{formattedTens}</Text>
                         </View>
@@ -365,13 +365,9 @@ const CircularSelector = forwardRef(({ updateCallback }, ref) => {
                         </View>
 
 </View>*/}
-
-
-                </Animated.View>
-
-
-
-            </ImageBackground>
+                    </Animated.View>
+                </ImageBackground>
+            </View>
         </View >
     )
 })

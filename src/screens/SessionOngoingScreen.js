@@ -188,11 +188,15 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
                 (nextAppState === 'background')) {
                 //|| nextAppState === 'inactive'
 
-
-                // schedule a notification if app is being minimized
+                // schedul 5-min left notification
+                if (!onEnd && secLeft > 60 * 5.5) {
+                    console.log(`Scheduling notification ${secLeft - 300} seconds from now`)
+                    schedulePushNotification(secLeft - 300, 0);
+                }
+                // schedule time-up notification
                 if (!onEnd) {
                     console.log(`SCHEDULING NOTIFICATION ${secLeft} seconds from now`)
-                    schedulePushNotification(secLeft);
+                    schedulePushNotification(secLeft, 1);
                 }
 
                 console.log('App has gone to the background!');
@@ -242,11 +246,18 @@ const SessionOngoingScreen = ({ navigation, route: { params } }) => {
         await Notifications.cancelAllScheduledNotificationsAsync()
     }
 
-    async function schedulePushNotification(numSec) {
+    async function schedulePushNotification(numSec, bodyNameId) {
+        if (bodyNameId == 1) {
+            var bodyName = `Your timer is up for ${activityName}. Go to Time Out to rate how you did.`
+            var titleName = 'Session complete'
+        } else {
+            var bodyName = `Go to Time Out to add more time to ${activityName} if you need.`
+            var titleName = '5 minutes left'
+        }
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "Session complete",
-                body: `Your timer is up for ${activityName}. Go to Time Out to rate how you did.`,
+                title: titleName,
+                body: bodyName,
                 data: { data: 'goes here' },
             },
             trigger: { seconds: numSec },

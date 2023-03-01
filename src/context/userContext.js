@@ -449,7 +449,8 @@ const fetchFriendsIfUpdate = dispatch => async (callback = null) => {
 const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, items_cost, callback = null, callback_fail = null) => {
     try {
         console.log("Items to redeem", items_to_redeem)
-        const response = await timeoutApi.post('/self_user/avatar2', { avatarJSON, items_to_redeem, items_cost })
+        const response = await timeoutApi.post('/self_user/avatar2',
+            { avatarJSON, items_to_redeem, items_cost }, { timeout: 10000 })
         console.log("Respone is ", response.data)
         var avatarBase64Data = `data:image/png;base64,${response.data.bufferString}`
         var avatarBase64DataThumbnail = `data:image/png;base64,${response.data.thumbnailBufferString}`
