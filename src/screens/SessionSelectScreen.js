@@ -28,10 +28,7 @@ const background_desk = require('../../assets/background_desk.png')
 const clock_bottom = require('../../assets/clock_bottom.png');
 const clock_top = require('../../assets/clock_top.png');
 const transition_session_complete = require('../../assets/transition-session-complete.png')
-const test_bg = require('../../assets/test_bg2.jpeg')
-const test_bg4 = require('../../assets/test_bg4.jpeg')
-const test_bg5 = require('../../assets/test_bg5.jpg')
-const test_bg6 = require('../../assets/test_bg6.png')
+//const test_bg6 = require('../../assets/test_bg6.png')
 const PADDING_TOP = 55;
 const { height, width } = Dimensions.get('window');
 const WIDTH_SETTING = height / 3.46
@@ -418,13 +415,13 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
 
                     <View style={{ paddingTop: PADDING_TOP, }}>
 
-                        <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
+                        {/*<View style={{ position: 'absolute', width: '100%', height: '100%' }}>
                             <Image
                                 source={test_bg6}
                                 style={{ width: '100%', height: '100%', }}
                                 resizeMode='contain'
                             />
-                        </View>
+                            </View>*/}
 
                         <View style={{
                             position: 'absolute', flex: 1,

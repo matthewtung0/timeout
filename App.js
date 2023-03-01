@@ -484,13 +484,16 @@ function CreateDrawer() {
       screenOptions={({ navigation }) => ({
         headerLeft: props =>
           <TouchableOpacity
-            style={{ marginLeft: 5, backgroundColor: '#ABC57E', borderRadius: 10, paddingHorizontal: 5, }}
+            style={{
+              marginLeft: 5, //backgroundColor: '#ABC57E', 
+              borderRadius: 10, paddingHorizontal: 5,
+            }}
             onPress={navigation.toggleDrawer}>
             <Icon
               name="menu"
               type='ionicon'
               size={35}
-              color='white'
+              color='#67806D'
             />
           </TouchableOpacity>
         ,
