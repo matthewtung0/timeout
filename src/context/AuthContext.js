@@ -116,8 +116,14 @@ const changePassword = (dispatch) => async (oldPassword, newPassword, callback =
     }
 }
 
+
 const signout = dispatch => async (callback = null) => {
     console.log("SIGNING OUT")
+    try {
+        const response = await timeoutApi.patch('/self_user_token');
+    } catch (err) {
+        console.log(err)
+    }
 
     // need to clear out the user info
     dispatch({ type: 'signout' });
