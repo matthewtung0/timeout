@@ -63,7 +63,7 @@ const CounterComponent = ({ item, addTallyCallback, colorArr,
         setTempNumber(item.point_count);
     }
 
-    console.log(`Rendering counter item ${item.activity_name} with color id ${item.color_id}`)
+    //console.log(`Rendering counter item ${item.activity_name} with color id ${item.color_id}`)
 
     const addCustomCallback = async (counter_id, add_by,) => {
 

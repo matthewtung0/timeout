@@ -451,7 +451,6 @@ const saveAvatar2 = dispatch => async (user_id, avatarJSON, items_to_redeem, ite
         console.log("Items to redeem", items_to_redeem)
         const response = await timeoutApi.post('/self_user/avatar2',
             { avatarJSON, items_to_redeem, items_cost }, { timeout: 10000 })
-        console.log("Respone is ", response.data)
         var avatarBase64Data = `data:image/png;base64,${response.data.bufferString}`
         var avatarBase64DataThumbnail = `data:image/png;base64,${response.data.thumbnailBufferString}`
         dispatch({ type: 'save_avatar2', payload: { avatarJSON, avatarBase64Data, avatarBase64DataThumbnail, items_cost } })

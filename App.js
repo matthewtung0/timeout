@@ -159,18 +159,6 @@ function CreateCategoryStack() {
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
         headerShown: false,
-        /*headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('mainFlow')}>
-            <Ionicons
-              name='arrow-back-outline'
-              size={24}
-              color='black' />
-
-          </TouchableOpacity>
-        ),
-        headerTransparent: false,
-        headerTitle: 'My Categories',*/
       })}>
       <Stack.Screen
         name="AddCategory"
@@ -187,18 +175,6 @@ function CreatePrivacyPolicyStack() {
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
         headerShown: false,
-        /*headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('mainFlow')}>
-            <Ionicons
-              name='arrow-back-outline'
-              size={24}
-              color='black' />
-
-          </TouchableOpacity>
-        ),
-        headerTransparent: false,
-        headerTitle: 'My Categories',*/
       })}>
       <Stack.Screen
         name="PrivacyPolicy"
@@ -243,18 +219,6 @@ function CreateTestSvgStack() {
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
         headerShown: false,
-        /*headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('mainFlow')}>
-            <Ionicons
-              name='arrow-back-outline'
-              size={24}
-              color='black' />
-
-          </TouchableOpacity>
-        ),
-        headerTransparent: false,
-        headerTitle: 'My Categories',*/
       })}>
       <Stack.Screen
         name="TestSvg"
@@ -271,18 +235,6 @@ function CreateProfileStack() {
     <Stack.Navigator
       screenOptions={() => ({
         headerShown: false
-        /*headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('mainFlow')}>
-            <Ionicons
-              name='arrow-back-outline'
-              size={24}
-              color='black' />
-
-          </TouchableOpacity>
-        ),
-        headerTransparent: true,
-        headerTitle: '',*/
       })}>
       <Stack.Screen
         name="Profile"
@@ -363,108 +315,115 @@ function CustomDrawerContent(props) {
     );
   }
   return (
-    <><DrawerContentScrollView
-      style={{ backgroundColor: '#67806D' }}
-      contentContainerStyle={{ flex: 1, }}
-      {...props}
-    >
-      <View style={{ flex: 5, backgroundColor: 'white', }}>
-        <View style={{}}>
-          <TouchableOpacity
-            onPress={() => {
-              setIdToView({ username: props.username, user_id: props.userId })
-              props.navigation.navigate('Profile temp')
-            }}>
-            <DrawerProfileView friends={props.friends} username={props.username}
-              totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} userId={props.userId} />
-          </TouchableOpacity>
+    <View style={{ flex: 1, }}>
+      <View style={{
+        position: 'absolute', height: '100%', width: '100%',
+        justifyContent: 'flex-end',
+      }}>
 
-
-          <DrawerItemList {...props} />
-          <Modal
-            style={{}}
-            isVisible={modalVis}
-            backdropTransitionOutTiming={0}>
-
-            <View style={{
-              flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'center',
-            }}>
-              <View style={{
-                height: '70%',
-                borderRadius: 20,
-              }}>
-                <HelpandSupportModal
-                  toggleFunction={helpAndSupportModalToggle}>
-                </HelpandSupportModal>
-
-
-              </View>
-
-            </View>
-          </Modal>
-        </View>
-
-
-        {/*<DrawerItem
-        label="Open modal"
-        onPress={() => setModalVis(true)}
-      />
-      <DrawerItem
-
-        label="Toggle drawer"
-        onPress={() => props.navigation.toggleDrawer()}
-  />*/}
-        <View
-          style={{
-            borderBottomColor: 'grey',
-            borderBottomWidth: StyleSheet.hairlineWidth,
-          }}
-        />
-        <DrawerItem
-          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
-          label="Help and Support"
-          onPress={() => { setModalVis(true) }} />
-        <DrawerItem
-          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
-          label="Privacy Policy"
-          //component={CreatePrivacyPolicyStack}
-          onPress={() => {
-            props.navigation.navigate("privacyPolicyFlow")
-          }}
-        />
-        {/*<DrawerItem
-          labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
-          label="Terms of Use"
-        onPress={() => { }} />*/}
-
-      </View>
-      <View style={{ flex: 1, backgroundColor: 'white', }} />
-      <View style={{ flex: 1, backgroundColor: 'white', }}>
-        <DrawerItem
-          labelStyle={{ color: 'crimson', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
-          style={{}}
-          label="Sign out"
-          onPress={() => {
-            areYouSureSignOut()
-          }} />
-      </View>
-
-      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'white', }}>
-        <Image
-          style={{ position: 'absolute', }}
-          source={drawer_bg}
-          resizeMode="contain"></Image>
-        <View style={{ alignContent: 'center', justifyContent: 'center', marginBottom: 10, }}>
+        <View style={{ alignContent: 'center', justifyContent: 'center', marginBottom: 20, }}>
           <Text style={{ textAlign: 'center', alignSelf: 'center', fontFamily: 'Inter-Regular', color: '#67806D' }}>Time Out ver. 1.0.5</Text>
         </View>
       </View>
+      <DrawerContentScrollView
+        style={{
+          marginBottom: 30,
+          //backgroundColor: '#67806D' 
+        }}
+        contentContainerStyle={{
 
-    </DrawerContentScrollView>
+          //flex: 1, 
+        }}
+        {...props}
+      >
+        <View style={{
+          //flex: 5, 
+
+        }}>
+          <View style={{}}>
+            <TouchableOpacity
+              onPress={() => {
+                setIdToView({ username: props.username, user_id: props.userId })
+                props.navigation.navigate('Profile temp')
+              }}>
+              <DrawerProfileView friends={props.friends} username={props.username}
+                totalTasks={props.totalTasks} totalTime={props.totalTime} pfpSrc={props.pfpSrc} userId={props.userId} />
+            </TouchableOpacity>
 
 
-    </>
+            <DrawerItemList {...props} />
+            <Modal
+              style={{}}
+              isVisible={modalVis}
+              backdropTransitionOutTiming={0}>
+
+              <View style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}>
+                <View style={{
+                  height: '70%',
+                  borderRadius: 20,
+                }}>
+                  <HelpandSupportModal
+                    toggleFunction={helpAndSupportModalToggle}>
+                  </HelpandSupportModal>
+
+
+                </View>
+
+              </View>
+            </Modal>
+          </View>
+          <View
+            style={{
+              borderBottomColor: 'grey',
+              borderBottomWidth: StyleSheet.hairlineWidth,
+            }}
+          />
+          <DrawerItem
+            labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
+            label="Help and Support"
+            onPress={() => { setModalVis(true) }} />
+          <DrawerItem
+            labelStyle={{ color: '#67806D', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
+            label="Privacy Policy"
+            onPress={() => {
+              props.navigation.navigate("privacyPolicyFlow")
+            }}
+          />
+        </View>
+        <View style={{
+          //flex: 1,
+        }} />
+        <View style={{
+          //flex: 1, 
+        }}>
+
+        </View>
+
+        <View style={{
+          justifyContent: 'flex-end',
+        }}>
+          <DrawerItem
+            labelStyle={{ color: 'crimson', fontFamily: 'Inter-SemiBold', fontSize: 15, }}
+            style={{}}
+            label="Sign out"
+            onPress={() => {
+              areYouSureSignOut()
+            }} />
+          {/*<Image
+          style={{ position: 'absolute', borderWidth: 1, }}
+          source={drawer_bg}
+        resizeMode="contain"></Image>*/}
+        </View>
+
+      </DrawerContentScrollView>
+
+
+
+    </View>
 
   );
 }
@@ -522,14 +481,6 @@ function CreateDrawer() {
         component={CreateProfileStack}
         options={{ drawerLabel: 'Profile temp', title: '', drawerItemStyle: { display: "none" }, headerShown: false }} />
 
-      {/*<Drawer.Screen name="notificationFlow"
-        component={CreateCategoryStack}
-        options={{
-          drawerLabel: 'Notifications',
-          title: 'Notifications',
-          headerShown: false,
-        }} />*/}
-
       <Drawer.Screen name="testFlow"
         component={CreateTestSvgStack}
         options={{
@@ -538,14 +489,6 @@ function CreateDrawer() {
           title: 'Customize Avatar',
           headerShown: false,
         }} />
-
-      {/*<Drawer.Screen name="inviteFlow"
-        component={CreateInvitationStack}
-        options={{
-          drawerLabel: 'Invite a Friend',
-          title: 'Invite a Friend',
-          headerShown: false,
-        }} />*/}
 
       <Drawer.Screen name="privacyPolicyFlow"
         component={CreatePrivacyPolicyStack}

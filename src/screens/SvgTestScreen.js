@@ -1206,14 +1206,14 @@ const SvgTestScreen = ({ navigation }) => {
             <TouchableOpacity
                 style={{
                     justifyContent: 'center', marginVertical: 15,
-                    paddingVertical: 15, borderRadius: 15, backgroundColor: '#ABC57E',
+                    paddingVertical: 15, borderRadius: 15, backgroundColor: '#8CC768',
                     shadowOffset: {
                         width: 0,
                         height: 6,
                     },
                     shadowOpacity: 1,
                     shadowRadius: 0,
-                    shadowColor: tinycolor('#ABC57E').darken(25).toString()
+                    shadowColor: tinycolor('#8CC768').darken(25).toString()
                 }}
                 disabled={isLoading}
                 onPress={() => {

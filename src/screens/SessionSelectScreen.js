@@ -232,7 +232,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                     },
                     shadowOpacity: 1,
                     shadowRadius: 0,
-                    shadowColor: tinycolor('#ABC57E').darken(25).toString(),
+                    shadowColor: tinycolor('#8CC768').darken(25).toString(),
                     //elevation: 4,
                 }]}
                 onPress={() => {
@@ -449,7 +449,7 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                         }}>
                             <TextInput
                                 style={[styles.input, styles.textDefault,
-                                { flex: 2, height: '65%', color: '#67806D', }]}
+                                { flex: 1.9, height: '65%', color: '#67806D', }]}
                                 placeholder="Task"
                                 placeholderTextColor={'#C0C0C0'}
                                 rightIconContainerStyle={styles.rightIconInput}
@@ -475,10 +475,12 @@ const SessionSelectScreen = ({ navigation: { navigate }, route: { params } }) =>
                                         width: '100%', justifyContent: 'center', alignItems: 'center',
                                         borderRadius: 25,
                                     }}>
-                                        <Text style={[styles.textDefaultSemiBold, {
-                                            color: 'white',
-                                            paddingVertical: 10,
-                                        }]}>{newCatName}</Text>
+                                        <Text
+                                            numberOfLines={1}
+                                            style={[styles.textDefaultSemiBold, {
+                                                color: 'white',
+                                                paddingVertical: 10,
+                                            }]}>{newCatName}</Text>
                                     </View>
                                 </TouchableOpacity>
 

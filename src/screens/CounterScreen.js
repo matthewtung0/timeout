@@ -13,14 +13,13 @@ const constants = require('../components/constants.json')
 const img = require('../../assets/tasks_topbar.png')
 import { Shadow } from 'react-native-shadow-2';
 import CounterComponent from '../components/CounterComponent';
-const BANNER_IMG_HEIGHT = 90;
-const BORDER_RADIUS = 20;
 
 const CounterScreen = () => {
     const { height, width } = Dimensions.get('window');
     const headerHeight = useHeaderHeight();
     const BANNER_IMG_HEIGHT = headerHeight ? headerHeight : 90;
-    const { state: counterState, setCounterTablesLocked, fetchUserCounters } = useContext(CounterContext)
+    const { state: counterState, setCounterTablesLocked, fetchUserCounters, fetchUserCountersTest,
+        clearCounters } = useContext(CounterContext)
 
     const [addCounterModalVisible, setAddCounterModalVisible] = useState(false)
     const [editCounterModalVisible, setEditCounterModalVisible] = useState(false)
@@ -125,10 +124,12 @@ const CounterScreen = () => {
     const focusEffectFunc = async (temp = false) => {
 
         var comp = compareAsc(counterState.lastUpdated, startOfDay(new Date()))
-        console.log(`Checking comparison ${comp}`)
+        console.log(`Checking comparison ${counterState.lastUpdated} with ${startOfDay(new Date())}`)
         if (comp < 0 || temp) { // need updating
+            await clearCounters();
             console.log("Refreshing counters for new day")
             await fetchUserCounters()
+            //await fetchUserCountersTest()
         }
     }
     const addCounterCallback = async () => {
@@ -175,7 +176,7 @@ const CounterScreen = () => {
     )
     useFocusEffect(
         useCallback(() => {
-            console.log("SETTING SORTED COUNTERS");
+            //console.log("SETTING SORTED COUNTERS");
             setSortedCounters(toSort(counterState.userCounters, sortBy))
             return () => {
             }
@@ -186,8 +187,8 @@ const CounterScreen = () => {
         return (
             <FlatList
                 style={{ marginTop: 25, marginHorizontal: 20, borderWidth: 0 }}
-                //data={sortedCounters}
-                data={counterState.userCounters}
+                data={sortedCounters}
+                //data={counterState.userCounters}
                 keyExtractor={(item) => item.counter_id}
                 renderItem={({ item }) => {
                     return (

@@ -10,6 +10,10 @@ const counterReducer = (state, action) => {
                 ...state, userCounters: action.payload,
                 lastUpdated: new Date()
             }
+        case 'clear_counters':
+            return {
+                ...state, userCounters: [],
+            }
         case 'add_counter':
             return state
         case 'add_tally':
@@ -79,7 +83,7 @@ const counterReducer = (state, action) => {
                 userCounters: [],
                 batchData: {},
                 counterTablesLocked: false,
-                lastUpdated: new Date(),
+                //lastUpdated: new Date(),
             }
         default:
             return state;
@@ -189,9 +193,20 @@ const fetchMultipleMonthsCounters = dispatch => async (startTime, endTime, callb
 }
 
 const fetchUserCounters = dispatch => async (id) => {
-    console.log("trying to fetch user counters");
     try {
         var startDate = startOfDay(new Date())
+        const response = await timeoutApi.get('/counter', { params: { id, startDate } })
+        dispatch({ type: 'fetch_counters', payload: response.data })
+
+        return response.data
+    } catch (err) {
+        console.log("error fetching counters", err);
+        dispatch({ type: 'add_error', payload: 'There was a problem retrieving the counters.' })
+    }
+}
+const fetchUserCountersTest = dispatch => async (id) => {
+    try {
+        var startDate = startOfMonth(new Date())
         const response = await timeoutApi.get('/counter', { params: { id, startDate } })
         dispatch({ type: 'fetch_counters', payload: response.data })
 
@@ -295,17 +310,26 @@ const clearCounterContext = dispatch => async () => {
     }
 }
 
+const clearCounters = dispatch => async () => {
+    try {
+        dispatch({ type: 'clear_counters' })
+    } catch (err) {
+
+    }
+}
+
 export const { Provider, Context } = createDataContext(
     counterReducer,
     {
         fetchUserCounters, addCounter, addTally, resetTally, deleteCounter,
         changeColorCounter, changeArchiveCounter, fetchMultipleMonthsCounters,
-        setCounterTablesLocked, clearCounterContext,
+        setCounterTablesLocked, clearCounterContext, clearCounters,
+        fetchUserCountersTest
     },
     {
         userCounters: [],
         batchData: {},
         counterTablesLocked: false,
-        lastUpdated: new Date(),
+        lastUpdated: startOfMonth(new Date()),
     }
 );
